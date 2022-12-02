@@ -70,7 +70,6 @@ extent: extentPoint depth: bitsPerPixel fromBytes: aByteArray
 
 	^self extent: extentPoint depth: bitsPerPixel bits: aByteArray swapWords swapBytes	! !
 
-
 !CharacterSequence methodsFor: 'converting' stamp: 'stp 12/1/2022 23:41:31'!
 clipTo: smallSize
 	"return myself or a copy shortened by clipping to smallSize"
@@ -103,29 +102,6 @@ expandedBy: delta
 			Rectangle
 				origin: origin - delta 
 				corner: corner + delta ]! !
-
-'From Cuis 6.0 [latest update: #5559] on 1 December 2022 at 10:15:23 pm'!
-
-!Form class methodsFor: 'instance creation' stamp: 'stp 12/1/2022 21:30:44'!
-extent: extentPoint depth: bitsPerPixel fromBytes: aByteArray
-	"Answer an instance of me with bitmap of the given dimensions and depth from the given 32-bit PADDED-ROWS data."
-
-	| len nArr wPerLine bPerLine ind |
-	len _ extentPoint x * extentPoint y / 8.
-	len = aByteArray size
-		ifTrue: [^self extent: extentPoint depth: bitsPerPixel bits: aByteArray	].
-"	Transcript tab; show: 'Form: ', (len * 8) printString, ' - ', (aByteArray size * 8) printString; cr.
-"	nArr _ ByteArray new: len * 2.
-	bPerLine _ extentPoint x / 8.	 "bytes per line"
-	wPerLine _ extentPoint x / 4.  "words per line"
-	ind _ 1.
-	0 to: (extentPoint y - 1) do: "line loop"
-		[ :y |
-		1 to: bPerLine do: "row loop"
-			[ :x | nArr at: ind put: (aByteArray at: (x + (y * wPerLine))).
-			ind _ ind + 1]].
-	^self extent: extentPoint depth: bitsPerPixel bits: nArr	
-"	^self extent: extentPoint depth: bitsPerPixel bits: aByteArray	"! !
 
 !Object methodsFor: 'associating'!
 

@@ -1,0 +1,65 @@
+Sound Objects in Siren
+
+Siren's hierarchy of events and functions includes objects that represent sampled sounds. These can be used for synthesis, recording, processing, and playback. The fact that a Siren sound is a function means that it has the semantics of a single-valued function of time. A concrete SampledSound has something in its data instance variable (inherited from Function) that might be a word (16-bit) or floating-point sample array, or a CPointer, meaning that the sound's actual data is held onto by CSL, PortAudio, LibSndFile, or Loris. Since sounds are also events, they can have properties such as sound metadata or control functions.
+
+There are many instance creation methods in the class SampledSound, including examples to create several kinds of waveforms, frequency sweeps, and impulse trains.
+
+Examples
+
+Create a 1-second sine wave sound at a sample rate of 44100 Hz, with 1 channel and the base frequency of 80 Hz.
+	[(SampledSound sineDur: 5 rate: 44100 freq: 80 chans: 1) edit]
+
+View a swept sine wave
+	[(SampledSound sweepDur: 2.0 rate: 44100 from: 10 to: 100 chans: 1) edit]
+
+View a pulse train
+	[(SampledSound pulseTrainDur: 5.0 rate: 44100 freq: 200 width: 0.1 chans: 1) edit]
+
+View a sawtooth waveform (these 2 methods are the same)
+	[SoundView openOn: SampledSound sawtooth]
+	[SampledSound sawtooth edit]
+
+Read in a sound from a file
+	[(SampledSound fromFile: 'unbelichtet.aiff') edit]
+
+Save a sound to a file
+	[(SampledSound sweepDur: 5.0 rate: 44100 from: 50 to: 1000 chans: 1) 
+				scaleBy: 0.2; storeOnFileNamed: 'sweep.aiff']
+	[(SampledSound fromFile: 'sweep.aiff') edit]
+
+Load and edit a long-ish sound file
+	[(SampledSound fromFile: 'FourMagicSentences.aiff') edit]
+
+Manipulating Sound Objects
+
+Sampled sound objects can be traeated as normal functions, i.e., one can address them as sample arrays and perform all manner of sample arithmetic, as illustrated in the following example, which mixes a sine wave and a sawtooth using low-level sample-accessing messages.
+
+	[ | sin saw |
+	sin := SampledSound sineDur: 1.0 rate: 44100 freq: 10 chans: 1.
+	saw := SampledSound sawtoothDur: 1.0 rate: 44100 freq: 100 chans: 1.
+	sin scaleBy: 0.8.
+	saw scaleBy: 0.1.
+	1 to: sin size do:			"loop to do verctor math on sound samples"
+		[ :index |
+		sin at: index put: ((sin at: index) + (saw at: index))].
+	sin edit]
+
+Class SampledSound also supports basic envelope extraction, as in this example,
+
+	[(SampledSound fromFile: 'kombination1a.snd') rmsEnvelope edit]
+
+As a final example, one can apply a function to a sound as an envelope, as in this block,
+
+	[((SampledSound sineDur: 1.0 rate: 44100 freq: 220 chans: 1) 
+				scaledByFunction: (ExponentialFunction default)) edit]
+
+For fancier signal processing, we use the CSL package rather than sample arithmetic with sounds and fnuctions.
+
+FFTs and Spectra
+
+There's also an FFT-based spectrum class in Siren, which uses the external interface to the FFTW FFT package. To use it, look at the example methods in the class Spectrum and SpectrumView
+
+	[Spectrum sweepExample display]
+	[Spectrum fileExample display]
+
+For more on sound processing, see the the various *sound* class utility methods, the SoundFile I/O methods, and notes below on the CSL framework in Siren.

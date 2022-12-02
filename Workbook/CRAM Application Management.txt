@@ -1,0 +1,49 @@
+The CREATE Real-time Applications Manager
+
+(Obsolete)
+
+CRAM is a distributed processing environment (DPE) database and management tool. For more information, see http://create.ucsb.edu/CRAM. CRAM assumes the existence of a Postgress-SQL database with network and application tables as described in the documentation. CRAM applications are generally written in C++ or SuperCollider. The CRAM manager is in Smaltalk.
+
+NodeSocketInterface Examples
+
+Try pinging the CRAM node manager on the local host.
+	NodeSocketInterface pingExample
+	NodeSocketInterface errorExample
+	NodeSocketInterface nameExample
+
+Creating and starting a clock service via the CRAM node manager on the local host.
+	NodeSocketInterface createServiceExample
+
+Try pinging the emergency port of the node manager on the local host.
+	NodeSocketInterface emergencyPingExample
+
+Restart the node manager
+	NodeSocketInterface emergencyRestartExample
+
+Try getting the log text of the node manager on the local host.
+	NodeSocketInterface getLogExample
+
+Try getting the tail of the log text.
+	NodeSocketInterface getLogTailExample
+
+Try creating and starting 2 clock services.
+	NodeSocketInterface handleServicesExample
+
+Stop all running services.
+	NodeSocketInterface killServicesExample
+
+Get the list of service names from the CRAM node manager on the local host.
+	NodeSocketInterface listServicesExample
+
+Try getting the run-time statistics from the CRAM node manager on the local host.
+	NodeSocketInterface statisticsExample
+	NodeSocketInterface benchmarkExample
+	
+Database
+
+Basic test using PostgresSql -- dump the machines table to the Transcript
+	DPE_Util test0
+
+Manager GUI
+
+CRAM.ManagerGUI open

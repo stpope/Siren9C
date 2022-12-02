@@ -1,0 +1,31 @@
+Known bugs
+
+There are certainly many bugs in Siren.
+
+Some of the demos don't work any more; sorry.
+
+The SWIG code is no longer supported.
+
+The old ManualWriter and ComposedTextEditor packages have disappeared, so the list workbook is single-font and can't create web pages any more.
+
+The MIDI and Sound I/O should probably be rewritten to use JUCE or some other modern APIs.
+
+The PortAudio sound output is pretty distorted; I should look into the buffer-passing code.
+
+The display list views have no notion of pages, so longer musical examples don't display well. We need a fancier document model with page layout.
+
+
+ToFixASAP
+
+Ostinato doesn't wait right.
+
+Browser: colors wrong on class/inst switches
+
+FullSystemBrowser: can't compile if no protocol selected, gives "Nothing more expected ->" error
+
+
+For VW 9.0
+
+Port workspace outliner to new framework used by system doc window
+
+Port full system browser to not require OldBrowsers package

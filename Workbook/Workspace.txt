@@ -1,0 +1,47 @@
+Test Workspace
+
+[WorkbookWindow openFolder: './Siren_Cuis/Workbook' 
+	named: 'Siren Workbook' ].
+
+Undeclared inspect.
+Smalltalk garbageCollect.
+Utilities openUsefulExpressions.
+DirectoryEntry currentDirectory.
+
+--------------------------
+
+[DisplayListView exampleRectangles].
+[DisplayListView exampleLines].
+[DisplayListView examplePolylines].
+[DisplayListView exampleVisuals].
+[DisplayListView exampleMixed].
+[DisplayList exampleHierarchical display]
+[DisplayVisual displayMusicConstants].
+
+[TimeSequenceView randomExample]
+[PitchTimeView randomExample]
+[HauerSteffensView randomExample]
+[DynamicCloud focusExample]
+
+--------------------------
+
+FFIPluginTests new testLoadSymbolFromModule
+Smalltalk browseAllCallsOn: (Undeclared associationAt: #A)
+
+--------------------------
+
+--------------------------
+
+File-out
+
+[SirenUtility fileoutCategories]
+
+As packages
+
+[SirenUtility categoryList do: 
+	[ :cat |
+	(CodePackage named: cat
+		createIfAbsent: true 
+		registerIfNew: true) save] ]
+	
+	

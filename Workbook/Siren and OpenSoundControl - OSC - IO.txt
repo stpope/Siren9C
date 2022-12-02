@@ -1,0 +1,46 @@
+Siren and OpenSoundControl
+
+Siren includes an output voice that generates messages in the CNMAT OpenSoundControl (OSC) protocol  (http://www.cnmat.berkeley.edu/OpenSoundControl), which is sent out via UDP network packets to some synthesis server. We generally build these servers using CSL or SuperCollider, and then control them with set-up, event trigger, and control messages sent out from Siren.
+
+The verbosity flag in the SirenUtility class allows for logging of all OSC to the transcript; open a Siren utility panel and use the pop-up menu to set the verbosity to 2. To test the OSC I/O, look at the classes OSCPort and OSCVoice with the default host/port settings and several useful parameter maps. A parameter map is a Smalltalk block that takes an event as its argument and returns an OSC message object (or a bundle), as in the following example (don't execute this):
+
+	[ :event |  | arr |			"This block takes an event as its argument and answers a"
+	arr := Array				"TypedOSCMessage for the address /note-on"
+			with: event duration asSec value
+			with: event pitch asHz value
+			with: event ampl asRatio value.
+	TypedOSCMessage for: '/note-on' with: arr]
+
+For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://www.mat.ucsb.edu/~c.ramakr/illposed/occam.html). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example demonstrates using OSC with the Occam convertor, to test OSC output using a MIDI synthesizer.
+
+	[OSCVoice midiScaleExample]
+
+There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "OSC_test" target, which sets of a simple server with 4 voices of FM synthesis and 4 sound file playback instruments. Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.
+
+#define CSL_OSC_FM_SndFile		// 4 voices of FM, 4 of SndFiles, and 1 bell
+//#define CSL_OSC_SAMPLER			// 16 voices of file playback
+//#define CSL_OSC_ADDER			// 16 voices of sum-of-sines synthesis
+
+Then you can try the OSCVoice examples that follow.
+
+	[OSCVoice fmExample1]
+	[OSCVoice sndExample1]
+
+These examples loop endlessly, so you have to interrupt or flush the scheduler to stop them
+
+	[OSCVoice fmExample2. 		5 wait.
+	OSCVoice sndExample2.		5 wait.
+	OSCVoice fmExample4]
+	[EventScheduler flush]
+
+Siren OSC also supports control output, as in this example, which sends values from a linear envelope out to the address "/osc/1/ampl" at the rate of 4 Hz (use dumpOSC to view the results).
+
+	[OSCVoice functionExample]
+
+You could rewrite this to use the function's change threshold instead of a constant update rate.
+
+As an example that mixes both styles, the following expression plays a long low FM note and then uses Siren function objects to send continuous controls to make the note glissando down and pan from left to right.
+
+	[OSCVoice fmExample3]
+
+For more examples, set the default voice to OSC (using the Siren utility control panel) and run the built in examples on the other pages of this outline.

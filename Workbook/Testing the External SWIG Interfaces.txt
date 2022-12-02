@@ -1,0 +1,53 @@
+Loading the SWIG Packages in Siren
+
+[Obsolete since SWIG no longer Smalltalk - sad]
+
+There is a Smalltalk back-end to the SWIG interface generator ported by Ian Upright. This allows us to use the SWIG APIs to access CSL and Loris packages from within Siren. If you're new to this, look at the README files in the SWIG example folders, then at the example notes below. See esp. 
+	http://commonsmalltalk.wikispaces.com/SWIG+Documentation
+and
+	http://commonsmalltalk.wikispaces.com/SwigForVW
+
+Note that normal Siren uesrs don't need to go into this; you can use the CSL and Loris interfaces (see the workbook section on models below) without having to regenerate the SWIG interfaces.
+
+Testing the Smalltalk SWIG Interface using Ian Upright's Example code
+
+Basic SWIG test: shared constants in the API - First you have to go to the example folder (Siren7.5/SWIG_Smalltalk/Examples/smalltalk/constants) and compile the example library, producing a .dll or .a file. The code block below calls the AMLImporter to load a list of .ssi files, creating an external interface and group of classes in the Siren namespace. (Edit your folder name in below.)
+
+[#( 'ExampleConstants' 'ExampleConstantsConstants' 'ExampleConstantsEmbeddedConstants'
+	 'ExampleConstantsNI' 'ExampleConstantsTest' ) 
+		do: [:nam |
+			AMLImporter new
+				baseDirectoryName: 'Siren7.5/SWIG_Smalltalk/Examples/smalltalk/constants/' ;
+				namespace: Smalltalk.Siren ;
+				import: nam]]
+
+Look at the class def for ExampleConstantsNIExternalInterface and make certain the DLL name and folder are correct; I have to paste in,
+			#(#libraryFiles #('ExampleConstants.a'))
+			#(#libraryDirectories #('Siren7.5/SWIG_Smalltalk/Examples/smalltalk/constants'))
+
+Now test is with (this prints stuff to the transcript)
+	[Siren.ExampleConstantsTest run] d
+
+Next step: variables in C. Compile the ExampleVariables library as above, then execute the following block.
+
+["#( 'ExampleVariables' 'ExampleVariablesNI' 'ExampleVariablesTest' 'SwigTypePint' 'SwigTypePPoint' )" 
+ #( 'ExampleVariablesTest' ) do: [:nam |
+AMLImporter new
+	baseDirectoryName: 'Siren7.5/SWIG_Smalltalk/Examples/smalltalk/variables/' ;
+	namespace: Smalltalk.Siren ;
+	import: nam]]
+
+Look at the class def for ExampleVariablesNIExternalInterface, editing it to fit your environment; then try,
+	[Siren.ExampleVariablesTest run] d		"prints stuff to the transcript"
+
+Now try loading a C++ class hierarchy and creating some shape objects
+
+[ #( 'ExampleClassTest' ) do: [:nam |
+AMLImporter new
+	baseDirectoryName: 'Siren7.5/SWIG_Smalltalk/Examples/smalltalk/class/' ;
+	namespace: Smalltalk.Siren ;
+	import: nam]]
+
+Look at the class def for ExampleClassNIExternalInterface
+
+Siren.ExampleClassTest run		"prints stuff to the transcript" 

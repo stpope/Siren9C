@@ -1,0 +1,49 @@
+Siren 9.0 Release Notes
+
+Current Status
+
+This is the V9.0 release of Siren on VisualWorks. (For simplicity, Siren version numbers parallel the versions of Smalltalk on which they run.)
+
+Smoke: The Smoke representation is complete, see the event list and event generator examples.
+
+Voices and Schedulers: The scheduler delivers acceptable real-time performance on a modern CPU. The real-time output via OSC or MIDI is suitable for use in performance.
+
+Sound I/O: Sound file I/O is implemented for many kinds of sound files (AIFF, WAV, .snd, etc.) via the libSndFile interface. There is a PortAudio callback interface using DLLCC as well as an FFTW interface for the class Spectrum
+
+MIDI/OSC: Ports and Voices exist for real-time control I/O.
+
+There are DLLCC interfaces to CSL and Loris based on SWIG interfaces.
+
+Graphics and GUI: The display list framework, Navigator MVC framework, and several MVC-based GUI tools are available; see the examples above.
+
+Version History
+
+Siren on Visualworks
+	9.0--FASTLab, Santa Barbara, May, 2020
+	7.6--FASTLab, Santa Barbara, January, 2013
+	7.5--CREATE, Santa Barbara, April, 2007
+	7.4--CREATE, Santa Barbara, Winter, 2006
+	7.3--CREATE, Santa Barbara, throughout 2005
+	7.2--CREATE, Santa Barbara, Fall, 2003
+	7.0--CREATE, Santa Barbara, Spring, 2001
+
+Siren on Squeak
+	3.0--T. U. Berlin, Summer, 2000
+	2.2--CREATE, October/November, 1998
+	2.0--CREATE, April-June, 1998
+	1.3--CREATE, August/September, 1997
+	1.0--CREATE, December, 1996
+
+MODE 
+	2.0--(Topaz2) CNMAT/Berkeley, April - December, 1994
+	1.3--(Topaz) SICS/EMS, Stockholm, February - April, 1993
+	1.2--CCRMA/Stanford, July, 1991 - February, 1992
+	1.0--STEIM, Amsterdam, May/June 1990
+	0.8--CCRMA/Stanford, June, 1989
+	0.4--ParcPlace Systems, March, 1988
+
+HyperScoreToolKit
+	1.0--Xerox PARC, October, 1986
+
+DoubleTalk
+	1.0--PCS/Cadmus GmbH, October, 1984

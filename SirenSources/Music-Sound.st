@@ -311,8 +311,8 @@ copy
 		[ :ass |
 		newMe at: (ass key) put: (ass value copy)].
 	1 to: self size do:
-		[ :index |
-		newMe sampleAt: index put: (self sampleAt: index)].
+		[ :ind |
+		newMe sampleAt: ind put: (self sampleAt: ind)].
 	^newMe! !
 
 !SampledSound methodsFor: 'accessing'!
@@ -341,8 +341,8 @@ copyFrom: start to: stop
 	newMe size: stop - start + 1.
 	newMe allocateData.
 	start to: stop - 1 do:
-		[ :index |
-		newMe sampleAt: index - start + 1 put: (self sampleAt: index)].
+		[ :ind |
+		newMe sampleAt: ind - start + 1 put: (self sampleAt: ind)].
 	^newMe! !
 
 !SampledSound methodsFor: 'accessing'!
@@ -462,8 +462,8 @@ fromSample: start toSample: finish
 	ssize := finish - start.
 	sdata := Array new: ssize.
 	1 to: ssize do:
-		[ :index |
-		sdata at: index put: (self sampleAt: index + start)].
+		[ :ind |
+		sdata at: ind put: (self sampleAt: ind + start)].
 	^SampledSound fromData: sdata
 		rate: self rate
 		channels: self channels
@@ -814,43 +814,43 @@ cutFrom: startSample to: stopSample
 	^GapSound on: self cutFrom: startSample to: stopSample! !
 
 !SampledSound methodsFor: 'sample accessing'!
-floatSampleAt: index
+floatSampleAt: ind
 	"Answer the sample at the given index as a normalized floating-point number."
 
-	^(self intSampleAt: index) asFloat / self class maxSample! !
+	^(self intSampleAt: ind) asFloat / self class maxSample! !
 
 !SampledSound methodsFor: 'sample accessing'!
-floatSampleAt: index put: aValue
+floatSampleAt: ind put: aValue
 	"Stuff the given floating-point sample at the given index after scaling."
 
-	self intSampleAt: index put: (aValue * self class maxSample) truncated! !
+	self intSampleAt: ind put: (aValue * self class maxSample) truncated! !
 
 !SampledSound methodsFor: 'sample accessing'!
-intSampleAt: index
+intSampleAt: ind
 	"Answer the sample at the given index as an integer."
 
-	^self sampleAt: index! !
+	^self sampleAt: ind! !
 
 !SampledSound methodsFor: 'sample accessing'!
-intSampleAt: index put: aValue
+intSampleAt: ind put: aValue
 	"Stuff the given integer sample at the given index."
 
-	self sampleAt: index put: aValue! !
+	self sampleAt: ind put: aValue! !
 
 !SampledSound methodsFor: 'sample accessing'!
-paste: aSound from: startSample to: stopSample at: index
+paste: aSound from: startSample to: stopSample at: ind
 	"Paste the given sound into the receiver; answer a new sound (!!)."
 
-	^CompositeSound on: self paste: aSound from: startSample to: stopSample at: index! !
+	^CompositeSound on: self paste: aSound from: startSample to: stopSample at: ind! !
 
 !SampledSound methodsFor: 'sample accessing'!
-sampleAt: index
+sampleAt: ind
 	"Answer the sample at the given index, mapping and paging as necessary."
 
 	| newIndex |
 	self samples == nil
 			ifTrue: [^self error: 'There are no samples for this sound.'].
-	newIndex := self mapSampleIndex: index.
+	newIndex := self mapSampleIndex: ind.
 	newIndex > domain last		"answer 0 after end of samples."
 		ifTrue: [^0].
 	newIndex < domain first		"or before start of samples."
@@ -912,9 +912,9 @@ fadeInOver: fTime
 		ifTrue: [Transcript show: 'Illegal fade-in time'; cr. ^nil].
 	fDur := fTime * self rate * self channels.
 	1 to: fDur do:
-		[ :index |
-		self sampleAt: index 
-			put: (self sampleAt: index) * (index / fDur)]! !
+		[ :ind |
+		self sampleAt: ind
+			put: (self sampleAt: ind) * (ind / fDur)]! !
 
 !SampledSound methodsFor: 'interpolating'!
 fadeOutOver: fTime
@@ -926,9 +926,9 @@ fadeOutOver: fTime
 	fDur := fTime * self rate * self channels.
 	s0 := domain - fDur.
 	s0 to: domain do:
-		[ :index |
-		self sampleAt: index 
-			put: (self sampleAt: index) * (1.0 - (index - s0 / fDur))]! !
+		[ :ind |
+		self sampleAt: ind
+			put: (self sampleAt: ind) * (1.0 - (ind - s0 / fDur))]! !
 
 !SampledSound methodsFor: 'interpolating'!
 interpolatedWindowAt: anIndex width: nSamples
@@ -1144,13 +1144,13 @@ peaksFrom: aStart to: aStop into: anArray
 readEnvelope: type
 	"Try to read the sample envelope for the receiver from a file named XXX.env."
 
-	| sfName ext index eName eStream eSize env |
+	| sfName ext ind eName eStream eSize env |
 	sfName := self name.
 	sfName isEmpty ifTrue: [^false].
 	ext := (type == #peak ifTrue: ['pk'] ifFalse: ['env']).
 	^self hasFile
-		ifTrue: [index := sfName indexOfSubCollection: '.snd' startingAt: 1.
-			eName := (sfName copyFrom: 1 to: index), ext.
+		ifTrue: [ind := sfName indexOfSubCollection: '.snd' startingAt: 1.
+			eName := (sfName copyFrom: 1 to: ind), ext.
 			eName asFilename exists
 				ifTrue: [eStream := eName asFilename readStream binary.
 					eSize := eName asFilename fileSize / 2.
@@ -1163,7 +1163,7 @@ readEnvelope: type
 					self envelope: env.
 					true]
 			ifFalse: ["Transcript show: 'No envelope file found ', 
-						(sfName copyFrom: 1 to: index), ext; cr. "
+						(sfName copyFrom: 1 to: ind), ext; cr. "
 					false]]
 		ifFalse: [self envelope ~~ nil]! !
 
@@ -1284,12 +1284,12 @@ scaledFrom: aStart to: aStop byFunction: aFunction
 writeEnvelope: type
 	"Write the sample envelope for the receiver to a file named XXX.env or XXX.pk."
 
-	| sfName index eName env eStream eSize |
+	| sfName ind eName env eStream eSize |
 	sfName := self name.
-	index := sfName indexOfSubCollection: '.snd' startingAt: 1.
+	ind := sfName indexOfSubCollection: '.snd' startingAt: 1.
 	type == #peak		"or #RMS"
-		ifTrue: [eName := (sfName copyFrom: 1 to: index), 'pk']
-		ifFalse: [eName := (sfName copyFrom: 1 to: index), 'env'].
+		ifTrue: [eName := (sfName copyFrom: 1 to: ind), 'pk']
+		ifFalse: [eName := (sfName copyFrom: 1 to: ind), 'env'].
 	eName asFilename exists
 		ifTrue: [(Dialog confirm: 
 					'Do you really want to overwrite the envelope file ', eName)
@@ -1384,10 +1384,10 @@ getData
 	domain := realme domain.! !
 
 !SampledSound methodsFor: 'private'!
-mapSampleIndex: index
+mapSampleIndex: ind
 	"Map the given sample index according to the 'page' (firstIndex) of the receiver."
 
-	^index truncated - firstIndex! !
+	^ind truncated - firstIndex! !
 
 !SampledSound methodsFor: 'private'!
 privateSampleAt: anIndex
@@ -1434,7 +1434,7 @@ privateSampleAt: anIndex put: aValue
 	data shortAt: (anIndex * 2 - 1) put: (aValue truncated) bigEndian: (UninterpretedBytes isBigEndian)! !
 
 !SampledSound methodsFor: 'private'!
-readSamplesFrom: index
+readSamplesFrom: ind
 	"Read in samples from disk starting a bit before the given index."
 
 	| file fSize offset |
@@ -1442,7 +1442,7 @@ readSamplesFrom: index
 	file == nil
 		ifTrue: [self error: 'There is no sound file associated with this sound.'].
 	fSize := file size.
-	offset := index - 128.
+	offset := ind - 128.
 	(offset + samplesInMemory) > fSize
 		ifTrue: [offset := fSize - samplesInMemory].
 	Cursor read showWhile: [file readSamplesStartingAt: offset].
@@ -1455,10 +1455,10 @@ realSound
 	^self! !
 
 !SampledSound methodsFor: 'private'!
-scaleSampleIndex: index
+scaleSampleIndex: ind
 	"Scale the given sample index according to the sample size of the receiver."
 
-	^index * self sampleSize - 1.! !
+	^ind * self sampleSize - 1.! !
 
 
 !SampledSound methodsFor: 'play/record'!
@@ -2372,20 +2372,20 @@ sawtoothDur: dur rate: rate freq: freq chans: chans
 	"StoredSound sawtooth"
 	"SoundView openOn: (SampledSound sawtoothDur: 1.0 rate: 22050 freq: 100 chans: 1)"
 
-	| waveLen incr snd index |
+	| waveLen incr snd ind |
 	snd := self duration: dur rate: rate channels: chans format: self formatSymbol.
 	waveLen := (rate / freq) asFloat.
 	incr :=  65536.0 / waveLen.
 	chans = 1
 		ifTrue: [1 to: (dur * rate) do: 
 			[ :i | 
-			index := ((i \\ waveLen) asFloat) max: 1.0.
-			snd intSampleAt: i put: (-32768.0 + (index - 1.0 * incr))]]
+			ind := ((i \\ waveLen) asFloat) max: 1.0.
+			snd intSampleAt: i put: (-32768.0 + (ind - 1.0 * incr))]]
 		ifFalse: [(1 to: (dur * rate) truncated by: 2) do: 
 			[ :i |
-			index := ((i \\ waveLen) asFloat) max: 1.0.
-			snd intSampleAt: i put: (-32768.0 + (index - 1.0 * incr)).
-			snd intSampleAt: (i + 1) put: (-32768.0 + (index - 1.0 * incr))]].
+			ind := ((i \\ waveLen) asFloat) max: 1.0.
+			snd intSampleAt: i put: (-32768.0 + (ind - 1.0 * incr)).
+			snd intSampleAt: (i + 1) put: (-32768.0 + (ind - 1.0 * incr))]].
 	^snd! !
 
 !SampledSound class methodsFor: 'standard wave forms'!
@@ -2467,29 +2467,29 @@ sampleSize
 
 
 !FloatSound methodsFor: 'private'!
-privateSampleAt: index
+privateSampleAt: ind
 	"Answer the sample at the given index."
 
-	^data floatAt: (index -1 * 4 + 1)! !
+	^data floatAt: (ind - 1 * 4 + 1)! !
 
 !FloatSound methodsFor: 'private'!
-privateSampleAt: index put: aValue
+privateSampleAt: ind put: aValue
 	"Stuff the given sample into the data array at the given index (no checking)."
 
-	data floatAt: (index -1 * 4 + 1) put: aValue asFloat! !
+	data floatAt: (ind - 1 * 4 + 1) put: aValue asFloat! !
 
 
 !FloatSound methodsFor: 'sample accessing'!
-intSampleAt: index
+intSampleAt: ind
 	"Answer the sample at the given index as a scaled 16-bit integer."
 
-	^((self sampleAt: index) * 32767.0) rounded! !
+	^((self sampleAt: ind) * 32767.0) rounded! !
 
 !FloatSound methodsFor: 'sample accessing'!
-intSampleAt: index put: aValue
+intSampleAt: ind put: aValue
 	"Put the given integer sample at the given index after scaling."
 
-	self sampleAt: index put: (aValue asFloat / 32767.0)! !
+	self sampleAt: ind put: (aValue asFloat / 32767.0)! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -2580,11 +2580,11 @@ stop: stop
 
 
 !VirtualSound methodsFor: 'sample accessing'!
-sampleAt: index put: aValue
+sampleAt: ind put: aValue
 	"Stuff the given sample at the given index **after transforming into a 'real' sound**."
 
 	self getReal.
-	^super sampleAt: index put: aValue! !
+	^super sampleAt: ind put: aValue! !
 
 
 !VirtualSound methodsFor: 'private'!
@@ -2599,10 +2599,10 @@ getReal
 	self become: newSound! !
 
 !VirtualSound methodsFor: 'private'!
-mapSampleIndex: index
+mapSampleIndex: ind
 	"Map the given sample index according to the 'page' (firstIndex) of the source and the receiver's relative offset."
 
-	^(source mapSampleIndex: index) + firstIndex! !
+	^(source mapSampleIndex: ind) + firstIndex! !
 
 !VirtualSound methodsFor: 'private'!
 realSound
@@ -2661,15 +2661,15 @@ Instance Variables:
 
 
 !CompositeSound methodsFor: 'sample accessing'!
-sampleAt: index
+sampleAt: ind
 	"Answer the sample at the given index, mapping and paging as necessary."
 
 	| q |
 	1 to: components size do:
-		[ :ind | 
-		q := components at: ind.
-		(q includes: index)
-			ifTrue: [^q sound sampleAt: (index - q start + q offset)]].
+		[ :in2 | 
+		q := components at: in2.
+		(q includes: ind)
+			ifTrue: [^q sound sampleAt: (ind - q start + q offset)]].
 	self error: 'No sample by that name, Sir.'! !
 
 
@@ -2697,37 +2697,37 @@ on: aSound
 	properties := aSound properties copy! !
 
 !CompositeSound methodsFor: 'accessing'!
-paste: sound from: start to: stop at: index
+paste: sound from: start to: stop at: ind
 	"Paste the designated section into the receiver."
 
 	| newItem item number extent oldStop |
 	extent := stop - start.
 	newItem := ComponentSound on: sound 
-				start: index stop: stop - start + index offset: start.
-	index >= self size						"if pasting onto the end of the sound"
+				start: ind stop: stop - start + ind offset: start.
+	ind >= self size						"if pasting onto the end of the sound"
 		ifTrue: [components add: newItem.
 				^self].
 	number := 1.							" else locate where to put it"
-	[(number > components size) | ((components at: number) includes: index)] 
+	[(number > components size) | ((components at: number) includes: ind)] 
 		whileFalse: [number := number + 1].
 	item := components at: number.
-	index = item stop						"if we're pasting at the end of another splice"
+	ind = item stop						"if we're pasting at the end of another splice"
 		ifTrue: [self rippleUpFrom: (number + 1) adding: extent.
 			components add: newItem.
 			^self].
-	index = item start						"if we're pasting at the start of another splice"
+	ind = item start						"if we're pasting at the start of another splice"
 		ifTrue: [self rippleUpFrom: number adding: extent.
 			components add: newItem.
 			^self].
 											"else we have to break up an existing component"
 	self rippleUpFrom: (number + 1) adding: extent.
 	oldStop := item stop.
-	item stop: index - item start.			"edit the old entry in place"
+	item stop: ind - item start.			"edit the old entry in place"
 	components add: newItem.			"insert the new item"
 								"add a copy of the old item with new interval and offset"
 	components add: (ComponentSound on: item sound 
-			start: (index + extent + 1) stop: (oldStop + extent) 
-			offset: (item offset + (index - item start) + extent)).
+			start: (ind + extent + 1) stop: (oldStop + extent) 
+			offset: (item offset + (ind - item start) + extent)).
 	^self! !
 
 
@@ -2744,14 +2744,14 @@ CompositeSound class
 	instanceVariableNames: ''!
 
 !CompositeSound class methodsFor: 'instance creation'!
-on: source paste: newSound from: start to: stop at: index
+on: source paste: newSound from: start to: stop at: ind
 	"Answer a CompositeSound derived from the argument pasting in the given sound at the given index."
 	"CompositeSound exampleView"
 
 	| me |
 	me := self new initialize.
 	me on: source.
-	me paste: newSound from: start to: stop at: index.
+	me paste: newSound from: start to: stop at: ind.
 	^me! !
 
 
@@ -2783,13 +2783,13 @@ Instance Variables:
 
 
 !GapSound methodsFor: 'private'!
-mapSampleIndex: index
+mapSampleIndex: ind
 	"Map the given sample index according to the cut list (i.e., deleted sections) of the receiver."
 
 	| mappedIndex |
 	((cutList == nil) or: [cutList size < 2])
-		ifTrue: [^index - firstIndex].
-	mappedIndex := index.
+		ifTrue: [^ind - firstIndex].
+	mappedIndex := ind.
 	mappedIndex < cutList first
 		ifTrue: [^mappedIndex].
 	1 to: cutList size by: 2 do:

@@ -25,7 +25,7 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'ZPoint.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
-	('./Siren_9C/FileIns/', file) asFileEntry readStreamDo: 
+	('./Siren9C/FileIns/', file) asFileEntry readStreamDo: 
 		[ :stream | stream ifNotNil: [stream fileIn]]]]
 
 Siren file-ins using packages (WIP) or source code files (works)
@@ -38,7 +38,7 @@ Siren file-ins using packages (WIP) or source code files (works)
 OR src code file-in (Edit the relative paths below to suit your installation)
 
 [
-	'./Siren_9C/FileIns/SirenSystemChanges.st' asFileEntry readStream fileIn.
+	'./Siren9C/FileIns/SirenSystemChanges.st' asFileEntry readStream fileIn.
 	
 #(	'Music-Models-Representation.st'
 	'Music-Models-Implementation.st'
@@ -46,8 +46,8 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	'Music-EventGenerators.st'
 	'Music-EventModifiers.st'
 	'Music-Functions.st'
-	'Music-Sound.st'
-	'Music-PitchScales.st'
+"	'Music-Sound.st'
+"	'Music-PitchScales.st'
 	'Music-PitchClasses.st'
 	'Music-Support.st'
 
@@ -62,10 +62,10 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
-	('./Siren_9C/SirenSources/', file) asFileEntry readStreamDo: 
+	('./Siren9C/SirenSources/', file) asFileEntry readStreamDo: 
 		[ :stream | stream ifNotNil: [stream fileIn]]].
 	
-	'./Siren_9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn.
+	'./Siren9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn.
 ]
 
 Clean up
@@ -77,7 +77,7 @@ Clean up
 
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)
 
-[ WorkbookWindow openFolder: './Siren_9C/Workbook' named: 'Siren Workbook' ]
+[ WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]
 Undeclared inspect
 Smalltalk garbageCollect
 

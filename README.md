@@ -6,6 +6,8 @@ What is Siren?
 
 The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). This version of Siren (9.0) works on Cuis Smalltalk (available for free) and supports [real soon] streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free system from the Cuis developers at https://cuis.st or https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
 
+For a more detailed introduction, take a look at the page for Siren 9 in VisualWorks at https://github.com/stpope/Siren9
+
 Siren is a programming framework and tool kit; the intended audience is Smalltalk developers, or users willing to learn Smalltalk in order to write their own applications. The built-in applications are meant as demonstrations of the use of the libraries, rather than as end-user applications. Siren is not a MIDI sequencer, nor a score notation editor, through both of these applications would be easy to implement with the Siren framework.
 
 There are several elements to Siren:

@@ -1,16 +1,14 @@
 # Siren9C
 
-Port of Siren9 to Cuis Smalltalk (WIP)
+Port of Siren9 to Cuis and Squeak Smalltalk (WIP)
 
 What is Siren?
 
-The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 was released oln VisualWorks Smalltalk; this new version (9C) works on both Cuis Smalltalk and Squeak (both available for free) with varying degrees of completeness. The Squeak version supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The GUI classes have not yet been ported to Squeak.
+The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 was released on VisualWorks Smalltalk in 2020; this new version (9C) works on both Cuis Smalltalk and Squeak (both available for free) with varying degrees of completeness. The core classes (seel below) are portable between all 3 versions of Smalltalk.  The Squeak version supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The GUI classes have not yet been ported to Squeak.  The Cuis version includes many of the GUI classes (e.g., eventlist editors), but the MIDI and OSC interfaces are still work-in-progress.
 
-The Cuis version includes many of the GUI classes, but the MIDI and OSC interfaces are still work-in-progress.
+In addition to this github site, the Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free system from the Cuis developers at https://cuis.st or https://github.com/Cuis-Smalltalk/Cuis-Smalltalk, or squeak at https://squeak.org.
 
-The Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free system from the Cuis developers at https://cuis.st or https://github.com/Cuis-Smalltalk/Cuis-Smalltalk, or squeak at https://squeak.org.
-
-For a more detailed introduction, take a look at the page for Siren 9 in VisualWorks at https://github.com/stpope/Siren9
+For a more detailed introduction, take a look at the page for Siren 9 in VisualWorks at https://github.com/stpope/Siren9C
 
 Siren is a programming framework and tool kit; the intended audience is Smalltalk developers, or users willing to learn Smalltalk in order to write their own applications. The built-in applications are meant as demonstrations of the use of the libraries, rather than as end-user applications. Siren is not a MIDI sequencer, nor a score notation editor, through both of these applications would be easy to implement with the Siren framework.
 
@@ -28,7 +26,7 @@ There are several elements to Siren:
 
 Each of these components is described below in its own section of this document.
 
-If you can read a bit of Smalltalk and want a quick tour before proceeding, read the condensed "Standard Siren Demo" that's at the end of this outline.
+If you can read a bit of Smalltalk and want a quick tour before proceeding, read the condensed "Standard Siren Demo" that's at the end of the built-in Siren outline (http://FASTLabInc.com/Siren/Workbook).
 
 Where's More Documentation?
 
@@ -44,7 +42,7 @@ Siren and its predecessors and components (ARA, DoubleTalk, HyperScore ToolKit, 
 - Proceedings of the 1986, 1987, 1989, 1991, 1992, 1994, 1996, 1997, 2003, ... 2022
 		International Computer Music Conferences (ICMCs);
 
-There are more MODE- and Smoke-related documents (including the above references) in the directory ftp://FASTLabInc.com/Siren/Doc or as PDF files on the page http://HeavenEverywhere.com/stp/publs.html.
+There are more MODE- and Smoke-related documents (including the above references) in the links at http://fastlabinc.com/Siren/main.html#documentation or as PDF files on the page http://HeavenEverywhere.com/stp/publs.html.
 
 The official Siren home page is http://FASTLabInc.com/Siren.
 
@@ -55,7 +53,7 @@ The read the demo code workbook (this text), go to,
 	http://FASTLabInc.com/Siren/Siren7.5.Workbook.html
 	http://FASTLabInc.com/Siren/Siren7.5.Workbook.pdf
 
-If you like to read manuals, take a look at,
+If you like to read manuals, take a look at the somewhat stale version,
 	http://FASTLabInc.com/Siren/Manual
 
 Watch the detailed Siren demo at,
@@ -69,6 +67,6 @@ Siren-on-Squeak (1996-2002) was a simple re-implementation of the MODE in the Sq
 
 Portability
 
-The Smalltalk portion of Siren is 100% cross-platform, and the DLLCC external interfaces to sound file, MIDI, and sound streaming I/O use cross-platform libraries. There are a few places (Sound play command and aubio interfaces) that assume UNIX shell commands can be run form within Smalltalk; I'm not certain hiow these port to Windows.
+The Smalltalk portion of Siren is 100% cross-platform, and the DLLCC external interfaces to sound file, MIDI, and sound streaming I/O use cross-platform libraries. There are a few places (Sound play command and aubio interfaces) that assume UNIX shell commands can be run form within Smalltalk; I'm not certain how these port to Windows.
 
-The core of Siren is not dependent on the dialect of Smalltalk, and in fact, runs well in Squeak. The bulk of the interactive tools and GUIs are based on my own display list graphics framework, and are thus also portable. The actual integrated applications and GUIs in Siren 7.5 use VisualWorks-specific application model classes, though.
+The core of Siren is not dependent on the dialect of Smalltalk, and in fact, runs well in both Cuis and Squeak. The main development is moving to these platforms.  The bulk of the interactive tools and GUIs are based on my own display list graphics framework, and are thus also portable. The actual integrated applications and GUIs in Siren 9.0 use VisualWorks-specific application model classes, though (stay tuned).

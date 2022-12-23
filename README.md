@@ -26,6 +26,8 @@ There are several elements to Siren:
 
 Each of these components is described below in its own section of this document.
 
+![Siren Overview](https://github.com/stpope/Siren9C/blob/main/Doc/siren-components-small.jpg "Siren Overview")
+
 If you can read a bit of Smalltalk and want a quick tour before proceeding, read the condensed "Standard Siren Demo" that's at the end of the built-in Siren outline (http://FASTLabInc.com/Siren/Workbook).
 
 Where's More Documentation?

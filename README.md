@@ -50,7 +50,7 @@ Here are the on-line Docs: The best in-depth doc (book chapter) is in,
 	http://FASTLabInc.com/Siren/Doc/SirenBookChapter.pdf
 
 (START HERE) The read the demo code workbook, go to,
-	http://FASTLabInc.com/Siren/Workbook.html
+	http://FASTLabInc.com/Siren/Workbook
 
 If you like to read manuals, take a look at the somewhat stale version,
 	http://FASTLabInc.com/Siren/Manual

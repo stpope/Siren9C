@@ -29,7 +29,7 @@ FFIPluginTests new testLoadSymbolFromModule
 Smalltalk browseAllCallsOn: (Undeclared associationAt: #A)
 
 --------------------------
-
+Squeak testing"(EventList scaleFrom: 48 to: 60 in: 1.5) asSoundScore play"" | sco voxs| 	sco := EventList scaleFrom: 48 to: 60 in: 1.5.	voxs := Array with: FMSound oboe1 with: FMSound brass1 			with: FMSound marimba with: PluckedSound default.	sco eventsDo: [ :ev |		ev voice: voxs atRandom].	sco asSoundScore play	"Roll tests((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList asSoundScore play((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList playOn: MIDIVoice default((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList 		playOn: OSCVoice cslHost: pMapForCSLSimpleFM----MacOSShell new getenv: 'HOME' OSProcess fileExists: '/Users/stp/.profile' OSProcess isUnixMacCStandardLibrary checkCStandardLibrary CStandardLibrary new abs: -42 PortMIDILibrary new pm_count_devices PortMIDILibrary new pm_default_input_device  0 PortMIDILibrary new pm_default_output_device  3 PortMIDILibrary new pm_test: PortMIDILibrary new pm_default_output_device PortMIDILibrary listDeviceTablePortMIDILibrary testAllNotesExternalLibrary clearAllCaches.PortMIDILibrary new pm_terminateMIDIVoice scaleExampleMIDIVoice randomExampleEventScheduler interrupt; flushOSCVoice fmExample2EventScheduler flushOSCVoice fmExample1OSCVoice fmExample2OSCVoice pluckExample1OSCVoice sndExample1OSCVoice sndExample2OSCVoice sharcExample1OSCVoice bellExample1OSCVoice vSOSExample1----Undeclared inspectSmalltalk garbageCollect	[MIDIPort allNotesOff]	[MIDIPort cleanUp]Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)	1 - 10 ---- 10 plucked strings		 "fff" - amp, pitch, pos	11 - 20 ---- 10 FM voices		"ffff" - dur amp pitch pos		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos	21 - 30 ---- 10 FM bells		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos	31 - 34 ---- 4 sound files (words)		"ff" - amp, pos	35 - 50 ---- 16 SHARC SOS voices (different instruments)		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	51 - 55 ---- 5 basic SHARC-spectrum additive cross-fade instruments		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	52 - 66 ---- 5 SHARC-instrument additive cross-fade instruments w att chiff		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel
 --------------------------
 
 File-out
@@ -43,5 +43,4 @@ As packages
 	(CodePackage named: cat
 		createIfAbsent: true 
 		registerIfNew: true) save] ]
-	
 	

@@ -1,0 +1,2 @@
+﻿'From Squeak6.0 of 21 October 2022 [latest update: #22114] on 11 December 2022 at 12:27:57 am'!!Float methodsFor: 'converting' stamp: 'stp 12/11/2022 00:27'!toOSCTypeOn: aConvertor  
+	aConvertor nextPutType: $f! !

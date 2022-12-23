@@ -1,0 +1,1 @@
+﻿'From Squeak6.0 of 21 October 2022 [latest update: #22114] on 7 December 2022 at 11:46:06 am'!!ObjectExplorer methodsFor: 'user interface' stamp: 'stp 12/7/2022 11:46'!initialExtent	^450@450! !

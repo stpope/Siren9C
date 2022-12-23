@@ -4,22 +4,26 @@ Port of Siren9 to Cuis Smalltalk (WIP)
 
 What is Siren?
 
-The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). This version of Siren (9.0) works on Cuis Smalltalk (available for free) and supports [real soon] streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free system from the Cuis developers at https://cuis.st or https://github.com/Cuis-Smalltalk/Cuis-Smalltalk
+The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 was released oln VisualWorks Smalltalk; this new version (9C) works on both Cuis Smalltalk and Squeak (both available for free) with varying degrees of completeness. The Squeak version supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The GUI classes have not yet been ported to Squeak.
+
+The Cuis version includes many of the GUI classes, but the MIDI and OSC interfaces are still work-in-progress.
+
+The Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free system from the Cuis developers at https://cuis.st or https://github.com/Cuis-Smalltalk/Cuis-Smalltalk, or squeak at https://squeak.org.
 
 For a more detailed introduction, take a look at the page for Siren 9 in VisualWorks at https://github.com/stpope/Siren9
 
 Siren is a programming framework and tool kit; the intended audience is Smalltalk developers, or users willing to learn Smalltalk in order to write their own applications. The built-in applications are meant as demonstrations of the use of the libraries, rather than as end-user applications. Siren is not a MIDI sequencer, nor a score notation editor, through both of these applications would be easy to implement with the Siren framework.
 
 There are several elements to Siren:
-	the Smoke music representation language
+- the Smoke music representation language
 		(music magnitudes, events, event lists, generators, functions, and sounds);
-	voices, schedulers and I/O drivers
+- voices, schedulers and I/O drivers
 		(real-time and file-based voices, sound, score file, OSC, and MIDI I/O);
-	user interface components for musical applications
+- user interface components for musical applications
 		(UI framework, tools, and widgets);
-	several built-in applications 
+- several built-in applications 
 		(editors and browsers for Smoke objects); and
-	external library interfaces for streaming I/O and DSP math
+- external library interfaces for streaming I/O and DSP math
 		(sound/MIDI I/O, fast FFT, CSL & Loris sound analysis/resynthesis packages )
 
 Each of these components is described below in its own section of this document.
@@ -29,16 +33,16 @@ If you can read a bit of Smalltalk and want a quick tour before proceeding, read
 Where's More Documentation?
 
 Siren and its predecessors and components (ARA, DoubleTalk, HyperScore ToolKit, and MODE) are documented in several extended book chapters and articles:
-	-- "Squeak: Open Personal Computing and Multimedia" (Mark Guzdial and Kim 
+- "Squeak: Open Personal Computing and Multimedia" (Mark Guzdial and Kim 
 		Rose, eds, Prentice-Hall, 2002);
-	--  "Musical Signal Processing" (C. Roads, S. T. Pope, G. DePoli, and A. Piccialli, 
+-  "Musical Signal Processing" (C. Roads, S. T. Pope, G. DePoli, and A. Piccialli, 
 		eds. Swets & Zeitlinger, 1997);
-	--  "The Interim DynaPiano" in "Computer Music Journal" 16:3, Fall, 1992 
+-  "The Interim DynaPiano" in "Computer Music Journal" 16:3, Fall, 1992 
 		(also on the CMJ Web site);
-	-- "The Well-Tempered Object: Musical Applications of Object-Oriented Software 
-		Technology" (S. T. Pope, ed. MIT Press, 1991);
-	-- Proceedings of the 1986, 1987, 1989, 1991, 1992, 1994, 1996, 1997, 2003 
-		International Computer Music Conferences (ICMCs); and 
+- "The Well-Tempered Object: Musical Applications of Object-Oriented Software 
+		Technology" (S. T. Pope, ed. MIT Press, 1991); and
+- Proceedings of the 1986, 1987, 1989, 1991, 1992, 1994, 1996, 1997, 2003, ... 2022
+		International Computer Music Conferences (ICMCs);
 
 There are more MODE- and Smoke-related documents (including the above references) in the directory ftp://FASTLabInc.com/Siren/Doc or as PDF files on the page http://HeavenEverywhere.com/stp/publs.html.
 

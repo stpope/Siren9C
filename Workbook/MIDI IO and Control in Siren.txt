@@ -34,7 +34,7 @@ MIDI devices (4):
 	1: CoreMIDI, PV16X   in
 	2: CoreMIDI, Kurzweil   out -- default out
 	3: CoreMIDI, MIDIPLUS TBOX 2x2 Midi Out 2   out
-
+2022 set-upDriver reports	MIDI devices (8):		0: CoreMIDI, MIDIPLUS TBOX 2x2 Midi In 1, in -- default in		1: CoreMIDI, Faders, in		2: CoreMIDI, IAC Driver Bus 1, in		3: CoreMIDI, Nord Stage 3 MIDI Output, in		4: CoreMIDI, Nord Stage 3, out -- default out		5: CoreMIDI, MIDIPLUS TBOX 2x2 Midi Out 2, out		6: CoreMIDI, IAC Driver Bus 1, out		7: CoreMIDI, Nord Stage 3 MIDI Input, outST Library reports	MIDI Device Table		# 0 - MIDIPLUS TBOX 2x2 Midi In 1 - in *		# 1 - Faders - in		# 2 - IAC Driver Bus 1 - in		# 3 - Nord Stage 3 MIDI Output - in		# 4 - Nord Stage 3 - out *		# 5 - MIDIPLUS TBOX 2x2 Midi Out 2 - out		# 6 - IAC Driver Bus 1 - out		# 7 - Nord Stage 3 MIDI Input - out	
 MIDI Tests and Examples
 
 Basic Tests
@@ -53,7 +53,7 @@ Open MIDI, play a fast scale.
 Open MIDI, play notes based on the mouse position (x --> voice; y --> pitch) until mouse down.
 	[MIDIPort testMouseMIDI]
 	[MIDIPort allNotesOff]
-
+EventScheduler interrupt; flush
 Close down and clean up.
 	[MIDIPort cleanUp]
 

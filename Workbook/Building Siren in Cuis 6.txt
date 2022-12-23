@@ -1,4 +1,4 @@
-Script to build Siren in Cuis (Version 9C)
+Script to build Siren9C in Cuis
 	Do not file this in - step through the blocks 1 by 1
 
 Set-up

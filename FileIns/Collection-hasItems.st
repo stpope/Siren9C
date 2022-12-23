@@ -1,0 +1,1 @@
+﻿'From Squeak6.0 of 21 October 2022 [latest update: #22114] on 6 December 2022 at 10:03:43 am'!!Collection methodsFor: 'testing' stamp: 'stp 12/6/2022 10:03'!hasItems	"Answer whether or not the receiver has items or components (true)."	^true! !

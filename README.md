@@ -4,7 +4,7 @@ Port of Siren9 to Cuis and Squeak Smalltalk (WIP)
 
 What is Siren?
 
-The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 was released on VisualWorks Smalltalk in 2020; this new version (9C) works on both Cuis Smalltalk and Squeak (both available for free) with varying degrees of completeness. The core classes (seel below) are portable between all 3 versions of Smalltalk.  The Squeak version supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The GUI classes have not yet been ported to Squeak.  The Cuis version includes many of the GUI classes (e.g., eventlist editors), but the MIDI and OSC interfaces are still work-in-progress.
+The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 was released on VisualWorks Smalltalk in 2020; this new version (9C) works on both Cuis Smalltalk and Squeak (both available for free) with varying degrees of completeness. The core classes (see below) are portable between all 3 versions of Smalltalk.  The Squeak version supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The GUI classes have not yet been ported to Squeak.  The Cuis version includes many of the GUI classes (e.g., eventlist editors), but the MIDI and OSC interfaces are still work-in-progress.
 
 In addition to this github site, the Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free system from the Cuis developers at https://cuis.st or https://github.com/Cuis-Smalltalk/Cuis-Smalltalk, or squeak at https://squeak.org.
 
@@ -49,9 +49,8 @@ The official Siren home page is http://FASTLabInc.com/Siren.
 Here are the on-line Docs: The best in-depth doc (book chapter) is in,
 	http://FASTLabInc.com/Siren/Doc/SirenBookChapter.pdf
 
-The read the demo code workbook (this text), go to,
-	http://FASTLabInc.com/Siren/Siren7.5.Workbook.html
-	http://FASTLabInc.com/Siren/Siren7.5.Workbook.pdf
+(START HERE) The read the demo code workbook, go to,
+	http://FASTLabInc.com/Siren/Workbook.html
 
 If you like to read manuals, take a look at the somewhat stale version,
 	http://FASTLabInc.com/Siren/Manual

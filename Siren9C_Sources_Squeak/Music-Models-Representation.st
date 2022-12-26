@@ -220,7 +220,7 @@ Examples:
 	Amplitude value: 77		"create an MIDI instance - range 0 to 127"
 	Amplitude value: #mp		"create a symbolic instance - range #ppp to #fff"
 
-See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Amplitude class	instanceVariableNames: 'generalityTable'!!Amplitude class methodsFor: 'instance creation' stamp: 'stp 11/28/2022 21:42:54'!value: aValue
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Amplitude class	instanceVariableNames: ''!!Amplitude class methodsFor: 'instance creation' stamp: 'stp 11/28/2022 21:42:54'!value: aValue
 	"Answer a new instance of a member of my species."
 
 	aValue species == Amplitude ifTrue: [^aValue].
@@ -442,7 +442,7 @@ See also the class example.!!MDuration methodsFor: 'public protocol' stamp: '
 	self seconds: 0 nanoSeconds: 0.
 ! !!MDuration methodsFor: 'double dispatching' stamp: 'pb 9/13/2017 06:21:11'!subtractFrom: aDateAndTimeOrDate
 
-	^aDateAndTimeOrDate subtractMDuration: self! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MDuration class	instanceVariableNames: 'generalityTable'!!MDuration class methodsFor: 'ansi protocol' stamp: 'gk 8/31/2006 01:09'!days: days hours: hours minutes: minutes seconds: seconds
+	^aDateAndTimeOrDate subtractMDuration: self! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MDuration class	instanceVariableNames: ''!!MDuration class methodsFor: 'ansi protocol' stamp: 'gk 8/31/2006 01:09'!days: days hours: hours minutes: minutes seconds: seconds
 
 	^ self days: days hours: hours minutes: minutes seconds: seconds nanoSeconds: 0! !!MDuration class methodsFor: 'ansi protocol' stamp: 'jmv 4/17/2013 00:35'!days: days seconds: seconds
 
@@ -666,7 +666,7 @@ Examples:
 
 Note that new pitch representations such as music11-like pch (4.11 = 11th note in oct 4) or oct (4.1100 = oct4 + 1100 cts) notations can be added by overriding the float-to-Hz or float-to-midi conversions.
 
-See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Pitch class	instanceVariableNames: 'generalityTable'!!Pitch class methodsFor: 'instance creation' stamp: 'stp 12/16/2022 19:06'!value: aValue
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Pitch class	instanceVariableNames: ''!!Pitch class methodsFor: 'instance creation' stamp: 'stp 12/16/2022 19:06'!value: aValue
 	"Answer a new instance of a member of my species."
 
 	aValue species == Pitch ifTrue: [^aValue].

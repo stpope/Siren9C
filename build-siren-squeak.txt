@@ -1,4 +1,4 @@
-Script to build Siren in Cuis (Version 9C)
+åçScript to build Siren in Cuis (Version 9C)
 	Do not file this in - step through the blocks 1 by 1
 
 Set-up
@@ -10,7 +10,7 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'ZPoint.st'	'SqueakChanges.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
-	(FileStream fileNamed: ('./Siren9C/FileIns/', file) asFileName) fileIn]]
+	(FileStream fileNamed: ('./Siren9C/FileIns/', file)) fileIn]]
 
 [#(	'Music-Models-Representation.st'
 	'Music-Models-Implementation.st'
@@ -18,8 +18,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'Music-EventGenerators.st'
 	'Music-EventModifiers.st'
 	'Music-Functions.st'
-"	'Music-Sound.st'
-"	'Music-PitchScales.st'
+"	'Music-Sound.st'	"
+	'Music-PitchScales.st'
 	'Music-PitchClasses.st'
 	'Music-Support.st'
 
@@ -34,8 +34,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
-	(FileStream fileNamed: ('./Siren9C/FileIns/', file) asFileName) fileIn]].
-		(FileStream fileNamed: ('./Siren9C/FileIns/MusicConstants.st', file) asFileName) fileIn
+	(FileStream fileNamed: ('./Siren9C/Siren9C_Sources_Squeak/', file)) fileIn]].
+					"Broken - GUI port still WIP"	(FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn
 ]
 
 Clean up
@@ -47,7 +47,7 @@ Clean up
 
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)
 
-[ WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]
+[WorkbookWindow openFolder: './Siren9C/Workbook/' named: 'Siren Workbook']
 Undeclared inspect
 Smalltalk garbageCollect
 

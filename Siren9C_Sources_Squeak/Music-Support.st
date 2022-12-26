@@ -119,10 +119,10 @@ See the class examples.!!EventScheduler methodsFor: 'accessing'!addClient: t
 	"Add the argument, 'theApp', to the instance variable 'appointments'."
 
 	appointments add: (start -> theApp) loop: aBool.
-	self changed: #appointments! !!EventScheduler methodsFor: 'accessing'!addClient: theApp in: start
+	self changed: #appointments! !!EventScheduler methodsFor: 'accessing' stamp: 'stp 12/25/2022 16:24'!addClient: theApp in: start
 	"Add the argument, 'theApp', to the instance variable 'appointments'."
 
-	^self addClient: theApp at: (Time microsecondClock + start asUsec value) loop: false! !!EventScheduler methodsFor: 'accessing'!addClient: theApp in: start loop: loopBool
+	^self addClient: theApp at: (Time utcMicrosecondClock + start asUsec value) loop: false! !!EventScheduler methodsFor: 'accessing'!addClient: theApp in: start loop: loopBool
 	"Add the argument, 'theApp', to the instance variable 'appointments'."
 
 	^self addClient: theApp at: (Time microsecondClock + start asUsec value) loop: loopBool! !!EventScheduler methodsFor: 'accessing'!addClient: theApp loop: aBool
@@ -281,7 +281,7 @@ See the class examples.!!EventScheduler methodsFor: 'accessing'!addClient: t
 		ifFalse: [theBool 
 			ifTrue: [threads first resume]
 			ifFalse: [threads first terminate]].
-	self changed: #running with: theBool! !!EventScheduler methodsFor: 'initialize release'!initialize
+	self changed: #running with: theBool! !!EventScheduler methodsFor: 'initialize release' stamp: 'stp 12/25/2022 14:34'!initialize
 	"Set up the default Schedule"
 	"ESchedule initialize"
 
@@ -290,8 +290,8 @@ See the class examples.!!EventScheduler methodsFor: 'accessing'!addClient: t
 	appointments := SEventQueue new.
 	timers := SEventQueue new.
 	threads := OrderedCollection new.
-	delay := Delay forMicroseconds: 1000.			"default tick delay"
-	logTime := Time microsecondClock.! !!EventScheduler methodsFor: 'initialize release' stamp: 'Install-Music-Support 11/30/2022 15:51:57'!release
+	delay := Delay forMilliseconds: 1.			"default tick delay"
+	logTime := Time utcMicrosecondClock.! !!EventScheduler methodsFor: 'initialize release' stamp: 'Install-Music-Support 11/30/2022 15:51:57'!release
 	"Clean up the schedule."
 
 	delay unschedule.

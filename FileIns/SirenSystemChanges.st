@@ -620,3 +620,10 @@ printOSCTypeOn: aStream
 toOSCTypeOn: aConvertor
 	aConvertor nextPutType: $F! !
 
+
+'From Squeak6.0 of 21 October 2022 [latest update: #22114] on 25 December 2022 at 4:25:13 pm'!!Time class methodsFor: 'clock' stamp: 'stp 12/25/2022 16:25'!microsecondClock	"Answer the UTC microseconds since the Smalltalk epoch (January 1st 1901, the start of the 20th century).	 The value is derived from the Posix epoch with a constant offset corresponding to elapsed microseconds	 between the two epochs according to RFC 868."	<primitive: 240>	^0! !!Collection methodsFor: 'testing' stamp: 'stp 12/25/2022 16:21'!hasItems	"Answer whether or not the receiver has items or components."	^true! !!Object methodsFor: 'testing'!hasItems
+	"Answer whether or not the receiver has items or components."
+
+	^false! !!Float methodsFor: 'converting' stamp: 'stp 12/11/2022 00:27'!toOSCBytes: aConvertor 	"Store a float in the proper byte-endian order"	"(1.5 asIEEE32BitWord bitShift: -16) bitAnd: 16rFF"		| int |	int := self asIEEE32BitWord.	Smalltalk isBigEndian		ifTrue: [aConvertor nextPut: (int bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -8) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -16) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -24) bitAnd: 16rFF)]		ifFalse: [aConvertor nextPut: ((int bitShift: -24) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -16) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -8) bitAnd: 16rFF).			aConvertor nextPut: (int bitAnd: 16rFF)]! !
+!Float methodsFor: 'converting' stamp: 'stp 12/11/2022 00:27'!toOSCTypeOn: aConvertor  
+	aConvertor nextPutType: $f! !

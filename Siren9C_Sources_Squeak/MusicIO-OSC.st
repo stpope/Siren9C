@@ -179,7 +179,7 @@ Shared Variables:
 	^self to: cslServ! !!OSCPort class methodsFor: 'instance-creation' stamp: 'stp 12/10/2022 14:57'!default
 	"Answer the default instance"
 
-	^self cslHost! !!OSCPort class methodsFor: 'instance-creation'!localhost
+	^self cslHost! !!OSCPort class methodsFor: 'instance-creation' stamp: 'stp 12/25/2022 16:37'!initialize	"Set up the dictionaries of commands, ioctl primitive selectors and arguments, and general MIDI maps."	"OSCPort initialize"	useSingleton := true.! !!OSCPort class methodsFor: 'instance-creation'!localhost
 	"Answer an OSC port on the local host"
 
 	^self to: (IPSocketAddress hostAddress: (ByteArray
@@ -306,7 +306,188 @@ Instance Variables:
 	"Set the voices instrument # range."
 
 	range := anInterval
-! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!OSCVoice class	instanceVariableNames: ''!!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:20'!bellExample1
+! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!OSCVoice class	instanceVariableNames: ''!!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/12/2022 07:23'!cslHost
+	"Answer the default voice for CSL over OSC"
+
+	^self onPort: OSCPort cslHost! !!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/12/2022 07:35'!cslHost: mapSelector
+	"Answer the default voice for CSL over OSC using the given map selector."
+	"| list voice |	list := EventList scaleFrom: 48 to: 60 in: 2.5.	voice := self cslHost: pMapForCSLSimpleFM.	list voice: voice.	list play."	
+	| inst |	inst := self onPort: OSCPort cslHost.	inst parameterMap: (self perform: mapSelector).	^inst! !!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/20/2022 07:18'!default
+	"Answer an OSC voice with the default OSC host and port."
+
+	^self onPort: OSCPort default! !!OSCVoice class methodsFor: 'instance creation'!localhost
+	"Answer an instance on the local host"
+
+	^self onPort: OSCPort localhost! !!OSCVoice class methodsFor: 'instance creation'!map: mapSelector
+	"Answer a default instance that uses the given parameter map name"
+	"OSCVoice map: #pMapForCSLSimpleFM"
+
+	| inst |
+	inst := self default.
+	inst parameterMap: (self perform: mapSelector).
+	^inst! !!OSCVoice class methodsFor: 'instance creation'!onPort: pt
+	"Answer an instance on the given port"
+
+	| me |
+	(me := self new initialize) port: pt.
+	^me! !!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/22/2022 13:42'!parameterMap: pmap
+	"Answer an OSC voice for use with the default OSC settings and the given parameter map."
+	"OSCVoice parameterMap: (OSCVoice pMapForCSLPluck: (1 to: 10))"	
+	| inst |	inst := self default.	inst parameterMap: pmap.	^inst! !!OSCVoice class methodsFor: 'instance creation'!scHost
+	"Answer the default voice for SC over OSC"
+
+	^self onPort: OSCPort scHost! !!OSCVoice class methodsFor: 'parameter maps'!defaultPMap
+	"Answer the default parameterMap for use with OSC."
+
+	^[ :e |  | arr |
+	arr := Array
+			with: e duration asSec value
+			with: e pitch asHz value
+			with: e ampl asRatio value.
+	TypedOSCMessage for: '/note' with: arr]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/15/2022 14:06'!pMapForCSLAdditive
+	"Answer the default parameterMap for use with the CSL sum-of-sines instrument.
+		This creates an OSC bundle with a 'ps' message for the spectrum followed
+		by a 'pn' message to play a note.
+		CSL SOSInstrument args: dur, ampl, freq, pos, [att, dec, sus, rel] "
+	"OSCVoice sosExample1"	
+	"EventScheduler flush"
+
+	^[ :e | | arr spect |
+	spect := e at: #spectrum.
+	spect := spect copyFrom: 1 to: 10.			"just the first 5 partials for now"
+	arr := Array new: 4.
+	arr at: 1 put: e duration asSec value.		"required fields"
+	arr at: 2 put: e ampl value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 4 put: e pos.
+													"optional fields"
+"	arr at: 5 put: e att.
+	arr at: 6 put: e dec.
+	arr at: 7 put: e sus.
+	arr at: 8 put: e rel."
+"	Transcript show: arr printString; cr."
+	OSCBundle 
+		with: (Array 								"spectrum set message"
+			with: (TypedOSCMessage for: '/i1/ps' with: spect)
+													"note-on message"
+			with: (TypedOSCMessage for: '/i1/pn' with: arr))]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLFM: range
+	"Answer the default parameterMap for use with the CSL FM example instrument."
+	"CSL FMInstrument has args: dur, ampl, c_fr, m_fr, ind, pos, att, dec, sus, rel, i_att, i_dec, i_sus, i_rel"
+
+	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 14.						"set up the parameter map"
+	arr at: 1 put: e duration asSec value.
+	arr at: 2 put: e ampl value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 4 put: e pitch asHz value * e ratio.
+	arr at: 5 put: e modIndex.
+	arr at: 6 put: e pos.
+	arr at: 7 put: e att.
+	arr at: 8 put: e dec.
+	arr at: 9 put: e sus.
+	arr at: 10 put: e rel.
+	arr at: 11 put: e iatt.
+	arr at: 12 put: e idec.
+	arr at: 13 put: e isus.
+	arr at: 14 put: e irel.	
+	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLFMBell: range
+	"Answer the default parameterMap for use with the CSL FM bell instrument."
+	"CSL FM bell has args: dur, ampl, pitch, gliss,rat, ind, pos"
+
+	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 7.						"set up the parameter map"
+	arr at: 1 put: e duration asSec value.
+	arr at: 2 put: e ampl value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 4 put: e gliss.
+	arr at: 5 put: e ratio.	arr at: 6 put: e ind.	arr at: 7 put: e pos.	
+	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLPluck: range
+	"Answer the default parameterMap for use with the CSL plucked string example instrument."
+
+	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 3.				"set up the parameter map"
+	arr at: 1 put: e ampl value.
+	arr at: 2 put: e pitch asHz value.
+	arr at: 3 put: e pos.		msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLSHARC1: range
+	"Answer the default parameterMap for use with the CSL sum-of-sines SHARC instrument.
+		CSL SHARCInstrument (short version) args: dur, amp, pitch, pos"
+	"OSCVoice sosExample1"	
+	"EventScheduler flush"
+
+	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 4.
+	arr at: 1 put: e duration asSec value.		"required fields"
+	arr at: 2 put: e ampl asRatio value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 4 put: e pos.				msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLSHARC2: range
+	"Answer the default parameterMap for use with the CSL sum-of-sines SHARC instrument.
+		CSL SHARCInstrument args: dur, amp, pitch, pos, att, dec, sus, rel"
+	"OSCVoice sosExample2"	
+	"EventScheduler flush"
+
+	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 8.
+	arr at: 1 put: e duration asSec value.		"required fields"
+	arr at: 2 put: e ampl value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 4 put: e pos.				arr at: 5 put: e att.
+	arr at: 6 put: e dec.
+	arr at: 7 put: e sus.
+	arr at: 8 put: e rel.		msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/18/2022 07:14'!pMapForCSLSimpleFM: range
+	"Answer the default parameterMap for use with the CSL FM example instrument."
+	"CSL FMInstrument has args: dur, ampl, c_fr, m_fr, ind, pos"
+	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 6.				"set up the parameter map"
+	arr at: 1 put: e duration asSec value.
+	arr at: 2 put: e ampl asRatio value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 4 put: e pitch asHz value * e ratio.
+	arr at: 5 put: e modIndex.
+	arr at: 6 put: e pos.
+	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/18/2022 07:14'!pMapForCSLSnd: range	"Answer the default parameterMap for use with the CSL FM example instrument."	"CSL SndFileInstrument has args: ampl, pos, start, stop"		^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 2.						"set up the parameter map"	arr at: 1 put: e ampl value.	arr at: 2 put: e pos."	arr at: 3 put: e start.	arr at: 4 put: e stop."	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:29'!pMapForCSLVectorSHARC: range
+	"Answer the default parameterMap for use with the CSL vector SHARC instrument -- dur, ampl, pitch, pos"
+	"OSCVoice vSOSExample1"	
+	"EventScheduler flush"
+
+	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 4.
+	arr at: 1 put: e duration asSec value.		"required fields"
+	arr at: 2 put: e ampl value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 4 put: e pos.	
+	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps'!pMapForMIDI
+	"Answer the default parameterMap for use with OSC-to-MIDI. 
+	In this class, we create and return a OSCMessage with data taken from the given event."
+
+	^[ :e | 
+	| arr timestamp |
+	arr := Array
+			with: (e voice isInteger ifTrue: [e voice] ifFalse: [1])
+			with: e pitch asMIDI value
+			with: e ampl asMIDI value.
+	timestamp := Timestamp now.
+	OSCBundle with: (Array 
+			with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
+			with: (OSCBundle 
+				with: (Array with: (TypedOSCMessage for: '/osc/midi/out/noteOff' with: arr))
+				at: (timestamp addMilliseconds: e duration asMsec value)))
+		at: timestamp]! !!OSCVoice class methodsFor: 'parameter maps'!pMapForMIDItoFM
+	"Answer the default parameterMap for use with the CSL FM example instrument."
+	"CSL FMInstrument has args: dur, ampl, pch, index, pos"
+
+	^[ :e | | arr |
+	arr := Array new: 6.				"set up the parameter map"
+	arr at: 1 put: e duration asSec value.
+	arr at: 2 put: e ampl asRatio value.
+	arr at: 3 put: e pitch asHz value.
+	arr at: 5 put: e modIndex.
+	arr at: 6 put: e pos.
+"	Transcript show: arr printString; cr."
+	TypedOSCMessage for: e inst with: arr]! !!OSCVoice class methodsFor: 'parameter maps'!pMapWithBundle
+	"Answer the default parameterMap for use with OSC-to-MIDI. In this class, we create and return a TypedOSCMessage with data taken from the given event. This allows us to have other versions that create OSC bundles."
+
+	^[ :e | | arr |
+	arr := Array with: 1
+			with: e pitch asMIDI value
+			with: e ampl asMIDI value.
+	OSCBundle 
+		with: (Array with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
+				with: (OSCBundle 
+						with: (TypedOSCMessage for: '/osc/midi/out/noteOff' with: arr)
+						at: (Timestamp now addMilliseconds: e duration asMsec value)))]! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:20'!bellExample1
 	"Play notes on CSL FM bell instruments"
 	"OSCVoice bellExample1"	"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"
@@ -488,7 +669,7 @@ Instance Variables:
 	list := EventList scaleFrom: 48 to: 60 in: 2.5.
 	voice := self default.
 	list voice: voice.
-	list play.! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:21'!sharcExample1
+	list play.! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:45'!sharcExample1
 	"Play short notes on the 16 SHARC instruments (version w vibrato)"
 	"OSCVoice sharcExample1"			"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"	"CSL SHARC instrument has args: dur, amp, pitch, pos, att, dec, sus, rel, chiff"
@@ -503,9 +684,9 @@ Instance Variables:
 		ev := (evList events at: ind) event.
 		ev inst: ('/i', (ind - 1 \\ 16 + 1) printString, '/pn').
 		ev duration: ev duration * 4].
-											"justify the pitches to the D Pentatonic scale"	evList applyBlock: [ :p | (PentatonicScale root: N re) nearestNoteTo: p asHz value] toProp: #pitch.	voice := self parameterMap: (self pMapForCSLSHARC1: (31 to: 46)).	"plug in the parameter map"
+											"justify the pitches to the D Pentatonic scale"	evList applyBlock: [ :p | (PentatonicScale root: N re) nearestNoteTo: p asHz value] toProp: #pitch.	voice := self parameterMap: (self pMapForCSLSHARC1: (35 to: 50)).	"plug in the parameter map"
 	evList voice: voice.	evList play.
-"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:21'!sharcExample2
+"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:45'!sharcExample2
 	"Play long low notes on the 16 SHARC instruments"
 	"OSCVoice sharcExample2"			"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"	"CSL SHARC instrument has args: dur, amp, pitch, pos, att, dec, sus, rel, chiff"
@@ -521,19 +702,19 @@ Instance Variables:
 		ev := (evList events at: ind) event.
 		ev inst: ('/i', (ind - 1 \\ 16 + 1) printString, '/pn').
 		ev duration: ev duration * 4].											"justify the pitches to the D Pentatonic scale"	evList applyBlock: [ :p | (PentatonicScale root: N re) nearestNoteTo: p asHz value] toProp: #pitch.
-	voice := self parameterMap: (self pMapForCSLSHARC2: (31 to: 46)).	"plug in the parameter map"
+	voice := self parameterMap: (self pMapForCSLSHARC2: (35 to: 50)).	"plug in the parameter map"
 	evList voice: voice.	evList play.
-"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:21'!sharcExample3
-	"Play long notes on the 16 SHARC instruments"
+"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:46'!sharcExample3
+	"Play one long notes on a SHARC instrument"
 	"OSCVoice sharcExample3"			"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"	
 	| evt voice |						"create the event"
 	evt := (4.0 sec, 50.1 Hz, -8 dB, (#pos -> 0.0), (#inst -> '/i1/pn')).
-	voice := self parameterMap: (self pMapForCSLSHARC1: (31 to: 46)).	"plug in the parameter map"
+	voice := self parameterMap: (self pMapForCSLSHARC1: (35 to: 50)).	"plug in the parameter map"
 	evt voice: voice.	evt play.
-! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:22'!sharcExample4
+! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:47'!sharcExample4
 	"Play long low notes on the 16 SHARC instruments"
-	"OSCVoice sharcExample2"			"EventScheduler flush"
+	"OSCVoice sharcExample4"			"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"	"CSL SHARC instrument has args: dur, amp, pitch, pos, att, dec, sus, rel, chiff"
 
 	| evList voice |						"create the event list"
@@ -549,7 +730,7 @@ Instance Variables:
 		ev duration: ev duration * 4].											"justify the pitches to the D Pentatonic scale"	evList applyBlock: [ :p | (PentatonicScale root: N re) nearestNoteTo: p asHz value] toProp: #pitch.
 	voice := self parameterMap: (self pMapForCSLSHARC2: (56 to: 61)).	"plug in the parameter map"
 	evList voice: voice.	evList play.
-"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:22'!sndExample1
+"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:43'!sndExample1
 	"Play random notes on the CSL sound file instruments"
 	"OSCVoice sndExample1"
 	"Startup up the CSL OSC demo and run these"
@@ -567,14 +748,14 @@ Instance Variables:
 				pos: (rand nextFrom: -1.0 to: 1.0) ; 
 				start: (rand nextFrom: 0.0 to: 0.5); 
 				stop: (rand nextFrom: 0.5 to: 1.0))].
-	voice := self parameterMap: (self pMapForCSLSnd: (47 to: 50)).	"plug in the parameter map"
+	voice := self parameterMap: (self pMapForCSLSnd: (31 to: 34)).	"plug in the parameter map"
 													"load 4 sound files"
 "	voice send: '/i5/fi' args: (Array with: (SirenUtility findFile: 'moon.snd')).
 	voice send: '/i6/fi' args: (Array with: (SirenUtility findFile: 'wet.snd')).
 	voice send: '/i7/fi' args: (Array with: (SirenUtility findFile: 'round.snd')).
 	voice send: '/i8/fi' args: (Array with: (SirenUtility findFile: 'shine.snd')).
 "	events voice: voice.
-	events play! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:19'!sndExample2
+	events play! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:43'!sndExample2
 	"Play random notes on the CSL sound file instruments; loop until interrupted"
 	"OSCVoice sndExample2"		"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"
@@ -593,7 +774,7 @@ Instance Variables:
 		(rand next > 0.75) 							"add 25% rests"
 			ifTrue: [events add: (DurationEvent new duration: rand next sec)]].
 
-	voice := self  parameterMap: (self pMapForCSLSnd: (47 to: 50)).	"plug in the parameter map"
+	voice := self  parameterMap: (self pMapForCSLSnd: (31 to: 34)).	"plug in the parameter map"
 	events voice: voice.							"set-up and loop list"	events play.
 "	events loop"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:23'!sosExample1		"UNTESTED"
 	"Play random notes on the CSL sum-of-sines instruments; loop until interrupted"
@@ -639,14 +820,14 @@ Instance Variables:
 	voice parameterMap: self pMapForCSLAdditive.	"plug in the parameter map"
 													"load voice files into instruments 5-8"
 	events voice: voice.							"set-up and loop list"
-	events play! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:24'!vSOSExample1
+	events play! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:49'!vSOSExample1
 	"Play random notes on the CSL simple vector SHARC instruments"
 	"OSCVoice vSOSExample1"	
 	"EventScheduler flush"
 	"Startup up the CSL/OSC additive and run these"
 	"CSL AdditiveInstrument has args: dur, ampl, freq, pos, [att, dec, sus, rel]"
 
-	| evList voice |						"create the event list"	evList := EventList randomExample: 8		from: ((#duration: -> 2.5),				(#pitch: -> (44.1 to: 88.1)),				(#ampl: -> (0.2 to: 0.3)),				(#pos: -> (-1.0 to: 1.0))).	1 to: evList events size do: 		[ :ind | | ev |						"plug in instruments and expand durations (molto legato)"		ev := (evList events at: ind) event.		ev inst: ('/i', (ind - 1 \\ 5 + 1) printString, '/pn').		ev duration: ev duration * 4].											"justify the pitches to the D Pentatonic scale"	evList applyBlock: [ :p | (PentatonicScale root: N re) nearestNoteTo: p asHz value] toProp: #pitch.	voice := self parameterMap: (self pMapForCSLVectorSHARC: (51 to: 55)).	"plug in the parameter map"	evList voice: voice.	evList play.! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:24'!vSOSExample2
+	| evList voice |						"create the event list"	evList := EventList randomExample: 8		from: ((#duration: -> 2.5),				(#pitch: -> (44.1 to: 88.1)),				(#ampl: -> (0.2 to: 0.3)),				(#pos: -> (-1.0 to: 1.0))).	1 to: evList events size do: 		[ :ind | | ev |						"plug in instruments and expand durations (molto legato)"		ev := (evList events at: ind) event.		ev inst: ('/i', (ind - 1 \\ 5 + 1) printString, '/pn').		ev duration: ev duration * 4].											"justify the pitches to the D Pentatonic scale"	evList applyBlock: [ :p | (PentatonicScale root: N re) nearestNoteTo: p asHz value] toProp: #pitch.	voice := self parameterMap: (self pMapForCSLVectorSHARC: (56 to: 61)).	"plug in the parameter map"	evList voice: voice.	evList play.! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:24'!vSOSExample2
 	"Play long low notes on the fancy vector SOS instruments"
 	"OSCVoice vSOSExample2"			"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"	"CSL  instrument has args: dur, amp, pitch, pos, (att, dec, sus, rel)"
@@ -663,196 +844,15 @@ Instance Variables:
 		ev duration: ev duration * 4].											"justify the pitches to the D Pentatonic scale"	evList applyBlock: [ :p | (PentatonicScale root: N re) nearestNoteTo: p asHz value] toProp: #pitch.
 	voice := self parameterMap: (self pMapForCSLVectorSHARC: (56 to: 61)).	"plug in the parameter map"
 	evList voice: voice.	evList play.
-"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:24'!vSOSExample3
-	"Play long notes on the 16 SHARC instruments"
+"	evList loop"								"loop until you stop the scheduler"! !!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/25/2022 16:53'!vSOSExample3
+	"Play a long note on the SHARC cross-fade instruments"
 	"OSCVoice vSOSExample3"			"EventScheduler flush"
 	"Startup up the CSL OSC demo and run these"	
 	| evt voice |						"create the event"
 	evt := (4.0 sec, 50.1 Hz, -8 dB, (#pos -> 0.0), (#inst -> '/i3/pn')).
 	voice := self parameterMap: (self pMapForCSLSHARC1: (56 to: 61)).	"plug in the parameter map"
 	evt voice: voice.	evt play.
-! !!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/12/2022 07:23'!cslHost
-	"Answer the default voice for CSL over OSC"
-
-	^self onPort: OSCPort cslHost! !!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/12/2022 07:35'!cslHost: mapSelector
-	"Answer the default voice for CSL over OSC using the given map selector."
-	"| list voice |	list := EventList scaleFrom: 48 to: 60 in: 2.5.	voice := self cslHost: pMapForCSLSimpleFM.	list voice: voice.	list play."	
-	| inst |	inst := self onPort: OSCPort cslHost.	inst parameterMap: (self perform: mapSelector).	^inst! !!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/20/2022 07:18'!default
-	"Answer an OSC voice with the default OSC host and port."
-
-	^self onPort: OSCPort default! !!OSCVoice class methodsFor: 'instance creation'!localhost
-	"Answer an instance on the local host"
-
-	^self onPort: OSCPort localhost! !!OSCVoice class methodsFor: 'instance creation'!map: mapSelector
-	"Answer a default instance that uses the given parameter map name"
-	"OSCVoice map: #pMapForCSLSimpleFM"
-
-	| inst |
-	inst := self default.
-	inst parameterMap: (self perform: mapSelector).
-	^inst! !!OSCVoice class methodsFor: 'instance creation'!onPort: pt
-	"Answer an instance on the given port"
-
-	| me |
-	(me := self new initialize) port: pt.
-	^me! !!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 12/22/2022 13:42'!parameterMap: pmap
-	"Answer an OSC voice for use with the default OSC settings and the given parameter map."
-	"OSCVoice parameterMap: (OSCVoice pMapForCSLPluck: (1 to: 10))"	
-	| inst |	inst := self default.	inst parameterMap: pmap.	^inst! !!OSCVoice class methodsFor: 'instance creation'!scHost
-	"Answer the default voice for SC over OSC"
-
-	^self onPort: OSCPort scHost! !!OSCVoice class methodsFor: 'parameter maps'!defaultPMap
-	"Answer the default parameterMap for use with OSC."
-
-	^[ :e |  | arr |
-	arr := Array
-			with: e duration asSec value
-			with: e pitch asHz value
-			with: e ampl asRatio value.
-	TypedOSCMessage for: '/note' with: arr]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/15/2022 14:06'!pMapForCSLAdditive
-	"Answer the default parameterMap for use with the CSL sum-of-sines instrument.
-		This creates an OSC bundle with a 'ps' message for the spectrum followed
-		by a 'pn' message to play a note.
-		CSL SOSInstrument args: dur, ampl, freq, pos, [att, dec, sus, rel] "
-	"OSCVoice sosExample1"	
-	"EventScheduler flush"
-
-	^[ :e | | arr spect |
-	spect := e at: #spectrum.
-	spect := spect copyFrom: 1 to: 10.			"just the first 5 partials for now"
-	arr := Array new: 4.
-	arr at: 1 put: e duration asSec value.		"required fields"
-	arr at: 2 put: e ampl value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pos.
-													"optional fields"
-"	arr at: 5 put: e att.
-	arr at: 6 put: e dec.
-	arr at: 7 put: e sus.
-	arr at: 8 put: e rel."
-"	Transcript show: arr printString; cr."
-	OSCBundle 
-		with: (Array 								"spectrum set message"
-			with: (TypedOSCMessage for: '/i1/ps' with: spect)
-													"note-on message"
-			with: (TypedOSCMessage for: '/i1/pn' with: arr))]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLFM: range
-	"Answer the default parameterMap for use with the CSL FM example instrument."
-	"CSL FMInstrument has args: dur, ampl, c_fr, m_fr, ind, pos, att, dec, sus, rel, i_att, i_dec, i_sus, i_rel"
-
-	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 14.						"set up the parameter map"
-	arr at: 1 put: e duration asSec value.
-	arr at: 2 put: e ampl value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pitch asHz value * e ratio.
-	arr at: 5 put: e modIndex.
-	arr at: 6 put: e pos.
-	arr at: 7 put: e att.
-	arr at: 8 put: e dec.
-	arr at: 9 put: e sus.
-	arr at: 10 put: e rel.
-	arr at: 11 put: e iatt.
-	arr at: 12 put: e idec.
-	arr at: 13 put: e isus.
-	arr at: 14 put: e irel.	
-	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLFMBell: range
-	"Answer the default parameterMap for use with the CSL FM bell instrument."
-	"CSL FM bell has args: dur, ampl, pitch, gliss,rat, ind, pos"
-
-	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 7.						"set up the parameter map"
-	arr at: 1 put: e duration asSec value.
-	arr at: 2 put: e ampl value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e gliss.
-	arr at: 5 put: e ratio.	arr at: 6 put: e ind.	arr at: 7 put: e pos.	
-	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLPluck: range
-	"Answer the default parameterMap for use with the CSL plucked string example instrument."
-
-	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 3.				"set up the parameter map"
-	arr at: 1 put: e ampl value.
-	arr at: 2 put: e pitch asHz value.
-	arr at: 3 put: e pos.		msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLSHARC1: range
-	"Answer the default parameterMap for use with the CSL sum-of-sines SHARC instrument.
-		CSL SHARCInstrument (short version) args: dur, amp, pitch, pos"
-	"OSCVoice sosExample1"	
-	"EventScheduler flush"
-
-	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 4.
-	arr at: 1 put: e duration asSec value.		"required fields"
-	arr at: 2 put: e ampl asRatio value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pos.				msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!pMapForCSLSHARC2: range
-	"Answer the default parameterMap for use with the CSL sum-of-sines SHARC instrument.
-		CSL SHARCInstrument args: dur, amp, pitch, pos, att, dec, sus, rel"
-	"OSCVoice sosExample2"	
-	"EventScheduler flush"
-
-	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 8.
-	arr at: 1 put: e duration asSec value.		"required fields"
-	arr at: 2 put: e ampl value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pos.				arr at: 5 put: e att.
-	arr at: 6 put: e dec.
-	arr at: 7 put: e sus.
-	arr at: 8 put: e rel.		msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/18/2022 07:14'!pMapForCSLSimpleFM: range
-	"Answer the default parameterMap for use with the CSL FM example instrument."
-	"CSL FMInstrument has args: dur, ampl, c_fr, m_fr, ind, pos"
-	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 6.				"set up the parameter map"
-	arr at: 1 put: e duration asSec value.
-	arr at: 2 put: e ampl asRatio value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pitch asHz value * e ratio.
-	arr at: 5 put: e modIndex.
-	arr at: 6 put: e pos.
-	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/18/2022 07:14'!pMapForCSLSnd: range	"Answer the default parameterMap for use with the CSL FM example instrument."	"CSL SndFileInstrument has args: ampl, pos, start, stop"		^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 2.						"set up the parameter map"	arr at: 1 put: e ampl value.	arr at: 2 put: e pos."	arr at: 3 put: e start.	arr at: 4 put: e stop."	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:29'!pMapForCSLVectorSHARC: range
-	"Answer the default parameterMap for use with the CSL vector SHARC instrument -- dur, ampl, pitch, pos"
-	"OSCVoice vSOSExample1"	
-	"EventScheduler flush"
-
-	^[ :e | | arr inst inst2 sta sto num msg|	inst := e inst.	inst ifEmpty: [inst := '/i1/pn'].	sta := inst findString: '/i'.	sto := inst findString: '/' startingAt: sta + 2.	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.	num := num + range start - 1.				"map inst num to range"	(num > range last)		ifTrue: [num := range last].	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 	arr := Array new: 4.
-	arr at: 1 put: e duration asSec value.		"required fields"
-	arr at: 2 put: e ampl value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pos.	
-	msg := TypedOSCMessage for: inst2 with: arr."	Transcript show: msg printString; cr."	msg]! !!OSCVoice class methodsFor: 'parameter maps'!pMapForMIDI
-	"Answer the default parameterMap for use with OSC-to-MIDI. 
-	In this class, we create and return a OSCMessage with data taken from the given event."
-
-	^[ :e | 
-	| arr timestamp |
-	arr := Array
-			with: (e voice isInteger ifTrue: [e voice] ifFalse: [1])
-			with: e pitch asMIDI value
-			with: e ampl asMIDI value.
-	timestamp := Timestamp now.
-	OSCBundle with: (Array 
-			with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
-			with: (OSCBundle 
-				with: (Array with: (TypedOSCMessage for: '/osc/midi/out/noteOff' with: arr))
-				at: (timestamp addMilliseconds: e duration asMsec value)))
-		at: timestamp]! !!OSCVoice class methodsFor: 'parameter maps'!pMapForMIDItoFM
-	"Answer the default parameterMap for use with the CSL FM example instrument."
-	"CSL FMInstrument has args: dur, ampl, pch, index, pos"
-
-	^[ :e | | arr |
-	arr := Array new: 6.				"set up the parameter map"
-	arr at: 1 put: e duration asSec value.
-	arr at: 2 put: e ampl asRatio value.
-	arr at: 3 put: e pitch asHz value.
-	arr at: 5 put: e modIndex.
-	arr at: 6 put: e pos.
-"	Transcript show: arr printString; cr."
-	TypedOSCMessage for: e inst with: arr]! !!OSCVoice class methodsFor: 'parameter maps'!pMapWithBundle
-	"Answer the default parameterMap for use with OSC-to-MIDI. In this class, we create and return a TypedOSCMessage with data taken from the given event. This allows us to have other versions that create OSC bundles."
-
-	^[ :e | | arr |
-	arr := Array with: 1
-			with: e pitch asMIDI value
-			with: e ampl asMIDI value.
-	OSCBundle 
-		with: (Array with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
-				with: (OSCBundle 
-						with: (TypedOSCMessage for: '/osc/midi/out/noteOff' with: arr)
-						at: (Timestamp now addMilliseconds: e duration asMsec value)))]! !OSCMessage subclass: #TypedOSCMessage	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-OSC'!!TypedOSCMessage commentStamp: '<historical>' prior: 0!A TypedOSCMessage represents the new form of (typed) OSC messages!!TypedOSCMessage methodsFor: 'osc'!argumentsToOSCBytes: convertor 
+! !OSCMessage subclass: #TypedOSCMessage	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-OSC'!!TypedOSCMessage commentStamp: '<historical>' prior: 0!A TypedOSCMessage represents the new form of (typed) OSC messages!!TypedOSCMessage methodsFor: 'osc'!argumentsToOSCBytes: convertor 
 	"Convert the args and type string to OSC format"
 
 	convertor nextPut: $, asInteger.
@@ -888,4 +888,4 @@ Instance Variables:
 	^self for: '/sc/stop'! !!TypedOSCMessage class methodsFor: 'examples'!start
 	"TypedOSCMessage start"
 
-	^self for: '/start'! !OSCBundle initialize!
+	^self for: '/start'! !OSCBundle initialize!OSCPort initialize!

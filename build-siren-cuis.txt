@@ -19,9 +19,6 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 [ #(
 	'GUI-changes.st'
 	'ST80-compatibility.st'
-	'SixPanedBrowser.st'
-	'SixPanedBrowserWindow.st'
-	'WorkbookWindow.st'
 	'ZPoint.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
@@ -59,7 +56,7 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	'MusicUI-DisplayListViews.st'
 	'MusicUI-Layout.st'
 	'MusicUI-Editors.st'
-	
+	'WorkbookWindow.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
 	('./Siren9C/SirenSources/', file) asFileEntry readStreamDo: 

@@ -1,1 +1,0 @@
-﻿'From Squeak6.0 of 21 October 2022 [latest update: #22114] on 9 December 2022 at 12:13:32 pm'!!Debugger methodsFor: 'initialize' stamp: 'cmm 6/22/2018 23:04'!initialExtent	"Initial extent for the full debugger. For the notifier's extent see #initialExtentForNotifier."		^ SavedExtent ifNil: [ 600@700]! !

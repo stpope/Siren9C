@@ -1,3 +1,155 @@
+!classDefinition: #EventAssociation category: #'Music-Support'!
+Association subclass: #EventAssociation
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Support'!
+!EventAssociation commentStamp: '<historical>' prior: 0!
+An EventAssociation is an Association with some special semantics for Siren. It can be created with the '=>' message to a Number, meaning start-time assicoated with event.!
+
+
+!EventAssociation methodsFor: 'accessing'!
+, anArgument
+	"Add the argument as a property of the receiver."
+	"((0 beat) => (1/16 beat,  'c3' pitch)),
+	  ((1/16 beat) => (1/16 beat, 'b2'  pitch))"
+
+	^EventList new add: self; add: anArgument! !
+
+!EventAssociation methodsFor: 'accessing'!
+event
+	"Answer the receiver's event (value)."
+
+	^self value! !
+
+!EventAssociation methodsFor: 'accessing'!
+start
+	"Answer the receiver's start (key)."
+
+	^self key! !
+
+!EventAssociation methodsFor: 'accessing'!
+start: aTime
+	"Set the receiver's start (key)."
+
+	self key: (Duration value: aTime)! !
+
+!EventAssociation methodsFor: 'accessing'!
+stop
+	"Answer the stop time of the event association."
+
+	^self start + self event duration! !
+
+!EventAssociation methodsFor: 'accessing'!
+time
+	"Answer the receiver's start (key)."
+
+	^self key! !
+
+
+!EventAssociation methodsFor: 'printing'!
+printOn: aStream 
+	"Append to the argument, aStream, the two elements of the 
+	EventAssociation separated by a double-right arrow (=>)."
+
+	key printOn: aStream.
+	aStream nextPutAll: ' => '.
+	value printOn: aStream! !
+
+
+!EventAssociation methodsFor: 'comparing'!
+< anAssociation 
+	"Handle events, associations, and time/order sorting."
+
+	anAssociation isAssociation
+		ifFalse: [^value < anAssociation].
+	key ifNil:
+		[anAssociation key ifNil:
+			[^((key order) < (anAssociation order))]].
+	^key < anAssociation key! !
+
+!EventAssociation methodsFor: 'comparing'!
+= anAssociation
+	"If the argument's not an association, compare it to the receiver's value, otherwise answer whether the receiver's key and value are both equal to the argument's."
+
+	(anAssociation isAssociation)
+		ifFalse: [^value = anAssociation].
+	key = anAssociation key
+		ifTrue: [^value = anAssociation value]
+		ifFalse: [^false]! !
+
+
+!classDefinition: #ScheduleRecord category: #'Music-Support'!
+Association subclass: #ScheduleRecord
+	instanceVariableNames: 'next previous loop'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Support'!
+!ScheduleRecord commentStamp: '<historical>' prior: 0!
+A ScheduleRecord is used as an entry in the SEventQueue. 
+It's a doubly-linked record with a key (the start time) and value (the scheduled event).
+
+Instance Variables
+	next <ScheduleRecord | nil> the next record in the Q (nil for the last)
+	previous <ScheduleRecord | nil> the previous record in the Q (nil for the first)
+
+	key <Integer> (inherited from LookupKey) the record's start time in msec
+	value <Event> (inherited from Association) the record's event.!
+
+
+!ScheduleRecord methodsFor: 'accessing'!
+loop
+	^loop! !
+
+!ScheduleRecord methodsFor: 'accessing'!
+loop: aBool
+	loop := aBool! !
+
+!ScheduleRecord methodsFor: 'accessing'!
+next
+	"Answer the receiver's 'next'."
+
+	^next! !
+
+!ScheduleRecord methodsFor: 'accessing'!
+next: anObject
+	"Set the receiver's instance variable 'next' to be anObject."
+
+	next := anObject! !
+
+!ScheduleRecord methodsFor: 'accessing'!
+previous
+	"Answer the receiver's 'previous'."
+
+	^previous! !
+
+!ScheduleRecord methodsFor: 'accessing'!
+previous: anObject
+	"Set the receiver's instance variable 'previous' to be anObject."
+
+	previous := anObject! !
+
+!ScheduleRecord methodsFor: 'accessing'!
+start
+	^self key! !
+
+
+!ScheduleRecord methodsFor: 'control'!
+clear
+	key := nil.
+	value := nil.
+! !
+
+!ScheduleRecord methodsFor: 'control'!
+stop
+	value ifNotNil: [value stop]! !
+
+
+!ScheduleRecord methodsFor: 'testing'!
+isActive
+	^value isActive! !
+
+
 !classDefinition: #DeviceModel category: #'Music-Support'!
 Model subclass: #DeviceModel
 	instanceVariableNames: 'name port stream debug in out rate'
@@ -1659,13 +1811,13 @@ update: anAspectSymbol with: aParameter from: aSender
 SirenSession class
 	instanceVariableNames: 'instance useSingleton'!
 
-!SirenSession class methodsFor: 'class initialization'!
+!SirenSession class methodsFor: 'class initialization' stamp: 'stp 12/28/2022 14:05:29'!
 flushTempEventLists
 	"Flush the class's temporary event list dictionary."
 	"SirenSession flushTempEventLists"
 
 	EventLists at: #Temp put: Dictionary new.
-	ObjectMemory compactingGC! !
+	Smalltalk garbageCollect! !
 
 !SirenSession class methodsFor: 'class initialization' stamp: 'stp 11/25/2022 09:55:57'!
 initialize
@@ -2906,158 +3058,6 @@ stop
 	lastUpdate := Time microsecondClock.
 	EventScheduler instance removerTimer: self
 	self changed! !
-
-
-!classDefinition: #EventAssociation category: #'Music-Support'!
-Association subclass: #EventAssociation
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Support'!
-!EventAssociation commentStamp: '<historical>' prior: 0!
-An EventAssociation is an Association with some special semantics for Siren. It can be created with the '=>' message to a Number, meaning start-time assicoated with event.!
-
-
-!EventAssociation methodsFor: 'accessing'!
-, anArgument
-	"Add the argument as a property of the receiver."
-	"((0 beat) => (1/16 beat,  'c3' pitch)),
-	  ((1/16 beat) => (1/16 beat, 'b2'  pitch))"
-
-	^EventList new add: self; add: anArgument! !
-
-!EventAssociation methodsFor: 'accessing'!
-event
-	"Answer the receiver's event (value)."
-
-	^self value! !
-
-!EventAssociation methodsFor: 'accessing'!
-start
-	"Answer the receiver's start (key)."
-
-	^self key! !
-
-!EventAssociation methodsFor: 'accessing'!
-start: aTime
-	"Set the receiver's start (key)."
-
-	self key: (Duration value: aTime)! !
-
-!EventAssociation methodsFor: 'accessing'!
-stop
-	"Answer the stop time of the event association."
-
-	^self start + self event duration! !
-
-!EventAssociation methodsFor: 'accessing'!
-time
-	"Answer the receiver's start (key)."
-
-	^self key! !
-
-
-!EventAssociation methodsFor: 'printing'!
-printOn: aStream 
-	"Append to the argument, aStream, the two elements of the 
-	EventAssociation separated by a double-right arrow (=>)."
-
-	key printOn: aStream.
-	aStream nextPutAll: ' => '.
-	value printOn: aStream! !
-
-
-!EventAssociation methodsFor: 'comparing'!
-< anAssociation 
-	"Handle events, associations, and time/order sorting."
-
-	anAssociation isAssociation
-		ifFalse: [^value < anAssociation].
-	key ifNil:
-		[anAssociation key ifNil:
-			[^((key order) < (anAssociation order))]].
-	^key < anAssociation key! !
-
-!EventAssociation methodsFor: 'comparing'!
-= anAssociation
-	"If the argument's not an association, compare it to the receiver's value, otherwise answer whether the receiver's key and value are both equal to the argument's."
-
-	(anAssociation isAssociation)
-		ifFalse: [^value = anAssociation].
-	key = anAssociation key
-		ifTrue: [^value = anAssociation value]
-		ifFalse: [^false]! !
-
-
-!classDefinition: #ScheduleRecord category: #'Music-Support'!
-Association subclass: #ScheduleRecord
-	instanceVariableNames: 'next previous loop'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Support'!
-!ScheduleRecord commentStamp: '<historical>' prior: 0!
-A ScheduleRecord is used as an entry in the SEventQueue. 
-It's a doubly-linked record with a key (the start time) and value (the scheduled event).
-
-Instance Variables
-	next <ScheduleRecord | nil> the next record in the Q (nil for the last)
-	previous <ScheduleRecord | nil> the previous record in the Q (nil for the first)
-
-	key <Integer> (inherited from LookupKey) the record's start time in msec
-	value <Event> (inherited from Association) the record's event.!
-
-
-!ScheduleRecord methodsFor: 'accessing'!
-loop
-	^loop! !
-
-!ScheduleRecord methodsFor: 'accessing'!
-loop: aBool
-	loop := aBool! !
-
-!ScheduleRecord methodsFor: 'accessing'!
-next
-	"Answer the receiver's 'next'."
-
-	^next! !
-
-!ScheduleRecord methodsFor: 'accessing'!
-next: anObject
-	"Set the receiver's instance variable 'next' to be anObject."
-
-	next := anObject! !
-
-!ScheduleRecord methodsFor: 'accessing'!
-previous
-	"Answer the receiver's 'previous'."
-
-	^previous! !
-
-!ScheduleRecord methodsFor: 'accessing'!
-previous: anObject
-	"Set the receiver's instance variable 'previous' to be anObject."
-
-	previous := anObject! !
-
-!ScheduleRecord methodsFor: 'accessing'!
-start
-	^self key! !
-
-
-!ScheduleRecord methodsFor: 'control'!
-clear
-	key := nil.
-	value := nil.
-! !
-
-!ScheduleRecord methodsFor: 'control'!
-stop
-	value ifNotNil: [value stop]! !
-
-
-!ScheduleRecord methodsFor: 'testing'!
-isActive
-	^value isActive! !
 
 
 !classDefinition: #SEventQueue category: #'Music-Support'!

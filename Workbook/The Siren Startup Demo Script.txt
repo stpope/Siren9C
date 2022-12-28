@@ -12,11 +12,6 @@ Configure and test the MIDI and sound I/O drivers using the utility panel.
 
 	[SirenSession openUtility] d
 
-Load the test data with the "Load All" button in the utility pane.
-You can browse the test data with the left-side menu buttons in the transport panel, do,
-
-	[SirenSession openTransport] d
-
 See also the section above on "Siren Set-up."
 
 MusicMagnitudes
@@ -42,18 +37,17 @@ Pitch expressions ("N" is short-hand for PitchClass)
 	[N C diminishedThirteenth] p
 	[N do flat intervalBetween: N sol] p
 	[PitchClass D flat melodicMinorScale notes] p
-	[(PitchClassChord new fromString: 'C aug9 dim5') notes] p
 	[(HungarianMinor root: N fa) asPitchesInOctave: 2] p
 
 Event Creation Messages
 
 Create a `generic' event using a class instance creation message.
 
-	MusicEvent duration: 1/4 pitch: 'c3' ampl: 'mf'
+	MusicEvent duration: 1/4 pitch: 'c3' ampl: 'mf' 
 
 Create one with added properties.
 
-	(MusicEvent dur: 1/4 pitch: 'c3') color: #green; accent: #sfz
+	(MusicEvent dur: 1/4 pitch: 'c3') color: #green; accent: #sfz 
 
 Terse format: concatenation (with ',') of music magnitudes
 
@@ -72,7 +66,7 @@ a chord is simply a set of events at the same time.
 
 Play a scale created with a class message.
 
-	[(EventList scaleFrom: 48 to: 60 in: 3000) open] d
+	[(EventList scaleFrom: 48 to: 60 in: 3000) open] d -- Buggy layout --
 
 Create 64 random events with parameters in the given ranges, play it on the default output voice, or edit it.
 
@@ -83,9 +77,9 @@ Create 64 random events with parameters in the given ranges, play it on the defa
 				(#voice: -> (1 to: 1)))			"play all on voice 1"
 		) open] d
 
-Create an event list of 20 notes with semi-random values and play it on a MIDI output voice.
+Create an event list of 20 notes with semi-random values and play it on an OSC output voice.
 
-	[(EventList randomExample: 20) playOn: MIDIVoice default] d
+	[(EventList randomExample: 20) playOn: OSCVoice default] d
 
 Event lists don't have to have pitches at all, as in the word,
 

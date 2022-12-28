@@ -42,11 +42,11 @@ waitUntil: anArg
 		whileFalse: ["Processor yield" (Delay forMilliseconds: 10) wait]! !
 
 
-!ConditionalDuration methodsFor: 'private'!
+!ConditionalDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:13'!
 species
 	"Answer Duration."
 
-	^Duration! !
+	^MDuration! !
 
 
 !ConditionalDuration methodsFor: 'converting'!
@@ -912,11 +912,11 @@ units
 	^' measures'! !
 
 
-!MeasureDuration methodsFor: 'private'!
+!MeasureDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:23'!
 species
 	"Answer Duration."
 
-	^Duration! !
+	^MDuration! !
 
 
 !classDefinition: #RatioMagnitude category: #'Music-Models-Implementation'!
@@ -1004,11 +1004,11 @@ units
 	^' beat'! !
 
 
-!RatioDuration methodsFor: 'private'!
+!RatioDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:27'!
 species
 	"Answer Duration."
 
-	^Duration! !
+	^MDuration! !
 
 
 !RatioDuration methodsFor: 'double dispatching'!
@@ -1328,14 +1328,15 @@ Instances of SecondDuration are duration times in floating-point seconds.
 This is among the most general duration time representations.!
 
 
-!SecondDuration methodsFor: 'printing'!
+!SecondDuration methodsFor: 'printing' stamp: 'stp 12/28/2022 13:58:56'!
 printOn: aStream
 	"Print the receiver on the argument as a MM declaration."
 
 	| valstr |
-	valstr := value printString.
-	valstr size > 6
-		ifTrue: [valstr := valstr copyFrom: 1 to: 5].
+	value isFloat ifTrue: [valstr := value printString: 4]
+			ifFalse: [valstr := value printString].    "4 digits"
+"	valstr size > 6
+		ifTrue: [valstr := valstr copyFrom: 1 to: 5]."
 	aStream nextPutAll: '(', valstr, self units, ')'! !
 
 !SecondDuration methodsFor: 'printing'!
@@ -1359,11 +1360,11 @@ mostGeneral
 
 	^self asSec! !
 
-!SecondDuration methodsFor: 'private'!
+!SecondDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:35'!
 species
 	"Answer Duration."
 
-	^Duration! !
+	^MDuration! !
 
 
 !SecondDuration methodsFor: 'converting'!
@@ -1836,11 +1837,11 @@ The instance variable tables are used for the name -> relation symbol map.
 See the class examples.!
 
 
-!Length methodsFor: 'private'!
+!Length methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:38'!
 species
 	"Answer Duration."
 
-	^Duration! !
+	^MDuration! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 

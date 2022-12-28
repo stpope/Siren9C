@@ -2215,6 +2215,240 @@ exampleList
 	list "inspect" edit! !
 
 
+!classDefinition: #PortMIDILibrary category: #'MusicIO-MIDI'!
+ExternalLibrary subclass: #PortMIDILibrary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MusicIO-MIDI'!
+!PortMIDILibrary commentStamp: 'stp 12/9/2022 12:00' prior: 0!
+A PortMIDILibrary is an external library to interface with the PortMIDI library -- see https://portmedia.sourceforge.net
+
+Instance Variables
+
+	Interface
+	port
+
+Calls
+
+!
+
+
+!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:36:32'!
+pm_close: which
+	"Close the selected MIDI output device/port."
+
+"	<cdecl: int32_t pm_close(uint32_t)>"
+	<primitive: 'pm_close' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:37:17'!
+pm_initialize
+	"Start the MIDI back-end."
+	"PortMIDILibrary new pm_initialize"
+	
+"	<cdecl: int32_t pm_initialize(void)>"
+	<primitive: 'pm_initialize' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:37:54'!
+pm_open: which with: direction
+	"Open the selected MIDI output device/port."
+	
+"	<cdecl: int32_t pm_open(int32_t, uint32_t)>"
+	<primitive: 'pm_open' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:38:24'!
+pm_terminate
+	"Stop the MIDI back-end."
+	"PortMIDILibrary new pm_terminate"
+	
+"	<cdecl: int32_t pm_terminate(void)>"
+	<primitive: 'pm_terminate' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:39:43'!
+pm_count_devices
+	"Answer the number of MIDI ports"
+	"PortMIDILibrary new pm_count_devices"
+	
+"	<cdecl: int32_t pm_count_devices (void)>"
+	<primitive: 'pm_count_devices' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:40:16'!
+pm_default_input_device
+	"Answer the default MIDI input device/port."
+	"PortMIDILibrary new pm_default_input_device"
+
+"	<cdecl: int32_t pm_default_input_device (void)>"
+	<primitive: 'pm_default_input_device' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:40:43'!
+pm_default_output_device
+	"Answer the default MIDI output device/port."
+	"PortMIDILibrary new pm_default_output_device"
+
+"	<cdecl: int32_t pm_default_output_device (void)>"
+	<primitive: 'pm_default_output_device' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:41:13'!
+pm_dev_dir: which
+	"Answer the i/o direction of the selected MIDI output device/port."
+
+"	<cdecl: int32_t pm_dev_dir(int32_t)>"
+	<primitive: 'pm_dev_dir' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:41:40'!
+pm_get_name: which
+	"Answer the name of the selected MIDI output device/port."
+
+"	<cdecl: const char * pm_get_name(uint32_t)>"
+	<primitive: 'pm_get_name' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:42:09'!
+pm_start_controller_cacheing
+	"Start MIDI controller cacheing."
+
+"	<cdecl: int32_t pm_start_controller_cacheing(void)>"
+	<primitive: 'pm_start_controller_cacheing' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:42:35'!
+pm_stop_controller_cacheing
+	"Stop MIDI controller cacheing."
+
+"	<cdecl: int32_t pm_stop_controller_cacheing(void)>"
+	<primitive: 'pm_stop_controller_cacheing' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:43:07'!
+pm_test
+	"Test MIDI by playing a note.."
+	
+"	<cdecl: void pm_test (void)>"
+	<primitive: 'pm_test' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+
+!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:32:15'!
+pm_poll: which
+	"The MIDI driver input process poll."
+
+"	<cdecl: uint32_t pm_poll(uint32_t) >"
+	<primitive: 'pm_poll' module: 'PortMIDIPrims'>
+	
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:33:05'!
+pm_read: which
+	"The MIDI driver input read prim."
+
+"	<cdecl: uint64_t pm_read(uint32_t)>"
+	<primitive: 'pm_read' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:34:02'!
+pm_read_controllers: which with: lo with: hi with: array
+	"Read a range of controllers"
+
+"	<cdecl: int32_t pm_read_controllers(uint32_t, uint32_t, uint32_t, short *) >"
+	<primitive: 'pm_read_controllers:' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:35:32'!
+pm_write_data2: which with: d1 with: d2
+	"Write a 2-byte MIDI Command."
+
+"	<cdecl: int32_t pm_write_data2(uint32_t, char, char) >"
+	<primitive: 'pm_write_data2' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:35:23'!
+pm_write_data3: which with: d1 with: d2 with: d3
+	"Write a standard 3-byte MIDI Command."
+
+"	<cdecl: int32_t pm_write_data3(uint32_t, char, char, char) >"
+	<primitive: 'pm_write_data3:' module: 'PortMIDIPrims'>
+
+	^self externalCallFailed! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PortMIDILibrary class' category: #'MusicIO-MIDI'!
+PortMIDILibrary class
+	instanceVariableNames: ''!
+
+!PortMIDILibrary class methodsFor: 'instance creation' stamp: 'stp 12/27/2022 11:45:34'!
+new
+	"Make certain to initialize instances."
+
+	^super new initialize! !
+
+
+!PortMIDILibrary class methodsFor: 'system startup' stamp: 'stp 12/27/2022 11:45:15'!
+initialize
+	"
+	self initialize
+	"
+	Smalltalk addToStartUpList: self after: (Smalltalk classNamed: #CStandardLibrary)! !
+
+
+!PortMIDILibrary class methodsFor: 'accessing' stamp: 'stp 12/27/2022 11:54:23'!
+moduleName
+	"Answer the module name"
+	
+	^'PortMIDIPrims'! !
+
+
+!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 12/27/2022 11:44:17'!
+listDeviceTable
+	"Print a list of devices to the transcript."
+	"PortMIDILibrary listDeviceTable"
+	
+ 	| lib num |
+	lib := PortMIDILibrary new.
+	num := lib pm_count_devices.
+	Transcript cr; show: 'MIDI Device Table'; cr.
+	1 to: num do:
+		[ :ind |
+		Transcript show: '# ', ind printString, ' - ',
+				(lib pm_get_name: ind), ' - ', (lib pm_dev_dir: ind) printString; cr]! !
+
+!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 12/27/2022 11:44:32'!
+testANote
+	"Try playing a note."
+	"PortMIDILibrary listDeviceTable"
+	
+	"PortMIDILibrary new pm_count_devices "
+	"PortMIDILibrary new pm_default_input_device "
+	"PortMIDILibrary new pm_default_output_device "
+	"PortMIDILibrary new pm_test"
+
+	PortMIDILibrary new pm_test! !
+
+
 !classDefinition: #MIDIPacket category: #'MusicIO-MIDI'!
 Object subclass: #MIDIPacket
 	instanceVariableNames: 'length time flags duration data'
@@ -2470,240 +2704,6 @@ setPitch: p dur: d loudness: vol
 	"Answer an instance of the class with the given parameters."
 
 	^self new pitch: p; velocity: vol; duration: d! !
-
-
-!classDefinition: #PortMIDILibrary category: #'MusicIO-MIDI'!
-ExternalLibrary subclass: #PortMIDILibrary
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MusicIO-MIDI'!
-!PortMIDILibrary commentStamp: 'stp 12/9/2022 12:00' prior: 0!
-A PortMIDILibrary is an external library to interface with the PortMIDI library -- see https://portmedia.sourceforge.net
-
-Instance Variables
-
-	Interface
-	port
-
-Calls
-
-!
-
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:36:32'!
-pm_close: which
-	"Close the selected MIDI output device/port."
-
-"	<cdecl: int32_t pm_close(uint32_t)>"
-	<primitive: 'pm_close' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:37:17'!
-pm_initialize
-	"Start the MIDI back-end."
-	"PortMIDILibrary new pm_initialize"
-	
-"	<cdecl: int32_t pm_initialize(void)>"
-	<primitive: 'pm_initialize' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:37:54'!
-pm_open: which with: direction
-	"Open the selected MIDI output device/port."
-	
-"	<cdecl: int32_t pm_open(int32_t, uint32_t)>"
-	<primitive: 'pm_open' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:38:24'!
-pm_terminate
-	"Stop the MIDI back-end."
-	"PortMIDILibrary new pm_terminate"
-	
-"	<cdecl: int32_t pm_terminate(void)>"
-	<primitive: 'pm_terminate' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:39:43'!
-pm_count_devices
-	"Answer the number of MIDI ports"
-	"PortMIDILibrary new pm_count_devices"
-	
-"	<cdecl: int32_t pm_count_devices (void)>"
-	<primitive: 'pm_count_devices' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:40:16'!
-pm_default_input_device
-	"Answer the default MIDI input device/port."
-	"PortMIDILibrary new pm_default_input_device"
-
-"	<cdecl: int32_t pm_default_input_device (void)>"
-	<primitive: 'pm_default_input_device' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:40:43'!
-pm_default_output_device
-	"Answer the default MIDI output device/port."
-	"PortMIDILibrary new pm_default_output_device"
-
-"	<cdecl: int32_t pm_default_output_device (void)>"
-	<primitive: 'pm_default_output_device' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:41:13'!
-pm_dev_dir: which
-	"Answer the i/o direction of the selected MIDI output device/port."
-
-"	<cdecl: int32_t pm_dev_dir(int32_t)>"
-	<primitive: 'pm_dev_dir' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:41:40'!
-pm_get_name: which
-	"Answer the name of the selected MIDI output device/port."
-
-"	<cdecl: const char * pm_get_name(uint32_t)>"
-	<primitive: 'pm_get_name' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:42:09'!
-pm_start_controller_cacheing
-	"Start MIDI controller cacheing."
-
-"	<cdecl: int32_t pm_start_controller_cacheing(void)>"
-	<primitive: 'pm_start_controller_cacheing' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:42:35'!
-pm_stop_controller_cacheing
-	"Stop MIDI controller cacheing."
-
-"	<cdecl: int32_t pm_stop_controller_cacheing(void)>"
-	<primitive: 'pm_stop_controller_cacheing' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:43:07'!
-pm_test
-	"Test MIDI by playing a note.."
-	
-"	<cdecl: void pm_test (void)>"
-	<primitive: 'pm_test' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:32:15'!
-pm_poll: which
-	"The MIDI driver input process poll."
-
-"	<cdecl: uint32_t pm_poll(uint32_t) >"
-	<primitive: 'pm_poll' module: 'PortMIDIPrims'>
-	
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:33:05'!
-pm_read: which
-	"The MIDI driver input read prim."
-
-"	<cdecl: uint64_t pm_read(uint32_t)>"
-	<primitive: 'pm_read' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:34:02'!
-pm_read_controllers: which with: lo with: hi with: array
-	"Read a range of controllers"
-
-"	<cdecl: int32_t pm_read_controllers(uint32_t, uint32_t, uint32_t, short *) >"
-	<primitive: 'pm_read_controllers:' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:35:32'!
-pm_write_data2: which with: d1 with: d2
-	"Write a 2-byte MIDI Command."
-
-"	<cdecl: int32_t pm_write_data2(uint32_t, char, char) >"
-	<primitive: 'pm_write_data2' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:35:23'!
-pm_write_data3: which with: d1 with: d2 with: d3
-	"Write a standard 3-byte MIDI Command."
-
-"	<cdecl: int32_t pm_write_data3(uint32_t, char, char, char) >"
-	<primitive: 'pm_write_data3:' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'PortMIDILibrary class' category: #'MusicIO-MIDI'!
-PortMIDILibrary class
-	instanceVariableNames: ''!
-
-!PortMIDILibrary class methodsFor: 'instance creation' stamp: 'stp 12/27/2022 11:45:34'!
-new
-	"Make certain to initialize instances."
-
-	^super new initialize! !
-
-
-!PortMIDILibrary class methodsFor: 'system startup' stamp: 'stp 12/27/2022 11:45:15'!
-initialize
-	"
-	self initialize
-	"
-	Smalltalk addToStartUpList: self after: (Smalltalk classNamed: #CStandardLibrary)! !
-
-
-!PortMIDILibrary class methodsFor: 'accessing' stamp: 'stp 12/27/2022 11:54:23'!
-moduleName
-	"Answer the module name"
-	
-	^'PortMIDIPrims'! !
-
-
-!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 12/27/2022 11:44:17'!
-listDeviceTable
-	"Print a list of devices to the transcript."
-	"PortMIDILibrary listDeviceTable"
-	
- 	| lib num |
-	lib := PortMIDILibrary new.
-	num := lib pm_count_devices.
-	Transcript cr; show: 'MIDI Device Table'; cr.
-	1 to: num do:
-		[ :ind |
-		Transcript show: '# ', ind printString, ' - ',
-				(lib pm_get_name: ind), ' - ', (lib pm_dev_dir: ind) printString; cr]! !
-
-!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 12/27/2022 11:44:32'!
-testANote
-	"Try playing a note."
-	"PortMIDILibrary listDeviceTable"
-	
-	"PortMIDILibrary new pm_count_devices "
-	"PortMIDILibrary new pm_default_input_device "
-	"PortMIDILibrary new pm_default_output_device "
-	"PortMIDILibrary new pm_test"
-
-	PortMIDILibrary new pm_test! !
 
 MIDIDevice initialize!
 MIDIVoice initialize!

@@ -577,9 +577,9 @@ printIP
 	| printSize stream |
 	stream := WriteStream on: (String new: 32).
 	printSize := self size.
-	printSize > self maxPrintElements
+"	printSize > self maxPrintElements
 		ifTrue: [printSize := self maxPrintElements].
-	(1 to: printSize)
+"	(1 to: printSize)
 		do: [ :index | (self at: index) printOn: stream]
 		separatedBy: [stream nextPut: $.].
 	^stream contents! !
@@ -639,3 +639,30 @@ start
 	"Refer to the comment in SequenceableCollection|first."
 
 	^start! !
+
+!PositionableStream methodsFor: 'fileIn/Out' stamp: 'stp 12/26/2022 07:19:37'!
+skipSeparators
+	| prevPosition item |
+	[self atEnd]
+		whileFalse: [
+			prevPosition _ self position.
+			item _ self next.
+			((item notNil) and: [item isSeparator]) ifFalse: [
+				self position: prevPosition.
+				^ self ]]! !
+
+!UniFileStream methodsFor: 'access' stamp: 'stp 12/23/2022 16:30:50'!
+fileID
+	"The contents of fileID can and will change after calling this method.
+	The sender should copy the result rather than depending on the result
+	to be immutable."
+
+	^ fileID! !
+
+
+!CharacterSequence methodsFor: 'converting' stamp: 'stp 12/28/2022 10:38:21'!
+toOSCBytes: aConvertor 
+	self isEmpty ifTrue: [^self].
+	aConvertor nextPutAll: self asByteArray.
+				"Align to 4 byte boundry"
+	4 - (self size \\ 4) timesRepeat: [aConvertor nextPut: 0]! !

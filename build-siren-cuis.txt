@@ -5,15 +5,21 @@ Set-up
 
 Load themes, choose light theme
 Choose small GUI features
+Load a couple extra fonts for fun
+
+[TrueTypeFontFamily readAllTrueTypeFontsIn: DirectoryEntry smalltalkImageDirectory / 'TrueTypeFonts/ComputerModern/ComputerModernSerif'.
+TrueTypeFontFamily readAllTrueTypeFontsIn: DirectoryEntry smalltalkImageDirectory / 'TrueTypeFonts/Cream']
+
 Set font Computer Modern Serif
+
 
 Load packages - optional for now
 
 [	Feature require: 'Network-Kernel'.
-	Feature require: 'SqueakCompatibility'.
-	Feature require: 'FFI.pck.st'.
-	Feature require: 'Tests-FFI.pck.st'.
-	Feature require: 'Sound.pck.st' ]
+	Feature require: 'FFI'.
+	Feature require: 'Tests-FFI'.
+	Feature require: 'Sound'.
+	Feature require: 'SqueakCompatibility' ]   "SqueakCompatibility broken at present; debugger because Utf8String gone"
 
 STP world file-ins (Edit the relative paths below to suit your installation)
 
@@ -22,6 +28,9 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'ST80-compatibility.st'
 	'ZPoint.st'
 	'SirenSystemChanges.st'
+	'SixPanedBrowser.st'
+	'SixPanedBrowserWindow.st'
+	'WorkbookWindowCuis.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
 	('./Siren9C/FileIns/', file) asFileEntry readStreamDo: 
@@ -59,16 +68,20 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
 	('./Siren9C/Siren_Sources_Cuis/', file) asFileEntry readStreamDo: 
-		[ :stream | stream ifNotNil: [stream fileIn]]].
-	
-	'./Siren9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn.
-]
+		[ :stream | stream ifNotNil: [stream fileIn]]]]
+
+Lastly: the music notation glyph set
+
+[ './Siren9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn]
 
 Clean up
 
-[	Duration initialize.
-	Pitch initialize.
-	Amplitude initialize.
+[	MDuration initialize.
+	MusicModel initializeGenerality.
+	PortModel initialize.
+	SirenUtility initialize.
+	SirenSession initialize.
+	SirenSession new.
 ]
 
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)

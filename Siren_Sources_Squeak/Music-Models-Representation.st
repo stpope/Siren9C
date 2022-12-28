@@ -290,309 +290,30 @@ Examples:
 	MDuration value: 1/4		"create an instance with beats as the unit"
 	MDuration value: [ :x | x > 4]	"create an instance for: 'until x > 4'"
 
-See also the class example.!!MDuration methodsFor: 'public protocol' stamp: 'jmv 5/24/2016 17:11'!totalMilliseconds
+See also the class example.!
 
-	^ (seconds * 1000) + (nanos // 1e6)! !!MDuration methodsFor: 'public protocol' stamp: 'jmv 6/30/2011 09:01'!totalMinutes
-	"Answer an integer number of minutes"
-	^ seconds // 60! !!MDuration methodsFor: 'public protocol' stamp: 'jmv 4/17/2013 00:32'!totalNanoSeconds
+!MDuration class methodsFor: 'class constants'!
 
-	^ (seconds * Time nanosInSecond) + nanos! !!MDuration methodsFor: 'public protocol' stamp: 'jmv 4/9/2010 13:38'!totalSeconds
-
-	^ seconds! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/9/2010 14:07'!* operand
-	"operand is a Number" 	^ self class nanoSeconds: ( (self totalNanoSeconds * operand) asInteger).
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/9/2010 14:07'!+ operand
-
-	"operand is a MDuration" 	^ self class nanoSeconds: (self totalNanoSeconds + operand totalNanoSeconds)
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'brp 5/13/2003 07:59'!- operand
-	"operand is a MDuration" 	^ self + operand negated
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/9/2010 14:08'!/ operand
-
-	"operand is a MDuration or a Number"
-
-
-	^ operand isNumber
-		ifTrue: [ self class nanoSeconds: (self totalNanoSeconds / operand) asInteger ]
-		ifFalse: [
-			self assert: operand class == MDuration.
-			self totalNanoSeconds / operand totalNanoSeconds ]
-.
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/9/2010 14:07'!< comparand
-
-	^ self totalNanoSeconds < comparand totalNanoSeconds
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 5/27/2014 11:22'!= comparand 
-	"Answer whether the argument is a <MDuration> representing the same 
-	period of time as the receiver."
-
-	self == comparand
-		ifTrue: [ ^ true ].
-
-	self species == comparand species 
-		ifFalse: [ ^ false ].
-
-	^ self totalNanoSeconds = comparand totalNanoSeconds! !!MDuration methodsFor: 'ansi protocol' stamp: 'brp 5/13/2003 08:01'!abs
-
-	^ self class seconds: seconds abs nanoSeconds: nanos abs
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/17/2013 00:35'!days
-	"Answer the number of days the receiver represents."
-
-	^ seconds quo: Time secondsInDay! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 11/4/2019 11:10:43'!hash
-	^seconds hash bitXor: nanos hash! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/17/2013 00:35'!hours
-	"Answer the number of hours the receiver represents."
-
-
-	^ (seconds rem: Time secondsInDay) quo: Time secondsInHour! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/17/2013 00:34'!minutes
-	"Answer the number of minutes the receiver represents."
-
-	^ (seconds rem: Time secondsInHour) quo: Time secondsInMinute! !!MDuration methodsFor: 'ansi protocol' stamp: 'brp 5/13/2003 08:02'!negated
-
-	^ self class seconds: seconds negated nanoSeconds: nanos negated
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'brp 5/13/2003 08:02'!negative
-
-
-	^ self positive not
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'brp 5/13/2003 08:02'!positive
-
-
-	^ seconds = 0 ifTrue: [ nanos positive ] ifFalse: [ seconds positive ]
-! !!MDuration methodsFor: 'ansi protocol' stamp: 'jmv 4/17/2013 00:34'!seconds
-	"Answer the number of seconds the receiver represents."
-
-	^seconds rem: Time secondsInMinute! !!MDuration methodsFor: 'squeak protocol' stamp: 'jmv 4/9/2010 14:08'!// operand
-
-	"operand is a MDuration or a Number"
-
-
-	^ operand isNumber
-		ifTrue: [ self class nanoSeconds: (self totalNanoSeconds // operand) asInteger ]
-		ifFalse: [
-			self assert: operand class == MDuration.
-			self totalNanoSeconds // operand totalNanoSeconds ]
-! !!MDuration methodsFor: 'squeak protocol' stamp: 'jmv 4/9/2010 14:07'!\\ operand
-
-	"modulo. Remainder defined in terms of //. Answer a MDuration with the 
-	same sign as aMDuration. operand is a MDuration or a Number."
-
-	^ operand isNumber
-		ifTrue: [ self class nanoSeconds: (self totalNanoSeconds \\ operand) ]
-		ifFalse: [ self - (operand * (self // operand)) ]
-! !!MDuration methodsFor: 'squeak protocol' stamp: 'brp 9/25/2003 13:42'!asDelay
-
-	^ Delay forMDuration: self! !!MDuration methodsFor: 'squeak protocol' stamp: 'brp 4/13/2006 10:20'!isZero
-
-	^ seconds = 0 and: [ nanos = 0 ]
-! !!MDuration methodsFor: 'squeak protocol' stamp: 'brp 5/13/2003 08:03'!nanoSeconds
-
-
-	^ nanos
-! !!MDuration methodsFor: 'squeak protocol' stamp: 'jmv 3/13/2020 08:18:50'!printOn: aStream
-	"Format as per ANSI 5.8.2.16: [-]D:HH:MM:SS[.S]
-	(MDuration days: 2 hours: 3 minutes: 16 seconds: 43) printString =  '2:03:16:43' 
-	"
-	| d h m s n |
-	d _ self days abs.
-	h _ self hours abs.
-	m _ self minutes abs.
- 	s _ self seconds abs truncated.
-	n _ self nanoSeconds abs. 	self negative ifTrue: [ aStream nextPut: $- ].
-	d printOn: aStream. aStream nextPut: $:.
-	h printOn: aStream length: 2 zeroPadded: true.aStream nextPut: $:.
-	m printOn: aStream length: 2 zeroPadded: true.aStream nextPut: $:.
-	s printOn: aStream length: 2 zeroPadded: true.
-	n = 0 ifFalse: [
-		| z ps |
-		aStream nextPut: $..
-		ps _ n printString padded: #left to: 9 with: $0. 
-		z _ ps findLast: [ :c | c digitValue > 0 ].
-		z _ #(3 6 9) detect: [ :ez | ez >= z ].	"print either milliseconds, microseconds or nanoseconds"
-		ps from: 1 to: z do: [ :c | aStream nextPut: c ] ]! !!MDuration methodsFor: 'squeak protocol' stamp: 'jmv 4/9/2010 14:07'!roundTo: aMDuration
-	"e.g. if the receiver is 5 minutes, 37 seconds, and aMDuration is 2 minutes, answer 6 minutes."
-
-	^ self class nanoSeconds: (self totalNanoSeconds roundTo: aMDuration totalNanoSeconds)
-
-! !!MDuration methodsFor: 'squeak protocol' stamp: 'jmv 4/9/2010 14:08'!truncateTo: aMDuration
-	"e.g. if the receiver is 5 minutes, 37 seconds, and aMDuration is 2 minutes, answer 4 minutes."
-
-	^ self class
-		nanoSeconds: (self totalNanoSeconds truncateTo: aMDuration totalNanoSeconds)
-
-! !!MDuration methodsFor: 'private' stamp: 'jmv 4/17/2013 00:32'!seconds: secondCount nanoSeconds: nanoCount 
-	"Private - only used by MDuration class"
-
-	seconds := secondCount.
-	nanos := nanoCount rounded.
-	"normalize if signs do not match"
-	[ nanos < 0 and: [ seconds > 0 ] ]
-		whileTrue: [ seconds := seconds - 1.
-			nanos := nanos + Time nanosInSecond ].
-	[ seconds < 0 and: [ nanos > 0 ] ]
-		whileTrue: [ seconds := seconds + 1.
-			nanos := nanos - Time nanosInSecond ]
-
-! !!MDuration methodsFor: 'private' stamp: 'brp 9/25/2003 14:42'!storeOn: aStream
-
-	aStream
-		nextPut: $(;
-		nextPutAll: self className;
-		nextPutAll: ' seconds: ';
-		print: seconds;
-		nextPutAll: ' nanoSeconds: ';
-		print: nanos;
-		nextPut: $).
-! !!MDuration methodsFor: 'initialization' stamp: 'nk 3/30/2004 10:01'!initialize
-	self seconds: 0 nanoSeconds: 0.
-! !!MDuration methodsFor: 'double dispatching' stamp: 'pb 9/13/2017 06:21:11'!subtractFrom: aDateAndTimeOrDate
-
-	^aDateAndTimeOrDate subtractMDuration: self! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MDuration class	instanceVariableNames: ''!!MDuration class methodsFor: 'ansi protocol' stamp: 'gk 8/31/2006 01:09'!days: days hours: hours minutes: minutes seconds: seconds
-
-	^ self days: days hours: hours minutes: minutes seconds: seconds nanoSeconds: 0! !!MDuration class methodsFor: 'ansi protocol' stamp: 'jmv 4/17/2013 00:35'!days: days seconds: seconds
-
-	^ self basicNew seconds: days * Time secondsInDay + seconds nanoSeconds: 0! !!MDuration class methodsFor: 'ansi protocol' stamp: 'gk 8/31/2006 01:34'!seconds: seconds
-
-	^ self seconds: seconds nanoSeconds: 0
-! !!MDuration class methodsFor: 'ansi protocol' stamp: 'gk 8/31/2006 00:09'!zero
-
-	^ self basicNew seconds: 0 nanoSeconds: 0
-! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 4/17/2013 00:35'!days: aNumber
-
-	^ self seconds: aNumber * Time secondsInDay nanoSeconds: 0! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 4/17/2013 00:35'!days: days hours: hours minutes: minutes seconds: seconds nanoSeconds: nanos	
-
- 	^ self seconds: ((days * Time secondsInDay) 
-						+ (hours * Time secondsInHour)
-							+ (minutes * Time secondsInMinute) 
-								+ seconds)
-		nanoSeconds: nanos! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 6/24/2021 10:19:10'!fromString: aString
-	"
-	Extended to accept non-ANSI formats, such as:
-		MDuration fromString: '1:50:00'
-		MDuration fromString: '5:30.5'
-		MDuration fromString: '1:6:50:00'
-		MDuration fromString: '3.5h'
-		MDuration fromString: '2.5min'
-		MDuration fromString: '1.5s'
-		MDuration fromString: '200s'
-		MDuration fromString: '200ms'
-	"
-	| colons s |
-
-	"If aString includes at least one $:, complete ANSI format"
-	colons _ aString occurrencesOf: $:.
-	colons > 0 ifTrue: [
-		s _ aString.
-		[colons < 3] whileTrue: [
-			s _ '00:', s.
-			colons _ colons + 1 ].
-		^ self readFrom: (ReadStream on: s) ].
-
-	"'3.5h' means 3.5 hours"
-	(aString endsWith: 'h') ifTrue: [
-		^self hours: aString asNumber ].
-
-	"'3.5min' means 3.5 minutes"
-	(aString endsWith: 'min') ifTrue: [
-		^self minutes: aString asNumber ].
-
-	"'3ms' means 3 milliseconds"
-	(aString endsWith: 'ms') ifTrue: [
-		^self milliSeconds: aString asNumber ].
-
-	"'3.5s' means 3.5 seconds"
-	(aString endsWith: 's') ifTrue: [
-		^self seconds: aString asNumber ].
-	
-	^nil! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 4/17/2013 00:35'!hours: aNumber
-
-	^ self seconds: aNumber * Time secondsInHour nanoSeconds: 0! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 4/17/2013 00:31'!milliSeconds: milliCount
-
-	^ self nanoSeconds: milliCount * 1000000! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 4/17/2013 00:34'!minutes: aNumber
-
-	^ self seconds: aNumber * Time secondsInMinute nanoSeconds: 0! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 4/17/2013 00:32'!nanoSeconds: nanos
-	"This method is slow. If you have nanos less than 10^6 you should use #seconds:nanoSeconds: instead."
-
-	| quo |
-	quo _ nanos quo: Time nanosInSecond.
-	^ self basicNew
-		seconds: quo
-		nanoSeconds: nanos - (quo * Time nanosInSecond)! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 6/24/2021 10:17:17'!readFrom: aStream
-	"Formatted as per ANSI 5.8.2.16: [-]D:HH:MM:SS[.S]"
-
-	| sign days hours minutes seconds nanos nanosBuffer |
-	sign := (aStream peekFor: $-) ifTrue: [-1] ifFalse: [1].
-	days := (aStream upTo: $:) findPositiveInteger * sign.
-	hours := (aStream upTo: $:) findPositiveInteger * sign.
-	minutes := (aStream upTo: $:) findPositiveInteger * sign.
-	seconds := (aStream upTo: $.) findPositiveInteger * sign.
-	nanosBuffer := '000000000' copy.
-	nanos := WriteStream on: nanosBuffer.
-	[aStream atEnd not and: [aStream peek isDigit]]
-		whileTrue: [nanos nextPut: aStream next].
-		
-	^ self 
-		days: days 
-		hours: hours 
-		minutes: minutes 
-		seconds: seconds 
-		nanoSeconds: (nanosBuffer findPositiveInteger * sign)
-
-	"
-		MDuration readFrom: '0:00:00:00' readStream
-		MDuration readFrom: '0:00:00:00.000000001' readStream
-		MDuration readFrom: '0:00:00:00.9' readStream
-		MDuration readFrom: '0:00:00:00.99' readStream
-		MDuration readFrom: '0:00:00:00.99999999' readStream
-		MDuration readFrom: '0:00:00:00.999999999' readStream
-		MDuration readFrom: '0:00:00:00.100000000' readStream
-		MDuration readFrom: '0:00:00:00.001 ' readStream
-		MDuration readFrom: '0:00:00:00.1' readStream
-		MDuration readFrom: '0:00:00:01 ' readStream
-		MDuration readFrom: '0:12:45:45' readStream
-		MDuration readFrom: '1:00:00:00' readStream
-		MDuration readFrom: '365:00:00:00' readStream
-		MDuration readFrom: '-7:09:12:06.10' readStream
-		MDuration readFrom: '+0:01:02:3' readStream
- 	"! !!MDuration class methodsFor: 'squeak protocol' stamp: 'jmv 4/17/2013 00:32'!seconds: seconds nanoSeconds: nanos
-
-	^ self basicNew
-		seconds: seconds truncated
-		nanoSeconds: seconds fractionPart * Time nanosInSecond + nanos! !!MDuration class methodsFor: 'squeak protocol' stamp: 'gk 8/30/2006 23:20'!weeks: aNumber
-
-	^ self days: (aNumber * 7) seconds: 0
-! !!MDuration class methodsFor: 'instance creation' stamp: 'stp 12/6/2022 10:01'!value: aValue
-	"Answer a new instance of a member of my species."
-
-	| number |
-	aValue species == MDuration ifTrue: [^aValue].
-	(aValue isMemberOf: SmallInteger)
-		ifTrue: [aValue < 10
-			ifTrue: [^SecondDuration new value: aValue]
-			ifFalse: [^MSecondDuration new value: aValue]].
-	(aValue isKindOf: Float)
-		ifTrue: [^SecondDuration new value: aValue].
-	(aValue isMemberOf: Fraction)
-		ifTrue: [^RatioDuration new value: aValue].
-	(aValue isKindOf: String)
-		ifTrue: [number := Number readFrom: (ReadStream on: aValue).
-			number = 0 ifTrue: [^self error: 'Unknown Duration value.'].
-			^MDuration value: number].
-	(aValue isMemberOf: BlockContext)
-		ifTrue: [^ConditionalDuration new value: aValue].
-"	^self error: 'Unknown MDuration type.'"
-	^aValue! !!MDuration class methodsFor: 'class constants'!color
+color
 	"Answer the default color to display instances with."
 
-	^ColorValue red! !!MDuration class methodsFor: 'class constants' stamp: 'stp 11/20/2022 11:05:29'!generalityTable
-	"Answer the class inst var"
+	^ColorValue red!
 
-	^generalityTable! !!MDuration class methodsFor: 'class constants' stamp: 'stp 12/6/2022 10:11'!initialize
+initialize
 	"Set up the class inst var, a generality table."
 	"MDuration initialize"
 	"MDuration generalize: (100 msec) and: ((1/4) beat)"
 	"MDuration generalize: (100 msec) and: (0.3 sec)"
+	"(0 msec) + (3767282984535741 usec)"
 
 	generalityTable :=
-		((SecondDuration -> 80),
-		(RatioDuration -> 60),
-		(MSecondDuration -> 40),
-		(ConditionalDuration -> 0))! !!MDuration class methodsFor: 'class constants'!initializeGeneralities
+		((SecondMDuration -> 40),
+		(RatioMDuration -> 60),
+		(USecondMDuration -> 50),
+		(MSecondMDuration -> 50),
+		(ConditionalMDuration -> 0))!
+
+initializeGeneralities
 	"Set up the class inst var, a generality table."
 	"MDuration initializeGeneralities"
 	"MDuration generalize: (100 msec) and: ((1/4) beat)"
@@ -602,19 +323,31 @@ See also the class example.!!MDuration methodsFor: 'public protocol' stamp: '
 		((SecondMDuration -> 80),
 		(RatioMDuration -> 60),
 		(MSecondMDuration -> 40),
-		(ConditionalMDuration -> 0))! !!MDuration class methodsFor: 'class constants'!mostGeneral
-	"Answer the most general-purpose MDuration--seconds"
+		(ConditionalMDuration -> 0))!
 
-	^#asSec! !!MDuration class methodsFor: 'class constants' stamp: 'stp 12/11/2022 15:38'!propertyName
+mostGeneral
+	"Answer the most general-purpose duration--seconds"
+
+	^#asSec!
+
+propertyName
 	"Answer the receiver class's default property name."
 
-	^#duration:! !!MDuration class methodsFor: 'class constants'!relativeMember
+	^#duration:!
+
+relativeMember
 	"Answer the receiver class's species member used as a relative magnitude."
 
-	^RatioMDuration! !!MDuration class methodsFor: 'class constants'!species
+	^RatioMDuration!
+
+species
 	"Answer MDuration."
 
-	^MDuration! !!MDuration class methodsFor: 'examples'!example
+	^MDuration! !
+
+!MDuration class methodsFor: 'examples'!
+
+example
 	"Print a simple message to the transcript demonstrating the various types."
 	"MDuration example"
 
@@ -622,11 +355,35 @@ See also the class example.!!MDuration methodsFor: 'public protocol' stamp: '
 	me := MDuration value: 1/4.
 	Transcript show: me printString; cr;
 		show: me asMS printString; cr.
-	me inspect! !Chronos subclass: #Meter	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Meter commentStamp: '<historical>' prior: 0!Instances of the Meter species model the tempo or metronome used to map MDurations.
+	me inspect! !
+
+!MDuration class methodsFor: 'instance creation'!
+
+value: aValue
+	"Answer a new instance of a member of my species."
+
+	| number |
+	aValue species == MDuration ifTrue: [^aValue].
+	(aValue isMemberOf: SmallInteger)
+		ifTrue: ["aValue < 100
+			ifTrue: [^SecondMDuration new value: aValue]
+			ifFalse: ["^MSecondMDuration new value: aValue"]"].
+	(aValue isKindOf: LimitedPrecisionReal)
+		ifTrue: [^SecondMDuration new value: aValue].
+	(aValue isMemberOf: Fraction)
+		ifTrue: [^RatioMDuration new value: aValue].
+	(aValue isKindOf: String)
+		ifTrue: [number := Number readFrom: (ReadStream on: aValue).
+			number = 0 ifTrue: [^self error: 'Unknown duration value.'].
+			^MDuration value: number].
+	(aValue isMemberOf: BlockContext)
+		ifTrue: [^ConditionalMDuration new value: aValue].
+"	^self error: 'Unknown duration type.'"
+	^aValue! !Chronos subclass: #Meter	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Meter commentStamp: '<historical>' prior: 0!Instances of the Meter species model the tempo or metronome used to map MDurations.
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
-In the later case, the value instance variable could hold a number, process or block.!Chroma subclass: #ModeMember	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!ModeMember commentStamp: '<historical>' prior: 0!Instances of the ModeMember species model pitches as elements of a mode (e.g., minor) or gamut (e.g., pentatonic on F).
+In the later case, the value instance variable could hold a number, process or block.!Chroma subclass: #ModeMember	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!ModeMember commentStamp: '<historical>' prior: 0!Instances of the ModeMember species model pitches as elements of a mode (e.g., minor) or gamut (e.g., pentatonic on F).
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
-In the later case, the value instance variable could hold a number or pitch, and the mode or gamut could be shared.!MusicMagnitude subclass: #PField	instanceVariableNames: 'name field'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!PField commentStamp: '<historical>' prior: 0!Instances of PField magnitudes are used for arbitrary parameters of musical events oriented towards formats with positional parameter declarations, e.g., Music-V-style notelist formats (see uses).
+In the later case, the value instance variable could hold a number or pitch, and the mode or gamut could be shared.!MusicMagnitude subclass: #PField	instanceVariableNames: 'name field'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!PField commentStamp: '<historical>' prior: 0!Instances of PField magnitudes are used for arbitrary parameters of musical events oriented towards formats with positional parameter declarations, e.g., Music-V-style notelist formats (see uses).
 
 Instance variables:
 	field <Integer> field in the score

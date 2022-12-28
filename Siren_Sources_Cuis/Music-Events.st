@@ -58,13 +58,13 @@ name
 	self propCheck.
 	^properties at: #name ifAbsent: ['']! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!AbstractEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:36:09'!
 open
 	"Edit, play (if <shift>) or inspect (if <ctrl>) the receiver, depending on the keyboard state"
 
-	^InputState default shiftDown
+	^Sensor shiftPressed
 		ifTrue: [self play]
-		ifFalse: [InputState default ctrlDown
+		ifFalse: [Sensor controlKeyPressed
 			ifTrue: [self inspect]
 			ifFalse: [self edit]]! !
 
@@ -348,13 +348,13 @@ duration
 
 	^duration! !
 
-!DurationEvent methodsFor: 'accessing' stamp: 'stp 12/26/2022 21:52:06'!
+!DurationEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:35:30'!
 duration: newValue
 	"Set the receiver's duration."
 
-	newValue species == Duration
+	newValue species == MDuration
 		ifTrue: [duration := newValue]
-		ifFalse: [duration := Duration value: newValue]! !
+		ifFalse: [duration := MDuration value: newValue]! !
 
 !DurationEvent methodsFor: 'accessing'!
 index: aNumber
@@ -720,12 +720,12 @@ printOn: aStream
 "	^self printVerboseOn: aStream
 "	^self printTerseOn: aStream! !
 
-!MusicEvent methodsFor: 'printing'!
+!MusicEvent methodsFor: 'printing' stamp: 'stp 12/28/2022 14:00:35'!
 printTerseOn: aStream 
 	"Format and print the receiver on the argument as tersely as possible."
 
 	duration == nil
-		ifFalse: [aStream nextPutAll: duration printString]. 
+		ifFalse: [duration printOn: aStream]. 
 	pitch == nil
 		ifFalse: [aStream nextPutAll: ' ', pitch printString].
 	loudness == nil
@@ -737,7 +737,7 @@ printTerseOn: aStream
 		ifFalse: [properties associationsDo:
 				[ :ass |
 				aStream nextPutAll: ' (', ass key, ': ', ass value printString, ')']].
-	aStream "nextPutAll: ')';" cr! !
+	aStream "nextPutAll: ')';" lf! !
 
 !MusicEvent methodsFor: 'printing'!
 printVerboseOn: aStream 
@@ -1423,7 +1423,7 @@ asExplorerString: ignored
 
 	^self name! !
 
-!EventList methodsFor: 'printing' stamp: 'stp 11/30/2022 12:27:28'!
+!EventList methodsFor: 'printing' stamp: 'stp 12/27/2022 17:36:29'!
 printOn: aStream
 	"Print out the receiver's events on the argument."
 
@@ -1435,17 +1435,19 @@ printOn: aStream
 		ifFalse: [aStream nextPutAll: ' pitch: ', self pitch printString].
 "	(self at: #tempo) == nil
 		ifFalse: [aStream nextPutAll: ' tempo: ', (self at: #tempo) printString].
-	aStream cr.
+	aStream lf.
 	Sensor shiftPressed
 			ifFalse: [count := self size min: 20]
 			ifTrue: [count := self size].
 	1 to: count do: [ :ind |
 		anEvent := events at: ind.
-		aStream tab; nextPutAll: anEvent key printString, ' => '.
+		aStream tab.
+		anEvent key printOn: aStream.
+		aStream nextPutAll: ' => '.
 		anEvent value printOn: aStream].
 	count = self size 
-			ifTrue: [aStream nextPut: $); cr]
-			ifFalse: [aStream nextPutAll: ' ... )'; cr]! !
+			ifTrue: [aStream nextPut: $); lf]
+			ifFalse: [aStream nextPutAll: ' ... )'; lf]! !
 
 !EventList methodsFor: 'printing'!
 readDataFrom: aDataStream size: size
@@ -1773,13 +1775,13 @@ empty
 	self index: 1.
 	self events: SortedCollection new.! !
 
-!EventList methodsFor: 'initialize-release'!
+!EventList methodsFor: 'initialize-release' stamp: 'stp 12/28/2022 13:34:44'!
 initializeAnonymous
 	"Initialize an un-named instance with default state."
 
 	self initialize.
 	self propCheck.
-	duration := Duration value: 0.
+	duration := MDuration value: 0.
 	self name: #anonymous.
 	self events: SortedCollection new.
 	index := nil.! !

@@ -965,7 +965,7 @@ weeks: aNumber
 ! !
 
 
-!Duration class methodsFor: 'instance creation'!
+!Duration class methodsFor: 'instance creation' stamp: 'stp 12/26/2022 21:51:59'!
 value: aValue
 	"Answer a new instance of a member of my species."
 
@@ -975,7 +975,7 @@ value: aValue
 		ifTrue: [aValue < 10
 			ifTrue: [^SecondDuration new value: aValue]
 			ifFalse: [^MSecondDuration new value: aValue]].
-	(aValue isKindOf: LimitedPrecisionReal)
+	(aValue isKindOf: Float)
 		ifTrue: [^SecondDuration new value: aValue].
 	(aValue isMemberOf: Fraction)
 		ifTrue: [^RatioDuration new value: aValue].
@@ -983,7 +983,7 @@ value: aValue
 		ifTrue: [number := Number readFrom: (ReadStream on: aValue).
 			number = 0 ifTrue: [^self error: 'Unknown duration value.'].
 			^Duration value: number].
-	(aValue isMemberOf: BlockContext)
+	(aValue isMemberOf: BlockClosure)
 		ifTrue: [^ConditionalDuration new value: aValue].
 "	^self error: 'Unknown duration type.'"
 	^aValue! !

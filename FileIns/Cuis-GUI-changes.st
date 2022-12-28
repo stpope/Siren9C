@@ -146,3 +146,57 @@ focusIndicatorLeft
 	^Preferences scrollbarSide = #left
 		ifTrue: [ScrollBar scrollbarThickness + borderWidth]
 		ifFalse: [^ borderWidth]! !
+
+
+!Form class methodsFor: 'instance creation' stamp: 'stp 12/2/2022 11:48:00'!
+extent: extentPoint depth: bitsPerPixel fromBytes: aByteArray
+	"Answer an instance of me with bitmap of the given dimensions and depth from the given 32-bit PADDED-ROWS data."
+
+	^self extent: extentPoint depth: bitsPerPixel bits: aByteArray swapWords swapBytes	! !
+
+!LightTheme methodsFor: 'colors' stamp: 'stp 12/22/2022 14:45:55'!
+defaultWindowColor
+	^ `Color lightGray`
+"	^ `Color white duller`"! !
+
+!PreferenceSet class methodsFor: 'sys fonts' stamp: 'stp 12/26/2022 18:09:19'!
+fontSizes
+	^ `{
+		#tinyFonts -> 8 .
+		#verySmallFonts -> 10 .
+		#smallFonts ->11 .
+		#standardFonts -> 14 .
+		#largeFonts -> 18 .
+		#veryLargeFonts -> 24 .
+		#hugeFonts -> 32} asDictionary`! !
+
+!RealEstateAgent class methodsFor: 'as yet unclassified' stamp: 'stp 12/26/2022 23:03:28'!
+placeWindowsAtPointer: aBool
+	"Value of the place-windows-at-pointer preference."
+	PlaceWindowsAtPointer := aBool!
+
+placeWindowsAtPointer
+	"Value of the place-windows-at-pointer preference."
+"	<preference: 'Place Windows At Pointer'
+		category: 'windows'
+		description: 'When true, place new windows near the mouse pointer'
+		type: #Boolean>"
+	PlaceWindowsAtPointer ifNil: [false]!
+	
+
+initialFrameAtPointerFor: aView initialExtent: scaledExtent world: aWorld
+	"Answer the frame for aView so that it's title is under the cursor position. Add an offset so that the user does not click on the close or menu button by accident."
+	
+	| offset |
+	offset := 32@32.   "ToolBuilder default windowPadding asPoint
+		+ (self defaultIconExtent // 2)
+		+ (self defaultIconExtent x * 2 @ 0)" "... move to the right, even beyond menu button if it is on the left ..."
+
+"	offset := (offset * self scaleFactor) truncated."
+	
+	 (Sensor cursorPoint - offset
+		extent: scaledExtent)
+			translatedAndSquishedToBeWithin: (self maximumUsableAreaInWorld: aWorld)! !
+
+
+

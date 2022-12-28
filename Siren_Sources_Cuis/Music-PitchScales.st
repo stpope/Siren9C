@@ -49,6 +49,12 @@ noteBefore: aNote
 notes
 	^notes! !
 
+!Scale methodsFor: 'accessing' stamp: 'stp 12/26/2022 18:13:15'!
+octaveScale
+	"Most scales repeat in octaves of 2.0"
+
+	^2.0! !
+
 !Scale methodsFor: 'accessing'!
 root
 	^root! !
@@ -204,6 +210,45 @@ leadingNote
 	"N la minorScale leadingNote"
 
 	^self notes last! !
+
+!Scale methodsFor: 'computing notes' stamp: 'stp 12/18/2022 11:32'!
+nearestNoteTo: aHzPitch
+	"Answer the frequency of the scale degree closest to the given pitch in Hz."
+	"(PentatonicScale root: N re) nearestNoteTo: 450"
+
+	| oct nNum bNote |
+	nNum := (((aHzPitch / 8.17579891564371) log: 2) * 12) truncated.
+	oct:= (nNum / 12) truncated.
+	bNote := oct * 12.
+
+"	Transcript show: 'nearestNoteTo: ', aHzPitch printString; cr."
+	0 to: notes size do: 
+		[ :ind | | nt0 nt1 t0 t1 p0 p1 |
+		(ind = 0)
+			ifFalse: [nt0 := notes at: ind.						"get the note degrees"
+				t0 := bNote + nt0 semiToneCount.				"adjust to oct base"
+				p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0))]		"lower/higher pitch of interval"
+			ifTrue:  [nt0 := notes last.					
+				t0 := bNote + nt0 semiToneCount.				
+				p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0)) / self octaveScale].
+		(ind < notes size)
+			ifTrue: [nt1 := notes at: ind + 1.
+				t1 := bNote + nt1 semiToneCount.
+				p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0))]
+			ifFalse: [nt1 := (notes at: 1).
+				t1 := bNote + nt1 semiToneCount.				
+				p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0)) * self octaveScale].
+
+"		Transcript tab; show: 'Between: ', p0 printString, ' and: ', p1 printString; cr."
+		(p0 <= aHzPitch and: [p1 >= aHzPitch])			"loop over intervals looking for the one that includes the given freq"
+			ifTrue:  [ |  a b  | 
+				a := (aHzPitch - p0).
+				b := (p1 - aHzPitch).
+				^(a >= b)
+					ifTrue:  [p1]
+					ifFalse: [p0]]].
+
+	self error: 'Pitch class member not found'! !
 
 !Scale methodsFor: 'computing notes'!
 reverseNotes
@@ -676,6 +721,25 @@ intervalList
 	"tire de McLaughlin et le Mahavishnu Orchestra"
 
 	^#(#unison #minorSecond #minorThird #perfectFourth #diminishedFifth #majorSixth #majorSeventh )! !
+
+
+!classDefinition: #PentatonicScale category: #'Music-PitchScales'!
+Scale subclass: #PentatonicScale
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-PitchScales'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PentatonicScale class' category: #'Music-PitchScales'!
+PentatonicScale class
+	instanceVariableNames: ''!
+
+!PentatonicScale class methodsFor: 'interval list' stamp: 'stp 12/18/2022 11:35'!
+intervalList
+
+	^#(#unison #majorSecond #perfectFourth #perfectFifth #majorSixth)! !
 
 
 !classDefinition: #PseudoMinorScale category: #'Music-PitchScales'!

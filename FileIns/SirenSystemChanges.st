@@ -626,4 +626,16 @@ toOSCTypeOn: aConvertor
 
 	^false! !!Float methodsFor: 'converting' stamp: 'stp 12/11/2022 00:27'!toOSCBytes: aConvertor 	"Store a float in the proper byte-endian order"	"(1.5 asIEEE32BitWord bitShift: -16) bitAnd: 16rFF"		| int |	int := self asIEEE32BitWord.	Smalltalk isBigEndian		ifTrue: [aConvertor nextPut: (int bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -8) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -16) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -24) bitAnd: 16rFF)]		ifFalse: [aConvertor nextPut: ((int bitShift: -24) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -16) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -8) bitAnd: 16rFF).			aConvertor nextPut: (int bitAnd: 16rFF)]! !
 !Float methodsFor: 'converting' stamp: 'stp 12/11/2022 00:27'!toOSCTypeOn: aConvertor  
-	aConvertor nextPutType: $f! !
+	aConvertor nextPutType: $f! !
+!PopUpMenu methodsFor: 'basic control sequence' stamp: 'stp 12/26/2022 17:33:00'!
+startUp
+	"Display and make a selection from the receiver as long as the button 
+	is pressed. Answer the current selection."
+	
+	^ self startUpWithCaption: nil! !
+
+!Interval methodsFor: 'accessing' stamp: 'stp 12/26/2022 18:25:04'!
+start 
+	"Refer to the comment in SequenceableCollection|first."
+
+	^start! !

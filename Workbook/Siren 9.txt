@@ -1,6 +1,8 @@
 What is Siren?
 
-The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). This version of Siren (9.0) works on VisualWorks Smalltalk (available for free for non-commercial use) and supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free (non-commercial) system from Cincom at http://www.cincom.com/smalltalk or http://smalltalk.cincom.com/downloads/index.ssp
+The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 works on VisualWorks Smalltalk (available for free for non-commercial use); Siren 9C works (to varying degrees) on Cuis and Squeak, two free implementations. Siren-on-Squeak supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports, but unfortauntely not the Siren GUI tools.  Siren-on-Cuis supports the GUI tools, but not the MIDI I/O facilities (stay tuned). At present, Cuis is expected to be the main platform for on-going development.
+
+The Siren release is available via the web from the URL https://github.com/stpope/Siren9C. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can get one of these for your desired host platform from https://github.com/OpenSmalltalk/opensmalltalk-vm/releases
 
 Siren is a programming framework and tool kit; the intended audience is Smalltalk developers, or users willing to learn Smalltalk in order to write their own applications. The built-in applications are meant as demonstrations of the use of the libraries, rather than as end-user applications. Siren is not a MIDI sequencer, nor a score notation editor, through both of these applications would be easy to implement with the Siren framework.
 
@@ -36,20 +38,21 @@ Siren and its predecessors and components (ARA, DoubleTalk, HyperScore ToolKit, 
 
 There are more MODE- and Smoke-related documents (including the above references) in the directory ftp://FASTLabInc.com/Siren/Doc or as PDF files on the page http://HeavenEverywhere.com/stp/publs.html.
 
-The official Siren home page is http://FASTLabInc.com/Siren.
+The official Siren home page is,
+	http://FASTLabInc.com/Siren
 
 Here are the on-line Docs: The best in-depth doc (book chapter) is in,
 	http://FASTLabInc.com/Siren/Doc/SirenBookChapter.pdf
 
 The read the demo code workbook (this text), go to,
-	http://FASTLabInc.com/Siren/Siren7.5.Workbook.html
-	http://FASTLabInc.com/Siren/Siren7.5.Workbook.pdf
+	http://FASTLabInc.com/Siren/Siren9C.Workbook.html
 
-If you like to read manuals, take a look at,
+If you like to read manuals, take a look at the auto-generated Siren 7.5 manual,
 	http://FASTLabInc.com/Siren/Manual
 
-Watch the detailed Siren demo at,
+Watch the detailed Siren demos at,
 	https://vimeo.com/120751122
+	https://vimeo.com/421319630
 
 History
 
@@ -61,4 +64,4 @@ Portability
 
 The Smalltalk portion of Siren is 100% cross-platform, and the DLLCC external interfaces to sound file, MIDI, and sound streaming I/O use cross-platform libraries. There are a few places (Sound play command and aubio interfaces) that assume UNIX shell commands can be run form within Smalltalk; I'm not certain hiow these port to Windows.
 
-The core of Siren is not dependent on the dialect of Smalltalk, and in fact, runs well in Squeak. The bulk of the interactive tools and GUIs are based on my own display list graphics framework, and are thus also portable. The actual integrated applications and GUIs in Siren 7.5 use VisualWorks-specific application model classes, though.
+The core of Siren is not dependent on the dialect of Smalltalk, and in fact, runs well in Squeak and Cuis. The bulk of the interactive tools and GUIs are based on my own display list graphics framework, and are thus also portable. The actual integrated applications and GUIs in Siren 9.0 use VisualWorks-specific application model classes, though.  The porting of the GUIs to Cuis is in-progress at the time of this writing.

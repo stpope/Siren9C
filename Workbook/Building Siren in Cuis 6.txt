@@ -78,13 +78,14 @@ Clean up
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)
 
 [ WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]
+
 Undeclared inspect
 Smalltalk garbageCollect
 
 Screen background image
 
 [self runningWorld backgroundImageData:
-	(UniFileStream new open: '/Users/stp/Pictures/Screens/Credo8.jpg' forWrite: false) 
+	(UniFileStream new open: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' forWrite: false) 
 	binary contentsOfEntireFile]
 
 ToDo

@@ -2,9 +2,9 @@ Setting up Siren
 
 To test the Siren set-up and I/O, open the configuration/test panel,
 
-	[SirenSession openUtility] d
+	[SirenSession openUtility] d 
 
-You can see the system configuration and test the MIDI, sound file, and sound IO here. If you use MIDI, use the left row of buttons to set it up and test it. The 2nd row of buttons is used to test sound IO via PortAudio. The SirenUtility is available as a menu item and a toolbar button in the Launcher's Tools menu (right-most button). There's a section below in this workbook about the Siren utility and transport panes.
+You can see the system configuration and test the MIDI, sound file, and sound IO here. If you use MIDI, use the left row of buttons to set it up and test it. The 2nd row of buttons is used to test sound IO.  There's a section below in this workbook about the Siren utility and transport panes.
 
 The right-most buttons are important utilities. The "clean up" button stops the scheduler and shuts down MIDI and sound IO (for use in an emergency).
 
@@ -16,7 +16,7 @@ See the method SirenUtility class initialize, with which you can customize Siren
 	DefaultMIDIOut := 10.
 	DefaultOSCHost := #[127 0 0 1].
 	DefaultOSCPort := 54321.
-	Verbosity := 1.						"0 = pretty silent, only error logging;
+	Verbosity := 1.								"0 = pretty silent, only error logging;
 									 1 = medium-verbose IO interface logging; 
 									 2 = full scheduler and verbose interface logging"
 	[...]
@@ -26,19 +26,16 @@ See the method SirenUtility class initialize, with which you can customize Siren
 
 Setting up the External Interfaces
 
-Siren uses several external interfaces (based on the DLLCC framework or SWIG) for access to external data and I/O. The Smalltalk code for these interfaces is in the category MusicIO-External. The external libraries Siren uses are:
+Siren uses several external interfaces (based on the user primitives) for access to external data and I/O. The Smalltalk code for these interfaces is in the category MusicIO-External. The external libraries Siren uses are:
 
-	Sound file read/write -- libSndFile -- see http://www.mega-nerd.com/libsndfile
 	Streaming MIDI I/O -- PortMidi -- see http://www.cs.cmu.edu/~music/portmusic
-	Streaming sound I/O -- PortAudio -- see http://www.portaudio.com
-	Fast Fourier Transform -- FFTW -- see http://fftw.org
+
+(In the past there were several more, but luckily sound I/O, FFT and several other facilities have been included in recent Smalltalks.)
 
 You need to have these libraries installed (normally in a directory such as /usr/local/lib), and compile and link the C-language interface libraries in the subdirectory DLLCC for sound or MIDI I/O to work with Siren. Binaries are available for Mac OSX. There are full sources and pre-compiled versions of the required libraries on the CSL web site; look at http://FASTLabInc.com/CSL.
 
-To get Loris, 	http://sourceforge.net/projects/loris
 To get CSL, 	http://FASTLabInc.com/CSL
 
-To use the SWIG-based interfaces (Loris and CSL), see the pages below.
 
 Testing MIDI I/O
 This will open the MIDI driver and play a note; printing messages to the Transcript.
@@ -47,9 +44,9 @@ Test this using a MIDI dump utility (such as MIDIMonitor), or a soft-synth, or o
 
 Testing OpenSoundControl output
 The following example will send out a few OSC messages; test it with a dumpOSC utility, or with the CSL OSC server example. There are many other tests in class OSCVoice.
-	[OSCVoice fm_example1]
+	[OSCVoice vSOSExample3]
 
-Testing sound file I/O
+Testing sound file I/O -- VisualWorks only -- 
 This will print diagnostics and a few rows of sample values to the Transcript. There are more examples ion class SoundFile.
 	[LibSndFileInterface example1: 'a.snd']
 

@@ -10,6 +10,7 @@ Set font Computer Modern Serif
 Load packages - optional for now
 
 [	Feature require: 'Network-Kernel'.
+	Feature require: 'SqueakCompatibility'.
 	Feature require: 'FFI.pck.st'.
 	Feature require: 'Tests-FFI.pck.st'.
 	Feature require: 'Sound.pck.st' ]
@@ -17,9 +18,10 @@ Load packages - optional for now
 STP world file-ins (Edit the relative paths below to suit your installation)
 
 [ #(
-	'GUI-changes.st'
+	'Cuis-GUI-changes.st'
 	'ST80-compatibility.st'
 	'ZPoint.st'
+	'SirenSystemChanges.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
 	('./Siren9C/FileIns/', file) asFileEntry readStreamDo: 
@@ -34,17 +36,14 @@ Siren file-ins using packages (WIP) or source code files (works)
 
 OR src code file-in (Edit the relative paths below to suit your installation)
 
-[
-	'./Siren9C/FileIns/SirenSystemChanges.st' asFileEntry readStream fileIn.
-	
-#(	'Music-Models-Representation.st'
+[ #(	'Music-Models-Representation.st'
 	'Music-Models-Implementation.st'
 	'Music-Events.st'
 	'Music-EventGenerators.st'
 	'Music-EventModifiers.st'
 	'Music-Functions.st'
-"	'Music-Sound.st'
-"	'Music-PitchScales.st'
+	'Music-Sound.st'
+	'Music-PitchScales.st'
 	'Music-PitchClasses.st'
 	'Music-Support.st'
 
@@ -56,10 +55,10 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	'MusicUI-DisplayListViews.st'
 	'MusicUI-Layout.st'
 	'MusicUI-Editors.st'
-	'WorkbookWindow.st'
+	
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
-	('./Siren9C/SirenSources/', file) asFileEntry readStreamDo: 
+	('./Siren9C/Siren_Sources_Cuis/', file) asFileEntry readStreamDo: 
 		[ :stream | stream ifNotNil: [stream fileIn]]].
 	
 	'./Siren9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn.
@@ -78,10 +77,10 @@ Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphi
 Undeclared inspect
 Smalltalk garbageCollect
 
-Screen background image
+Screen background image (edit to taste)
 
 [self runningWorld backgroundImageData:
-	(UniFileStream new open: '/Users/stp/Pictures/Screens/Credo8.jpg' forWrite: false) 
+	(UniFileStream new open: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' forWrite: false) 
 	binary contentsOfEntireFile]
 
 ToDo

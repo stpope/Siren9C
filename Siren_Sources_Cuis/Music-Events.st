@@ -348,7 +348,7 @@ duration
 
 	^duration! !
 
-!DurationEvent methodsFor: 'accessing'!
+!DurationEvent methodsFor: 'accessing' stamp: 'stp 12/26/2022 21:52:06'!
 duration: newValue
 	"Set the receiver's duration."
 

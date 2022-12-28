@@ -1,0 +1,118 @@
+Siren and OpenSoundControl
+
+Siren includes an output voice that generates messages in the CNMAT OpenSoundControl (OSC) protocol  (http://www.cnmat.berkeley.edu/OpenSoundControl), which is sent out via UDP network packets to some synthesis server. We generally build these servers using CSL or SuperCollider, and then control them with set-up, event trigger, and control messages sent out from Siren.
+
+The verbosity flag in the SirenUtility class allows for logging of all OSC to the transcript; open a Siren utility panel and use the pop-up menu to set the verbosity to 2. To test the OSC I/O, look at the classes OSCPort and OSCVoice with the default host/port settings and several useful parameter maps. A parameter map is a Smalltalk block that takes an event as its argument and returns an OSC message object (or a bundle), as in the following example (don't execute this):
+
+	[ :event |  | arr |			"This block takes an event as its argument and answers a"
+	arr := Array				"TypedOSCMessage for the address /note-on"
+			with: event duration asSec value
+			with: event pitch asHz value
+			with: event ampl asRatio value.
+	TypedOSCMessage for: '/note-on' with: arr]
+
+For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://www.mat.ucsb.edu/~c.ramakr/illposed/occam.html). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example demonstrates using OSC with the Occam convertor, to test OSC output using a MIDI synthesizer.
+
+	[OSCVoice midiScaleExample]
+
+There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "OSC_test" target, which sets of a simple server with 4 voices of FM synthesis and 4 sound file playback instruments. Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.
+
+#define CSL_OSC_FM_SndFile		// 4 voices of FM, 4 of SndFiles, and 1 bell
+//#define CSL_OSC_SAMPLER			// 16 voices of file playback
+//#define CSL_OSC_ADDER			// 16 voices of sum-of-sines synthesis
+
+Then you can try the OSCVoice examples that follow.
+
+	[OSCVoice fmExample1]
+	[OSCVoice sndExample1]
+
+These examples loop endlessly, so you have to interrupt or flush the scheduler to stop them
+
+	[OSCVoice fmExample2. 		5 wait.
+	OSCVoice sndExample2.		5 wait.
+	OSCVoice fmExample4]
+	[EventScheduler flush]
+
+Siren OSC also supports control output, as in this example, which sends values from a linear envelope out to the address "/osc/1/ampl" at the rate of 4 Hz (use dumpOSC to view the results).
+
+	[OSCVoice functionExample]
+
+You could rewrite this to use the function's change threshold instead of a constant update rate.
+
+As an example that mixes both styles, the following expression plays a long low FM note and then uses Siren function objects to send continuous controls to make the note glissando down and pan from left to right.
+
+	[OSCVoice fmExample3]
+
+For more examples, set the default voice to OSC (using the Siren utility control panel) and run the built in examples on the other pages of this outline.
+
+----
+
+Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)
+
+	1 - 10 ---- 10 plucked strings
+		 "fff" - amp, pitch, pos
+	11 - 20 ---- 10 FM instruments
+		"ffff" - dur amp pitch pos
+		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos
+	21 - 30 ---- 10 FM bells
+		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos
+	31 - 34 ---- 4 sound files (words)
+		"ff" - amp, pos
+	35 - 50 ---- 16 SHARC SOS voices (different instruments)
+		dur, ampl, pitch, pos
+		dur, ampl, pitch, pos, att, dec, sus, rel
+	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato
+		dur, ampl, pitch, pos
+		dur, ampl, pitch, pos, att, dec, sus, rel
+	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato
+		dur, ampl, pitch, pos
+		dur, ampl, pitch, pos, att, dec, sus, rel
+
+----
+
+The liblo OSC library includes a useful test program called oscsend, which allows one to 
+send OSC commands to a server from the UNIX shell.  To compile this tool, go to the 
+CSL7/Libs/liblo-0.31/src/tools folder and use a shell command such as,
+
+	gcc -I../.. -g -O2 -o oscsend oscsend-oscsend.o /usr/local/lib/liblo.7.dylib -lpthread -lm
+
+to compile and link the oscsend command -- the Makefile may of may not work; it depends
+on where you installed the liblo library goven in the command line.
+If you're running the CSL demo OSC synthesis server, you can now open
+a shell window and use commands such as,
+
+	# Plucked string (amp, pitch, pos)
+	oscsend localhost 54321 /i1/pn fff   0.77 207.67 -0.271	
+	
+	# FM (dur, amp, pitch, pos) or (dur, amp, c_fr, m_fr, ind, pos)
+	oscsend localhost 54321 /i11/pn ffff  3.0 0.177 207.67 -0.271
+	oscsend localhost 54321 /i12/pn ffff  3.0 0.177 207.6 207.6 0.0 0.0
+	
+	# FM bell
+	oscsend localhost 54321 /i21/pn fffffff  3.0 0.77 107.67 0.5 180.0 120.0 0.0 
+
+	# Snd file player (amp, pos)
+	oscsend localhost 54321 /i31/pn ff  3.0 0.0 
+	oscsend localhost 54321 /i32/pn ff  3.0 0.0 
+	
+	# SHARC add-syn - basic version w vibrato
+	oscsend localhost 54321 /i35/pn ffff  3.0 0.77 207.67 -0.271
+	oscsend localhost 54321 /i36/pn ffff  3.0 0.77 207.67 -0.271
+	
+	# SHARC add-syn - basic version w attack chiff
+	oscsend localhost 54321 /i51/pn ffff  3.0 0.77 207.67 -0.271
+	oscsend localhost 54321 /i52/pn ffff  3.0 0.77 207.67 -0.271
+	
+	# Vector-synth SHARC add synth (dur, amp, pitch, pos)
+	# Version with SHARC instruments, i.e., different spectra per-note and straight cross-fade
+	oscsend localhost 54321 /i56/pn ffff  3.0 0.77 144.7 0.0
+	oscsend localhost 54321 /i57/pn ffff  3.0 0.77 144.7 0.0
+	oscsend localhost 54321 /i58/pn ffff  3.0 0.77 144.7 0.0
+	oscsend localhost 54321 /i59/pn ffff  3.0 0.77 144.7 0.0
+	oscsend localhost 54321 /i60/pn ffff  3.0 0.77 144.7 0.0
+	
+	# Vector-synth SHARC add synth (dur, amp, pitch, pos)
+	# Version with SHARC instruments and random-walk cross-fade
+	oscsend localhost 54321 /i62/pn ffff  3.0 0.77 144.7 0.0
+	oscsend localhost 54321 /i63/pn ffff  3.0 0.77 144.7 0.0
+	oscsend localhost 54321 /i64/pn ffff  3.0 0.77 144.7 0.0

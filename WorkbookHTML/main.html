@@ -4,7 +4,7 @@ Welcome to Siren 9.0!</br>
 </br>
 What is this?</br>
 </br>
-This document is the Siren user's guide. This manual is available as a web site for on-line browsing (see http://FASTLabInc.com/Siren or github), as a PDF file for printing, or from within the Smalltalk run-time system in a workspace outline view (the best way to read it).</br>
+This document is the Siren user's guide. This manual is available as a web site for on-line browsing (see http://FASTLabInc.com/Siren or https://github.com/stpope/Siren9C), as a PDF file for printing, or from within the Smalltalk run-time system in a workspace outline view (the best way to read it).</br>
 </br>
 Throughout this document, there are executable Smalltalk expressions, which are generally enclosed in square brackets, as in</br>
 </br>
@@ -28,7 +28,9 @@ Stephen Travis Pope (stephen@HeavenEverywhere.com)</br>
 Munich, October 1984 - Santa Barbara, May 2007 - May 2020 - Ojai, December, 2022</br>
 </p><hr><h3 id="Siren9">2 - Siren 9</h3>What is Siren?</br>
 </br>
-The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). This version of Siren (9.0) works on VisualWorks Smalltalk (available for free for non-commercial use) and supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports. The Siren release is available via the web from the URL http://FASTLabInc.com/Siren. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can down-load the free (non-commercial) system from Cincom at http://www.cincom.com/smalltalk or http://smalltalk.cincom.com/downloads/index.ssp</br>
+The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 works on VisualWorks Smalltalk (available for free for non-commercial use); Siren 9C works (to varying degrees) on Cuis and Squeak, two free implementations. Siren-on-Squeak supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports, but unfortauntely not the Siren GUI tools.  Siren-on-Cuis supports the GUI tools, but not the MIDI I/O facilities (stay tuned). At present, Cuis is expected to be the main platform for on-going development.</br>
+</br>
+The Siren release is available via the web from the URL https://github.com/stpope/Siren9C. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can get one of these for your desired host platform from https://github.com/OpenSmalltalk/opensmalltalk-vm/releases</br>
 </br>
 Siren is a programming framework and tool kit; the intended audience is Smalltalk developers, or users willing to learn Smalltalk in order to write their own applications. The built-in applications are meant as demonstrations of the use of the libraries, rather than as end-user applications. Siren is not a MIDI sequencer, nor a score notation editor, through both of these applications would be easy to implement with the Siren framework.</br>
 </br>
@@ -64,20 +66,21 @@ Siren and its predecessors and components (ARA, DoubleTalk, HyperScore ToolKit, 
 </br>
 There are more MODE- and Smoke-related documents (including the above references) in the directory ftp://FASTLabInc.com/Siren/Doc or as PDF files on the page http://HeavenEverywhere.com/stp/publs.html.</br>
 </br>
-The official Siren home page is http://FASTLabInc.com/Siren.</br>
+The official Siren home page is,</br>
+&emsp;http://FASTLabInc.com/Siren</br>
 </br>
 Here are the on-line Docs: The best in-depth doc (book chapter) is in,</br>
 &emsp;http://FASTLabInc.com/Siren/Doc/SirenBookChapter.pdf</br>
 </br>
 The read the demo code workbook (this text), go to,</br>
-&emsp;http://FASTLabInc.com/Siren/Siren7.5.Workbook.html</br>
-&emsp;http://FASTLabInc.com/Siren/Siren7.5.Workbook.pdf</br>
+&emsp;http://FASTLabInc.com/Siren/Siren9C.Workbook.html</br>
 </br>
-If you like to read manuals, take a look at,</br>
+If you like to read manuals, take a look at the auto-generated Siren 7.5 manual,</br>
 &emsp;http://FASTLabInc.com/Siren/Manual</br>
 </br>
-Watch the detailed Siren demo at,</br>
+Watch the detailed Siren demos at,</br>
 &emsp;https://vimeo.com/120751122</br>
+&emsp;https://vimeo.com/421319630</br>
 </br>
 History</br>
 </br>
@@ -89,7 +92,7 @@ Portability</br>
 </br>
 The Smalltalk portion of Siren is 100% cross-platform, and the DLLCC external interfaces to sound file, MIDI, and sound streaming I/O use cross-platform libraries. There are a few places (Sound play command and aubio interfaces) that assume UNIX shell commands can be run form within Smalltalk; I'm not certain hiow these port to Windows.</br>
 </br>
-The core of Siren is not dependent on the dialect of Smalltalk, and in fact, runs well in Squeak. The bulk of the interactive tools and GUIs are based on my own display list graphics framework, and are thus also portable. The actual integrated applications and GUIs in Siren 7.5 use VisualWorks-specific application model classes, though.</br>
+The core of Siren is not dependent on the dialect of Smalltalk, and in fact, runs well in Squeak and Cuis. The bulk of the interactive tools and GUIs are based on my own display list graphics framework, and are thus also portable. The actual integrated applications and GUIs in Siren 9.0 use VisualWorks-specific application model classes, though.  The porting of the GUIs to Cuis is in-progress at the time of this writing.</br>
 </p><hr><h3 id="GettingStartedusingSiren">3 - Getting Started using Siren</h3>Getting Started with Siren</br>
 </br>
 Depending on what your background, you may take any one of several paths to get started with Siren. </br>
@@ -109,7 +112,7 @@ As a very simple introduction, look at the following line of code</br>
 &emsp;3 + 4</br>
 this is a perfectly well-formed Smalltalk program. To execute it, you simply have to select the text, and then use the pop-up contextual menu to compile and run it; we call this "do-it" in the menu. Try selecting the above line and selecting the menu item "do-it."</br>
 </br>
-You might notice that nothing visible happened. The system compiled and executed the program, but the threw away the result. To print the result object from an expression, use the menu item "print-it." Try this again with the above example code. This should now have printed the string "7" at the end of the text you selected.</br>
+You might notice that nothing visible happened. The system happily compiled and executed the program, but then threw away the result. To print the result object from an expression, use the menu item "print-it." Try this again with the above example code. This should now have printed the string "7" at the end of the text you selected.</br>
 </br>
 To make text selection easier in this outline, I generally enclose text that's intended as a code example in square brackets (to make selecting the code easier -- you simply need to click on the opening or closing brackets). In many cases, I also place a "d,", "p," "i," or "db" after the text to give you a hint as to whether to do-it, print-it, inspect-it, or debug-it. Try this on the examples below.</br>
 </br>
@@ -126,9 +129,9 @@ Now try looking at the code of a Siren event list example; say "debug-it" to the
 </br>
 To test the Siren set-up and I/O, open the configuration/test panel,</br>
 </br>
-&emsp;[SirenSession openUtility] d</br>
+&emsp;[SirenSession openUtility] d </br>
 </br>
-You can see the system configuration and test the MIDI, sound file, and sound IO here. If you use MIDI, use the left row of buttons to set it up and test it. The 2nd row of buttons is used to test sound IO via PortAudio. The SirenUtility is available as a menu item and a toolbar button in the Launcher's Tools menu (right-most button). There's a section below in this workbook about the Siren utility and transport panes.</br>
+You can see the system configuration and test the MIDI, sound file, and sound IO here. If you use MIDI, use the left row of buttons to set it up and test it. The 2nd row of buttons is used to test sound IO.  There's a section below in this workbook about the Siren utility and transport panes.</br>
 </br>
 The right-most buttons are important utilities. The "clean up" button stops the scheduler and shuts down MIDI and sound IO (for use in an emergency).</br>
 </br>
@@ -140,7 +143,7 @@ See the method SirenUtility class initialize, with which you can customize Siren
 &emsp;DefaultMIDIOut := 10.</br>
 &emsp;DefaultOSCHost := #[127 0 0 1].</br>
 &emsp;DefaultOSCPort := 54321.</br>
-&emsp;Verbosity := 1.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"0 = pretty silent, only error logging;</br>
+&emsp;Verbosity := 1.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"0 = pretty silent, only error logging;</br>
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; 1 = medium-verbose IO interface logging; </br>
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; 2 = full scheduler and verbose interface logging"</br>
 &emsp;[...]</br>
@@ -150,19 +153,16 @@ See the method SirenUtility class initialize, with which you can customize Siren
 </br>
 Setting up the External Interfaces</br>
 </br>
-Siren uses several external interfaces (based on the DLLCC framework or SWIG) for access to external data and I/O. The Smalltalk code for these interfaces is in the category MusicIO-External. The external libraries Siren uses are:</br>
+Siren uses several external interfaces (based on the user primitives) for access to external data and I/O. The Smalltalk code for these interfaces is in the category MusicIO-External. The external libraries Siren uses are:</br>
 </br>
-&emsp;Sound file read/write -- libSndFile -- see http://www.mega-nerd.com/libsndfile</br>
 &emsp;Streaming MIDI I/O -- PortMidi -- see http://www.cs.cmu.edu/~music/portmusic</br>
-&emsp;Streaming sound I/O -- PortAudio -- see http://www.portaudio.com</br>
-&emsp;Fast Fourier Transform -- FFTW -- see http://fftw.org</br>
+</br>
+(In the past there were several more, but luckily sound I/O, FFT and several other facilities have been included in recent Smalltalks.)</br>
 </br>
 You need to have these libraries installed (normally in a directory such as /usr/local/lib), and compile and link the C-language interface libraries in the subdirectory DLLCC for sound or MIDI I/O to work with Siren. Binaries are available for Mac OSX. There are full sources and pre-compiled versions of the required libraries on the CSL web site; look at http://FASTLabInc.com/CSL.</br>
 </br>
-To get Loris, &emsp;http://sourceforge.net/projects/loris</br>
 To get CSL, &emsp;http://FASTLabInc.com/CSL</br>
 </br>
-To use the SWIG-based interfaces (Loris and CSL), see the pages below.</br>
 </br>
 Testing MIDI I/O</br>
 This will open the MIDI driver and play a note; printing messages to the Transcript.</br>
@@ -171,9 +171,9 @@ Test this using a MIDI dump utility (such as MIDIMonitor), or a soft-synth, or o
 </br>
 Testing OpenSoundControl output</br>
 The following example will send out a few OSC messages; test it with a dumpOSC utility, or with the CSL OSC server example. There are many other tests in class OSCVoice.</br>
-&emsp;[OSCVoice fm_example1]</br>
+&emsp;[OSCVoice vSOSExample3]</br>
 </br>
-Testing sound file I/O</br>
+Testing sound file I/O -- VisualWorks only -- </br>
 This will print diagnostics and a few rows of sample values to the Transcript. There are more examples ion class SoundFile.</br>
 &emsp;[LibSndFileInterface example1: 'a.snd']</br>
 </br>
@@ -1349,31 +1349,31 @@ One can get an event generator's event list and process it using Smalltalk code 
 Extending EventGenerators</br>
 </br>
 New kinds of event generator can be programmed with constructor and eventList: methods. The framework facilitates the design of fancier behaviors and parameterized event generators.</br>
-</p><hr><h3 id="Score11EventGenerators">14 - Score11 EventGenerators</h3>Score11 is a port of a Score11 instrument as a Siren EventGenerator; see https://www.esm.rochester.edu/ears/docs/score11/index.html and http://fastlabinc.com/Siren/STPope_Siren_Score11_FAST.pdf</br>
+</p><hr><h3 id="Score11EventGenerators">14 - Score11 EventGenerators</h3>Score11 is a port of a Score11 instrument; see https://www.esm.rochester.edu/ears/docs/score11/index.html</br>
 </br>
 Instance Variables:</br>
 &emsp;generators&emsp;<Dictionary of (prop-name -> data)>&emsp;the parameter blocks of the score11 instrument</br>
 </br>
 Examples:</br>
 </br>
-instrument 1 0 10;&emsp;&emsp;< Instrument 1 starts at time 0 and plays for 10 beats.</br>
+instrument 1 0 10;&emsp;< Instrument 1 starts at time 0 and plays for 10 beats.</br>
 &emsp;parameter 3 1; &emsp;< Each note lasts 1 beat</br>
-end;&emsp;&emsp;&emsp;&emsp;&emsp;< This finishes the I-block</br>
+end;          &emsp;&emsp;&emsp;< This finishes the I-block</br>
 </br>
 i1 0 5;</br>
 &emsp;p3 rh 4/8*6/4;</br>
 &emsp;p4 no c4/d/e/f/g/a/b/c5;</br>
-&emsp;p5 1.0 1.0 5.0;&emsp;&emsp;&emsp;< 100% of values between 1.0 and 5.0</br>
-&emsp;p6 mo 5 1000 2000;&emsp;< move from 1000 to 2000 in 5 beats</br>
+&emsp;p5 1.0 1.0 5.0;    &emsp;&emsp;&emsp;< 100% of values between 1.0 and 5.0</br>
+&emsp;p6 mo 5 1000 2000;&emsp;&emsp;< move from 1000 to 2000 in 5 beats</br>
 end;</br>
 </br>
 Standard parameter maps -- the SCORE-11 constant parameter meanings are:</br>
 </br>
-&emsp;p1 = Instrument number</br>
-&emsp;p2 = Starting time for this note (in beats) (not normally used)</br>
-&emsp;p3 = Duration for this note (in beats)</br>
-&emsp;p4 = Pitch (or frequency)</br>
-&emsp;p5 = Amplitude value (0 - 32000)</br>
+      p1 = Instrument number</br>
+      p2 = Starting time for this note (in beats) (not normally used)</br>
+      p3 = Duration for this note (in beats)</br>
+      p4 = Pitch (or frequency)</br>
+      p5 = Amplitude value (0 - 32000)</br>
 </br>
 Smalltalk examples</br>
 </br>
@@ -1497,6 +1497,39 @@ Keywords not using a parameter number:</br>
 &emsp;9. rseed</br>
 &emsp;10. tempo</br>
 &emsp;11. tfactor</br>
+</br>
+</br>
+Score11>>writeP3RH:into: (RestEvent is Undeclared) </br>
+Score11>>writeP3RH:into: (RestEvent is Undeclared) </br>
+Score11 class>>chorale1 (InputState is Undeclared) </br>
+Score11 class>>chorale2 (InputState is Undeclared) </br>
+Score11 class>>melody1 (InputState is Undeclared) </br>
+Score11 class>>melody1b (InputState is Undeclared) </br>
+Score11 class>>test14 (InputState is Undeclared) </br>
+Score11 class>>booh1 (InputState is Undeclared) </br>
+Score11 class>>booh2 (InputState is Undeclared) </br>
+Score11 class>>booh3 (InputState is Undeclared) </br>
+Score11 class>>sleepingSword1 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword1 (BohlenPierceScale is Undeclared) </br>
+Score11 class>>sleepingSword1 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword1 (InputState is Undeclared) </br>
+Score11 class>>sleepingSword2 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword2 (BohlenPierceScale is Undeclared) </br>
+Score11 class>>sleepingSword2 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword2 (InputState is Undeclared) </br>
+Score11 class>>sleepingSword3 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword3 (BohlenPierceScale is Undeclared) </br>
+Score11 class>>sleepingSword3 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword3 (InputState is Undeclared) </br>
+Score11 class>>sleepingSword3b (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword3b (BohlenPierceScale is Undeclared) </br>
+Score11 class>>sleepingSword3b (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword3b (InputState is Undeclared) </br>
+Score11 class>>sleepingSword4 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword4 (BohlenPierceScale is Undeclared) </br>
+Score11 class>>sleepingSword4 (PentatonicScale is Undeclared) </br>
+Score11 class>>sleepingSword4 (InputState is Undeclared) </br>
+Score11>>writeP3RH:into: (RestEvent is Undeclared) </br>
 </p><hr><h3 id="EventModifiersandMappingFunctions">15 - EventModifiers and Mapping Functions</h3>Using EventModifiers</br>
 </br>
 One can apply functions to the properties of event lists, as in the following example, which creates a drum roll and applies a crescendo modifier to it.</br>
@@ -1828,7 +1861,7 @@ If things get wedged, do this</br>
 &emsp;[PortMidiInterface unloadLibraries]</br>
 </br>
 For much more detail, see the class example messages in MIDIPort, or the tests in the PortMIDIPort and PortMidiInterface classes.</br>
-</p><hr><h3 id="SirenandOpenSoundControl-OSC-IO">19 - Siren and OpenSoundControl - OSC - IO</h3>Siren and OpenSoundControl</br>
+</p><hr><h3 id="OpenSoundControl-OSCIO">19 - OpenSoundControl - OSC IO</h3>Siren and OpenSoundControl</br>
 </br>
 Siren includes an output voice that generates messages in the CNMAT OpenSoundControl (OSC) protocol  (http://www.cnmat.berkeley.edu/OpenSoundControl), which is sent out via UDP network packets to some synthesis server. We generally build these servers using CSL or SuperCollider, and then control them with set-up, event trigger, and control messages sent out from Siren.</br>
 </br>
@@ -1886,18 +1919,15 @@ Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 &emsp;&emsp;"ffffff" - dur, ampl, c_fr, m_fr, ind, pos</br>
 &emsp;21 - 30 ---- 10 FM bells</br>
 &emsp;&emsp; "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos</br>
-&emsp;31 - 34 ---- 4 sound files (single words)</br>
+&emsp;31 - 34 ---- 4 sound files (words)</br>
 &emsp;&emsp;"ff" - amp, pos</br>
-&emsp;35 - 50 ---- 16 SHARC SOS instruments (different spectra) w vibrato</br>
+&emsp;35 - 50 ---- 16 SHARC SOS voices (different instruments)</br>
 &emsp;&emsp;dur, ampl, pitch, pos</br>
 &emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;51 - 55 ---- 5 SHARC SOS additive instruments w att chiff</br>
+&emsp;51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato</br>
 &emsp;&emsp;dur, ampl, pitch, pos</br>
 &emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;56 - 61 ---- 5 SHARC additive cross-fade instruments</br>
-&emsp;&emsp;dur, ampl, pitch, pos</br>
-&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;62 - 66 ---- 5 SHARC additive random-walk cross-fade instruments</br>
+&emsp;56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato</br>
 &emsp;&emsp;dur, ampl, pitch, pos</br>
 &emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
 </br>
@@ -3295,13 +3325,14 @@ Clean up</br>
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)</br>
 </br>
 [ WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]</br>
+</br>
 Undeclared inspect</br>
 Smalltalk garbageCollect</br>
 </br>
 Screen background image</br>
 </br>
 [self runningWorld backgroundImageData:</br>
-&emsp;(UniFileStream new open: '/Users/stp/Pictures/Screens/Credo8.jpg' forWrite: false) </br>
+&emsp;(UniFileStream new open: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' forWrite: false) </br>
 &emsp;binary contentsOfEntireFile]</br>
 </br>
 ToDo</br>
@@ -3310,21 +3341,24 @@ DisplayList editing</br>
 OSC I/O via sockets</br>
 MIDI I/O via plug-in</br>
 Function & Sound editors</br>
-</p><hr><h3 id="BuildingSireninSqueak6">35 - Building Siren in Squeak 6</h3>Script to build Siren9C in Squeak 6</br>
+</p><hr><h3 id="BuildingSireninSqueak6">35 - Building Siren in Squeak 6</h3>Script to build Siren in Cuis (Version 9C)</br>
 &emsp;Do not file this in - step through the blocks 1 by 1</br>
 </br>
 Set-up</br>
 </br>
 Use the Squeak customization process.</br>
 </br>
+</br>
 STP world file-ins (Edit the relative paths below to suit your installation)</br>
 </br>
 [ #(</br>
 &emsp;'ZPoint.st'</br>
+&emsp;'SirenSystemChanges.st'</br>
 &emsp;'SqueakChanges.st'</br>
+&emsp;'WorkbookWindowSqueak.st'</br>
 ) do: [ :file |</br>
 &emsp;Transcript show: 'Filing in ', file; cr.</br>
-&emsp;(FileStream fileNamed: ('./Siren9C/FileIns/', file) asFileName) fileIn]]</br>
+&emsp;(FileStream fileNamed: ('./Siren9C/FileIns/', file)) fileIn]]</br>
 </br>
 [#(&emsp;'Music-Models-Representation.st'</br>
 &emsp;'Music-Models-Implementation.st'</br>
@@ -3332,8 +3366,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)</br
 &emsp;'Music-EventGenerators.st'</br>
 &emsp;'Music-EventModifiers.st'</br>
 &emsp;'Music-Functions.st'</br>
-"&emsp;'Music-Sound.st'</br>
-"&emsp;'Music-PitchScales.st'</br>
+"&emsp;'Music-Sound.st'&emsp;"</br>
+&emsp;'Music-PitchScales.st'</br>
 &emsp;'Music-PitchClasses.st'</br>
 &emsp;'Music-Support.st'</br>
 </br>
@@ -3348,9 +3382,9 @@ STP world file-ins (Edit the relative paths below to suit your installation)</br
 &emsp;</br>
 ) do: [ :file |</br>
 &emsp;Transcript show: 'Filing in ', file; cr.</br>
-&emsp;(FileStream fileNamed: ('./Siren9C/FileIns/', file) asFileName) fileIn]].</br>
-&emsp;</br>
-&emsp;(FileStream fileNamed: ('./Siren9C/FileIns/MusicConstants.st', file) asFileName) fileIn</br>
+&emsp;(FileStream fileNamed: ('./Siren9C/Siren9C_Sources_Squeak/', file)) fileIn]].</br>
+&emsp;&emsp;&emsp;&emsp;&emsp;"Broken - GUI port still WIP"</br>
+&emsp;&emsp;(FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn</br>
 ]</br>
 </br>
 Clean up</br>
@@ -3362,7 +3396,9 @@ Clean up</br>
 </br>
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)</br>
 </br>
-[ WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]</br>
+[WorkbookWindow openFolder: './Siren9C/Workbook/' named: 'Siren Workbook']</br>
+</br>
+</br>
 Undeclared inspect</br>
 Smalltalk garbageCollect</br>
 </br>
@@ -3821,7 +3857,7 @@ Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 </br>
 &emsp;1 - 10 ---- 10 plucked strings</br>
 &emsp;&emsp; "fff" - amp, pitch, pos</br>
-&emsp;11 - 20 ---- 10 FM voices</br>
+&emsp;11 - 20 ---- 10 FM instruments</br>
 &emsp;&emsp;"ffff" - dur amp pitch pos</br>
 &emsp;&emsp;"ffffff" - dur, ampl, c_fr, m_fr, ind, pos</br>
 &emsp;21 - 30 ---- 10 FM bells</br>
@@ -3831,71 +3867,12 @@ Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 &emsp;35 - 50 ---- 16 SHARC SOS voices (different instruments)</br>
 &emsp;&emsp;dur, ampl, pitch, pos</br>
 &emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;51 - 55 ---- 5 basic SHARC-spectrum additive cross-fade instruments</br>
+&emsp;51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato</br>
 &emsp;&emsp;dur, ampl, pitch, pos</br>
 &emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
 &emsp;56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato</br>
 &emsp;&emsp;dur, ampl, pitch, pos</br>
 &emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;52 - 66 ---- 5 SHARC-instrument additive cross-fade instruments w att chiff</br>
-&emsp;&emsp;dur, ampl, pitch, pos</br>
-&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-</br>
-</br>
---------------------------</br>
-</br>
-File-out</br>
-</br>
-[SirenUtility fileoutCategories]</br>
-</br>
-As packages</br>
-</br>
-[SirenUtility categoryList do: </br>
-&emsp;[ :cat |</br>
-&emsp;(CodePackage named: cat</br>
-&emsp;&emsp;createIfAbsent: true </br>
-&emsp;&emsp;registerIfNew: true) save] ]</br>
-&emsp;</br>
-</p></p><HR><p>e fmExample1</br>
-OSCVoice fmExample2</br>
-OSCVoice pluckExample1</br>
-OSCVoice sndExample1</br>
-OSCVoice sndExample2</br>
-OSCVoice sharcExample1</br>
-OSCVoice bellExample1</br>
-OSCVoice vSOSExample1</br>
-</br>
-----</br>
-</br>
-Undeclared inspect</br>
-Smalltalk garbageCollect</br>
-&emsp;[MIDIPort allNotesOff]</br>
-&emsp;[MIDIPort cleanUp]</br>
-</br>
-Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
-</br>
-&emsp;1 - 10 ---- 10 plucked strings</br>
-&emsp;&emsp; "fff" - amp, pitch, pos</br>
-&emsp;11 - 20 ---- 10 FM voices</br>
-&emsp;&emsp;"ffff" - dur amp pitch pos</br>
-&emsp;&emsp;"ffffff" - dur, ampl, c_fr, m_fr, ind, pos</br>
-&emsp;21 - 30 ---- 10 FM bells</br>
-&emsp;&emsp; "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos</br>
-&emsp;31 - 34 ---- 4 sound files (words)</br>
-&emsp;&emsp;"ff" - amp, pos</br>
-&emsp;35 - 50 ---- 16 SHARC SOS voices (different instruments)</br>
-&emsp;&emsp;dur, ampl, pitch, pos</br>
-&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;51 - 55 ---- 5 basic SHARC-spectrum additive cross-fade instruments</br>
-&emsp;&emsp;dur, ampl, pitch, pos</br>
-&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato</br>
-&emsp;&emsp;dur, ampl, pitch, pos</br>
-&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-&emsp;52 - 66 ---- 5 SHARC-instrument additive cross-fade instruments w att chiff</br>
-&emsp;&emsp;dur, ampl, pitch, pos</br>
-&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
-</br>
 </br>
 --------------------------</br>
 </br>

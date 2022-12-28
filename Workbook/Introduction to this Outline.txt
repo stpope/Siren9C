@@ -4,7 +4,7 @@ Welcome to Siren 9.0!
 
 What is this?
 
-This document is the Siren user's guide. This manual is available as a web site for on-line browsing (see http://FASTLabInc.com/Siren or github), as a PDF file for printing, or from within the Smalltalk run-time system in a workspace outline view (the best way to read it).
+This document is the Siren user's guide. This manual is available as a web site for on-line browsing (see http://FASTLabInc.com/Siren or https://github.com/stpope/Siren9C), as a PDF file for printing, or from within the Smalltalk run-time system in a workspace outline view (the best way to read it).
 
 Throughout this document, there are executable Smalltalk expressions, which are generally enclosed in square brackets, as in
 

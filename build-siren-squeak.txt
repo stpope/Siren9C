@@ -18,8 +18,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'Music-EventGenerators.st'
 	'Music-EventModifiers.st'
 	'Music-Functions.st'
-"	'Music-Sound.st'
-"	'Music-PitchScales.st'
+	'Music-Sound.st'
+	'Music-PitchScales.st'
 	'Music-PitchClasses.st'
 	'Music-Support.st'
 

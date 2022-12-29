@@ -1,4 +1,4 @@
-!classDefinition: #OSCPort category: #'MusicIO-OSC'!
+!classDefinition: #OSCPort category: 'MusicIO-OSC'!
 PortModel subclass: #OSCPort
 	instanceVariableNames: 'socket address'
 	classVariableNames: ''
@@ -42,7 +42,7 @@ init: sock
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCPort class' category: #'MusicIO-OSC'!
+!classDefinition: 'OSCPort class' category: 'MusicIO-OSC'!
 OSCPort class
 	instanceVariableNames: ''!
 
@@ -194,7 +194,7 @@ sendStop
 	^self! !
 
 
-!classDefinition: #OSCVoice category: #'MusicIO-OSC'!
+!classDefinition: #OSCVoice category: 'MusicIO-OSC'!
 NotelistVoice subclass: #OSCVoice
 	instanceVariableNames: 'port range'
 	classVariableNames: ''
@@ -290,7 +290,7 @@ range: anInterval
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCVoice class' category: #'MusicIO-OSC'!
+!classDefinition: 'OSCVoice class' category: 'MusicIO-OSC'!
 OSCVoice class
 	instanceVariableNames: ''!
 
@@ -1183,7 +1183,7 @@ pMapWithBundle
 						at: (Timestamp now addMilliseconds: e duration asMsec value)))]! !
 
 
-!classDefinition: #AbstractOSCPacket category: #'MusicIO-OSC'!
+!classDefinition: #AbstractOSCPacket category: 'MusicIO-OSC'!
 Object subclass: #AbstractOSCPacket
 	instanceVariableNames: 'oscBytes'
 	classVariableNames: ''
@@ -1228,7 +1228,7 @@ init
 	^self! !
 
 
-!classDefinition: #OSCBundle category: #'MusicIO-OSC'!
+!classDefinition: #OSCBundle category: 'MusicIO-OSC'!
 AbstractOSCPacket subclass: #OSCBundle
 	instanceVariableNames: 'messages time'
 	classVariableNames: 'MillisecScale MillisecToNTP SecsInAYear'
@@ -1286,7 +1286,7 @@ init: aCollection time: aTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCBundle class' category: #'MusicIO-OSC'!
+!classDefinition: 'OSCBundle class' category: 'MusicIO-OSC'!
 OSCBundle class
 	instanceVariableNames: ''!
 
@@ -1353,7 +1353,7 @@ example2
 	^self with: (Array with: self example1 with: OSCMessage scDecreaseVolume)! !
 
 
-!classDefinition: #OSCMessage category: #'MusicIO-OSC'!
+!classDefinition: #OSCMessage category: 'MusicIO-OSC'!
 AbstractOSCPacket subclass: #OSCMessage
 	instanceVariableNames: 'address arguments'
 	classVariableNames: ''
@@ -1421,7 +1421,7 @@ initAddress: t1 arguments: t2
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCMessage class' category: #'MusicIO-OSC'!
+!classDefinition: 'OSCMessage class' category: 'MusicIO-OSC'!
 OSCMessage class
 	instanceVariableNames: ''!
 
@@ -1456,7 +1456,7 @@ example3
 	^self for: '/example3' with: #(20 30 'blah')! !
 
 
-!classDefinition: #TypedOSCMessage category: #'MusicIO-OSC'!
+!classDefinition: #TypedOSCMessage category: 'MusicIO-OSC'!
 OSCMessage subclass: #TypedOSCMessage
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1492,7 +1492,7 @@ typesToOSC: converter
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TypedOSCMessage class' category: #'MusicIO-OSC'!
+!classDefinition: 'TypedOSCMessage class' category: 'MusicIO-OSC'!
 TypedOSCMessage class
 	instanceVariableNames: ''!
 
@@ -1533,7 +1533,7 @@ start
 	^self for: '/start'! !
 
 
-!classDefinition: #OSCByteConvertor category: #'MusicIO-OSC'!
+!classDefinition: #OSCByteConvertor category: 'MusicIO-OSC'!
 Object subclass: #OSCByteConvertor
 	instanceVariableNames: 'packetData'
 	classVariableNames: ''
@@ -1581,7 +1581,7 @@ init
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCByteConvertor class' category: #'MusicIO-OSC'!
+!classDefinition: 'OSCByteConvertor class' category: 'MusicIO-OSC'!
 OSCByteConvertor class
 	instanceVariableNames: ''!
 

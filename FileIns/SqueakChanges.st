@@ -150,7 +150,7 @@ mostGeneral
 duration
 	"Answer a duration whose value is the receiver."
 
-	^Duration value: self!
+	^MDuration value: self!
 
 sec
 	"Answer a duration whose value is the receiver."
@@ -244,9 +244,9 @@ sortedSubclasses
 	"Answer the receiver's subclasses in a sorted collection by name with abstract classes first."
 
 	 | coll coll2 coll3 allClasses |
-	subclasses == nil
+	self allSubclasses isEmpty
 		ifTrue: [^Set new].
-	coll := subclasses collect: [ :e | e name ].
+	coll := self allSubclasses collect: [ :e | e name ].
 	coll := coll asSortedCollection.
 	allClasses := OrderedCollection new: 1024.
 	SystemUtils allClassesDo: [ :cls | allClasses add: cls].
@@ -396,4 +396,4 @@ printOSCTypeOn: aStream
 toOSCTypeOn: aConvertor
 	aConvertor nextPutType: $F! !
 
-!Debugger methodsFor: 'initialize' stamp: 'cmm 6/22/2018 23:04'!initialExtent	"Initial extent for the full debugger. For the notifier's extent see #initialExtentForNotifier."		^ SavedExtent ifNil: [ 600@700]! !!Inspector methodsFor: 'initialization' stamp: 'stp 12/7/2022 11:45'!initialExtent	"Answer the desired extent for the receiver when it is first opened on the screen.  "	^ 450 @ 450! !!ObjectExplorer methodsFor: 'user interface' stamp: 'stp 12/7/2022 11:46'!initialExtent	^450@450! !
+!Debugger methodsFor: 'initialize' stamp: 'cmm 6/22/2018 23:04'!initialExtent	"Initial extent for the full debugger. For the notifier's extent see #initialExtentForNotifier."		^ SavedExtent ifNil: [ 600@700]! !!Inspector methodsFor: 'initialization' stamp: 'stp 12/7/2022 11:45'!initialExtent	"Answer the desired extent for the receiver when it is first opened on the screen.  "	^ 450 @ 450! !!ObjectExplorer methodsFor: 'user interface' stamp: 'stp 12/7/2022 11:46'!initialExtent	^450@450! !!Form class methodsFor: 'instance creation' stamp: 'stp 12/2/2022 11:48:00'!extent: extentPoint depth: bitsPerPixel fromBytes: aByteArray	"Answer an instance of me with bitmap of the given dimensions and depth from the given 32-bit PADDED-ROWS data."	^self extent: extentPoint depth: bitsPerPixel bits: aByteArray swapWords swapBytes! !'From Cuis 6.0 [latest update: #5569] on 2 December 2022 at 11:03:21 am'!!ByteArray methodsFor: 'converting' stamp: 'stp 12/2/2022 10:54:00'!swapWords	"Answer a copy of the receiver with the even/odd WORDS swapped."	"#[2 0 3 0 3 0 3 128] swapWords"		| new1 |	new1 _ self class newFrom: self.	1 to: new1 size by: 4 do: 		[ :ind | | t1 |		t1 _ new1 at: ind.		new1 at: ind put: (new1 at: ind + 2).		new1 at: ind + 2 put: t1.		t1 _ new1 at: ind + 1.		new1 at: ind + 1 put: (new1 at: ind + 3).		new1 at: ind + 3 put: t1.].	^new1! !!ByteArray methodsFor: 'converting' stamp: 'stp 12/2/2022 10:47:34'!swapBytes	"Answer a copy of the receiver with the even/odd bytes swapped."	"#[2 0 3 0 3 0 3 128] swapBytes"		| new1 |	new1 _ self class newFrom: self.	1 to: new1 size by: 2 do: 		[ :ind | | tmp |		tmp _ new1 at: ind.		new1 at: ind put: (new1 at: ind + 1).		new1 at: ind + 1 put: tmp.].	^new1! !!ByteArray methodsFor: 'converting' stamp: 'stp 12/2/2022 11:01:27'!reverseWords	"Answer a copy of the receiver with the even/odd WORDS swapped."	"#[2 0 3 0 3 0 3 128] reverseWords"		| new1 |	new1 _ self class newFrom: self.	1 to: new1 size by: 4 do: 		[ :ind | | t1 t2 t3 t4 |		t1 _ new1 at: ind.		t2 _ new1 at: ind + 1.		t3 _ new1 at: ind + 2.		t4 _ new1 at: ind + 3.		new1 at: ind + 3 put: t1.		new1 at: ind + 2 put: t2.		new1 at: ind + 1 put: t3.		new1 at: ind put: t4].	^new1! !!ByteArray methodsFor: 'printing'!printIP	| printSize stream |	stream := WriteStream on: (String new: 32).	printSize := self size."	printSize > self maxPrintElements		ifTrue: [printSize := self maxPrintElements]."	(1 to: printSize)		do: [ :index | (self at: index) printOn: stream]		separatedBy: [stream nextPut: $.].	^stream contents! !

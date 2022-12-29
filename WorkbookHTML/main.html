@@ -28,7 +28,7 @@ Stephen Travis Pope (stephen@HeavenEverywhere.com)</br>
 Munich, October 1984 - Santa Barbara, May 2007 - May 2020 - Ojai, December, 2022</br>
 </p><hr><h3 id="Siren9Overview">2 - Siren 9 Overview</h3>What is Siren?</br>
 </br>
-The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of about 350 classes written in Smalltalk-80 (40 kLOC or so). Siren 9.0 works on VisualWorks Smalltalk (available for free for non-commercial use); Siren 9C works (to varying degrees) on Cuis and Squeak, two free implementations. Siren-on-Squeak supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports, but unfortauntely not the Siren GUI tools.  Siren-on-Cuis supports the GUI tools, but not the MIDI I/O facilities (stay tuned). At present, Cuis is expected to be the main platform for on-going development.</br>
+The Siren system is a general-purpose software framework for music and sound composition, processing, performance, and analysis; it is a collection of 200-350 classes (depending on which version and platform you're using) written in Smalltalk-80 (40 kLOC or so). Siren 9.0 works on VisualWorks Smalltalk (available for free for non-commercial use), and (to varying degrees) on Cuis and Squeak, two free Smalltalk implementations. Siren-on-Squeak supports streaming I/O via OpenSoundControl (OSC), MIDI, and multi-channel audio ports, but the Siren GUI tools are stillbeing ported.  Siren-on-Cuis supports the GUI tools, but not the MIDI I/O facilities (work in progress).  Squeak is expected to be the main platform for on-going development.</br>
 </br>
 The Siren release is available via the web from the URL https://github.com/stpope/Siren9C. Note that you need a Smalltalk virtual machine and run-time to use Siren; you can get one of these for your desired host platform from https://github.com/OpenSmalltalk/opensmalltalk-vm/releases</br>
 </br>
@@ -122,7 +122,7 @@ To make text selection easier in this outline, I generally enclose text that's i
 &emsp;[ 100 factorial ] p</br>
 &emsp;[ 100 factorial ] i</br>
 </br>
-Now try looking at the code of a Siren event list example; say "debug-it" to the expression below, which will bring up the code in a debugger; in this view, use the top-left menu bar button to "step-into" the block; now you'll be looking at the randomExample: method itself. You can use the 2nd button from the left to single step through this method, inspecting the objects in use with the inspectors at the bottom of the debugger.</br>
+Now try looking at the code of a Siren event list example; say "debug-it" to the expression below, which will bring up the code in a debugger; in this view, use the menu bar below the top-most stack list to "step-into" the block; now you'll be looking at the randomExample: method itself. You can use the "into"| and "over" buttons to single step through this method, inspecting the objects in use with the inspectors at the bottom of the debugger.</br>
 </br>
 &emsp;[ EventList randomExample: 20 ] db</br>
 </p><hr><h3 id="SirenSetupandTesting">4 - Siren Setup and Testing</h3>Setting up Siren</br>
@@ -143,11 +143,11 @@ See the method SirenUtility class initialize, with which you can customize Siren
 &emsp;DefaultMIDIOut := 10.</br>
 &emsp;DefaultOSCHost := #[127 0 0 1].</br>
 &emsp;DefaultOSCPort := 54321.</br>
-&emsp;Verbosity := 1.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"0 = pretty silent, only error logging;</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; 1 = medium-verbose IO interface logging; </br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; 2 = full scheduler and verbose interface logging"</br>
+&emsp;Verbosity := 1.&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"0 = pretty silent, only error logging;</br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; 1 = medium-verbose IO interface logging; </br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; 2 = full scheduler and verbose interface logging"</br>
 &emsp;[...]</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"Set search paths"</br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"Set search paths"</br>
 &emsp;self addDir: 'Databases' to: SoundDir.&emsp;"STP-specific"</br>
 &emsp;self addDir: '3-Credo/*' to: SoundDir.&emsp;"You can add using wildcards"</br>
 </br>
@@ -161,10 +161,12 @@ Siren uses several external interfaces (based on the user primitives) for access
 </br>
 You need to have these libraries installed (normally in a directory such as /usr/local/lib), and compile and link the C-language interface libraries in the subdirectory DLLCC for sound or MIDI I/O to work with Siren. Binaries are available for Mac OSX. There are full sources and pre-compiled versions of the required libraries on the CSL web site; look at http://FASTLabInc.com/CSL.</br>
 </br>
-To get CSL, &emsp;http://FASTLabInc.com/CSL</br>
+To get CSL visit, &emsp;http://FASTLabInc.com/CSL   or   https://github.com/stpope/CSL7</br>
 </br>
 </br>
 Testing MIDI I/O</br>
+</br>
+</br>
 This will open the MIDI driver and play a note; printing messages to the Transcript.</br>
 &emsp;[MIDIPort testANote]</br>
 Test this using a MIDI dump utility (such as MIDIMonitor), or a soft-synth, or outboard MIDI hardware. There are many other tests in class MIDIPort.</br>
@@ -210,7 +212,7 @@ Siren House-keeping</br>
 To clear out temp. event lists, use,</br>
 &emsp;[SirenSession flushTempEventLists]</br>
 or to flush all,</br>
-&emsp;[SirenSession flushAllEventLists]</br>
+&emsp;[SirenSession instance freeLists]</br>
 </br>
 To flush and close down the scheduler,</br>
 &emsp;[Schedule interrupt; flush; release]</br>
@@ -395,7 +397,7 @@ Voices</br>
 &emsp;&emsp;&emsp;&emsp;CsoundVoice</br>
 &emsp;&emsp;&emsp;SoundVoice</br>
 </p><hr><h3 id="Siren9CClassList">6 - Siren 9C Class List</h3></br>
-Siren 9C (Cuis) Class list</br>
+Siren 9C (Squeak/Cuis) Class list</br>
 </br>
 Category Music-Models-Representation</br>
 </br>
@@ -2681,11 +2683,6 @@ Configure and test the MIDI and sound I/O drivers using the utility panel.</br>
 </br>
 &emsp;[SirenSession openUtility] d</br>
 </br>
-Load the test data with the "Load All" button in the utility pane.</br>
-You can browse the test data with the left-side menu buttons in the transport panel, do,</br>
-</br>
-&emsp;[SirenSession openTransport] d</br>
-</br>
 See also the section above on "Siren Set-up."</br>
 </br>
 MusicMagnitudes</br>
@@ -2711,18 +2708,17 @@ Pitch expressions ("N" is short-hand for PitchClass)</br>
 &emsp;[N C diminishedThirteenth] p</br>
 &emsp;[N do flat intervalBetween: N sol] p</br>
 &emsp;[PitchClass D flat melodicMinorScale notes] p</br>
-&emsp;[(PitchClassChord new fromString: 'C aug9 dim5') notes] p</br>
 &emsp;[(HungarianMinor root: N fa) asPitchesInOctave: 2] p</br>
 </br>
 Event Creation Messages</br>
 </br>
 Create a `generic' event using a class instance creation message.</br>
 </br>
-&emsp;MusicEvent duration: 1/4 pitch: 'c3' ampl: 'mf'</br>
+&emsp;MusicEvent duration: 1/4 pitch: 'c3' ampl: 'mf' </br>
 </br>
 Create one with added properties.</br>
 </br>
-&emsp;(MusicEvent dur: 1/4 pitch: 'c3') color: #green; accent: #sfz</br>
+&emsp;(MusicEvent dur: 1/4 pitch: 'c3') color: #green; accent: #sfz </br>
 </br>
 Terse format: concatenation (with ',') of music magnitudes</br>
 </br>
@@ -2741,7 +2737,7 @@ a chord is simply a set of events at the same time.</br>
 </br>
 Play a scale created with a class message.</br>
 </br>
-&emsp;[(EventList scaleFrom: 48 to: 60 in: 3000) open] d</br>
+&emsp;[(EventList scaleFrom: 48 to: 60 in: 3000) open] d -- Buggy layout --</br>
 </br>
 Create 64 random events with parameters in the given ranges, play it on the default output voice, or edit it.</br>
 </br>
@@ -2752,9 +2748,9 @@ Create 64 random events with parameters in the given ranges, play it on the defa
 &emsp;&emsp;&emsp;&emsp;(#voice: -> (1 to: 1)))&emsp;&emsp;&emsp;"play all on voice 1"</br>
 &emsp;&emsp;) open] d</br>
 </br>
-Create an event list of 20 notes with semi-random values and play it on a MIDI output voice.</br>
+Create an event list of 20 notes with semi-random values and play it on an OSC output voice.</br>
 </br>
-&emsp;[(EventList randomExample: 20) playOn: MIDIVoice default] d</br>
+&emsp;[(EventList randomExample: 20) playOn: OSCVoice default] d</br>
 </br>
 Event lists don't have to have pitches at all, as in the word,</br>
 </br>
@@ -2774,7 +2770,7 @@ Play two-voice "counterpoint" on the note list score file voices.</br>
 &emsp;&emsp;&emsp;addAll: (EventList randomExample: 20).</br>
 &emsp;vox play: list.</br>
 &emsp;vox close.</br>
-&emsp;(Filename named: 'test.cs') edit] d</br>
+&emsp;(FileStream fileNamed: 'test.cs') edit] d</br>
 </br>
 Here's another example of creating a simple melody with a terse format</br>
 </br>
@@ -3341,19 +3337,17 @@ DisplayList editing</br>
 OSC I/O via sockets</br>
 MIDI I/O via plug-in</br>
 Function & Sound editors</br>
-</p><hr><h3 id="BuildingSireninSqueak6">35 - Building Siren in Squeak 6</h3>Script to build Siren in Cuis (Version 9C)</br>
+</p><hr><h3 id="BuildingSireninSqueak6">35 - Building Siren in Squeak 6</h3>Script to build Siren in Squeak6.0 (Version 9C)</br>
 &emsp;Do not file this in - step through the blocks 1 by 1</br>
 </br>
 Set-up</br>
 </br>
 Use the Squeak customization process.</br>
 </br>
-</br>
 STP world file-ins (Edit the relative paths below to suit your installation)</br>
 </br>
 [ #(</br>
 &emsp;'ZPoint.st'</br>
-&emsp;'SirenSystemChanges.st'</br>
 &emsp;'SqueakChanges.st'</br>
 &emsp;'WorkbookWindowSqueak.st'</br>
 ) do: [ :file |</br>
@@ -3366,8 +3360,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)</br
 &emsp;'Music-EventGenerators.st'</br>
 &emsp;'Music-EventModifiers.st'</br>
 &emsp;'Music-Functions.st'</br>
-"&emsp;'Music-Sound.st'&emsp;"</br>
-&emsp;'Music-PitchScales.st'</br>
+"&emsp;'Music-Sound.st'</br>
+"&emsp;'Music-PitchScales.st'</br>
 &emsp;'Music-PitchClasses.st'</br>
 &emsp;'Music-Support.st'</br>
 </br>
@@ -3382,32 +3376,36 @@ STP world file-ins (Edit the relative paths below to suit your installation)</br
 &emsp;</br>
 ) do: [ :file |</br>
 &emsp;Transcript show: 'Filing in ', file; cr.</br>
-&emsp;(FileStream fileNamed: ('./Siren9C/Siren9C_Sources_Squeak/', file)) fileIn]].</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;"Broken - GUI port still WIP"</br>
-&emsp;&emsp;(FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn</br>
+&emsp;(FileStream fileNamed: ('./Siren9C/Siren_Sources_Cuis/', file)) fileIn]].</br>
 ]</br>
+&emsp;</br>
+[ (FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn ]</br>
 </br>
 Clean up</br>
 </br>
-[&emsp;MDuration initialize.</br>
-&emsp;Pitch initialize.</br>
-&emsp;Amplitude initialize.</br>
+[&emsp;MusicModel initializeGenerality.</br>
+&emsp;PortModel initialize.</br>
+&emsp;SirenUtility initialize.</br>
+&emsp;SirenSession initialize.</br>
+&emsp;SirenSession new.</br>
 ]</br>
 </br>
-Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)</br>
+Reorganize system categories (for better 6-paned browsing)</br>
 </br>
 [WorkbookWindow openFolder: './Siren9C/Workbook/' named: 'Siren Workbook']</br>
 </br>
+Screen background image</br>
+</br>
+[Form openAsBackground: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' ]</br>
 </br>
 Undeclared inspect</br>
 Smalltalk garbageCollect</br>
 </br>
-ToDo</br>
+TTFontDescription addFromFileNamed: '/Users/stp/Code/Smalltalk/Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' </br>
 </br>
-DisplayList editing</br>
-OSC I/O via sockets</br>
-MIDI I/O via plug-in</br>
-Function & Sound editors</br>
+TTCFont installFromFileNames: #( '/Users/stp/Code/Smalltalk/Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' ).</br>
+</br>
+</br>
 </p><hr><h3 id="RelatedSoftware">36 - Related Software</h3>Related Software</br>
 </br>
 Siren is typically used in consort with a number of other packages; for more information, see the links below</br>
@@ -3577,14 +3575,15 @@ Expression examples</br>
 </br>
 &emsp;Keyword messages - [receiver keyword: operand]</br>
 &emsp;&emsp;anArray at: 1&emsp;&emsp;&emsp;&emsp;"get an item from an array"</br>
-&emsp;&emsp;anArray at: 1 put: 7&emsp;&emsp;&emsp;"assign into an array"</br>
+&emsp;&emsp;anArray at: 1 put: 7&emsp;&emsp;"assign into an array"</br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"longer keyword message example"</br>
 &emsp;&emsp;aVisualItem displayOn: aMedium at: aPoint clip: aClipRect mask: aMask</br>
-&emsp;(messages called  at:put:  or  displayOn:at:clip:mask:)</br>
+&emsp;&emsp;&emsp;&emsp;(messages called  at:put:  or  displayOn:at:clip:mask:)</br>
 </br>
 Unary expressions can be concatenated, as in</br>
 &emsp;Date today weekday size odd printString</br>
 </br>
-which answers the string "true" or "false," as though it were written,</br>
+which answers "true" or "false," as though it were written,</br>
 &emsp;((((Date today) weekday) size) odd) printString</br>
 </br>
 Unary messages bind more strongly than binary messages, as in,</br>
@@ -3593,20 +3592,34 @@ this is read as</br>
 &emsp;(3 negated) * (4 sqrt)</br>
 </br>
 Keywords bind the weakest, so that the expressions,</br>
+</br>
+</br>
 &emsp;Transcript show: aNumber printString, ' is not equal to ', otherNumber printString.</br>
 &emsp;anArray at: index + 1 put: 'hello ', ' world'.</br>
+&emsp;</br>
 are to be read as,</br>
+</br>
+</br>
 &emsp;Transcript show: ((aNumber printString), ' is not equal to ', (otherNumber printString)).</br>
 &emsp;anArray at: (index + 1) put: ('hello ', ' world').</br>
 </br>
 A single expression can contain at most one keyword message, i.e., the compiler always tries to build the longest composed keyword message it can find in an expression. For example, to copy an element from one position in an array to another, we would have to parenthesize the 2 keyword messages, as follows,</br>
+</br>
+</br>
 &emsp;anArray at: 1 put: (anArray at: 2)</br>
+</br>
+</br>
 because without the parentheses, the message would be interpreted as at:put:at: (which is probably not implemented).</br>
 </br>
 When several messages are to be sent to the same receiver, and the return values are ignored, one can create a message cascade" by separating the messages with semi-colons instead of periods, and not repeating the receiver, as in,</br>
+</br>
+</br>
 &emsp;Transcript show: name printString.</br>
 &emsp;Transcript cr.</br>
+&emsp;</br>
 which can be written as a cascade or 2 messages sent to Transcript,</br>
+</br>
+</br>
 &emsp;Transcript show: name printString ; cr.</br>
 </br>
 Comments</br>
@@ -3625,14 +3638,14 @@ Symbols are special strings that are stored in a table so as to be unique; they 
 </br>
 Immediate Object Formats</br>
 </br>
-&emsp;Integer&emsp;&emsp;7&emsp;&emsp;&emsp;&emsp;244361990863443121 </br>
+&emsp;Integer&emsp;&emsp;&emsp;7&emsp;&emsp;&emsp;&emsp;244361990863443121 </br>
 &emsp;Real&emsp;&emsp;&emsp;3.1415926&emsp;&emsp;2.8879044346233</br>
 &emsp;Character&emsp;&emsp;$a &emsp;&emsp;&emsp;&emsp;$.</br>
-&emsp;String&emsp;&emsp;'hi'&emsp;&emsp;&emsp;&emsp;'longer string'</br>
-&emsp;Symbol&emsp;&emsp;#hi&emsp;&emsp;&emsp;&emsp;#SymbolicValue</br>
+&emsp;String&emsp;&emsp;&emsp;'hi'&emsp;&emsp;&emsp;&emsp;'longer string'</br>
+&emsp;Symbol&emsp;&emsp;&emsp;#hi&emsp;&emsp;&emsp;&emsp;#SymbolicValue</br>
 </br>
 &emsp;List (Collection)&emsp;&emsp;#(a b c)</br>
-&emsp;Association&emsp;&emsp;( a -> b)&emsp;&emsp;&emsp;"key/value tuple"</br>
+&emsp;Association&emsp;&emsp;&emsp;( a -> b)&emsp;&emsp;&emsp;"key/value tuple"</br>
 &emsp;Dictionary (Map)&emsp;(a -> b), (c -> d)&emsp;"like a hash map"</br>
 </br>
 &emsp;Logical constants&emsp;true, false, nil</br>
@@ -3649,6 +3662,7 @@ A block that takes two arguments and returns their sum would look like:</br>
 Since Boolean objects and blocks are supported, it's easy to define the standard program logical control flow operations such as if/then/else or do/while. Here are examlpes in Smalltalk</br>
 </br>
 &emsp;(x < 0) ifTrue: [x := x negated]&emsp;&emsp;&emsp;"like if (x < 0) { x = 0 - x; };"</br>
+&emsp;&emsp;&emsp;&emsp;</br>
 &emsp;(x < 0) ifTrue: [x := x negated]&emsp;&emsp;&emsp;"like if (x < 0) { } else { }"</br>
 &emsp;&emsp;&emsp;ifFalse: [x := x - 1]</br>
 </br>
@@ -3735,39 +3749,36 @@ To actually work in Smalltalk, one generally writes code in browsers, then uses 
 For more info, there are several excellent on-line Smallatlk tutorials (just ask Google), see the reference section of this workbook. The Squeak CD-ROM (http://www.squeak.org/Download/SqueakCD) has a whole collection of good Smalltalk tutorials.</br>
 </p><hr><h3 id="Bugs&ThingsToDo">40 - Bugs & ThingsToDo</h3>Known bugs</br>
 </br>
+This is a test release; both the Squeak and Cuis ports are work-in-progress and many features are still to be ported.  See the startup demo script for what works in Siren9c.</br>
+</br>
 There are certainly many bugs in Siren.</br>
 </br>
 Some of the demos don't work any more; sorry.</br>
 </br>
-The SWIG code is no longer supported.</br>
+The SWIG code is no longer supported (sadly)</br>
 </br>
-The old ManualWriter and ComposedTextEditor packages have disappeared, so the list workbook is single-font and can't create web pages any more.</br>
-</br>
-The MIDI and Sound I/O should probably be rewritten to use JUCE or some other modern APIs.</br>
-</br>
-The PortAudio sound output is pretty distorted; I should look into the buffer-passing code.</br>
+The old ManualWriter and ComposedTextEditor packages have disappeared, so the list workbook is single-font.</br>
 </br>
 The display list views have no notion of pages, so longer musical examples don't display well. We need a fancier document model with page layout.</br>
 </br>
+----</br>
 </br>
-ToFixASAP</br>
+</br>
+ToDo</br>
+</br>
+EventListEditor selection </br>
+</br>
+SirenUtility buttons</br>
+</br>
+Workbook clean-up</br>
+</br>
+Score-11</br>
 </br>
 Ostinato doesn't wait right.</br>
 </br>
-Browser: colors wrong on class/inst switches</br>
+Function & Sound editors</br>
 </br>
-FullSystemBrowser: can't compile if no protocol selected, gives "Nothing more expected ->" error</br>
-</br>
-</br>
-For VW 9.0</br>
-</br>
-Port workspace outliner to new framework used by system doc window</br>
-</br>
-Port full system browser to not require OldBrowsers package</br>
 </p><hr><h3 id="Workspace">41 - Workspace</h3>Test Workspace</br>
-</br>
-[WorkbookWindow openFolder: './Siren_Cuis/Workbook' </br>
-&emsp;named: 'Siren Workbook' ].</br>
 </br>
 Undeclared inspect.</br>
 Smalltalk garbageCollect.</br>
@@ -3775,19 +3786,25 @@ Utilities openUsefulExpressions.</br>
 DirectoryEntry currentDirectory.</br>
 </br>
 --------------------------</br>
+Siren GUI demos</br>
+</br>
 </br>
 [DisplayListView exampleRectangles].</br>
 [DisplayListView exampleLines].</br>
 [DisplayListView examplePolylines].</br>
 [DisplayListView exampleVisuals].</br>
-[DisplayListView exampleMixed].</br>
+(DisplayList stringsX: 3000 byY: 6000) display</br>
+[DisplayListView exampleMixed].&emsp;&emsp;"huge display list - takes a while"</br>
 [DisplayList exampleHierarchical display]</br>
 [DisplayVisual displayMusicConstants].</br>
 </br>
 [TimeSequenceView randomExample]</br>
 [PitchTimeView randomExample]</br>
 [HauerSteffensView randomExample]</br>
+[HauerSteffensView cloudExample]</br>
 [DynamicCloud focusExample]</br>
+[HauerSteffensView scaleExample ]</br>
+</br>
 </br>
 --------------------------</br>
 </br>
@@ -3809,14 +3826,14 @@ Squeak testing</br>
 </br>
 Roll tests</br>
 </br>
-((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList asSoundScore play</br>
-((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList playOn: MIDIVoice default</br>
-((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList </br>
-&emsp;&emsp;playOn: OSCVoice cslHost: pMapForCSLSimpleFM</br>
+[((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList asSoundScore play]</br>
+[((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList playOn: MIDIVoice default]</br>
+[((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList </br>
+&emsp;&emsp;playOn: OSCVoice cslHost: pMapForCSLSimpleFM]</br>
 </br>
 ----</br>
 </br>
-MacOSShell new getenv: 'HOME' </br>
+MacOSShell new getenv: 'HOME'  '/Users/stp' </br>
 OSProcess fileExists: '/Users/stp/.profile' </br>
 OSProcess isUnixMac</br>
 </br>

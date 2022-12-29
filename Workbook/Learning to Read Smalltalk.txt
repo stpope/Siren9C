@@ -30,14 +30,14 @@ Expression examples
 
 	Keyword messages - [receiver keyword: operand]
 		anArray at: 1				"get an item from an array"
-		anArray at: 1 put: 7			"assign into an array"
+		anArray at: 1 put: 7		"assign into an array"									"longer keyword message example"
 		aVisualItem displayOn: aMedium at: aPoint clip: aClipRect mask: aMask
-	(messages called  at:put:  or  displayOn:at:clip:mask:)
+				(messages called  at:put:  or  displayOn:at:clip:mask:)
 
 Unary expressions can be concatenated, as in
 	Date today weekday size odd printString
 
-which answers the string "true" or "false," as though it were written,
+which answers "true" or "false," as though it were written,
 	((((Date today) weekday) size) odd) printString
 
 Unary messages bind more strongly than binary messages, as in,
@@ -45,21 +45,21 @@ Unary messages bind more strongly than binary messages, as in,
 this is read as
 	(3 negated) * (4 sqrt)
 
-Keywords bind the weakest, so that the expressions,
+Keywords bind the weakest, so that the expressions,
 	Transcript show: aNumber printString, ' is not equal to ', otherNumber printString.
-	anArray at: index + 1 put: 'hello ', ' world'.
-are to be read as,
+	anArray at: index + 1 put: 'hello ', ' world'.	
+are to be read as,
 	Transcript show: ((aNumber printString), ' is not equal to ', (otherNumber printString)).
 	anArray at: (index + 1) put: ('hello ', ' world').
 
-A single expression can contain at most one keyword message, i.e., the compiler always tries to build the longest composed keyword message it can find in an expression. For example, to copy an element from one position in an array to another, we would have to parenthesize the 2 keyword messages, as follows,
-	anArray at: 1 put: (anArray at: 2)
+A single expression can contain at most one keyword message, i.e., the compiler always tries to build the longest composed keyword message it can find in an expression. For example, to copy an element from one position in an array to another, we would have to parenthesize the 2 keyword messages, as follows,
+	anArray at: 1 put: (anArray at: 2)
 because without the parentheses, the message would be interpreted as at:put:at: (which is probably not implemented).
 
-When several messages are to be sent to the same receiver, and the return values are ignored, one can create a message cascade" by separating the messages with semi-colons instead of periods, and not repeating the receiver, as in,
+When several messages are to be sent to the same receiver, and the return values are ignored, one can create a message cascade" by separating the messages with semi-colons instead of periods, and not repeating the receiver, as in,
 	Transcript show: name printString.
-	Transcript cr.
-which can be written as a cascade or 2 messages sent to Transcript,
+	Transcript cr.	
+which can be written as a cascade or 2 messages sent to Transcript,
 	Transcript show: name printString ; cr.
 
 Comments
@@ -78,14 +78,14 @@ Symbols are special strings that are stored in a table so as to be unique; they 
 
 Immediate Object Formats
 
-	Integer		7				244361990863443121 
+	Integer			7				244361990863443121 
 	Real			3.1415926		2.8879044346233
 	Character		$a 				$.
-	String		'hi'				'longer string'
-	Symbol		#hi				#SymbolicValue
+	String			'hi'				'longer string'
+	Symbol			#hi				#SymbolicValue
 
 	List (Collection)		#(a b c)
-	Association		( a -> b)			"key/value tuple"
+	Association			( a -> b)			"key/value tuple"
 	Dictionary (Map)	(a -> b), (c -> d)	"like a hash map"
 
 	Logical constants	true, false, nil
@@ -101,7 +101,7 @@ A block that takes two arguments and returns their sum would look like:
 
 Since Boolean objects and blocks are supported, it's easy to define the standard program logical control flow operations such as if/then/else or do/while. Here are examlpes in Smalltalk
 
-	(x < 0) ifTrue: [x := x negated]			"like if (x < 0) { x = 0 - x; };"
+	(x < 0) ifTrue: [x := x negated]			"like if (x < 0) { x = 0 - x; };"				
 	(x < 0) ifTrue: [x := x negated]			"like if (x < 0) { } else { }"
 			ifFalse: [x := x - 1]
 

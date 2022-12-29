@@ -2,7 +2,7 @@ Magnitude subclass: #MusicMagnitude	instanceVariableNames: 'value'	classVariab
 
 MusicMagnitudes generally implement precise mixed-mode arithmetic and comparison methods using a per-species generality table and auto-coercion within a species.
 
-The "type abstraction" classes (MDuration, Pitch, Amplitude, etc.) represent "what"; they are never instantiated; their class creation methods answer instances of their species, but they manage coercion within the classes of their species. The "representational abstraction" classes (NominalMagnitude, OrdinalMagnitude, NumericalMagnitude, RatioMagnitude, etc.) represent "how"; they share value model semantics and coercion techniques. Note that the concrete implementation classes therefore answer their species by property model rather than by implementation subclass (i.e., HertzPitch species --> Pitch rather than NumericalMagnitude).
+The "type abstraction" classes (Duration, Pitch, Amplitude, etc.) represent "what"; they are never instantiated; their class creation methods answer instances of their species, but they manage coercion within the classes of their species. The "representational abstraction" classes (NominalMagnitude, OrdinalMagnitude, NumericalMagnitude, RatioMagnitude, etc.) represent "how"; they share value model semantics and coercion techniques. Note that the concrete implementation classes therefore answer their species by property model rather than by implementation subclass (i.e., HertzPitch species --> Pitch rather than NumericalMagnitude).
 
 MusicMagnitudes can have dependents (observers), and send themselves the changed: message when their values are changed.
 
@@ -75,10 +75,10 @@ Instance variables:
 	"Answer the selector to be used in coercing double-dispatching messages."
 
 	^self class ddMsgName! !!MusicMagnitude methodsFor: 'converting'!msec
-	"Answer a MSecondMDuration."
+	"Answer a MSecondDuration."
 
 	^self asMsec! !!MusicMagnitude methodsFor: 'converting'!usec
-	"Answer a MSecondMDuration."
+	"Answer a MSecondDuration."
 
 	^self asUsec! !!MusicMagnitude methodsFor: 'testing'!isImmediate
 	"Answer whether the receiver has an immediate representation."
@@ -190,13 +190,13 @@ See the class methods for generality.
 
 Class inst Vars:
 	generalityTable <Dictionary of (Class ->Integer)> The species generality table
-!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MusicModel class	instanceVariableNames: 'generalityTable'!!MusicModel class methodsFor: 'generality'!generality
-	"Answer the class inst var for the generality table."
+!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MusicModel class	instanceVariableNames: 'generalityTable'!!MusicModel class methodsFor: 'generality' stamp: 'stp 12/28/2022 13:42:58'!generalityTable
+	"Answer the class inst var"
 
-	^generalityTable! !!MusicModel class methodsFor: 'generality' stamp: 'stp 11/20/2022 11:04:46'!generalize: aMag and: otherMag
+	^generalityTable! !!MusicModel class methodsFor: 'generality' stamp: 'stp 12/28/2022 13:38:37'!generalize: aMag and: otherMag
 	"Answer an array of the two arguments with the most general first."
 
-	^(self generalityTable at: aMag class) > (self generalityTable at: otherMag class)
+	^(generalityTable at: aMag class) > (generalityTable at: otherMag class)
 		ifTrue: [Array with: aMag with: otherMag]
 		ifFalse: [Array with: otherMag with: aMag]! !!MusicModel class methodsFor: 'examples'!examples
 
@@ -208,9 +208,17 @@ Class inst Vars:
 	"MDuration generalize: (100 msec) and: ((1/4) beat)"
 	"MDuration generalize: (100 msec) and: (0.3 sec)"
 
-	 (#ff ampl) - (32 velocity)! !MusicModel subclass: #Chroma	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Chroma commentStamp: '<historical>' prior: 0!Class Chroma is the abstract representational class for the pitch and mode-element species.
-Instances of its subclass species are used to model pitches, gamut members, and frequencies.!MusicModel subclass: #Chronos	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Chronos commentStamp: '<historical>' prior: 0!Class Chronos is the abstract representational class for the MDuration and meter species.
-Instances of its subclass species are used to model times, MDurations and metronomes.!MusicModel subclass: #Ergon	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Ergon commentStamp: '<historical>' prior: 0!Class Ergon is the abstract representational class for the amplitude/loudness/dynamic species.
+	 (#ff ampl) - (32 velocity)! !!MusicModel class methodsFor: 'class initialization' stamp: 'stp 12/28/2022 13:45:33'!initialize
+	"Set up the class inst var, a generality table."
+	"MusicModel initialize"
+
+	^self! !!MusicModel class methodsFor: 'class initialization' stamp: 'stp 12/28/2022 13:45:50'!initializeGenerality
+	"Set up the class inst var, a generality table."
+	"MusicModel initializeGenerality"
+
+	MusicModel allSubclassesDo: [ :cl | cl initialize]! !MusicModel subclass: #Chroma	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Chroma commentStamp: '<historical>' prior: 0!Class Chroma is the abstract representational class for the pitch and mode-element species.
+Instances of its subclass species are used to model pitches, gamut members, and frequencies.!MusicModel subclass: #Chronos	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Chronos commentStamp: '<historical>' prior: 0!Class Chronos is the abstract representational class for the duration and meter species.
+Instances of its subclass species are used to model times, durations and metronomes.!MusicModel subclass: #Ergon	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Ergon commentStamp: '<historical>' prior: 0!Class Ergon is the abstract representational class for the amplitude/loudness/dynamic species.
 Instances of its subclass species are used to model loudness values.!Ergon subclass: #Amplitude	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Amplitude commentStamp: '<historical>' prior: 0!Instances of classes whose species is Amplitude are used for the loudness parameters of musical events.
 Amplitudes come in several flavors, as in the classes RatioMagnitude, MIDIVelocity and SymbolicLoudness.
 The class Amplitude is abstract, its class creation method answers an instance of a concrete Amplitude/Loudness class.
@@ -220,35 +228,10 @@ Examples:
 	Amplitude value: 77		"create an MIDI instance - range 0 to 127"
 	Amplitude value: #mp		"create a symbolic instance - range #ppp to #fff"
 
-See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Amplitude class	instanceVariableNames: ''!!Amplitude class methodsFor: 'instance creation' stamp: 'stp 11/28/2022 21:42:54'!value: aValue
-	"Answer a new instance of a member of my species."
-
-	aValue species == Amplitude ifTrue: [^aValue].
-	(aValue isMemberOf: SmallInteger)
-			ifTrue: [^MIDIVelocity new value: aValue].
-	(aValue isKindOf: Float)
-			ifTrue: [^RatioLoudness new value: aValue].
-	(aValue isMemberOf: Fraction)
-			ifTrue: [^RatioLoudness new value: aValue].
-	(aValue isKindOf: CharacterSequence)
-			ifTrue: [^SymbolicLoudness new value: aValue asSymbol].
-	^self new value: aValue! !!Amplitude class methodsFor: 'class constants'!color
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Amplitude class	instanceVariableNames: ''!!Amplitude class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:39'!value: aValue 	"Answer a new instance of a member of my species."	aValue species == Amplitude		ifTrue: [^ aValue].	(aValue isMemberOf: SmallInteger)		ifTrue: [^ MIDIVelocity new value: aValue].	(aValue isKindOf: Float)		ifTrue: [^ RatioLoudness new value: aValue].	(aValue isMemberOf: Fraction)		ifTrue: [^ RatioLoudness new value: aValue].	(aValue isKindOf: String)		ifTrue: [^ SymbolicLoudness new value: aValue asSymbol].	^ self new value: aValue! !!Amplitude class methodsFor: 'class constants'!color
 	"Answer the default color to display instances with."
 
-	^ColorValue blue! !!Amplitude class methodsFor: 'class constants' stamp: 'stp 11/30/2022 11:54:30'!generalityTable
-	"Answer the class inst var"
-
-	^generalityTable! !!Amplitude class methodsFor: 'class constants'!initialize
-	"Set up the class inst var, a generality table."
-	"Amplitude initialize"
-	"Amplitude generalize: (21 dB) and: (88 velocity)"
-	"Amplitude generalize: (#ff ampl) and: (127 velocity)"
-
-	generalityTable :=
-		((DBLoudness -> 80),
-		(RatioLoudness -> 80),
-		(MIDIVelocity -> 40),
-		(SymbolicLoudness -> 20))! !!Amplitude class methodsFor: 'class constants'!initializeGenerality
+	^ColorValue blue! !!Amplitude class methodsFor: 'class constants'!initialize
 	"Set up the class inst var, a generality table."
 	"Amplitude initialize"
 	"Amplitude generalize: (21 dB) and: (88 velocity)"
@@ -259,7 +242,7 @@ See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 		(RatioLoudness -> 80),
 		(MIDIVelocity -> 40),
 		(SymbolicLoudness -> 20))! !!Amplitude class methodsFor: 'class constants'!mostGeneral
-	"Answer the most general-purpose MDuration--relative"
+	"Answer the most general-purpose duration--relative"
 
 	^#asRatio! !!Amplitude class methodsFor: 'class constants'!propertyName
 	"Answer the receiver class's default property name."
@@ -280,74 +263,43 @@ See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 	Transcript show: me printString; cr;
 		show: me asRatio printString; cr;
 		show: me asMIDI printString; cr.
-	me inspect! !Chronos subclass: #MDuration	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!MDuration commentStamp: '<historical>' prior: 0!Instances of classes whose species is MDuration are used for the MDuration parameters of musical events.
-MDurations come in several flavors, as in the classes RatioMDuration, MSecondMDuration and ConditionalMDuration.
-The class MDuration is abstract, its class creation method answers an instance of a concrete MDuration class.
+	me inspect! !Chronos subclass: #MDuration	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!MDuration commentStamp: '<historical>' prior: 0!Instances of classes whose species is MDuration are used for the duration parameters of musical events.
+Durations come in several flavors, as in the classes RatioDuration, MSecondDuration and ConditionalDuration.
+The class MDuration is abstract, its class creation method answers an instance of a concrete Duration class.
 
 Examples:
 	MDuration value: 0.77		"create an instance with seconds as the unit"
-	MDuration value: 770		"create an instance with milliseconds as the unit"
+	Duration value: 770		"create an instance with milliseconds as the unit"
 	MDuration value: 1/4		"create an instance with beats as the unit"
 	MDuration value: [ :x | x > 4]	"create an instance for: 'until x > 4'"
 
-See also the class example.!
-
-!MDuration class methodsFor: 'class constants'!
-
-color
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MDuration class	instanceVariableNames: ''!!MDuration class methodsFor: 'class constants'!color
 	"Answer the default color to display instances with."
 
-	^ColorValue red!
-
-initialize
+	^ColorValue red! !!MDuration class methodsFor: 'class constants' stamp: 'stp 12/28/2022 13:58:18'!initialize
 	"Set up the class inst var, a generality table."
 	"MDuration initialize"
 	"MDuration generalize: (100 msec) and: ((1/4) beat)"
 	"MDuration generalize: (100 msec) and: (0.3 sec)"
-	"(0 msec) + (3767282984535741 usec)"
 
 	generalityTable :=
-		((SecondMDuration -> 40),
-		(RatioMDuration -> 60),
-		(USecondMDuration -> 50),
-		(MSecondMDuration -> 50),
-		(ConditionalMDuration -> 0))!
-
-initializeGeneralities
-	"Set up the class inst var, a generality table."
-	"MDuration initializeGeneralities"
-	"MDuration generalize: (100 msec) and: ((1/4) beat)"
-	"MDuration generalize: (100 msec) and: (0.3 sec)"
-
-	generalityTable :=
-		((SecondMDuration -> 80),
-		(RatioMDuration -> 60),
-		(MSecondMDuration -> 40),
-		(ConditionalMDuration -> 0))!
-
-mostGeneral
+		((SecondDuration -> 40),
+		(RatioDuration -> 60),
+		(USecondDuration -> 50),
+		(MSecondDuration -> 50),
+		(ConditionalDuration -> 0))! !!MDuration class methodsFor: 'class constants'!mostGeneral
 	"Answer the most general-purpose duration--seconds"
 
-	^#asSec!
-
-propertyName
+	^#asSec! !!MDuration class methodsFor: 'class constants'!propertyName
 	"Answer the receiver class's default property name."
 
-	^#duration:!
-
-relativeMember
+	^#duration:! !!MDuration class methodsFor: 'class constants'!relativeMember
 	"Answer the receiver class's species member used as a relative magnitude."
 
-	^RatioMDuration!
-
-species
+	^RatioMDuration! !!MDuration class methodsFor: 'class constants'!species
 	"Answer MDuration."
 
-	^MDuration! !
-
-!MDuration class methodsFor: 'examples'!
-
-example
+	^MDuration! !!MDuration class methodsFor: 'examples'!example
 	"Print a simple message to the transcript demonstrating the various types."
 	"MDuration example"
 
@@ -355,11 +307,7 @@ example
 	me := MDuration value: 1/4.
 	Transcript show: me printString; cr;
 		show: me asMS printString; cr.
-	me inspect! !
-
-!MDuration class methodsFor: 'instance creation'!
-
-value: aValue
+	me inspect! !!MDuration class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 13:35:11'!value: aValue
 	"Answer a new instance of a member of my species."
 
 	| number |
@@ -367,23 +315,23 @@ value: aValue
 	(aValue isMemberOf: SmallInteger)
 		ifTrue: ["aValue < 100
 			ifTrue: [^SecondMDuration new value: aValue]
-			ifFalse: ["^MSecondMDuration new value: aValue"]"].
-	(aValue isKindOf: LimitedPrecisionReal)
-		ifTrue: [^SecondMDuration new value: aValue].
+			ifFalse: ["^MSecondDuration new value: aValue"]"].
+	(aValue isKindOf: Float)
+		ifTrue: [^SecondDuration new value: aValue].
 	(aValue isMemberOf: Fraction)
-		ifTrue: [^RatioMDuration new value: aValue].
+		ifTrue: [^RatioDuration new value: aValue].
 	(aValue isKindOf: String)
 		ifTrue: [number := Number readFrom: (ReadStream on: aValue).
 			number = 0 ifTrue: [^self error: 'Unknown duration value.'].
 			^MDuration value: number].
-	(aValue isMemberOf: BlockContext)
-		ifTrue: [^ConditionalMDuration new value: aValue].
+	(aValue isMemberOf: BlockClosure)
+		ifTrue: [^ConditionalDuration new value: aValue].
 "	^self error: 'Unknown duration type.'"
-	^aValue! !Chronos subclass: #Meter	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Meter commentStamp: '<historical>' prior: 0!Instances of the Meter species model the tempo or metronome used to map MDurations.
+	^aValue! !Chronos subclass: #Meter	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Meter commentStamp: '<historical>' prior: 0!Instances of the Meter species model the tempo or metronome used to map durations.
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
-In the later case, the value instance variable could hold a number, process or block.!Chroma subclass: #ModeMember	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!ModeMember commentStamp: '<historical>' prior: 0!Instances of the ModeMember species model pitches as elements of a mode (e.g., minor) or gamut (e.g., pentatonic on F).
+In the later case, the value instance variable could hold a number, process or block.!Chroma subclass: #ModeMember	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!ModeMember commentStamp: '<historical>' prior: 0!Instances of the ModeMember species model pitches as elements of a mode (e.g., minor) or gamut (e.g., pentatonic on F).
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
-In the later case, the value instance variable could hold a number or pitch, and the mode or gamut could be shared.!MusicMagnitude subclass: #PField	instanceVariableNames: 'name field'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!PField commentStamp: '<historical>' prior: 0!Instances of PField magnitudes are used for arbitrary parameters of musical events oriented towards formats with positional parameter declarations, e.g., Music-V-style notelist formats (see uses).
+In the later case, the value instance variable could hold a number or pitch, and the mode or gamut could be shared.!MusicMagnitude subclass: #PField	instanceVariableNames: 'name field'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!PField commentStamp: '<historical>' prior: 0!Instances of PField magnitudes are used for arbitrary parameters of musical events oriented towards formats with positional parameter declarations, e.g., Music-V-style notelist formats (see uses).
 
 Instance variables:
 	field <Integer> field in the score
@@ -423,25 +371,10 @@ Examples:
 
 Note that new pitch representations such as music11-like pch (4.11 = 11th note in oct 4) or oct (4.1100 = oct4 + 1100 cts) notations can be added by overriding the float-to-Hz or float-to-midi conversions.
 
-See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Pitch class	instanceVariableNames: ''!!Pitch class methodsFor: 'instance creation' stamp: 'stp 12/16/2022 19:06'!value: aValue
-	"Answer a new instance of a member of my species."
-
-	aValue species == Pitch ifTrue: [^aValue].
-	(aValue isInteger)
-			ifTrue: [^MIDIPitch new value: aValue].
-	(aValue isFloat)
-			ifTrue: [^HertzPitch new value: aValue].
-	(aValue isFraction)
-			ifTrue: [^RatioPitch new value: aValue].
-	(aValue isString)
-			ifTrue: [^SymbolicPitch new value: aValue asSymbol].
-	^self new value: aValue! !!Pitch class methodsFor: 'class constants'!color
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Pitch class	instanceVariableNames: ''!!Pitch class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:38'!value: aValue 	"Answer a new instance of a member of my species."	aValue species == Pitch		ifTrue: [^ aValue].	(aValue isMemberOf: SmallInteger)		ifTrue: [^ MIDIPitch new value: aValue].	(aValue isKindOf: Float)		ifTrue: [^ HertzPitch new value: aValue].	(aValue isMemberOf: Fraction)		ifTrue: [^ RatioPitch new value: aValue].	(aValue isKindOf: String)		ifTrue: [^ SymbolicPitch new value: aValue asSymbol].	^ self new value: aValue! !!Pitch class methodsFor: 'class constants'!color
 	"Answer the default color to display instances with."
 
-	^ColorValue green! !!Pitch class methodsFor: 'class constants' stamp: 'stp 11/30/2022 11:53:29'!generalityTable
-	"Answer the class inst var"
-
-	^generalityTable! !!Pitch class methodsFor: 'class constants'!initialize
+	^ColorValue green! !!Pitch class methodsFor: 'class constants'!initialize
 	"Set up the class inst var, a generality table."
 	"Pitch initialize"
 	"Pitch generalize: (#c pitch) and: (21 key)"
@@ -452,19 +385,8 @@ See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 		((HertzPitch -> 80),
 		(RatioPitch -> 60),
 		(MIDIPitch -> 40),
-		(SymbolicPitch -> 20))! !!Pitch class methodsFor: 'class constants'!initializeGenerality
-	"Set up the class inst var, a generality table."
-	"Pitch initializeGenerality"
-	"Pitch generalize: (#c pitch) and: (21 key)"
-	"Pitch generalize: (#c pitch) and: (220 Hz)"
-	"Pitch generalize: (220 Hz) and: (#c pitch)"
-
-	generalityTable :=
-		((HertzPitch -> 80),
-		(RatioPitch -> 60),
-		(MIDIPitch -> 40),
 		(SymbolicPitch -> 20))! !!Pitch class methodsFor: 'class constants'!mostGeneral
-	"Answer the most general-purpose MDuration--Hertz"
+	"Answer the most general-purpose duration--Hertz"
 
 	^#asHz! !!Pitch class methodsFor: 'class constants'!propertyName
 	"Answer the receiver class's default property name."
@@ -510,4 +432,4 @@ In the later case, the value instance variable would hold a 1- or 2-dimensional 
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
 In the later case, the value instance variable could hold a number or point.!Positus subclass: #Spatialization	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Spatialization commentStamp: '<historical>' prior: 0!Instances of the Spatialization species model the characteristics and configuration of room simulations in scores.
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
-In the later case, the value instance variable would hold a record with the geometry or the room, the positions of default sources, and the listener's position and features.!Amplitude initialize!MDuration initialize!Pitch initialize!
+In the later case, the value instance variable would hold a record with the geometry or the room, the positions of default sources, and the listener's position and features.!MusicModel initialize!Amplitude initialize!MDuration initialize!Pitch initialize!

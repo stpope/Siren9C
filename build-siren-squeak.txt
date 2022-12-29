@@ -1,4 +1,4 @@
-åçScript to build Siren in Cuis (Version 9C)
+Script to build Siren in Squeak6.0 (Version 9C)
 	Do not file this in - step through the blocks 1 by 1
 
 Set-up
@@ -7,7 +7,7 @@ Use the Squeak customization process.
 STP world file-ins (Edit the relative paths below to suit your installation)
 
 [ #(
-	'ZPoint.st'	'SqueakChanges.st'
+	'ZPoint.st'	'SqueakChanges.st'	'WorkbookWindowSqueak.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
 	(FileStream fileNamed: ('./Siren9C/FileIns/', file)) fileIn]]
@@ -18,8 +18,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'Music-EventGenerators.st'
 	'Music-EventModifiers.st'
 	'Music-Functions.st'
-"	'Music-Sound.st'	"
-	'Music-PitchScales.st'
+"	'Music-Sound.st'
+"	'Music-PitchScales.st'
 	'Music-PitchClasses.st'
 	'Music-Support.st'
 
@@ -34,23 +34,20 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
-	(FileStream fileNamed: ('./Siren9C/Siren9C_Sources_Squeak/', file)) fileIn]].
-					"Broken - GUI port still WIP"	(FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn
+	(FileStream fileNamed: ('./Siren9C/Siren_Sources_Cuis/', file)) fileIn]].
 ]
-
+	[ (FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn ]
 Clean up
 
-[	MDuration initialize.
-	Pitch initialize.
-	Amplitude initialize.
-]
+[	MusicModel initializeGenerality.	PortModel initialize.	SirenUtility initialize.	SirenSession initialize.	SirenSession new.]
 
-Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)
+Reorganize system categories (for better 6-paned browsing)
 
-[WorkbookWindow openFolder: './Siren9C/Workbook/' named: 'Siren Workbook']
+[WorkbookWindow openFolder: './Siren9C/Workbook/' named: 'Siren Workbook']Screen background image[Form openAsBackground: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' ]
 Undeclared inspect
 Smalltalk garbageCollect
-
+TTFontDescription addFromFileNamed: '/Users/stp/Code/Smalltalk/Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' TTCFont installFromFileNames: #( '/Users/stp/Code/Smalltalk/Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' ).
+
 ToDo
 
 DisplayList editing

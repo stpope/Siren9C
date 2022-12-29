@@ -27,6 +27,6 @@ To make text selection easier in this outline, I generally enclose text that's i
 	[ 100 factorial ] p
 	[ 100 factorial ] i
 
-Now try looking at the code of a Siren event list example; say "debug-it" to the expression below, which will bring up the code in a debugger; in this view, use the top-left menu bar button to "step-into" the block; now you'll be looking at the randomExample: method itself. You can use the 2nd button from the left to single step through this method, inspecting the objects in use with the inspectors at the bottom of the debugger.
+Now try looking at the code of a Siren event list example; say "debug-it" to the expression below, which will bring up the code in a debugger; in this view, use the menu bar below the top-most stack list to "step-into" the block; now you'll be looking at the randomExample: method itself. You can use the "into"| and "over" buttons to single step through this method, inspecting the objects in use with the inspectors at the bottom of the debugger.
 
 	[ EventList randomExample: 20 ] db

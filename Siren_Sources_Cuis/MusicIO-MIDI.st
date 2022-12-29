@@ -1,4 +1,4 @@
-!classDefinition: #MIDIDevice category: #'MusicIO-MIDI'!
+!classDefinition: #MIDIDevice category: 'MusicIO-MIDI'!
 DeviceModel subclass: #MIDIDevice
 	instanceVariableNames: ''
 	classVariableNames: 'MStream'
@@ -193,7 +193,7 @@ mapVoice: aVal
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIDevice class' category: #'MusicIO-MIDI'!
+!classDefinition: 'MIDIDevice class' category: 'MusicIO-MIDI'!
 MIDIDevice class
 	instanceVariableNames: ''!
 
@@ -265,7 +265,7 @@ initialize
 "	MStream := nil! !
 
 
-!classDefinition: #MIDIFB01 category: #'MusicIO-MIDI'!
+!classDefinition: #MIDIFB01 category: 'MusicIO-MIDI'!
 MIDIDevice subclass: #MIDIFB01
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -299,7 +299,7 @@ play: anEvent on: aChannel
 		ifFalse: [port put: bytes length: 6]! !
 
 
-!classDefinition: #MIDIPF70 category: #'MusicIO-MIDI'!
+!classDefinition: #MIDIPF70 category: 'MusicIO-MIDI'!
 MIDIDevice subclass: #MIDIPF70
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -315,7 +315,7 @@ The standard PF70 note command is like:
 
 
 
-!classDefinition: #MIDIPort category: #'MusicIO-MIDI'!
+!classDefinition: #MIDIPort category: 'MusicIO-MIDI'!
 PortModel subclass: #MIDIPort
 	instanceVariableNames: 'inputData readProcess'
 	classVariableNames: 'Streams'
@@ -704,7 +704,7 @@ readControllersFrom: lo to: hi into: array
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIPort class' category: #'MusicIO-MIDI'!
+!classDefinition: 'MIDIPort class' category: 'MusicIO-MIDI'!
 MIDIPort class
 	instanceVariableNames: ''!
 
@@ -1611,7 +1611,7 @@ self initializeMIDIFamilies
 	(Siren at: #GeneralMIDIFamilies) add: ('Sound Effects' asSymbol -> (121 to: 128))! !
 
 
-!classDefinition: #PortMIDIPort category: #'MusicIO-MIDI'!
+!classDefinition: #PortMIDIPort category: 'MusicIO-MIDI'!
 MIDIPort subclass: #PortMIDIPort
 	instanceVariableNames: 'driver'
 	classVariableNames: ''
@@ -1846,7 +1846,7 @@ isActive
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PortMIDIPort class' category: #'MusicIO-MIDI'!
+!classDefinition: 'PortMIDIPort class' category: 'MusicIO-MIDI'!
 PortMIDIPort class
 	instanceVariableNames: ''!
 
@@ -1882,7 +1882,7 @@ initializeData
 	blockSize := 0.! !
 
 
-!classDefinition: #MIDIVoice category: #'MusicIO-MIDI'!
+!classDefinition: #MIDIVoice category: 'MusicIO-MIDI'!
 Voice subclass: #MIDIVoice
 	instanceVariableNames: 'currentTime'
 	classVariableNames: 'Instance UseSingleton'
@@ -1944,7 +1944,7 @@ number
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIVoice class' category: #'MusicIO-MIDI'!
+!classDefinition: 'MIDIVoice class' category: 'MusicIO-MIDI'!
 MIDIVoice class
 	instanceVariableNames: ''!
 
@@ -2051,7 +2051,7 @@ initialize
 	UseSingleton := false.! !
 
 
-!classDefinition: #MIDIDump category: #'MusicIO-MIDI'!
+!classDefinition: #MIDIDump category: 'MusicIO-MIDI'!
 Model subclass: #MIDIDump
 	instanceVariableNames: 'eventList live notesOn startedAt'
 	classVariableNames: ''
@@ -2124,7 +2124,7 @@ live: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIDump class' category: #'MusicIO-MIDI'!
+!classDefinition: 'MIDIDump class' category: 'MusicIO-MIDI'!
 MIDIDump class
 	instanceVariableNames: ''!
 
@@ -2215,7 +2215,7 @@ exampleList
 	list "inspect" edit! !
 
 
-!classDefinition: #PortMIDILibrary category: #'MusicIO-MIDI'!
+!classDefinition: #PortMIDILibrary category: 'MusicIO-MIDI'!
 ExternalLibrary subclass: #PortMIDILibrary
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -2396,7 +2396,7 @@ pm_write_data3: which with: d1 with: d2 with: d3
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PortMIDILibrary class' category: #'MusicIO-MIDI'!
+!classDefinition: 'PortMIDILibrary class' category: 'MusicIO-MIDI'!
 PortMIDILibrary class
 	instanceVariableNames: ''!
 
@@ -2449,7 +2449,7 @@ testANote
 	PortMIDILibrary new pm_test! !
 
 
-!classDefinition: #MIDIPacket category: #'MusicIO-MIDI'!
+!classDefinition: #MIDIPacket category: 'MusicIO-MIDI'!
 Object subclass: #MIDIPacket
 	instanceVariableNames: 'length time flags duration data'
 	classVariableNames: ''
@@ -2655,7 +2655,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIPacket class' category: #'MusicIO-MIDI'!
+!classDefinition: 'MIDIPacket class' category: 'MusicIO-MIDI'!
 MIDIPacket class
 	instanceVariableNames: ''!
 

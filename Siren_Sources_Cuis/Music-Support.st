@@ -1,4 +1,4 @@
-!classDefinition: #EventAssociation category: #'Music-Support'!
+!classDefinition: #EventAssociation category: 'Music-Support'!
 Association subclass: #EventAssociation
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -79,7 +79,7 @@ printOn: aStream
 		ifFalse: [^false]! !
 
 
-!classDefinition: #ScheduleRecord category: #'Music-Support'!
+!classDefinition: #ScheduleRecord category: 'Music-Support'!
 Association subclass: #ScheduleRecord
 	instanceVariableNames: 'next previous loop'
 	classVariableNames: ''
@@ -150,7 +150,7 @@ isActive
 	^value isActive! !
 
 
-!classDefinition: #DeviceModel category: #'Music-Support'!
+!classDefinition: #DeviceModel category: 'Music-Support'!
 Model subclass: #DeviceModel
 	instanceVariableNames: 'name port stream debug in out rate'
 	classVariableNames: ''
@@ -242,7 +242,7 @@ printOn: aStream
 	aStream nextPut: $)! !
 
 
-!classDefinition: #EditorModel category: #'Music-Support'!
+!classDefinition: #EditorModel category: 'Music-Support'!
 Model subclass: #EditorModel
 	instanceVariableNames: 'selections copyBuffer view'
 	classVariableNames: ''
@@ -282,7 +282,7 @@ view: aView
 	view := aView! !
 
 
-!classDefinition: #EventScheduler category: #'Music-Support'!
+!classDefinition: #EventScheduler category: 'Music-Support'!
 Model subclass: #EventScheduler
 	instanceVariableNames: 'appointments timers threads running doWait startTime delay logTime'
 	classVariableNames: 'ESchedule'
@@ -598,7 +598,7 @@ release
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventScheduler class' category: #'Music-Support'!
+!classDefinition: 'EventScheduler class' category: 'Music-Support'!
 EventScheduler class
 	instanceVariableNames: ''!
 
@@ -769,7 +769,7 @@ instance
 	^ ESchedule! !
 
 
-!classDefinition: #PortModel category: #'Music-Support'!
+!classDefinition: #PortModel category: 'Music-Support'!
 Model subclass: #PortModel
 	instanceVariableNames: 'name status device in out'
 	classVariableNames: ''
@@ -842,7 +842,7 @@ status: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PortModel class' category: #'Music-Support'!
+!classDefinition: 'PortModel class' category: 'Music-Support'!
 PortModel class
 	instanceVariableNames: 'instance useSingleton'!
 
@@ -991,7 +991,7 @@ sampleRate: value
 	rate := value! !
 
 
-!classDefinition: #SirenSession category: #'Music-Support'!
+!classDefinition: #SirenSession category: 'Music-Support'!
 Model subclass: #SirenSession
 	instanceVariableNames: 'scheduleList scheduleListText verbosity clock startedAt inChannels blockSize sampleRate outChannels interfaceParams transport eventList sound voice timer soundPort midiPort loadedSounds loadedLists oscAddress defaultVoiceClass'
 	classVariableNames: 'EventLists Sounds Voices'
@@ -1807,7 +1807,7 @@ update: anAspectSymbol with: aParameter from: aSender
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SirenSession class' category: #'Music-Support'!
+!classDefinition: 'SirenSession class' category: 'Music-Support'!
 SirenSession class
 	instanceVariableNames: 'instance useSingleton'!
 
@@ -2439,7 +2439,7 @@ release
 		instance := nil]! !
 
 
-!classDefinition: #SirenUtility category: #'Music-Support'!
+!classDefinition: #SirenUtility category: 'Music-Support'!
 Model subclass: #SirenUtility
 	instanceVariableNames: ''
 	classVariableNames: 'DataDir DefaultMIDIIn DefaultMIDIOut DefaultOSCHost DefaultOSCPort LoggingStream ScoreDir SoundDir Verbosity'
@@ -2457,7 +2457,7 @@ Class Variables:
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SirenUtility class' category: #'Music-Support'!
+!classDefinition: 'SirenUtility class' category: 'Music-Support'!
 SirenUtility class
 	instanceVariableNames: ''!
 
@@ -2941,7 +2941,7 @@ nextName: aName type: extension
 	^(base asString, Filename separatorString, aName, ind, extension)! !
 
 
-!classDefinition: #Timer category: #'Music-Support'!
+!classDefinition: #Timer category: 'Music-Support'!
 Model subclass: #Timer
 	instanceVariableNames: 'startTime accumulator lastUpdate interval running name'
 	classVariableNames: ''
@@ -3060,7 +3060,7 @@ stop
 	self changed! !
 
 
-!classDefinition: #SEventQueue category: #'Music-Support'!
+!classDefinition: #SEventQueue category: 'Music-Support'!
 SequenceableCollection subclass: #SEventQueue
 	instanceVariableNames: 'first last'
 	classVariableNames: 'CurrentRecord RecordPool'
@@ -3241,7 +3241,7 @@ printOn: aStream
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SEventQueue class' category: #'Music-Support'!
+!classDefinition: 'SEventQueue class' category: 'Music-Support'!
 SEventQueue class
 	instanceVariableNames: ''!
 

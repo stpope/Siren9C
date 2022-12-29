@@ -1,4 +1,4 @@
-!classDefinition: #DisplayItem category: #'MusicUI-DisplayLists'!
+!classDefinition: #DisplayItem category: 'MusicUI-DisplayLists'!
 Object subclass: #DisplayItem
 	instanceVariableNames: 'model offset color container'
 	classVariableNames: ''
@@ -206,7 +206,7 @@ computePreferredBounds
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayItem class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayItem class' category: 'MusicUI-DisplayLists'!
 DisplayItem class
 	instanceVariableNames: ''!
 
@@ -223,7 +223,7 @@ offset: aPt
 	^self new offset: aPt! !
 
 
-!classDefinition: #DisplayLine category: #'MusicUI-DisplayLists'!
+!classDefinition: #DisplayLine category: 'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayLine
 	instanceVariableNames: 'width extent'
 	classVariableNames: ''
@@ -320,7 +320,7 @@ bounds
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayLine class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayLine class' category: 'MusicUI-DisplayLists'!
 DisplayLine class
 	instanceVariableNames: ''!
 
@@ -337,7 +337,7 @@ offset: oPoint extent: ePoint
 	^((self new) offset: oPoint) extent: ePoint! !
 
 
-!classDefinition: #DisplayRectangle category: #'MusicUI-DisplayLists'!
+!classDefinition: #DisplayRectangle category: 'MusicUI-DisplayLists'!
 DisplayLine subclass: #DisplayRectangle
 	instanceVariableNames: 'fill stroke'
 	classVariableNames: ''
@@ -394,7 +394,7 @@ drawOn: aCanvas
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayRectangle class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayRectangle class' category: 'MusicUI-DisplayLists'!
 DisplayRectangle class
 	instanceVariableNames: ''!
 
@@ -406,7 +406,7 @@ rectangleExample
 	(DisplayList rectanglesX: 600 byY: 600) display! !
 
 
-!classDefinition: #DisplayPolyline category: #'MusicUI-DisplayLists'!
+!classDefinition: #DisplayPolyline category: 'MusicUI-DisplayLists'!
 DisplayRectangle subclass: #DisplayPolyline
 	instanceVariableNames: 'vertices'
 	classVariableNames: ''
@@ -487,7 +487,7 @@ drawOn: aCanvas
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayPolyline class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayPolyline class' category: 'MusicUI-DisplayLists'!
 DisplayPolyline class
 	instanceVariableNames: ''!
 
@@ -512,7 +512,7 @@ polylineExample
 	(DisplayList polylinesX: 600 byY: 600) display! !
 
 
-!classDefinition: #DisplayList category: #'MusicUI-DisplayLists'!
+!classDefinition: #DisplayList category: 'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayList
 	instanceVariableNames: 'components'
 	classVariableNames: ''
@@ -919,7 +919,7 @@ addWrapper: aVisualWrapper
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayList class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayList class' category: 'MusicUI-DisplayLists'!
 DisplayList class
 	instanceVariableNames: ''!
 
@@ -1256,7 +1256,7 @@ visualsX: x byY: y
 	^dList! !
 
 
-!classDefinition: #DisplayString category: #'MusicUI-DisplayLists'!
+!classDefinition: #DisplayString category: 'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayString
 	instanceVariableNames: 'string font'
 	classVariableNames: ''
@@ -1362,7 +1362,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayString class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayString class' category: 'MusicUI-DisplayLists'!
 DisplayString class
 	instanceVariableNames: ''!
 
@@ -1393,7 +1393,7 @@ string: aString offset: oPoint
 	^self new string: aString; offset: oPoint! !
 
 
-!classDefinition: #DisplayVisual category: #'MusicUI-DisplayLists'!
+!classDefinition: #DisplayVisual category: 'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayVisual
 	instanceVariableNames: 'image'
 	classVariableNames: ''
@@ -1498,7 +1498,7 @@ drawOn: aCanvas
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayVisual class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayVisual class' category: 'MusicUI-DisplayLists'!
 DisplayVisual class
 	instanceVariableNames: ''!
 
@@ -1642,7 +1642,7 @@ visual: aV origin: aPt
 	^(super new initialize) visual: aV; offset: aPt! !
 
 
-!classDefinition: #OpaqueImage category: #'MusicUI-DisplayLists'!
+!classDefinition: #OpaqueImage category: 'MusicUI-DisplayLists'!
 Object subclass: #OpaqueImage
 	instanceVariableNames: 'image mask'
 	classVariableNames: ''
@@ -1675,7 +1675,7 @@ mask: aForm
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OpaqueImage class' category: #'MusicUI-DisplayLists'!
+!classDefinition: 'OpaqueImage class' category: 'MusicUI-DisplayLists'!
 OpaqueImage class
 	instanceVariableNames: ''!
 

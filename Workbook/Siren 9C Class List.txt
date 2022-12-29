@@ -1,5 +1,5 @@
 
-Siren 9C (Cuis) Class list
+Siren 9C (Squeak/Cuis) Class list
 
 Category Music-Models-Representation
 

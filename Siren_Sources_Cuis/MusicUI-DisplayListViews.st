@@ -1,4 +1,4 @@
-!classDefinition: #InnerDisplayListMorph category: #'MusicUI-DisplayListViews'!
+!classDefinition: #InnerDisplayListMorph category: 'MusicUI-DisplayListViews'!
 InnerPluggableMorph subclass: #InnerDisplayListMorph
 	instanceVariableNames: 'dList selection isDragging dragPos'
 	classVariableNames: ''
@@ -152,7 +152,7 @@ select: item
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'InnerDisplayListMorph class' category: #'MusicUI-DisplayListViews'!
+!classDefinition: 'InnerDisplayListMorph class' category: 'MusicUI-DisplayListViews'!
 InnerDisplayListMorph class
 	instanceVariableNames: ''!
 
@@ -176,7 +176,7 @@ backgroundColor
 	^Color lightYellow muchLighter! !
 
 
-!classDefinition: #DisplayListView category: #'MusicUI-DisplayListViews'!
+!classDefinition: #DisplayListView category: 'MusicUI-DisplayListViews'!
 PluggableScrollPane subclass: #DisplayListView
 	instanceVariableNames: 'dList backgroundColor background page'
 	classVariableNames: 'Constants'
@@ -285,7 +285,7 @@ inspectSelection
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayListView class' category: #'MusicUI-DisplayListViews'!
+!classDefinition: 'DisplayListView class' category: 'MusicUI-DisplayListViews'!
 DisplayListView class
 	instanceVariableNames: ''!
 
@@ -369,7 +369,7 @@ constants
 	^Constants! !
 
 
-!classDefinition: #DisplayListWindow category: #'MusicUI-DisplayListViews'!
+!classDefinition: #DisplayListWindow category: 'MusicUI-DisplayListViews'!
 SystemWindow subclass: #DisplayListWindow
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -384,7 +384,7 @@ buildMorphicWindow
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayListWindow class' category: #'MusicUI-DisplayListViews'!
+!classDefinition: 'DisplayListWindow class' category: 'MusicUI-DisplayListViews'!
 DisplayListWindow class
 	instanceVariableNames: ''!
 
@@ -396,7 +396,7 @@ open: aDLV label: lab
 	super open: aDLV label: lab! !
 
 
-!classDefinition: #DisplayListController category: #'MusicUI-DisplayListViews'!
+!classDefinition: #DisplayListController category: 'MusicUI-DisplayListViews'!
 Object subclass: #DisplayListController
 	instanceVariableNames: ''
 	classVariableNames: ''

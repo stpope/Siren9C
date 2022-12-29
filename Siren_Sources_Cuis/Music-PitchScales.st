@@ -1,4 +1,4 @@
-!classDefinition: #Scale category: #'Music-PitchScales'!
+!classDefinition: #Scale category: 'Music-PitchScales'!
 Object subclass: #Scale
 	instanceVariableNames: 'root notes'
 	classVariableNames: 'AllNotes'
@@ -387,7 +387,7 @@ pitchClassFor: p
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Scale class' category: #'Music-PitchScales'!
+!classDefinition: 'Scale class' category: 'Music-PitchScales'!
 Scale class
 	instanceVariableNames: ''!
 
@@ -457,7 +457,7 @@ initialize
 	AllNotes := Dictionary new! !
 
 
-!classDefinition: #ChromaticScale category: #'Music-PitchScales'!
+!classDefinition: #ChromaticScale category: 'Music-PitchScales'!
 Scale subclass: #ChromaticScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -466,7 +466,7 @@ Scale subclass: #ChromaticScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ChromaticScale class' category: #'Music-PitchScales'!
+!classDefinition: 'ChromaticScale class' category: 'Music-PitchScales'!
 ChromaticScale class
 	instanceVariableNames: ''!
 
@@ -476,7 +476,7 @@ intervalList
 	^#(#unison #augmentedUnison #majorSecond #minorThird #majorThird #perfectFourth #augmentedFourth #perfectFifth #minorSixth #majorSixth #minorSeventh #majorSeventh )! !
 
 
-!classDefinition: #DoubleHarmonic category: #'Music-PitchScales'!
+!classDefinition: #DoubleHarmonic category: 'Music-PitchScales'!
 Scale subclass: #DoubleHarmonic
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -485,7 +485,7 @@ Scale subclass: #DoubleHarmonic
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DoubleHarmonic class' category: #'Music-PitchScales'!
+!classDefinition: 'DoubleHarmonic class' category: 'Music-PitchScales'!
 DoubleHarmonic class
 	instanceVariableNames: ''!
 
@@ -496,7 +496,7 @@ intervalList
 	^#(#unison #minorSecond #majorThird #perfectFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #HarmonicMinorScale category: #'Music-PitchScales'!
+!classDefinition: #HarmonicMinorScale category: 'Music-PitchScales'!
 Scale subclass: #HarmonicMinorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -527,7 +527,7 @@ enharmonicScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'HarmonicMinorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'HarmonicMinorScale class' category: 'Music-PitchScales'!
 HarmonicMinorScale class
 	instanceVariableNames: ''!
 
@@ -540,7 +540,7 @@ intervalList
 	^#(#unison #second #minorThird #perfectFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #HungarianMinor category: #'Music-PitchScales'!
+!classDefinition: #HungarianMinor category: 'Music-PitchScales'!
 Scale subclass: #HungarianMinor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -549,7 +549,7 @@ Scale subclass: #HungarianMinor
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'HungarianMinor class' category: #'Music-PitchScales'!
+!classDefinition: 'HungarianMinor class' category: 'Music-PitchScales'!
 HungarianMinor class
 	instanceVariableNames: ''!
 
@@ -574,7 +574,7 @@ intervalList
 	^#(#unison #second #minorThird #augmentedFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #MajorScale category: #'Music-PitchScales'!
+!classDefinition: #MajorScale category: 'Music-PitchScales'!
 Scale subclass: #MajorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -603,7 +603,7 @@ enharmonicScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MajorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'MajorScale class' category: 'Music-PitchScales'!
 MajorScale class
 	instanceVariableNames: ''!
 
@@ -616,7 +616,7 @@ intervalList
 	^#(#unison #second #majorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #MelodicMinorScale category: #'Music-PitchScales'!
+!classDefinition: #MelodicMinorScale category: 'Music-PitchScales'!
 Scale subclass: #MelodicMinorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -647,7 +647,7 @@ enharmonicScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MelodicMinorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'MelodicMinorScale class' category: 'Music-PitchScales'!
 MelodicMinorScale class
 	instanceVariableNames: ''!
 
@@ -660,7 +660,7 @@ intervalList
 	^#(#unison #second #minorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #NeapolitanMajor category: #'Music-PitchScales'!
+!classDefinition: #NeapolitanMajor category: 'Music-PitchScales'!
 Scale subclass: #NeapolitanMajor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -669,7 +669,7 @@ Scale subclass: #NeapolitanMajor
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'NeapolitanMajor class' category: #'Music-PitchScales'!
+!classDefinition: 'NeapolitanMajor class' category: 'Music-PitchScales'!
 NeapolitanMajor class
 	instanceVariableNames: ''!
 
@@ -680,7 +680,7 @@ intervalList
 	^#(#unison #minorSecond #minorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #NeapolitanMinor category: #'Music-PitchScales'!
+!classDefinition: #NeapolitanMinor category: 'Music-PitchScales'!
 Scale subclass: #NeapolitanMinor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -692,7 +692,7 @@ Scale subclass: #NeapolitanMinor
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'NeapolitanMinor class' category: #'Music-PitchScales'!
+!classDefinition: 'NeapolitanMinor class' category: 'Music-PitchScales'!
 NeapolitanMinor class
 	instanceVariableNames: ''!
 
@@ -703,7 +703,7 @@ intervalList
 	^#(#unison #minorSecond #minorThird #perfectFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #Oriental category: #'Music-PitchScales'!
+!classDefinition: #Oriental category: 'Music-PitchScales'!
 Scale subclass: #Oriental
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -712,7 +712,7 @@ Scale subclass: #Oriental
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Oriental class' category: #'Music-PitchScales'!
+!classDefinition: 'Oriental class' category: 'Music-PitchScales'!
 Oriental class
 	instanceVariableNames: ''!
 
@@ -723,7 +723,7 @@ intervalList
 	^#(#unison #minorSecond #minorThird #perfectFourth #diminishedFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #PentatonicScale category: #'Music-PitchScales'!
+!classDefinition: #PentatonicScale category: 'Music-PitchScales'!
 Scale subclass: #PentatonicScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -732,7 +732,7 @@ Scale subclass: #PentatonicScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PentatonicScale class' category: #'Music-PitchScales'!
+!classDefinition: 'PentatonicScale class' category: 'Music-PitchScales'!
 PentatonicScale class
 	instanceVariableNames: ''!
 
@@ -742,7 +742,7 @@ intervalList
 	^#(#unison #majorSecond #perfectFourth #perfectFifth #majorSixth)! !
 
 
-!classDefinition: #PseudoMinorScale category: #'Music-PitchScales'!
+!classDefinition: #PseudoMinorScale category: 'Music-PitchScales'!
 Scale subclass: #PseudoMinorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -751,7 +751,7 @@ Scale subclass: #PseudoMinorScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PseudoMinorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'PseudoMinorScale class' category: 'Music-PitchScales'!
 PseudoMinorScale class
 	instanceVariableNames: ''!
 

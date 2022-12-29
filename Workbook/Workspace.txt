@@ -1,28 +1,24 @@
 Test Workspace
 
-[WorkbookWindow openFolder: './Siren_Cuis/Workbook' 
-	named: 'Siren Workbook' ].
-
 Undeclared inspect.
 Smalltalk garbageCollect.
 Utilities openUsefulExpressions.
 DirectoryEntry currentDirectory.
 
 --------------------------
-
+Siren GUI demos
 [DisplayListView exampleRectangles].
 [DisplayListView exampleLines].
 [DisplayListView examplePolylines].
-[DisplayListView exampleVisuals].
-[DisplayListView exampleMixed].
+[DisplayListView exampleVisuals].(DisplayList stringsX: 3000 byY: 6000) display
+[DisplayListView exampleMixed].		"huge display list - takes a while"
 [DisplayList exampleHierarchical display]
 [DisplayVisual displayMusicConstants].
 
 [TimeSequenceView randomExample]
 [PitchTimeView randomExample]
-[HauerSteffensView randomExample]
-[DynamicCloud focusExample]
-
+[HauerSteffensView randomExample][HauerSteffensView cloudExample][DynamicCloud focusExample]
+[HauerSteffensView scaleExample ]
 --------------------------
 
 FFIPluginTests new testLoadSymbolFromModule
@@ -43,14 +39,14 @@ Squeak testing
 
 Roll tests
 
-((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList asSoundScore play
-((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList playOn: MIDIVoice default
-((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList 
-		playOn: OSCVoice cslHost: pMapForCSLSimpleFM
+[((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList asSoundScore play]
+[((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList playOn: MIDIVoice default]
+[((Roll length: 6000 rhythm: 60 note: 60) ampl: 100) eventList 
+		playOn: OSCVoice cslHost: pMapForCSLSimpleFM]
 
 ----
 
-MacOSShell new getenv: 'HOME' 
+MacOSShell new getenv: 'HOME'  '/Users/stp' 
 OSProcess fileExists: '/Users/stp/.profile' 
 OSProcess isUnixMac
 
@@ -120,5 +116,8 @@ As packages
 	[ :cat |
 	(CodePackage named: cat
 		createIfAbsent: true 
+		registerIfNew: true) save] ]
+	
+nt: true 
 		registerIfNew: true) save] ]
 	

@@ -16,11 +16,11 @@ See the method SirenUtility class initialize, with which you can customize Siren
 	DefaultMIDIOut := 10.
 	DefaultOSCHost := #[127 0 0 1].
 	DefaultOSCPort := 54321.
-	Verbosity := 1.								"0 = pretty silent, only error logging;
-									 1 = medium-verbose IO interface logging; 
-									 2 = full scheduler and verbose interface logging"
+	Verbosity := 1.						"0 = pretty silent, only error logging;
+										 1 = medium-verbose IO interface logging; 
+										 2 = full scheduler and verbose interface logging"
 	[...]
-									"Set search paths"
+										"Set search paths"
 	self addDir: 'Databases' to: SoundDir.	"STP-specific"
 	self addDir: '3-Credo/*' to: SoundDir.	"You can add using wildcards"
 
@@ -34,10 +34,10 @@ Siren uses several external interfaces (based on the user primitives) for access
 
 You need to have these libraries installed (normally in a directory such as /usr/local/lib), and compile and link the C-language interface libraries in the subdirectory DLLCC for sound or MIDI I/O to work with Siren. Binaries are available for Mac OSX. There are full sources and pre-compiled versions of the required libraries on the CSL web site; look at http://FASTLabInc.com/CSL.
 
-To get CSL, 	http://FASTLabInc.com/CSL
+To get CSL visit, 	http://FASTLabInc.com/CSL   or   https://github.com/stpope/CSL7
 
 
-Testing MIDI I/O
+Testing MIDI I/O
 This will open the MIDI driver and play a note; printing messages to the Transcript.
 	[MIDIPort testANote]
 Test this using a MIDI dump utility (such as MIDIMonitor), or a soft-synth, or outboard MIDI hardware. There are many other tests in class MIDIPort.
@@ -83,7 +83,7 @@ Siren House-keeping
 To clear out temp. event lists, use,
 	[SirenSession flushTempEventLists]
 or to flush all,
-	[SirenSession flushAllEventLists]
+	[SirenSession instance freeLists]
 
 To flush and close down the scheduler,
 	[Schedule interrupt; flush; release]

@@ -1,4 +1,4 @@
-!classDefinition: #EventListPanel category: #'MusicUI-Editors'!
+!classDefinition: #EventListPanel category: 'MusicUI-Editors'!
 Model subclass: #EventListPanel
 	instanceVariableNames: 'editorView scoreView textView'
 	classVariableNames: ''
@@ -46,7 +46,7 @@ textView
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventListPanel class' category: #'MusicUI-Editors'!
+!classDefinition: 'EventListPanel class' category: 'MusicUI-Editors'!
 EventListPanel class
 	instanceVariableNames: ''!
 
@@ -57,7 +57,7 @@ windowSpec
 	! !
 
 
-!classDefinition: #EventListText category: #'MusicUI-Editors'!
+!classDefinition: #EventListText category: 'MusicUI-Editors'!
 Model subclass: #EventListText
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -65,7 +65,7 @@ Model subclass: #EventListText
 	category: 'MusicUI-Editors'!
 
 
-!classDefinition: #EventListTreeEditor category: #'MusicUI-Editors'!
+!classDefinition: #EventListTreeEditor category: 'MusicUI-Editors'!
 Model subclass: #EventListTreeEditor
 	instanceVariableNames: 'scoreView listTree'
 	classVariableNames: ''
@@ -99,7 +99,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventListTreeEditor class' category: #'MusicUI-Editors'!
+!classDefinition: 'EventListTreeEditor class' category: 'MusicUI-Editors'!
 EventListTreeEditor class
 	instanceVariableNames: ''!
 
@@ -115,7 +115,7 @@ treeMenu
 	^Menu labelArray: #(copy cut paste again undo)! !
 
 
-!classDefinition: #EventListTreeItem category: #'MusicUI-Editors'!
+!classDefinition: #EventListTreeItem category: 'MusicUI-Editors'!
 Model subclass: #EventListTreeItem
 	instanceVariableNames: 'lists'
 	classVariableNames: ''
@@ -139,7 +139,7 @@ hasChildren
 	^lists notEmpty! !
 
 
-!classDefinition: #ScoreView category: #'MusicUI-Editors'!
+!classDefinition: #ScoreView category: 'MusicUI-Editors'!
 Model subclass: #ScoreView
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -147,7 +147,7 @@ Model subclass: #ScoreView
 	category: 'MusicUI-Editors'!
 
 
-!classDefinition: #TimeSequenceView category: #'MusicUI-Editors'!
+!classDefinition: #TimeSequenceView category: 'MusicUI-Editors'!
 DisplayListView subclass: #TimeSequenceView
 	instanceVariableNames: 'clefForm xScaleDefault xScale xColor yColor headColor clefColor itemAccessors'
 	classVariableNames: ''
@@ -440,7 +440,7 @@ update: ignored
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TimeSequenceView class' category: #'MusicUI-Editors'!
+!classDefinition: 'TimeSequenceView class' category: 'MusicUI-Editors'!
 TimeSequenceView class
 	instanceVariableNames: ''!
 
@@ -496,7 +496,7 @@ inset
 	^16@16! !
 
 
-!classDefinition: #PhraseView category: #'MusicUI-Editors'!
+!classDefinition: #PhraseView category: 'MusicUI-Editors'!
 TimeSequenceView subclass: #PhraseView
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -560,7 +560,7 @@ itemFor: anAss
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PhraseView class' category: #'MusicUI-Editors'!
+!classDefinition: 'PhraseView class' category: 'MusicUI-Editors'!
 PhraseView class
 	instanceVariableNames: ''!
 
@@ -573,7 +573,7 @@ example
 		((EventListEditor new) eventList: (EventList named: #phrase1) copy)! !
 
 
-!classDefinition: #PitchTimeView category: #'MusicUI-Editors'!
+!classDefinition: #PitchTimeView category: 'MusicUI-Editors'!
 TimeSequenceView subclass: #PitchTimeView
 	instanceVariableNames: 'pitchOffset yScale yScaleDefault'
 	classVariableNames: ''
@@ -726,7 +726,7 @@ defaultControllerClass
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PitchTimeView class' category: #'MusicUI-Editors'!
+!classDefinition: 'PitchTimeView class' category: 'MusicUI-Editors'!
 PitchTimeView class
 	instanceVariableNames: ''!
 
@@ -804,7 +804,7 @@ addButtonsOn: me for: dled to: container in: rect
 		to: container.! !
 
 
-!classDefinition: #HauerSteffensView category: #'MusicUI-Editors'!
+!classDefinition: #HauerSteffensView category: 'MusicUI-Editors'!
 PitchTimeView subclass: #HauerSteffensView
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -883,7 +883,7 @@ initForm
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'HauerSteffensView class' category: #'MusicUI-Editors'!
+!classDefinition: 'HauerSteffensView class' category: 'MusicUI-Editors'!
 HauerSteffensView class
 	instanceVariableNames: ''!
 
@@ -937,7 +937,7 @@ inset
 	^16@16! !
 
 
-!classDefinition: #PositionTimeView category: #'MusicUI-Editors'!
+!classDefinition: #PositionTimeView category: 'MusicUI-Editors'!
 PitchTimeView subclass: #PositionTimeView
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -965,7 +965,7 @@ initialize
 	pitchOffset := 40! !
 
 
-!classDefinition: #TimeSequenceController category: #'MusicUI-Editors'!
+!classDefinition: #TimeSequenceController category: 'MusicUI-Editors'!
 DisplayListController subclass: #TimeSequenceController
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1072,7 +1072,7 @@ initializeMenu
 			values: #(group doInspect play pan redraw storeList readList)))"! !
 
 
-!classDefinition: #PitchTimeController category: #'MusicUI-Editors'!
+!classDefinition: #PitchTimeController category: 'MusicUI-Editors'!
 TimeSequenceController subclass: #PitchTimeController
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1096,7 +1096,7 @@ selectFromPoint: aPoint toPoint: anotherPoint
 	view invalidate! !
 
 
-!classDefinition: #EventListEditor category: #'MusicUI-Editors'!
+!classDefinition: #EventListEditor category: 'MusicUI-Editors'!
 Object subclass: #EventListEditor
 	instanceVariableNames: 'eventList ostinato defaultEvent'
 	classVariableNames: ''
@@ -1263,7 +1263,7 @@ release
 	list release! !
 
 
-!classDefinition: #EventListFileViewer category: #'MusicUI-Editors'!
+!classDefinition: #EventListFileViewer category: 'MusicUI-Editors'!
 Object subclass: #EventListFileViewer
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1303,7 +1303,7 @@ playFile
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventListFileViewer class' category: #'MusicUI-Editors'!
+!classDefinition: 'EventListFileViewer class' category: 'MusicUI-Editors'!
 EventListFileViewer class
 	instanceVariableNames: ''!
 

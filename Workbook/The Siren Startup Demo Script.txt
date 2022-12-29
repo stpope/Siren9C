@@ -99,7 +99,7 @@ Play two-voice "counterpoint" on the note list score file voices.
 			addAll: (EventList randomExample: 20).
 	vox play: list.
 	vox close.
-	(Filename named: 'test.cs') edit] d
+	(FileStream fileNamed: 'test.cs') edit] d
 
 Here's another example of creating a simple melody with a terse format
 

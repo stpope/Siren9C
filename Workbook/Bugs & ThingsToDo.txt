@@ -6,19 +6,13 @@ There are certainly many bugs in Siren.
 
 Some of the demos don't work any more; sorry.
 
-The SWIG code is no longer supported.
+The SWIG code is no longer supported (sadly)
 
 The old ManualWriter and ComposedTextEditor packages have disappeared, so the list workbook is single-font.
 
-The MIDI and Sound I/O should probably be rewritten to use JUCE or some other modern APIs.
-
 The display list views have no notion of pages, so longer musical examples don't display well. We need a fancier document model with page layout.
 
-
-ToFixASAP
-
-Ostinato doesn't wait right.
-
-Browser: colors wrong on class/inst switches
+----
+ToDoEventListEditor selection SirenUtility buttonsWorkbook clean-upScore-11Ostinato doesn't wait right.Function & Sound editors on class/inst switches
 
 FullSystemBrowser: can't compile if no protocol selected, gives "Nothing more expected ->" error

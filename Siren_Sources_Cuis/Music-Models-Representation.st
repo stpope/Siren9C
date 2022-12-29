@@ -1,4 +1,4 @@
-!classDefinition: #MusicMagnitude category: #'Music-Models-Representation'!
+!classDefinition: #MusicMagnitude category: 'Music-Models-Representation'!
 Magnitude subclass: #MusicMagnitude
 	instanceVariableNames: 'value'
 	classVariableNames: ''
@@ -264,7 +264,7 @@ hash
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicMagnitude class' category: #'Music-Models-Representation'!
+!classDefinition: 'MusicMagnitude class' category: 'Music-Models-Representation'!
 MusicMagnitude class
 	instanceVariableNames: ''!
 
@@ -298,7 +298,7 @@ relativeMember
 	^self subclassResponsibility! !
 
 
-!classDefinition: #MusicModel category: #'Music-Models-Representation'!
+!classDefinition: #MusicModel category: 'Music-Models-Representation'!
 MusicMagnitude subclass: #MusicModel
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -316,7 +316,7 @@ Class inst Vars:
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicModel class' category: #'Music-Models-Representation'!
+!classDefinition: 'MusicModel class' category: 'Music-Models-Representation'!
 MusicModel class
 	instanceVariableNames: 'generalityTable'!
 
@@ -364,7 +364,7 @@ initializeGenerality
 	MusicModel allSubclassesDo: [ :cl | cl initialize]! !
 
 
-!classDefinition: #Chroma category: #'Music-Models-Representation'!
+!classDefinition: #Chroma category: 'Music-Models-Representation'!
 MusicModel subclass: #Chroma
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -376,7 +376,7 @@ Instances of its subclass species are used to model pitches, gamut members, and 
 
 
 
-!classDefinition: #ModeMember category: #'Music-Models-Representation'!
+!classDefinition: #ModeMember category: 'Music-Models-Representation'!
 Chroma subclass: #ModeMember
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -389,7 +389,7 @@ In the later case, the value instance variable could hold a number or pitch, and
 
 
 
-!classDefinition: #Pitch category: #'Music-Models-Representation'!
+!classDefinition: #Pitch category: 'Music-Models-Representation'!
 Chroma subclass: #Pitch
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -414,7 +414,7 @@ See also the class example.!
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Pitch class' category: #'Music-Models-Representation'!
+!classDefinition: 'Pitch class' category: 'Music-Models-Representation'!
 Pitch class
 	instanceVariableNames: ''!
 
@@ -514,7 +514,7 @@ exampleAdC
 	"Note that asMIDI and asSymbol can now be used to round pitches to 	chromatics, while asFracMIDI and asFracSymbol keep microtonal 	precision."! !
 
 
-!classDefinition: #Chronos category: #'Music-Models-Representation'!
+!classDefinition: #Chronos category: 'Music-Models-Representation'!
 MusicModel subclass: #Chronos
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -526,7 +526,7 @@ Instances of its subclass species are used to model times, durations and metrono
 
 
 
-!classDefinition: #MDuration category: #'Music-Models-Representation'!
+!classDefinition: #MDuration category: 'Music-Models-Representation'!
 Chronos subclass: #MDuration
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -548,7 +548,7 @@ See also the class example.!
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MDuration class' category: #'Music-Models-Representation'!
+!classDefinition: 'MDuration class' category: 'Music-Models-Representation'!
 MDuration class
 	instanceVariableNames: ''!
 
@@ -633,7 +633,7 @@ value: aValue
 	^aValue! !
 
 
-!classDefinition: #Meter category: #'Music-Models-Representation'!
+!classDefinition: #Meter category: 'Music-Models-Representation'!
 Chronos subclass: #Meter
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -646,7 +646,7 @@ In the later case, the value instance variable could hold a number, process or b
 
 
 
-!classDefinition: #Ergon category: #'Music-Models-Representation'!
+!classDefinition: #Ergon category: 'Music-Models-Representation'!
 MusicModel subclass: #Ergon
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -658,7 +658,7 @@ Instances of its subclass species are used to model loudness values.!
 
 
 
-!classDefinition: #Amplitude category: #'Music-Models-Representation'!
+!classDefinition: #Amplitude category: 'Music-Models-Representation'!
 Ergon subclass: #Amplitude
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -679,7 +679,7 @@ See also the class example.!
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Amplitude class' category: #'Music-Models-Representation'!
+!classDefinition: 'Amplitude class' category: 'Music-Models-Representation'!
 Amplitude class
 	instanceVariableNames: ''!
 
@@ -757,7 +757,7 @@ example
 	me inspect! !
 
 
-!classDefinition: #Positus category: #'Music-Models-Representation'!
+!classDefinition: #Positus category: 'Music-Models-Representation'!
 MusicModel subclass: #Positus
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -769,7 +769,7 @@ Instances of its subclass species are used to model spatial and positional value
 
 
 
-!classDefinition: #Directionality category: #'Music-Models-Representation'!
+!classDefinition: #Directionality category: 'Music-Models-Representation'!
 Positus subclass: #Directionality
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -782,7 +782,7 @@ In the later case, the value instance variable would hold a 1- or 2-dimensional 
 
 
 
-!classDefinition: #Position category: #'Music-Models-Representation'!
+!classDefinition: #Position category: 'Music-Models-Representation'!
 Positus subclass: #Position
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -795,7 +795,7 @@ In the later case, the value instance variable could hold a number or point.!
 
 
 
-!classDefinition: #Spatialization category: #'Music-Models-Representation'!
+!classDefinition: #Spatialization category: 'Music-Models-Representation'!
 Positus subclass: #Spatialization
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -808,7 +808,7 @@ In the later case, the value instance variable would hold a record with the geom
 
 
 
-!classDefinition: #PField category: #'Music-Models-Representation'!
+!classDefinition: #PField category: 'Music-Models-Representation'!
 MusicMagnitude subclass: #PField
 	instanceVariableNames: 'name field'
 	classVariableNames: ''
@@ -853,7 +853,7 @@ name: theName
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PField class' category: #'Music-Models-Representation'!
+!classDefinition: 'PField class' category: 'Music-Models-Representation'!
 PField class
 	instanceVariableNames: ''!
 

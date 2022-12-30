@@ -25,7 +25,6 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 
 [ #(
 	'Cuis-GUI-changes.st'
-	'ST80-compatibility.st'
 	'ZPoint.st'
 	'SirenSystemChanges.st'
 	'SixPanedBrowser.st'
@@ -51,8 +50,8 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	'Music-EventGenerators.st'
 	'Music-EventModifiers.st'
 	'Music-Functions.st'
-"	'Music-Sound.st'
-"	'Music-PitchScales.st'
+	'Music-Sound.st'
+	'Music-PitchScales.st'
 	'Music-PitchClasses.st'
 	'Music-Support.st'
 
@@ -65,11 +64,9 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	'MusicUI-Layout.st'
 	'MusicUI-Editors.st'
 
-	'WorkbookWindow.st'
-
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
-	('./Siren9C/Siren_Sources_Squeak/', file) asFileEntry readStreamDo:
+	('./Siren9C/Siren9C_Sources_Cuis/', file) asFileEntry readStreamDo:
 		[ :stream | stream ifNotNil: [stream fileIn]]]]
 
 Lastly: the music notation glyph set

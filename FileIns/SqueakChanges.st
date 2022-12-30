@@ -396,3 +396,4 @@ printOSCTypeOn: aStream
 toOSCTypeOn: aConvertor
 	aConvertor nextPutType: $F! !
 
+!LoopedSampledSound class methodsFor: 'instance creation' stamp: 'stp 12/29/2022 10:56'!fromAIFFFileNamed: fileName mergeIfStereo: mergeFlag 	"Initialize this sound from the data in the given AIFF file. If mergeFlag	is true and the file is stereo, its left and right channels are mixed	together to produce a mono sampled sound."	| aiffFileReader |	aiffFileReader := AIFFFileReader new.	aiffFileReader		readFromFile: fileName		mergeIfStereo: mergeFlag		skipDataChunk: false.	^self new fromAIFFFileReader: aiffFileReader mergeIfStereo: mergeFlag! !!FileDirectory class methodsFor: 'platform specific' stamp: 'stp 12/29/2022 11:06'!separatorString	^ self pathNameDelimiter asString! !

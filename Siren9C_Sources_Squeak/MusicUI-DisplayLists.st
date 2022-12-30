@@ -381,7 +381,7 @@ Instance Variables:
 	^true! !!DisplayList methodsFor: 'testing'!isEmpty
 	"Amswer whether the receiver has any items."
 
-	^components isEmpty! !!DisplayList methodsFor: 'bounds accessing' stamp: 'stp 12/12/2022 07:50'!computePreferredBounds
+	^components isEmpty! !!DisplayList methodsFor: 'bounds accessing' stamp: 'stp 12/28/2022 23:53'!computePreferredBounds
 	"Compute the receiver's preferredBounds"
 
 	| preferredBounds |
@@ -393,7 +393,7 @@ Instance Variables:
 		preferredBounds := preferredBounds merge: (components at: i) bounds].
 	preferredBounds origin < (0@0)
 		ifTrue: [preferredBounds := preferredBounds 
-				translatedBy: preferredBounds origin negated].
+				translateBy: preferredBounds origin negated].
 	offset == nil
 		ifTrue: [preferredBounds := preferredBounds expandBy: (64@64)]
 		ifFalse: [preferredBounds := (preferredBounds translateBy: offset) expandBy: (64@64)].
@@ -428,15 +428,11 @@ Instance Variables:
 	1 to: components size do:
 		[ :i | (components at: i) displayPostScriptOn: aPostscriptContext].
 	offset == nil
-		ifFalse: [aPostscriptContext translateBy: offset negated].! !!DisplayList methodsFor: 'displaying' stamp: 'stp 12/2/2022 02:56:11'!drawOn: aContext
+		ifFalse: [aPostscriptContext translateBy: offset negated].! !!DisplayList methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:37'!drawOn: aContext
 	"Display each of the receiver's components."
-
-	| xform |
-	xform := aContext currentTransformation.
-	offset ifNotNil: [aContext geometryTransformation: (xform translatedBy: offset)].
-	components do:
-		[ :comp | comp drawOn: aContext].
-	offset ifNotNil: [aContext geometryTransformation: (xform translatedBy: offset negated)].! !!DisplayList methodsFor: 'adding-removing'!add: aVisualComponent
+	aContext translateBy: offset during: [:canvas | components do:
+		[ :comp | comp drawOn: canvas]]
+! !!DisplayList methodsFor: 'displaying' stamp: 'stp 12/29/2022 00:31'!drawOn: aContext at: inset 	"Display each of the receiver's components."	aContext		translateBy: offset + inset		during: [:canvas | components				do: [:comp | comp drawOn: canvas]]! !!DisplayList methodsFor: 'adding-removing'!add: aVisualComponent
 	"Add the argument to the receiver."
 
 	^self addComponent: aVisualComponent! !!DisplayList methodsFor: 'adding-removing'!add: aVisualComponent at: aPoint
@@ -465,7 +461,7 @@ Instance Variables:
 	self error: 'I don''t use Wrappers!!'! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayList class	instanceVariableNames: ''!!DisplayList class methodsFor: 'instance creation' stamp: 'stp 11/20/2022 10:34:06'!new
 	"Initialize instances of the receiver."
 
-	^super new initialize! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/2/2022 02:58:44'!exampleHierarchical
+	^super new initialize! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/28/2022 20:56'!exampleHierarchical
 	"Create and answer a large display list with a lines, strings, and visuals."
 	"DisplayList exampleHierarchical display"
 
@@ -482,24 +478,24 @@ Instance Variables:
 		[ | pt |
 		pt := (rand next * size) rounded @ ((rand next * size) rounded).
 		dl1 add: ((DisplayString string: (pt printString) 
-				offset: pt) color: (Color random: rand))].
+				offset: pt) color: (Color random))].
 	10 timesRepeat:
 		[ | x y w h |
 		x := (rand next * size) rounded.		y := (rand next * size) rounded.
 		w := (rand next * size) rounded.		h :=  (rand next * size) rounded.
 		dl2 add: ((DisplayRectangle offset: (x@y) extent: (w@h))
-				color: (Color random: rand); fill: true)].
+				color: (Color random); fill: true)].
 	10 timesRepeat:
 		[ | x y w h |
 		x := (rand next * size) rounded.		y := (rand next * size) rounded.
 		w := (rand next * size) rounded.		h :=  (rand next * size) rounded.
 		dl3 add: ((DisplayRectangle offset: (x@y) extent: (w@h))
-				color: (Color random: rand); fill: true)].
+				color: (Color random); fill: true)].
 	10 timesRepeat:
 		[ | pt |
 		pt := (rand next * size) rounded @ ((rand next * size) rounded).
 		dl4 add: ((DisplayString string: (pt printString) 
-				offset: pt) color: (Color random: rand))].
+				offset: pt) color: (Color random))].
 	dl5 add: dl1; 
 		add: dl2 at: ((size * 2)@0); 
 		add: dl3 at: (0@(size * 2)); 
@@ -562,19 +558,7 @@ Instance Variables:
 				extent: (w@h))
 				color: Color random;
 				width: (rand next * 4) truncated)].
-	^dList! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/1/2022 21:38:23'!mixedExample
-	"Open a display list view with randomly-placed random-color rects, lines, p-lines and strings over the given extent."
-	"DisplayList mixedExample"
-	"DisplayListView exampleMixed"
-	
-	| x y |
-	x _ 20000.
-	y _ 2000.
-	^((DisplayList rectanglesX: x byY: y) 
-		addAll: (DisplayList linesX: x byY: y);
-		addAll: (DisplayList polylinesX: x byY: y);
-		addAll: (DisplayList visualsX: x byY: y);
-		addAll: (DisplayList stringsX: x byY: y))! !!DisplayList class methodsFor: 'examples'!polylineExample
+	^dList! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/28/2022 21:12'!mixedExample	"Open a HUGE display list view with randomly-placed random-color rects,	lines, p-lines and strings over the given extent."	"DisplayList mixedExample"	"DisplayListView exampleMixed"	| x y |	x := 20000.	y := 4000.	^ (DisplayList rectanglesX: x byY: y)		addAll: (DisplayList linesX: x byY: y);		addAll: (DisplayList polylinesX: x byY: y);		addAll: (DisplayList visualsX: x byY: y);		addAll: (DisplayList stringsX: x byY: y)! !!DisplayList class methodsFor: 'examples'!polylineExample
 	"Answer a display list with randomly-placed random-color polylines over the given extent."
 	"DisplayList polylineExample"
 
@@ -699,22 +683,7 @@ Instance Variables:
 	"Open a display list view with randomly-placed random-color strings over the given extent."
 	"DisplayList stringExample"
 
-	(DisplayList stringsX: 4000 byY: 4000) display! !!DisplayList class methodsFor: 'examples' stamp: 'stp 11/19/2022 11:01:35'!stringsX: x byY: y
-	"Answer a display list with randomly-placed random-color strings over the given extent."
-	"(DisplayList stringsX: 600 byY: 600) display"
-
-	| dList rand inset |
-	inset := 16.
-	dList := DisplayList new.
-	rand := Random new.
-	((x/5) + (y/5)) timesRepeat:
-		[ | pos |
-		pos := (rand nextIntFrom: inset to: x - inset) @ (rand nextIntFrom: inset to: y - inset).
-		dList add: ((DisplayString
-				string: pos printString
-				offset: pos)
-				color: Color random)].
-	^dList! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/1/2022 21:31:48'!visualsX: x byY: y
+	(DisplayList stringsX: 4000 byY: 4000) display! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/28/2022 21:43'!stringsX: x byY: y 	"Answer a display list with randomly-placed random-color strings over	the given extent."	"(DisplayList stringsX: 800 byY: 1600) display"	| dList rand inset fonts |	inset := 16.	dList := DisplayList new.	rand := Random new.	fonts := StrikeFont familyNames.	x / 5 + (y / 5)		timesRepeat: [| pos |			pos := (rand nextIntFrom: inset to: x - inset)						@ (rand nextIntFrom: inset to: y - inset).			dList				add: ((DisplayString						string: pos printString						offset: pos						font: (StrikeFont familyName: fonts atRandom pointSize: 12))						color: Color random)].	^ dList! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/1/2022 21:31:48'!visualsX: x byY: y
 	"Answer a display list with randomly-placed random-color visuals over the given extent."
 	"(DisplayList visualsX: 2000 byY: 2000) display"
 	"DisplayListView exampleVisuals"
@@ -767,14 +736,10 @@ Instanve Variables:
 
 	aPostscriptContext translate: offset.
 	aPostscriptContext box: extent y width: extent x.
-	aPostscriptContext translate: offset negated.! !!DisplayRectangle methodsFor: 'displaying' stamp: 'stp 11/29/2022 13:29:24'!drawOn: aCanvas
+	aPostscriptContext translate: offset negated.! !!DisplayRectangle methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:40'!drawOn: aCanvas
 	"Display a rect on the given canvas"
 
-	aCanvas fillRectangle: self bounds
-		color: color
-		borderWidth: 1
-		borderStyleSymbol: #simple
-		baseColorForBorder: Color darkGray! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayRectangle class	instanceVariableNames: ''!!DisplayRectangle class methodsFor: 'examples'!rectangleExample
+"	aCanvas fillRectangle: self bounds		color: color		borderWidth: 1		borderStyleSymbol: #simple		baseColorForBorder: Color darkGray"		aCanvas fillRectangle: self bounds		color: Color random	! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayRectangle class	instanceVariableNames: ''!!DisplayRectangle class methodsFor: 'examples'!rectangleExample
 	"Open a display list view with randomly-placed random-color rectangles over the given extent."
 	"DisplayRectangle rectangleExample"
 
@@ -858,11 +823,7 @@ Instance Variables:
 	font := aFont! !!DisplayString methodsFor: 'accessing'!string
 	"Answer the receiver's string."
 
-	^string! !!DisplayString methodsFor: 'accessing' stamp: 'stp 11/29/2022 16:41:49'!string: aString
-	"Set the receiver's string."
-
-	string _ aString.
-	font _ FontFamily defaultFamilyAndPointSize! !!DisplayString methodsFor: 'printing'!printOn: aStream
+	^string! !!DisplayString methodsFor: 'accessing' stamp: 'stp 12/28/2022 20:53'!string: aString 	"Set the receiver's string."	"font := FontFamily defaultFamilyAndPointSize"	string := aString! !!DisplayString methodsFor: 'printing'!printOn: aStream
 	"comment stating purpose of message"
 
 	aStream nextPutAll: ' (a ', self class name, ' offset: '.
@@ -884,18 +845,11 @@ Instance Variables:
 
 	aPostscriptContext translate: offset.
 	aPostscriptContext show: string.
-	aPostscriptContext translate: offset negated.! !!DisplayString methodsFor: 'displaying' stamp: 'stp 12/1/2022 23:37:37'!drawOn: aCanvas
-	"Display a string on the given canvas"
-
-	aCanvas drawString: string from: 1 to: string size 
-		at: offset 
-		font: font
-		color: (color ifNil: [Color black] ifNotNil: [color])
-! !!DisplayString methodsFor: 'initialize-release' stamp: 'stp 11/20/2022 16:54:33'!initialize
+	aPostscriptContext translate: offset negated.! !!DisplayString methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:52'!drawOn: aCanvas 	"Display a string on the given canvas"	aCanvas		drawString: string		from: 1		to: string size		at: offset		font: font		color: (color				ifNil: [Color random]				ifNotNil: [color])! !!DisplayString methodsFor: 'initialize-release' stamp: 'stp 12/28/2022 20:50'!initialize
 	"Initialize the instance variables of the receiver."
 
 	super initialize.
-	font := FontFamily defaultFamilyAndPointSize! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayString class	instanceVariableNames: ''!!DisplayString class methodsFor: 'examples'!stringExample
+	"font := FontFamily defaultFamilyAndPointSize"! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayString class	instanceVariableNames: ''!!DisplayString class methodsFor: 'examples'!stringExample
 	"Open a display list view with randomly-placed random-color strings over the given extent."
 	"DisplayString stringExample"
 
@@ -908,16 +862,16 @@ Instance Variables:
 	^self new string: aString! !!DisplayString class methodsFor: 'instance creation'!string: aString offset: oPoint
 	"Answer a new instance with the arguments as its string and offset point."
 
-	^self new string: aString; offset: oPoint! !DisplayItem subclass: #DisplayVisual	instanceVariableNames: 'image'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-DisplayLists'!!DisplayVisual commentStamp: '<historical>' prior: 0!Instances of DisplayVisual are used for displaying arbitrary visual objects (e.g., cached images) in display lists.
+	^self new string: aString; offset: oPoint! !!DisplayString class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 21:15'!string: aString offset: oPoint font: aFont	"Answer a new instance with the arguments as its string and offset	point. "	^ self new string: aString;		 offset: oPoint;		font: aFont! !DisplayItem subclass: #DisplayVisual	instanceVariableNames: 'image'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-DisplayLists'!!DisplayVisual commentStamp: '<historical>' prior: 0!Instances of DisplayVisual are used for displaying arbitrary visual objects (e.g., cached images) in display lists.
 
 Instance Variables:
-	visual		<VisualComponent> the object's visual object, typically an image!!DisplayVisual methodsFor: 'accessing' stamp: 'stp 12/1/2022 17:34:44'!bounds
+	visual		<VisualComponent> the object's visual object, typically an image!!DisplayVisual methodsFor: 'accessing' stamp: 'stp 12/4/2022 11:44:38'!bounds
 	"Answer the visual's bounds translated by the receiver's translation."
 
 "	^0@0 extent: image image extent
 "	^offset == nil
-		ifTrue: [(0@0 extent: image image extent) expandBy: 8]
-		ifFalse: [(offset extent: image image extent) expandBy: 32]! !!DisplayVisual methodsFor: 'accessing' stamp: 'stp 12/1/2022 11:01:47'!image
+		ifTrue: [(0@0 extent: image image extent) expandBy: 4]
+		ifFalse: [(offset extent: image image extent) expandBy: 4]! !!DisplayVisual methodsFor: 'accessing' stamp: 'stp 12/1/2022 11:01:47'!image
 	"Answer the receiver's visual."
 
 	^image! !!DisplayVisual methodsFor: 'accessing' stamp: 'stp 12/1/2022 11:01:57'!image: aVisual
@@ -962,14 +916,7 @@ Instance Variables:
 	aPostscriptContext imageWidth: image width 
 			height: image height 
 			bits: image bits.
-	aPostscriptContext translate: offset negated! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/1/2022 23:19:10'!drawOn: aCanvas
-	"Display a rect on the given canvas"
-
-	| form |
-	form _ image image.
-"	self halt.
-	aCanvas image: (ColorForm mappingWhiteToTransparentFrom: image mask) at: offset.
-"	aCanvas image: form at: offset "- form offset" "sourceRect: (form boundingBox expandBy: 16)"! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayVisual class	instanceVariableNames: ''!!DisplayVisual class methodsFor: 'examples'!convertMusicConstants
+	aPostscriptContext translate: offset negated! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/29/2022 00:57'!drawOn: aCanvas 	"Display a rect on the given canvas"	aCanvas stencil: image image at: offset color: Color black! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:46'!drawOn: aCanvas 	"Display a rect on the given canvas"	drawImage: image image at: offset 	! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayVisual class	instanceVariableNames: ''!!DisplayVisual class methodsFor: 'examples'!convertMusicConstants
 	"Convert all the forms to opaque forms"
 	"DisplayVisual convertMusicConstants. DisplayVisual displayMusicConstants"
 
@@ -993,37 +940,7 @@ Instance Variables:
 					[ :item |
 					(item isMemberOf: OpaqueImage)
 						ifFalse: [item visual: (OpaqueImage figure: item visual 
-								shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/2/2022 10:24:17'!displayMusicConstants
-	"Draw a nice table of the hierarchical image dictionary."
-	"DisplayVisual displayMusicConstants"
-
-	| xstep y i ystep dl dlv |
-	xstep := 80.
-	ystep := 64.
-	y := 0.
-	dl _ DisplayList new.
-	DisplayListView constants keysAndValuesDo: [ :title :dict |
-		i := 0.
-		dl add: (DisplayString string: title asString) at: (xstep@y).
-		y := y + (ystep/2).
-		dict keysAndValuesDo:
-			[ :str :item |
-			dl add: (DisplayString string: (str isNumber 
-					ifTrue: [str printString] ifFalse: [str asString clipTo: 9]))
-				 at: ((i*xstep+8)@y).
-			dl add: (DisplayString string: (item isDisplayItem
-					ifTrue: [item image image extent printString]
-					ifFalse: [item image extent printString]))
-				 at: ((i*xstep+8)@(y + 16)).
-			item isDisplayItem
-				ifTrue: [dl add: item at: ((i * xstep + 8) @ (y + 40))]
-				ifFalse: [dl add: (DisplayVisual image: item) at: ((i * xstep + 8) @ (y + 40))].
-			i := i + 1.
-			i = 14 ifTrue: [i := 0. y := y + (ystep * 1.5)]].
-		y := y + ystep + 24].
-	dlv _ DisplayListView newOn: dl.
-	dlv backgroundColor: Color gray.
-	DisplayListWindow open: dlv label: 'Music Constants'! !!DisplayVisual class methodsFor: 'examples'!storeMusicConstants
+								shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/28/2022 20:59'!displayMusicConstants	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicConstants"	| xstep y i ystep dl dlv |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	DisplayListView constants		keysAndValuesDo: [:title :dict | 			i := 0.			dl				add: (DisplayString string: title asString)				at: xstep @ y.			y := y + (ystep / 2).			dict				keysAndValuesDo: [:str :item | 					dl						add: (DisplayString								string: (str isNumber										ifTrue: [str printString]										ifFalse: [str asString contractTo: 11]))						at: i * xstep + 8 @ y.					dl						add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item image extent printString]))						at: i * xstep + 8 @ (y + 16).					item isDisplayItem						ifTrue: [dl add: item at: i * xstep + 8 @ (y + 40)]						ifFalse: [dl								add: (DisplayVisual image: item)								at: i * xstep + 8 @ (y + 40)].					i := i + 1.					i = 14						ifTrue: [i := 0.							y := y + (ystep * 1.5)]].			y := y + ystep + 24].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Constants'! !!DisplayVisual class methodsFor: 'examples'!storeMusicConstants
 	"Write out all the forms to opaque forms"
 	"DisplayVisual storeMusicConstants"
 

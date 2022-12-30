@@ -1,4 +1,4 @@
-!classDefinition: #MusicalInterval category: #'Music-PitchClasses'!
+!classDefinition: #MusicalInterval category: 'Music-PitchClasses'!
 Object subclass: #MusicalInterval
 	instanceVariableNames: 'type semiTones'
 	classVariableNames: ''
@@ -159,7 +159,7 @@ descending
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicalInterval class' category: #'Music-PitchClasses'!
+!classDefinition: 'MusicalInterval class' category: 'Music-PitchClasses'!
 MusicalInterval class
 	instanceVariableNames: ''!
 
@@ -535,7 +535,7 @@ thirteenth
 	^self majorThirteenth! !
 
 
-!classDefinition: #ChromaticInterval category: #'Music-PitchClasses'!
+!classDefinition: #ChromaticInterval category: 'Music-PitchClasses'!
 MusicalInterval subclass: #ChromaticInterval
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -553,7 +553,7 @@ printOn: s
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ChromaticInterval class' category: #'Music-PitchClasses'!
+!classDefinition: 'ChromaticInterval class' category: 'Music-PitchClasses'!
 ChromaticInterval class
 	instanceVariableNames: ''!
 
@@ -569,7 +569,7 @@ semiTones: x
 	^self type: -1 semiTones: x! !
 
 
-!classDefinition: #DiatonicInterval category: #'Music-PitchClasses'!
+!classDefinition: #DiatonicInterval category: 'Music-PitchClasses'!
 MusicalInterval subclass: #DiatonicInterval
 	instanceVariableNames: 'ascending'
 	classVariableNames: ''
@@ -608,7 +608,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DiatonicInterval class' category: #'Music-PitchClasses'!
+!classDefinition: 'DiatonicInterval class' category: 'Music-PitchClasses'!
 DiatonicInterval class
 	instanceVariableNames: ''!
 
@@ -625,7 +625,7 @@ new
 	^super new initialize! !
 
 
-!classDefinition: #MusicalDescendingInterval category: #'Music-PitchClasses'!
+!classDefinition: #MusicalDescendingInterval category: 'Music-PitchClasses'!
 MusicalInterval subclass: #MusicalDescendingInterval
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -673,7 +673,7 @@ descending
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicalDescendingInterval class' category: #'Music-PitchClasses'!
+!classDefinition: 'MusicalDescendingInterval class' category: 'Music-PitchClasses'!
 MusicalDescendingInterval class
 	instanceVariableNames: ''!
 
@@ -684,7 +684,7 @@ example
 (N B flat octave: 3) intervalBetween: (N B flat flat octave: 2) descending augmented octave"! !
 
 
-!classDefinition: #OctaveDependentNote category: #'Music-PitchClasses'!
+!classDefinition: #OctaveDependentNote category: 'Music-PitchClasses'!
 Object subclass: #OctaveDependentNote
 	instanceVariableNames: 'oct pc midiPitch natural'
 	classVariableNames: ''
@@ -1394,7 +1394,7 @@ intervalTypeModuloOctaveBetween: n
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OctaveDependentNote class' category: #'Music-PitchClasses'!
+!classDefinition: 'OctaveDependentNote class' category: 'Music-PitchClasses'!
 OctaveDependentNote class
 	instanceVariableNames: ''!
 
@@ -1524,7 +1524,7 @@ tenorRangeInScale: aScale
 		to: (N la octave: 4)! !
 
 
-!classDefinition: #PitchClass category: #'Music-PitchClasses'!
+!classDefinition: #PitchClass category: 'Music-PitchClasses'!
 Object subclass: #PitchClass
 	instanceVariableNames: ''
 	classVariableNames: 'A AllNatural AllNotes B C D E English F G'
@@ -1971,7 +1971,7 @@ nameInScale: aScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PitchClass class' category: #'Music-PitchClasses'!
+!classDefinition: 'PitchClass class' category: 'Music-PitchClasses'!
 PitchClass class
 	instanceVariableNames: ''!
 
@@ -2436,7 +2436,7 @@ sharpflatAlgebraExample
 	"! !
 
 
-!classDefinition: #PitchClassAltered category: #'Music-PitchClasses'!
+!classDefinition: #PitchClassAltered category: 'Music-PitchClasses'!
 PitchClass subclass: #PitchClassAltered
 	instanceVariableNames: 'natural'
 	classVariableNames: ''
@@ -2477,7 +2477,7 @@ isNatural
 	^false! !
 
 
-!classDefinition: #PitchClassDoubleFlat category: #'Music-PitchClasses'!
+!classDefinition: #PitchClassDoubleFlat category: 'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassDoubleFlat
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -2547,7 +2547,7 @@ isDoubleFlat
 	^true! !
 
 
-!classDefinition: #PitchClassDoubleSharp category: #'Music-PitchClasses'!
+!classDefinition: #PitchClassDoubleSharp category: 'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassDoubleSharp
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -2615,7 +2615,7 @@ isDoubleSharp
 	^true! !
 
 
-!classDefinition: #PitchClassFlat category: #'Music-PitchClasses'!
+!classDefinition: #PitchClassFlat category: 'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassFlat
 	instanceVariableNames: 'flat'
 	classVariableNames: ''
@@ -2682,7 +2682,7 @@ sharp
 	^natural! !
 
 
-!classDefinition: #PitchClassSharp category: #'Music-PitchClasses'!
+!classDefinition: #PitchClassSharp category: 'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassSharp
 	instanceVariableNames: 'sharp'
 	classVariableNames: ''
@@ -2750,7 +2750,7 @@ sharp: value
 	sharp := value! !
 
 
-!classDefinition: #PitchClassNatural category: #'Music-PitchClasses'!
+!classDefinition: #PitchClassNatural category: 'Music-PitchClasses'!
 PitchClass subclass: #PitchClassNatural
 	instanceVariableNames: 'semiToneCount nom name following preceding sharp flat'
 	classVariableNames: ''
@@ -2895,7 +2895,7 @@ representBinaryOn: s
 	^MessageSend receiver: self class selector:  name! !
 
 
-!classDefinition: #PitchClassChord category: #'Music-PitchClasses'!
+!classDefinition: #PitchClassChord category: 'Music-PitchClasses'!
 Object subclass: #PitchClassChord
 	instanceVariableNames: 'root structure notes possibleTonalities'
 	classVariableNames: ''
@@ -3652,7 +3652,7 @@ bestTonalityInIsolatedCase
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PitchClassChord class' category: #'Music-PitchClasses'!
+!classDefinition: 'PitchClassChord class' category: 'Music-PitchClasses'!
 PitchClassChord class
 	instanceVariableNames: ''!
 
@@ -3810,7 +3810,7 @@ reallyAllChordsFromListOfNotes: aList
 	^PitchClass allPlausibleRootNotes collect: [:n | self new fromNotes: aList root: n]! !
 
 
-!classDefinition: #OctaveDependentChord category: #'Music-PitchClasses'!
+!classDefinition: #OctaveDependentChord category: 'Music-PitchClasses'!
 PitchClassChord subclass: #OctaveDependentChord
 	instanceVariableNames: 'notesByInterval'
 	classVariableNames: ''
@@ -4179,7 +4179,7 @@ beTransposedOneStepUp
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OctaveDependentChord class' category: #'Music-PitchClasses'!
+!classDefinition: 'OctaveDependentChord class' category: 'Music-PitchClasses'!
 OctaveDependentChord class
 	instanceVariableNames: ''!
 
@@ -4221,7 +4221,7 @@ example2
 	^N C majorTriad fondamental! !
 
 
-!classDefinition: #Triad category: #'Music-PitchClasses'!
+!classDefinition: #Triad category: 'Music-PitchClasses'!
 PitchClassChord subclass: #Triad
 	instanceVariableNames: 'type'
 	classVariableNames: ''
@@ -4242,7 +4242,7 @@ notes: x
 	notes := x! !
 
 
-!classDefinition: #Signature category: #'Music-PitchClasses'!
+!classDefinition: #Signature category: 'Music-PitchClasses'!
 Object subclass: #Signature
 	instanceVariableNames: 'sharps flats'
 	classVariableNames: ''
@@ -4358,7 +4358,7 @@ sharps: s flats: f
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Signature class' category: #'Music-PitchClasses'!
+!classDefinition: 'Signature class' category: 'Music-PitchClasses'!
 Signature class
 	instanceVariableNames: ''!
 

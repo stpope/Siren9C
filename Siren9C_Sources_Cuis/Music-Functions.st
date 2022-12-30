@@ -1,4 +1,4 @@
-!classDefinition: #FunctionEvent category: #'Music-Functions'!
+!classDefinition: #FunctionEvent category: 'Music-Functions'!
 MusicEvent subclass: #FunctionEvent
 	instanceVariableNames: 'function interval delta'
 	classVariableNames: ''
@@ -102,7 +102,7 @@ scheduleAt: aTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FunctionEvent class' category: #'Music-Functions'!
+!classDefinition: 'FunctionEvent class' category: 'Music-Functions'!
 FunctionEvent class
 	instanceVariableNames: ''!
 
@@ -113,7 +113,7 @@ new
 	^super new initialize! !
 
 
-!classDefinition: #Function category: #'Music-Functions'!
+!classDefinition: #Function category: 'Music-Functions'!
 DurationEvent subclass: #Function
 	instanceVariableNames: 'data range domain scale offset'
 	classVariableNames: ''
@@ -599,7 +599,7 @@ indexOfPointNearestX: anXValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Function class' category: #'Music-Functions'!
+!classDefinition: 'Function class' category: 'Music-Functions'!
 Function class
 	instanceVariableNames: ''!
 
@@ -828,7 +828,7 @@ defaultSize
 	^1024! !
 
 
-!classDefinition: #FourierSummation category: #'Music-Functions'!
+!classDefinition: #FourierSummation category: 'Music-Functions'!
 Function subclass: #FourierSummation
 	instanceVariableNames: 'myForm myArray lazy'
 	classVariableNames: ''
@@ -914,7 +914,7 @@ at: theIndex
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FourierSummation class' category: #'Music-Functions'!
+!classDefinition: 'FourierSummation class' category: 'Music-Functions'!
 FourierSummation class
 	instanceVariableNames: ''!
 
@@ -957,7 +957,7 @@ fourierViewExample
 							(7 0.17 0) (9 0.15 0) (11 0.1 0)))! !
 
 
-!classDefinition: #FunctionGraph category: #'Music-Functions'!
+!classDefinition: #FunctionGraph category: 'Music-Functions'!
 Function subclass: #FunctionGraph
 	instanceVariableNames: 'operandL operandR operation'
 	classVariableNames: ''
@@ -1004,7 +1004,7 @@ operation: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FunctionGraph class' category: #'Music-Functions'!
+!classDefinition: 'FunctionGraph class' category: 'Music-Functions'!
 FunctionGraph class
 	instanceVariableNames: ''!
 
@@ -1027,7 +1027,7 @@ opL: opL opR: opR operation: op
 	^self new operandL: opL; operandR: opR; operation: op! !
 
 
-!classDefinition: #LinearFunction category: #'Music-Functions'!
+!classDefinition: #LinearFunction category: 'Music-Functions'!
 Function subclass: #LinearFunction
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1132,7 +1132,7 @@ size
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'LinearFunction class' category: #'Music-Functions'!
+!classDefinition: 'LinearFunction class' category: 'Music-Functions'!
 LinearFunction class
 	instanceVariableNames: ''!
 
@@ -1211,7 +1211,7 @@ linearViewExample
 		(LinearFunction from: #((0 0) (0.1 1) (0.2 0.6) (0.9 0.4) (1 0)))! !
 
 
-!classDefinition: #ExponentialFunction category: #'Music-Functions'!
+!classDefinition: #ExponentialFunction category: 'Music-Functions'!
 LinearFunction subclass: #ExponentialFunction
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1291,7 +1291,7 @@ printOn: aStream
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ExponentialFunction class' category: #'Music-Functions'!
+!classDefinition: 'ExponentialFunction class' category: 'Music-Functions'!
 ExponentialFunction class
 	instanceVariableNames: ''!
 
@@ -1358,7 +1358,7 @@ expsegViewExample
 		(ExponentialFunction from: #((0 0 -3) (0.2 1 -5) (0.6 0.5 -1) (1 0)))! !
 
 
-!classDefinition: #SplineFunction category: #'Music-Functions'!
+!classDefinition: #SplineFunction category: 'Music-Functions'!
 LinearFunction subclass: #SplineFunction
 	instanceVariableNames: 'linSeg'
 	classVariableNames: ''
@@ -1398,7 +1398,7 @@ at: anIndex
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SplineFunction class' category: #'Music-Functions'!
+!classDefinition: 'SplineFunction class' category: 'Music-Functions'!
 SplineFunction class
 	instanceVariableNames: ''!
 
@@ -1429,7 +1429,7 @@ default
 	^SplineFunction from: #((0 0.5) (0.35 0.7) (0.65 0.35) (1 0.5))! !
 
 
-!classDefinition: #Spectrum category: #'Music-Functions'!
+!classDefinition: #Spectrum category: 'Music-Functions'!
 Function subclass: #Spectrum
 	instanceVariableNames: 'sound window windowSize stepSize magReal'
 	classVariableNames: ''
@@ -1782,7 +1782,7 @@ frame: frm realAt: frq put: val
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Spectrum class' category: #'Music-Functions'!
+!classDefinition: 'Spectrum class' category: 'Music-Functions'!
 Spectrum class
 	instanceVariableNames: ''!
 

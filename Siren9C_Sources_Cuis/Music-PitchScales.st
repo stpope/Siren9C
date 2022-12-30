@@ -1,4 +1,4 @@
-!classDefinition: #Scale category: #'Music-PitchScales'!
+!classDefinition: #Scale category: 'Music-PitchScales'!
 Object subclass: #Scale
 	instanceVariableNames: 'root notes'
 	classVariableNames: 'AllNotes'
@@ -48,6 +48,12 @@ noteBefore: aNote
 !Scale methodsFor: 'accessing'!
 notes
 	^notes! !
+
+!Scale methodsFor: 'accessing' stamp: 'stp 12/26/2022 18:13:15'!
+octaveScale
+	"Most scales repeat in octaves of 2.0"
+
+	^2.0! !
 
 !Scale methodsFor: 'accessing'!
 root
@@ -205,6 +211,45 @@ leadingNote
 
 	^self notes last! !
 
+!Scale methodsFor: 'computing notes' stamp: 'stp 12/18/2022 11:32'!
+nearestNoteTo: aHzPitch
+	"Answer the frequency of the scale degree closest to the given pitch in Hz."
+	"(PentatonicScale root: N re) nearestNoteTo: 450"
+
+	| oct nNum bNote |
+	nNum := (((aHzPitch / 8.17579891564371) log: 2) * 12) truncated.
+	oct:= (nNum / 12) truncated.
+	bNote := oct * 12.
+
+"	Transcript show: 'nearestNoteTo: ', aHzPitch printString; cr."
+	0 to: notes size do: 
+		[ :ind | | nt0 nt1 t0 t1 p0 p1 |
+		(ind = 0)
+			ifFalse: [nt0 := notes at: ind.						"get the note degrees"
+				t0 := bNote + nt0 semiToneCount.				"adjust to oct base"
+				p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0))]		"lower/higher pitch of interval"
+			ifTrue:  [nt0 := notes last.					
+				t0 := bNote + nt0 semiToneCount.				
+				p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0)) / self octaveScale].
+		(ind < notes size)
+			ifTrue: [nt1 := notes at: ind + 1.
+				t1 := bNote + nt1 semiToneCount.
+				p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0))]
+			ifFalse: [nt1 := (notes at: 1).
+				t1 := bNote + nt1 semiToneCount.				
+				p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0)) * self octaveScale].
+
+"		Transcript tab; show: 'Between: ', p0 printString, ' and: ', p1 printString; cr."
+		(p0 <= aHzPitch and: [p1 >= aHzPitch])			"loop over intervals looking for the one that includes the given freq"
+			ifTrue:  [ |  a b  | 
+				a := (aHzPitch - p0).
+				b := (p1 - aHzPitch).
+				^(a >= b)
+					ifTrue:  [p1]
+					ifFalse: [p0]]].
+
+	self error: 'Pitch class member not found'! !
+
 !Scale methodsFor: 'computing notes'!
 reverseNotes
 	"first is root, others following descending order"
@@ -342,7 +387,7 @@ pitchClassFor: p
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Scale class' category: #'Music-PitchScales'!
+!classDefinition: 'Scale class' category: 'Music-PitchScales'!
 Scale class
 	instanceVariableNames: ''!
 
@@ -412,7 +457,7 @@ initialize
 	AllNotes := Dictionary new! !
 
 
-!classDefinition: #ChromaticScale category: #'Music-PitchScales'!
+!classDefinition: #ChromaticScale category: 'Music-PitchScales'!
 Scale subclass: #ChromaticScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -421,7 +466,7 @@ Scale subclass: #ChromaticScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ChromaticScale class' category: #'Music-PitchScales'!
+!classDefinition: 'ChromaticScale class' category: 'Music-PitchScales'!
 ChromaticScale class
 	instanceVariableNames: ''!
 
@@ -431,7 +476,7 @@ intervalList
 	^#(#unison #augmentedUnison #majorSecond #minorThird #majorThird #perfectFourth #augmentedFourth #perfectFifth #minorSixth #majorSixth #minorSeventh #majorSeventh )! !
 
 
-!classDefinition: #DoubleHarmonic category: #'Music-PitchScales'!
+!classDefinition: #DoubleHarmonic category: 'Music-PitchScales'!
 Scale subclass: #DoubleHarmonic
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -440,7 +485,7 @@ Scale subclass: #DoubleHarmonic
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DoubleHarmonic class' category: #'Music-PitchScales'!
+!classDefinition: 'DoubleHarmonic class' category: 'Music-PitchScales'!
 DoubleHarmonic class
 	instanceVariableNames: ''!
 
@@ -451,7 +496,7 @@ intervalList
 	^#(#unison #minorSecond #majorThird #perfectFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #HarmonicMinorScale category: #'Music-PitchScales'!
+!classDefinition: #HarmonicMinorScale category: 'Music-PitchScales'!
 Scale subclass: #HarmonicMinorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -482,7 +527,7 @@ enharmonicScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'HarmonicMinorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'HarmonicMinorScale class' category: 'Music-PitchScales'!
 HarmonicMinorScale class
 	instanceVariableNames: ''!
 
@@ -495,7 +540,7 @@ intervalList
 	^#(#unison #second #minorThird #perfectFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #HungarianMinor category: #'Music-PitchScales'!
+!classDefinition: #HungarianMinor category: 'Music-PitchScales'!
 Scale subclass: #HungarianMinor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -504,7 +549,7 @@ Scale subclass: #HungarianMinor
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'HungarianMinor class' category: #'Music-PitchScales'!
+!classDefinition: 'HungarianMinor class' category: 'Music-PitchScales'!
 HungarianMinor class
 	instanceVariableNames: ''!
 
@@ -529,7 +574,7 @@ intervalList
 	^#(#unison #second #minorThird #augmentedFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #MajorScale category: #'Music-PitchScales'!
+!classDefinition: #MajorScale category: 'Music-PitchScales'!
 Scale subclass: #MajorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -558,7 +603,7 @@ enharmonicScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MajorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'MajorScale class' category: 'Music-PitchScales'!
 MajorScale class
 	instanceVariableNames: ''!
 
@@ -571,7 +616,7 @@ intervalList
 	^#(#unison #second #majorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #MelodicMinorScale category: #'Music-PitchScales'!
+!classDefinition: #MelodicMinorScale category: 'Music-PitchScales'!
 Scale subclass: #MelodicMinorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -602,7 +647,7 @@ enharmonicScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MelodicMinorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'MelodicMinorScale class' category: 'Music-PitchScales'!
 MelodicMinorScale class
 	instanceVariableNames: ''!
 
@@ -615,7 +660,7 @@ intervalList
 	^#(#unison #second #minorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #NeapolitanMajor category: #'Music-PitchScales'!
+!classDefinition: #NeapolitanMajor category: 'Music-PitchScales'!
 Scale subclass: #NeapolitanMajor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -624,7 +669,7 @@ Scale subclass: #NeapolitanMajor
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'NeapolitanMajor class' category: #'Music-PitchScales'!
+!classDefinition: 'NeapolitanMajor class' category: 'Music-PitchScales'!
 NeapolitanMajor class
 	instanceVariableNames: ''!
 
@@ -635,7 +680,7 @@ intervalList
 	^#(#unison #minorSecond #minorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #NeapolitanMinor category: #'Music-PitchScales'!
+!classDefinition: #NeapolitanMinor category: 'Music-PitchScales'!
 Scale subclass: #NeapolitanMinor
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -647,7 +692,7 @@ Scale subclass: #NeapolitanMinor
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'NeapolitanMinor class' category: #'Music-PitchScales'!
+!classDefinition: 'NeapolitanMinor class' category: 'Music-PitchScales'!
 NeapolitanMinor class
 	instanceVariableNames: ''!
 
@@ -658,7 +703,7 @@ intervalList
 	^#(#unison #minorSecond #minorThird #perfectFourth #perfectFifth #minorSixth #majorSeventh )! !
 
 
-!classDefinition: #Oriental category: #'Music-PitchScales'!
+!classDefinition: #Oriental category: 'Music-PitchScales'!
 Scale subclass: #Oriental
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -667,7 +712,7 @@ Scale subclass: #Oriental
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Oriental class' category: #'Music-PitchScales'!
+!classDefinition: 'Oriental class' category: 'Music-PitchScales'!
 Oriental class
 	instanceVariableNames: ''!
 
@@ -678,7 +723,26 @@ intervalList
 	^#(#unison #minorSecond #minorThird #perfectFourth #diminishedFifth #majorSixth #majorSeventh )! !
 
 
-!classDefinition: #PseudoMinorScale category: #'Music-PitchScales'!
+!classDefinition: #PentatonicScale category: 'Music-PitchScales'!
+Scale subclass: #PentatonicScale
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-PitchScales'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PentatonicScale class' category: 'Music-PitchScales'!
+PentatonicScale class
+	instanceVariableNames: ''!
+
+!PentatonicScale class methodsFor: 'interval list' stamp: 'stp 12/18/2022 11:35'!
+intervalList
+
+	^#(#unison #majorSecond #perfectFourth #perfectFifth #majorSixth)! !
+
+
+!classDefinition: #PseudoMinorScale category: 'Music-PitchScales'!
 Scale subclass: #PseudoMinorScale
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -687,7 +751,7 @@ Scale subclass: #PseudoMinorScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PseudoMinorScale class' category: #'Music-PitchScales'!
+!classDefinition: 'PseudoMinorScale class' category: 'Music-PitchScales'!
 PseudoMinorScale class
 	instanceVariableNames: ''!
 

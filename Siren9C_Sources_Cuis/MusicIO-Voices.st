@@ -1,4 +1,4 @@
-!classDefinition: #Voice category: #'MusicIO-Voices'!
+!classDefinition: #Voice category: 'MusicIO-Voices'!
 Model subclass: #Voice
 	instanceVariableNames: 'name instrument stream'
 	classVariableNames: 'DefaultVoiceClass'
@@ -130,7 +130,7 @@ initializeNamed: aName
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Voice class' category: #'MusicIO-Voices'!
+!classDefinition: 'Voice class' category: 'MusicIO-Voices'!
 Voice class
 	instanceVariableNames: ''!
 
@@ -194,7 +194,7 @@ on: someStream
 	^me! !
 
 
-!classDefinition: #MIDIFileVoice category: #'MusicIO-Voices'!
+!classDefinition: #MIDIFileVoice category: 'MusicIO-Voices'!
 Voice subclass: #MIDIFileVoice
 	instanceVariableNames: 'fileType tracks ppq tempo'
 	classVariableNames: ''
@@ -353,7 +353,7 @@ close
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIFileVoice class' category: #'MusicIO-Voices'!
+!classDefinition: 'MIDIFileVoice class' category: 'MusicIO-Voices'!
 MIDIFileVoice class
 	instanceVariableNames: ''!
 
@@ -376,7 +376,7 @@ midiFileExample
 	^self! !
 
 
-!classDefinition: #NotelistVoice category: #'MusicIO-Voices'!
+!classDefinition: #NotelistVoice category: 'MusicIO-Voices'!
 Voice subclass: #NotelistVoice
 	instanceVariableNames: 'parameterMap lastTime header'
 	classVariableNames: ''
@@ -535,7 +535,7 @@ initializeOnStream: theStream
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'NotelistVoice class' category: #'MusicIO-Voices'!
+!classDefinition: 'NotelistVoice class' category: 'MusicIO-Voices'!
 NotelistVoice class
 	instanceVariableNames: ''!
 
@@ -567,7 +567,7 @@ onFileNamed: fName
 	^self new initializeOnStream: fName asFilename writeStream! !
 
 
-!classDefinition: #CmixVoice category: #'MusicIO-Voices'!
+!classDefinition: #CmixVoice category: 'MusicIO-Voices'!
 NotelistVoice subclass: #CmixVoice
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -626,7 +626,7 @@ writeHeader
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CmixVoice class' category: #'MusicIO-Voices'!
+!classDefinition: 'CmixVoice class' category: 'MusicIO-Voices'!
 CmixVoice class
 	instanceVariableNames: ''!
 
@@ -680,7 +680,7 @@ defaultPMap
 	^map! !
 
 
-!classDefinition: #CmusicVoice category: #'MusicIO-Voices'!
+!classDefinition: #CmusicVoice category: 'MusicIO-Voices'!
 NotelistVoice subclass: #CmusicVoice
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -714,7 +714,7 @@ writeHeader
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CmusicVoice class' category: #'MusicIO-Voices'!
+!classDefinition: 'CmusicVoice class' category: 'MusicIO-Voices'!
 CmusicVoice class
 	instanceVariableNames: ''!
 
@@ -775,7 +775,7 @@ defaultPMap
 	^map! !
 
 
-!classDefinition: #CsoundVoice category: #'MusicIO-Voices'!
+!classDefinition: #CsoundVoice category: 'MusicIO-Voices'!
 NotelistVoice subclass: #CsoundVoice
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -801,7 +801,7 @@ writeHeader
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CsoundVoice class' category: #'MusicIO-Voices'!
+!classDefinition: 'CsoundVoice class' category: 'MusicIO-Voices'!
 CsoundVoice class
 	instanceVariableNames: ''!
 
@@ -850,7 +850,7 @@ defaultPMap
 	^map! !
 
 
-!classDefinition: #SuperColliderVoice category: #'MusicIO-Voices'!
+!classDefinition: #SuperColliderVoice category: 'MusicIO-Voices'!
 NotelistVoice subclass: #SuperColliderVoice
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -897,7 +897,7 @@ score = #[
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SuperColliderVoice class' category: #'MusicIO-Voices'!
+!classDefinition: 'SuperColliderVoice class' category: 'MusicIO-Voices'!
 SuperColliderVoice class
 	instanceVariableNames: ''!
 
@@ -970,7 +970,7 @@ pMapForPanner
 	^map! !
 
 
-!classDefinition: #SoundVoice category: #'MusicIO-Voices'!
+!classDefinition: #SoundVoice category: 'MusicIO-Voices'!
 Voice subclass: #SoundVoice
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -988,7 +988,7 @@ playEvent: t1 at: t2
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SoundVoice class' category: #'MusicIO-Voices'!
+!classDefinition: 'SoundVoice class' category: 'MusicIO-Voices'!
 SoundVoice class
 	instanceVariableNames: ''!
 

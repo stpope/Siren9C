@@ -931,7 +931,7 @@ Instance Variables:
 	"Set the receiver's instance variable 'windowSize' to be aNum."
 
 	windowSize := aNum.
-! !!Spectrum methodsFor: 'computing' stamp: 'stp 12/10/2022 15:04'!compute
+! !!Spectrum methodsFor: 'computing' stamp: 'stp 12/5/2022 15:39:36'!compute
 	"Do the FFT and store the results into the receiver's data."
 	"Spectrum sweepExample"
 	"Spectrum fileExample"
@@ -944,7 +944,7 @@ Instance Variables:
 	samples gcCopyToHeap.
 	spectrum := ByteArray new: (windowSize * 4 + 1).
 	spectrum gcCopyToHeap.
-	fft := "FFTWInterface" Object new.						"set up the FFT"
+	fft := FFTWInterface new.						"set up the FFT"
 	[fft fftw_initialize: windowSize with: samples with: spectrum]
 		on: Error
 		do: [ :ex | self error: 'FFT not installed'].

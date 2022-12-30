@@ -1,11 +1,11 @@
-!classDefinition: #AbstractEvent category: #'Music-Events'!
-Object subclass: #AbstractEvent
+!classDefinition: #MAbstractEvent category: 'Music-Events'!
+Object subclass: #MAbstractEvent
 	instanceVariableNames: 'properties'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Music-Events'!
-!AbstractEvent commentStamp: '<historical>' prior: 0!
-AbstractEvent is the base class in the event/event-list hierarchy (although it can be instantiated). Instances of AbstractEvent are objects that can be used as dictionaries or property lists. Their properties can be accessed either with at: and at:put: or by using the new property names themselves as selectors (e.g., (anAEventInstance at: #color put: #green) or (anAEventInstance color: #green)).
+!MAbstractEvent commentStamp: '<historical>' prior: 0!
+MAbstractEvent is the base class in the event/event-list hierarchy (although it can be instantiated). Instances of MAbstractEvent are objects that can be used as dictionaries or property lists. Their properties can be accessed either with at: and at:put: or by using the new property names themselves as selectors (e.g., (anAEventInstance at: #color put: #green) or (anAEventInstance color: #green)).
 
 Instance variables:
 	properties	 <Dictionary or nil> property list dictionary
@@ -14,7 +14,7 @@ The global dictionary called Events can be used for sharing event instances.
 !
 
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 , anArgument
 	"Add the argument as a property of the receiver."
 	"440 Hz, 250 msec, (#voice -> #flute)"
@@ -29,21 +29,21 @@ The global dictionary called Events can be used for sharing event instances.
 				ifTrue: [^EventList new add: self; add: anArgument]
 				ifFalse: [self error: 'Unknown property type.']]]! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 date
 	"Answer the receiver's 'date'."
 
 	self propCheck.
 	^properties at: #date ifAbsent: [nil]! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 date: obj
 	"Set the receiver's 'date'."
 
 	self propCheck.
 	^properties at: #date put: obj! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 inspect
 	"Inspect the receiver--Use a special inspector for Event types"
 	"EventInspectorView open: (EventInspector inspect: MEvent someInstance)"
@@ -51,37 +51,37 @@ inspect
 "	EventInspectorView open: (EventInspector inspect: self)"
 	^super inspect! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 name
 	"Answer the receiver's 'name'."
 
 	self propCheck.
 	^properties at: #name ifAbsent: ['']! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:36:09'!
 open
 	"Edit, play (if <shift>) or inspect (if <ctrl>) the receiver, depending on the keyboard state"
 
-	^InputState default shiftDown
+	^Sensor shiftPressed
 		ifTrue: [self play]
-		ifFalse: [InputState default ctrlDown
+		ifFalse: [Sensor controlKeyPressed
 			ifTrue: [self inspect]
 			ifFalse: [self edit]]! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 species
 	"Answer AEvent--all subclasses look like me"
 
-	^AbstractEvent! !
+	^MAbstractEvent! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 version
 	"Answer the receiver's 'version'."
 
 	self propCheck.
 	^properties at: #version ifAbsent: [nil]! !
 
-!AbstractEvent methodsFor: 'accessing'!
+!MAbstractEvent methodsFor: 'accessing'!
 version: obj
 	"Set the receiver's 'version'."
 
@@ -89,7 +89,7 @@ version: obj
 	^properties at: #version put: obj! !
 
 
-!AbstractEvent methodsFor: 'printing'!
+!MAbstractEvent methodsFor: 'printing'!
 asExplorerString: showHide
 
 	| stream |
@@ -99,7 +99,7 @@ asExplorerString: showHide
 			[ :pr | self display: showHide field: pr on: stream]].
 	^(super asExplorerString: showHide), stream contents! !
 
-!AbstractEvent methodsFor: 'printing'!
+!MAbstractEvent methodsFor: 'printing'!
 display: showHide field: filter on: stream
 
 	| obj |
@@ -111,7 +111,7 @@ display: showHide field: filter on: stream
 						ifFalse: [stream nextPutAll: ': '].
 					stream nextPutAll: obj]]! !
 
-!AbstractEvent methodsFor: 'printing'!
+!MAbstractEvent methodsFor: 'printing'!
 displayField: filter on: stream
 
 	| obj |
@@ -120,7 +120,7 @@ displayField: filter on: stream
 	obj isString ifFalse: [obj := obj printString].
 	stream nextPutAll: obj! !
 
-!AbstractEvent methodsFor: 'printing'!
+!MAbstractEvent methodsFor: 'printing'!
 printOn: aStream 
 	"Format and print the receiver on the argument."
 
@@ -133,7 +133,7 @@ printOn: aStream
 				aStream nextPutAll: ' (', ass key, ': ', ass value printString, ')']].
 	aStream nextPut: $); cr! !
 
-!AbstractEvent methodsFor: 'printing'!
+!MAbstractEvent methodsFor: 'printing'!
 storeOn: aStream 
 	"Format and store the source the receiver on the argument."
 
@@ -150,7 +150,7 @@ storeOn: aStream
 					aStream nextPut: $;; cr.]].
 	aStream nextPutAll: ')'! !
 
-!AbstractEvent methodsFor: 'printing'!
+!MAbstractEvent methodsFor: 'printing'!
 templateFields
 	"Answer the field names for the instances of the receiver class."
 
@@ -162,21 +162,21 @@ templateFields
 	^coll! !
 
 
-!AbstractEvent methodsFor: 'scheduling'!
+!MAbstractEvent methodsFor: 'scheduling'!
 scheduleOn: aChannel
 	"Perform or interpret the receiver on the argument; override in subclasses."
 
 	aChannel schedule: self at: 0! !
 
 
-!AbstractEvent methodsFor: 'properties'!
+!MAbstractEvent methodsFor: 'properties'!
 at: aProp
 	"Answer a value from the property list dictionary (or an instVar)."
 
 	self propCheck.
 	^properties at: aProp ifAbsent: [nil]! !
 
-!AbstractEvent methodsFor: 'properties'!
+!MAbstractEvent methodsFor: 'properties'!
 at: aProp ifAbsent: otherCase
 	"Answer a value from the property list dictionary or the value of the given block."
 
@@ -193,14 +193,14 @@ at: aProp ifAbsent: otherCase
 			ifTrue: [self perform: aProp]
 			ifFalse: ["otherCase value"]"]! !
 
-!AbstractEvent methodsFor: 'properties'!
+!MAbstractEvent methodsFor: 'properties'!
 at: aProp put: aVal
 	"Set a value in the receiver's property list dictionary (or instVar)."
 
 	self propCheck.
 	properties at: aProp put: aVal! !
 
-!AbstractEvent methodsFor: 'properties'!
+!MAbstractEvent methodsFor: 'properties'!
 doesNotUnderstand: aMessage 
 	"Handle doesNotUnderstand: to try to access the property dictionary.
 	If this is unsuccessful, announce that the receiver does not understand the argument."
@@ -216,20 +216,20 @@ doesNotUnderstand: aMessage
 					put: (aMessage arguments at: 1)]].
 	^super doesNotUnderstand: aMessage					"otherwise"! !
 
-!AbstractEvent methodsFor: 'properties'!
+!MAbstractEvent methodsFor: 'properties'!
 hasProperty: aSymbol
 	"Answer whether or not the receiver's property list dictionary includes the symbol as a key."
 
 	properties ifNil: [^false].
 	^properties includesKey: aSymbol! !
 
-!AbstractEvent methodsFor: 'properties'!
+!MAbstractEvent methodsFor: 'properties'!
 properties
 	"Answer the receiver's property list dictionary."
 
 	^properties! !
 
-!AbstractEvent methodsFor: 'properties'!
+!MAbstractEvent methodsFor: 'properties'!
 respondsTo: aSymbol
 	"Answer whether the method dictionary of the receiver's class contains 
 	aSymbol as a message selector OR if the selector is unary and is a key 
@@ -242,13 +242,13 @@ respondsTo: aSymbol
 "	^false! !
 
 
-!AbstractEvent methodsFor: 'initialize-release'!
+!MAbstractEvent methodsFor: 'initialize-release'!
 initialize
 	"Set up the default state of the receiver--add props. dict."
 
 	properties := IdentityDictionary new.! !
 
-!AbstractEvent methodsFor: 'initialize-release'!
+!MAbstractEvent methodsFor: 'initialize-release'!
 release
 	"Flush the receiver."
 
@@ -260,7 +260,7 @@ release
 	properties  := nil! !
 
 
-!AbstractEvent methodsFor: 'private'!
+!MAbstractEvent methodsFor: 'private'!
 propCheck
 	"Make sure the receiver has a property list dictionary."
 
@@ -268,20 +268,20 @@ propCheck
 		ifTrue: [properties := IdentityDictionary new].! !
 
 
-!AbstractEvent methodsFor: 'testing'!
+!MAbstractEvent methodsFor: 'testing'!
 isEvent
 	"Answer true."
 
 	^true! !
 
-!AbstractEvent methodsFor: 'testing'!
+!MAbstractEvent methodsFor: 'testing'!
 isSound
 	"Answer false."
 
 	^false! !
 
 
-!AbstractEvent methodsFor: 'comparing'!
+!MAbstractEvent methodsFor: 'comparing'!
 = anObject 
 	"Answer whether the receiver and the argument represent the same values."
 
@@ -291,27 +291,27 @@ isSound
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'AbstractEvent class' category: #'Music-Events'!
-AbstractEvent class
+!classDefinition: 'MAbstractEvent class' category: 'Music-Events'!
+MAbstractEvent class
 	instanceVariableNames: ''!
 
-!AbstractEvent class methodsFor: 'examples'!
+!MAbstractEvent class methodsFor: 'examples'!
 eventInspectExample
 	"Demonstrate the creation of an AEvent."
-	"AbstractEvent example"
+	"MAbstractEvent example"
 
-	((AbstractEvent new) color: #green; shape: #round) inspect! !
+	((MAbstractEvent new) color: #green; shape: #round) inspect! !
 
-!AbstractEvent class methodsFor: 'examples'!
+!MAbstractEvent class methodsFor: 'examples'!
 example
 	"Demonstrate the creation of an AEvent."
-	"AbstractEvent example inspect"
+	"MAbstractEvent example inspect"
 
-	^(AbstractEvent new) color: #green; shape: #round! !
+	^(MAbstractEvent new) color: #green; shape: #round! !
 
 
-!classDefinition: #DurationEvent category: #'Music-Events'!
-AbstractEvent subclass: #DurationEvent
+!classDefinition: #DurationEvent category: 'Music-Events'!
+MAbstractEvent subclass: #DurationEvent
 	instanceVariableNames: 'duration index startedAt realTime'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -348,13 +348,13 @@ duration
 
 	^duration! !
 
-!DurationEvent methodsFor: 'accessing'!
+!DurationEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:35:30'!
 duration: newValue
 	"Set the receiver's duration."
 
-	newValue species == Duration
+	newValue species == MDuration
 		ifTrue: [duration := newValue]
-		ifFalse: [duration := Duration value: newValue]! !
+		ifFalse: [duration := MDuration value: newValue]! !
 
 !DurationEvent methodsFor: 'accessing'!
 index: aNumber
@@ -493,7 +493,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DurationEvent class' category: #'Music-Events'!
+!classDefinition: 'DurationEvent class' category: 'Music-Events'!
 DurationEvent class
 	instanceVariableNames: ''!
 
@@ -519,7 +519,7 @@ dur: aD voice: aVoice
 	^self new duration: aD; voice: aVoice! !
 
 
-!classDefinition: #ActionEvent category: #'Music-Events'!
+!classDefinition: #ActionEvent category: 'Music-Events'!
 DurationEvent subclass: #ActionEvent
 	instanceVariableNames: 'action'
 	classVariableNames: ''
@@ -560,7 +560,7 @@ action: anObject
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ActionEvent class' category: #'Music-Events'!
+!classDefinition: 'ActionEvent class' category: 'Music-Events'!
 ActionEvent class
 	instanceVariableNames: ''!
 
@@ -623,7 +623,7 @@ dur: aD block: actionBlock
 	^self new duration: aD; action: actionBlock! !
 
 
-!classDefinition: #MusicEvent category: #'Music-Events'!
+!classDefinition: #MusicEvent category: 'Music-Events'!
 DurationEvent subclass: #MusicEvent
 	instanceVariableNames: 'pitch loudness voice'
 	classVariableNames: ''
@@ -720,12 +720,12 @@ printOn: aStream
 "	^self printVerboseOn: aStream
 "	^self printTerseOn: aStream! !
 
-!MusicEvent methodsFor: 'printing'!
+!MusicEvent methodsFor: 'printing' stamp: 'stp 12/28/2022 14:00:35'!
 printTerseOn: aStream 
 	"Format and print the receiver on the argument as tersely as possible."
 
 	duration == nil
-		ifFalse: [aStream nextPutAll: duration printString]. 
+		ifFalse: [duration printOn: aStream]. 
 	pitch == nil
 		ifFalse: [aStream nextPutAll: ' ', pitch printString].
 	loudness == nil
@@ -737,7 +737,7 @@ printTerseOn: aStream
 		ifFalse: [properties associationsDo:
 				[ :ass |
 				aStream nextPutAll: ' (', ass key, ': ', ass value printString, ')']].
-	aStream "nextPutAll: ')';" cr! !
+	aStream "nextPutAll: ')';" lf! !
 
 !MusicEvent methodsFor: 'printing'!
 printVerboseOn: aStream 
@@ -850,7 +850,7 @@ playOn: aVoice at: aTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicEvent class' category: #'Music-Events'!
+!classDefinition: 'MusicEvent class' category: 'Music-Events'!
 MusicEvent class
 	instanceVariableNames: ''!
 
@@ -984,7 +984,7 @@ example
 "	((880 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl) accent: #sfz) inspect"! !
 
 
-!classDefinition: #EventList category: #'Music-Events'!
+!classDefinition: #EventList category: 'Music-Events'!
 MusicEvent subclass: #EventList
 	instanceVariableNames: 'events'
 	classVariableNames: ''
@@ -1423,7 +1423,7 @@ asExplorerString: ignored
 
 	^self name! !
 
-!EventList methodsFor: 'printing' stamp: 'stp 11/30/2022 12:27:28'!
+!EventList methodsFor: 'printing' stamp: 'stp 12/27/2022 17:36:29'!
 printOn: aStream
 	"Print out the receiver's events on the argument."
 
@@ -1435,17 +1435,19 @@ printOn: aStream
 		ifFalse: [aStream nextPutAll: ' pitch: ', self pitch printString].
 "	(self at: #tempo) == nil
 		ifFalse: [aStream nextPutAll: ' tempo: ', (self at: #tempo) printString].
-	aStream cr.
+	aStream lf.
 	Sensor shiftPressed
 			ifFalse: [count := self size min: 20]
 			ifTrue: [count := self size].
 	1 to: count do: [ :ind |
 		anEvent := events at: ind.
-		aStream tab; nextPutAll: anEvent key printString, ' => '.
+		aStream tab.
+		anEvent key printOn: aStream.
+		aStream nextPutAll: ' => '.
 		anEvent value printOn: aStream].
 	count = self size 
-			ifTrue: [aStream nextPut: $); cr]
-			ifFalse: [aStream nextPutAll: ' ... )'; cr]! !
+			ifTrue: [aStream nextPut: $); lf]
+			ifFalse: [aStream nextPutAll: ' ... )'; lf]! !
 
 !EventList methodsFor: 'printing'!
 readDataFrom: aDataStream size: size
@@ -1773,13 +1775,13 @@ empty
 	self index: 1.
 	self events: SortedCollection new.! !
 
-!EventList methodsFor: 'initialize-release'!
+!EventList methodsFor: 'initialize-release' stamp: 'stp 12/28/2022 13:34:44'!
 initializeAnonymous
 	"Initialize an un-named instance with default state."
 
 	self initialize.
 	self propCheck.
-	duration := Duration value: 0.
+	duration := MDuration value: 0.
 	self name: #anonymous.
 	self events: SortedCollection new.
 	index := nil.! !
@@ -2005,7 +2007,7 @@ map: anAssociation at: startTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventList class' category: #'Music-Events'!
+!classDefinition: 'EventList class' category: 'Music-Events'!
 EventList class
 	instanceVariableNames: ''!
 

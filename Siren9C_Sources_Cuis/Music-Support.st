@@ -1,4 +1,4 @@
-!classDefinition: #EventAssociation category: #'Music-Support'!
+!classDefinition: #EventAssociation category: 'Music-Support'!
 Association subclass: #EventAssociation
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -79,7 +79,7 @@ printOn: aStream
 		ifFalse: [^false]! !
 
 
-!classDefinition: #ScheduleRecord category: #'Music-Support'!
+!classDefinition: #ScheduleRecord category: 'Music-Support'!
 Association subclass: #ScheduleRecord
 	instanceVariableNames: 'next previous loop'
 	classVariableNames: ''
@@ -150,7 +150,7 @@ isActive
 	^value isActive! !
 
 
-!classDefinition: #DeviceModel category: #'Music-Support'!
+!classDefinition: #DeviceModel category: 'Music-Support'!
 Model subclass: #DeviceModel
 	instanceVariableNames: 'name port stream debug in out rate'
 	classVariableNames: ''
@@ -242,7 +242,7 @@ printOn: aStream
 	aStream nextPut: $)! !
 
 
-!classDefinition: #EditorModel category: #'Music-Support'!
+!classDefinition: #EditorModel category: 'Music-Support'!
 Model subclass: #EditorModel
 	instanceVariableNames: 'selections copyBuffer view'
 	classVariableNames: ''
@@ -282,7 +282,7 @@ view: aView
 	view := aView! !
 
 
-!classDefinition: #EventScheduler category: #'Music-Support'!
+!classDefinition: #EventScheduler category: 'Music-Support'!
 Model subclass: #EventScheduler
 	instanceVariableNames: 'appointments timers threads running doWait startTime delay logTime'
 	classVariableNames: 'ESchedule'
@@ -559,16 +559,17 @@ run
 	threads add: proc.
 	self changed: #running with: true! !
 
-!EventScheduler methodsFor: 'running'!
+!EventScheduler methodsFor: 'running' stamp: 'stp 12/26/2022 21:54:08'!
 run: theBool
 	"Accept the argument, 'theBool', as the instance variable 'running'."
 
 	running := theBool.
 	SirenUtility log: 'Sched: ', (theBool ifTrue: ['run'] ifFalse: ['stop']) level: 0.
 	threads isEmpty
-		ifFalse: [theBool 
-			ifTrue: [threads first resume]
-			ifFalse: [threads first terminate]].
+		ifFalse: [threads first ifNil: [threads removeFirst]
+			ifNotNil: [theBool 
+				ifTrue: [threads first resume]
+				ifFalse: [threads first terminate]]].
 	self changed: #running with: theBool! !
 
 
@@ -597,7 +598,7 @@ release
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventScheduler class' category: #'Music-Support'!
+!classDefinition: 'EventScheduler class' category: 'Music-Support'!
 EventScheduler class
 	instanceVariableNames: ''!
 
@@ -768,7 +769,7 @@ instance
 	^ ESchedule! !
 
 
-!classDefinition: #PortModel category: #'Music-Support'!
+!classDefinition: #PortModel category: 'Music-Support'!
 Model subclass: #PortModel
 	instanceVariableNames: 'name status device in out'
 	classVariableNames: ''
@@ -841,9 +842,9 @@ status: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PortModel class' category: #'Music-Support'!
+!classDefinition: 'PortModel class' category: 'Music-Support'!
 PortModel class
-	instanceVariableNames: ''!
+	instanceVariableNames: 'instance useSingleton'!
 
 !PortModel class methodsFor: 'instance creation'!
 concreteClass
@@ -990,7 +991,7 @@ sampleRate: value
 	rate := value! !
 
 
-!classDefinition: #SirenSession category: #'Music-Support'!
+!classDefinition: #SirenSession category: 'Music-Support'!
 Model subclass: #SirenSession
 	instanceVariableNames: 'scheduleList scheduleListText verbosity clock startedAt inChannels blockSize sampleRate outChannels interfaceParams transport eventList sound voice timer soundPort midiPort loadedSounds loadedLists oscAddress defaultVoiceClass'
 	classVariableNames: 'EventLists Sounds Voices'
@@ -1031,30 +1032,26 @@ allOff
 	self resetSound.
 	EventScheduler resetClock.! !
 
-!SirenSession methodsFor: 'actions'!
+!SirenSession methodsFor: 'actions' stamp: 'stp 12/26/2022 17:11:59'!
 cleanUp
 
 	self stopSound.
 	self stopMIDI.
 	MIDIPort cleanUp.
 	self resetSound.
-	SirenExternalInterface unload.
 	EventScheduler resetClock.
-	CSL.IO release.
-	CSL.CSL freeModule.
-	Loris.Loris freeModule.
-	ObjectMemory globalGarbageCollect! !
+! !
 
-!SirenSession methodsFor: 'actions'!
+!SirenSession methodsFor: 'actions' stamp: 'stp 12/26/2022 17:33:37'!
 configureMIDI
 
 	| sel dev devices |
 	MIDIPort concreteClass devices ifNil: [MIDIPort testOpenClose].
-	sel := (Menu labelArray: #('pick input port' 'pick output port')) startUp.
+	sel := (PopUpMenu labelArray: #('pick input port' 'pick output port')) startUp.
 	sel = 0 ifTrue: [^self].
 	sel = 1 ifTrue: [devices := MIDIPort concreteClass devices select: [ :item | item out = 1]].
 	sel = 2 ifTrue: [devices := MIDIPort concreteClass devices select: [ :item | item out = 0]].
-	dev := (Menu labelArray: (devices collect: [ :item | item name])) startUp.
+	dev := (PopUpMenu labelArray: (devices collect: [ :item | item name])) startUp.
 	dev = 0 ifTrue: [^self].
 	sel = 1 ifTrue: [Transcript show: 'Default MIDI input device set to ', ((devices at: dev) name); cr.
 			dev := (devices at: dev) port.
@@ -1065,12 +1062,12 @@ configureMIDI
 			SirenUtility defaultMIDIOut: dev.
 			MIDIPort concreteClass out: dev].! !
 
-!SirenSession methodsFor: 'actions'!
+!SirenSession methodsFor: 'actions' stamp: 'stp 12/26/2022 17:11:21'!
 freeLists
 
 	SirenSession flushTempEventLists.
 	SirenSession initializeSounds.
-	ObjectMemory globalGarbageCollect! !
+	Smalltalk garbageCollect! !
 
 !SirenSession methodsFor: 'actions'!
 inspectSession
@@ -1110,7 +1107,7 @@ resetSound
 	outChannels value: SoundPort out.
 	sampleRate value: SoundPort sampleRate.! !
 
-!SirenSession methodsFor: 'actions'!
+!SirenSession methodsFor: 'actions' stamp: 'stp 12/26/2022 22:29:21'!
 stopMIDI
 	"Turn off MIDI"
 
@@ -1118,7 +1115,7 @@ stopMIDI
 	EventScheduler flush.
 	[MIDIPort default allNotesOff]
 		on: Error
-		do: [ :ex | Transcript show: 'Midi not installed'; cr].! !
+		do: [ :ex | Transcript show: 'MIDI prims not installed'; cr].! !
 
 !SirenSession methodsFor: 'actions'!
 stopSound
@@ -1179,6 +1176,12 @@ oscAddress
 	"Answer the formatted OSC IP address + port"
 
 	^oscAddress! !
+
+!SirenSession methodsFor: 'aspects' stamp: 'stp 12/26/2022 17:02:50'!
+oscAddress: value
+	"Answer the formatted OSC IP address + port"
+
+	self halt! !
 
 !SirenSession methodsFor: 'aspects'!
 outChannels
@@ -1311,29 +1314,30 @@ postOpenWith: aBuilder
 	self timer onChangeSend: #newTimer to: self.! !
 
 
-!SirenSession methodsFor: 'initialize release'!
+!SirenSession methodsFor: 'initialize release' stamp: 'stp 12/26/2022 12:28:56'!
 initialize
 	"Set up the defaults values."
 	"self open"
 
-	interfaceParams := SoundPort concreteClass properties.
-	interfaceParams isEmpty ifTrue: [interfaceParams := #(0 0 0 0)].
-	inChannels := interfaceParams first asValue.
-	outChannels := (interfaceParams at: 2) asValue.
-	sampleRate := (interfaceParams at: 3) asValue.
-	blockSize := SoundPort concreteClass blockSize asValue.
-	defaultVoiceClass := #MIDIVoice asValue.
-	transport := nil asValue.
-	scheduleList := SelectionInList new.
-	scheduleListText := SelectionInList new.
-	clock := String new asValue.
+"	interfaceParams := SoundPort concreteClass properties.
+	interfaceParams isEmpty ifTrue: [interfaceParams := #(0 0 0 0)].  "
+	interfaceParams := #(0 0 0 0)	.
+	inChannels := interfaceParams first.
+	outChannels := (interfaceParams at: 2).
+	sampleRate := (interfaceParams at: 3).
+	blockSize := 1024.  "SoundPort concreteClass blockSize asValue."
+	defaultVoiceClass := #MIDIVoice.
+	transport := nil.
+"	scheduleList := SelectionInList new.
+	scheduleListText := SelectionInList new."
+	clock := String new.
 	loadedSounds := OrderedCollection new.
 	loadedLists := OrderedCollection new.
-	verbosity := SirenUtility verbosity asValue.
-	oscAddress := (SirenUtility defaultOSCHost printIP, ':', SirenUtility defaultOSCPort printString) asValue.
+	verbosity := SirenUtility verbosity.
+	oscAddress := (SirenUtility defaultOSCHost printIP, ':', SirenUtility defaultOSCPort printString).
 
-	(EventScheduler instance dependents includes: self)
-		ifFalse: [EventScheduler instance addDependent: self]! !
+"	(EventScheduler instance dependents includes: self)
+		ifFalse: [EventScheduler instance addDependent: self]"! !
 
 !SirenSession methodsFor: 'initialize release'!
 release
@@ -1695,18 +1699,18 @@ stop
 	EventScheduler instance run: false! !
 
 
-!SirenSession methodsFor: 'actions--tests'!
+!SirenSession methodsFor: 'actions--tests' stamp: 'stp 12/26/2022 17:37:29'!
 testMIDI
 
 	| lis sel |
-	sel := (Menu labelArray: #('test input' 'test output')) startUp.
+	sel := (PopUpMenu labelArray: #('test input' 'test output')) startUp.
 	sel == 0 ifTrue: [^self].
 	sel == 1 ifTrue: 
-		[sel := (Menu labelArray: #('start input' 'stop input')) startUp.
+		[sel := (PopUpMenu labelArray: #('start input' 'stop input')) startUp.
 		sel == 0 ifTrue: [^self].
 		sel == 1 ifTrue: [^MIDIPort testInput].
 		sel == 2 ifTrue: [^MIDIPort testInputStop]].
-	sel := (Menu labelArray: #('single note' 'scale' 'dense chaos')) startUp.
+	sel := (PopUpMenu labelArray: #('single note' 'scale' 'dense chaos')) startUp.
 	sel == 0 ifTrue: [^self].
 	sel == 1 ifTrue: [^MIDIPort testANote].
 	sel == 2 ifTrue: [^(EventList scaleFrom: 48 to: 72 in: 1.5) playOn: MIDIVoice default].
@@ -1751,14 +1755,14 @@ testMIDIout
 			density: 9) eventList)].
 	lis playOn: MIDIVoice default! !
 
-!SirenSession methodsFor: 'actions--tests'!
+!SirenSession methodsFor: 'actions--tests' stamp: 'stp 12/26/2022 18:03:49'!
 testOSCout
 
 	| sel |
-	sel := (Menu labelArray: #('CSL FM example' 'MIDI example')) startUp.
+	sel := (PopUpMenu labelArray: #('CSL strings example' 'scale example')) startUp.
 	sel == 0 ifTrue: [^self].
-	sel == 1 ifTrue: [^OSCVoice fmExample1].
-		^OSCVoice midiScaleExample! !
+	sel == 1 ifTrue: [^OSCVoice pluckExample1].
+		^OSCVoice scaleExample! !
 
 !SirenSession methodsFor: 'actions--tests'!
 testSndFileIn
@@ -1803,17 +1807,17 @@ update: anAspectSymbol with: aParameter from: aSender
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SirenSession class' category: #'Music-Support'!
+!classDefinition: 'SirenSession class' category: 'Music-Support'!
 SirenSession class
 	instanceVariableNames: 'instance useSingleton'!
 
-!SirenSession class methodsFor: 'class initialization'!
+!SirenSession class methodsFor: 'class initialization' stamp: 'stp 12/28/2022 14:05:29'!
 flushTempEventLists
 	"Flush the class's temporary event list dictionary."
 	"SirenSession flushTempEventLists"
 
 	EventLists at: #Temp put: Dictionary new.
-	ObjectMemory compactingGC! !
+	Smalltalk garbageCollect! !
 
 !SirenSession class methodsFor: 'class initialization' stamp: 'stp 11/25/2022 09:55:57'!
 initialize
@@ -2071,6 +2075,10 @@ verbosityMenu
 
 	! !
 
+!SirenSession class methodsFor: 'resources' stamp: 'stp 12/26/2022 12:26:31'!
+windowColor
+	^ Theme current object! !
+
 
 !SirenSession class methodsFor: 'data load/store'!
 data: aName in: theDict put: anItem
@@ -2197,31 +2205,205 @@ openTransport
 
 	^self openOn: self new withSpec: #transportWindowSpec! !
 
-!SirenSession class methodsFor: 'interface opening'!
+!SirenSession class methodsFor: 'interface opening' stamp: 'stp 12/26/2022 22:11:48'!
 openUtility
+	"Open the ApplicationModel's user interface."
+	"SirenSession openUtility"
+
+	| topLevel midi snd1 general window font |
+	topLevel _ LayoutMorph newRow.
+	midi _ LayoutMorph newColumn borderWidth: 8.
+	snd1 _ LayoutMorph newColumn borderWidth: 8.
+	general _ LayoutMorph newColumn borderWidth: 8.
+
+	font _ FontFamily familyName: 'Parc Place Legacy' pointSize: 12.
+	midi addMorph: (LabelMorph contents: '    MIDI/OSC  ' font: font emphasis: AbstractFont boldCode) 
+				proportionalHeight: 0.2;
+		addMorph: self createConfButton proportionalHeight: 0.2;
+		addMorph: self createTestMButton proportionalHeight: 0.2;
+		addMorph: self createTestOSCButton proportionalHeight: 0.2;
+		addMorph: self createStopMButton proportionalHeight: 0.2.
+	snd1 addMorph: (LabelMorph contents: '    Sound I/O  ' font: font emphasis: AbstractFont boldCode) 
+				proportionalHeight: 0.2;
+		addMorph: self createTestSoutButton proportionalHeight: 0.2;
+		addMorph: self createTestSinButton proportionalHeight: 0.2;
+		addMorph: self createTestSiFileButton proportionalHeight: 0.2;
+		addMorph: self createStopSButton proportionalHeight: 0.2.
+	general addMorph: (LabelMorph contents: '    Data  ' font: font emphasis: AbstractFont boldCode) 
+				proportionalHeight: 0.25;
+		addMorph: (LabelMorph contents: '          OSC Port' ) proportionalHeight: 0.15;
+		addMorph: ((TextModelMorph textProvider: instance
+				textGetter: #oscAddress textSetter: #oscAddress:) acceptOnCR: true; 
+					alwaysHideVerticalScrollbar) proportionalHeight: 0.12;
+	addMorph: self createLoadButton proportionalHeight: 0.16;
+	addMorph: self createStoreButton proportionalHeight: 0.16;
+	addMorph: self createFlushButton proportionalHeight: 0.16.
+
+	topLevel addMorph: midi proportionalWidth: 0.33;
+		addMorph: snd1 proportionalWidth: 0.33;
+		addMorph: general proportionalWidth: 0.34.
+
+	self new.				"initialize singleton"
+	window _ SystemWindow new model: self new.
+	window setLabel: 'Siren Utility'.
+	window layoutMorph addMorph: topLevel.
+	topLevel morphExtent: 500@100.
+	window morphExtent: 500@100.
+"	window widgetsColor: Color lightGray."
+	UISupervisor runningWorld addMorph: window
+! !
+
+!SirenSession class methodsFor: 'interface opening' stamp: 'stp 12/26/2022 11:57:19'!
+openUtilityOld
 	"Open the ApplicationModel's user interface."
 	"SirenSession openUtility"
 
 	^self openOn: self new withSpec: #utilWindowSpec! !
 
 
-!SirenSession class methodsFor: 'interface specs'!
-transportButtonSpec
-	"Tools.UIPainter new openOnClass: self andSelector: #transportButtonSpec"
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 22:07:57'!
+createConfButton
 
-	! !
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #configureMIDI.
+	button 
+		label: 'Configure MIDI';
+		setBalloonText: 'Configure MIDI I/O ports'.
+	^button ! !
 
-!SirenSession class methodsFor: 'interface specs'!
-transportWindowSpec
-	"Tools.UIPainter new openOnClass: self andSelector: #transportWindowSpec"
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 17:13:08'!
+createFlushButton
 
-	! !
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #freeLists.
+	button 
+		label: 'Flush all';
+		setBalloonText: 'Flush all persistent event lists'.
+	^button ! !
 
-!SirenSession class methodsFor: 'interface specs'!
-utilWindowSpec
-	"Tools.UIPainter new openOnClass: self andSelector: #utilWindowSpec"
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 17:13:30'!
+createLoadButton
 
-	! !
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #loadAll.
+	button 
+		label: 'Load all';
+		setBalloonText: 'Load all stored event lists'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 21:56:07'!
+createStopButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #stopMIDI.
+	button 
+		label: 'Stop Scheduler';
+		setBalloonText: 'Stop the MIDI/OSC output and scheduler'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 22:08:23'!
+createStopMButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #stopMIDI.
+	button 
+		label: 'Stop Scheduler';
+		setBalloonText: 'Stop the MIDI/OSC output and scheduler'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 16:59:44'!
+createStopSButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #stopSound.
+	button 
+		label: 'Stop sound';
+		setBalloonText: 'Stop the sound output'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 17:12:58'!
+createStoreButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #storeLists.
+	button 
+		label: 'Store all';
+		setBalloonText: 'Store all persistent event lists'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 16:59:49'!
+createTestMButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #testMIDI.
+	button 
+		label: 'Test MIDI I/O';
+		setBalloonText: 'Test the Midi I/O ports'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 17:38:53'!
+createTestOSCButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #testOSCout.
+	button 
+		label: 'Test OSC output';
+		setBalloonText: 'Test the OSC output'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 16:59:59'!
+createTestSiFileButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #testSoundFiles.
+	button 
+		label: 'Test sound file';
+		setBalloonText: 'Test the sound file playback'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 17:00:04'!
+createTestSinButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #testSoundIn.
+	button 
+		label: 'Test sound in';
+		setBalloonText: 'Test the sound input'.
+	^button ! !
+
+!SirenSession class methodsFor: 'interface specs' stamp: 'stp 12/26/2022 17:00:12'!
+createTestSoutButton
+
+	| button |
+	button := PluggableButtonMorph 
+		model: instance
+		action: #testSoundOut.
+	button 
+		label: 'Test sound out';
+		setBalloonText: 'Test the sound output'.
+	^button ! !
 
 
 !SirenSession class methodsFor: 'instance creation'!
@@ -2257,7 +2439,7 @@ release
 		instance := nil]! !
 
 
-!classDefinition: #SirenUtility category: #'Music-Support'!
+!classDefinition: #SirenUtility category: 'Music-Support'!
 Model subclass: #SirenUtility
 	instanceVariableNames: ''
 	classVariableNames: 'DataDir DefaultMIDIIn DefaultMIDIOut DefaultOSCHost DefaultOSCPort LoggingStream ScoreDir SoundDir Verbosity'
@@ -2275,7 +2457,7 @@ Class Variables:
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SirenUtility class' category: #'Music-Support'!
+!classDefinition: 'SirenUtility class' category: 'Music-Support'!
 SirenUtility class
 	instanceVariableNames: ''!
 
@@ -2367,10 +2549,10 @@ Santa Barbara, May, 2007'.
 	book open! !
 
 
-!SirenUtility class methodsFor: 'logging'!
+!SirenUtility class methodsFor: 'logging' stamp: 'stp 12/26/2022 22:16:06'!
 log: theMessage
 	"Log the given string to the Transcript (or otgher output stream) if the system verbosity is >= the given verbosity level"
-	"SirenUtility log: 'hello there' level: 2"
+	"SirenUtility log: 'hello there' level: 0"
 
 	LoggingStream
 		ifNil: [Transcript show: theMessage; cr]
@@ -2538,75 +2720,6 @@ playSoundFile: nam
 	fullName ifNil: [self error: 'File not found'].
 	Transcript show: 'Playing snd file ', nam, '...'; cr.
 	UnixProcess cshOne: ('/usr/local/bin/sndfile-play ', fullName)! !
-
-!SirenUtility class methodsFor: 'utilities'!
-writeSirenManual
-	"Create the big book"
-	"SirenUtility writeSirenManual"
-	"Siren organization listAtCategoryNamed: #'Music-Events'"
-
-	| mw classes |
-	mw := ManualWriter new.
-	classes := OrderedCollection new: 512.
-	self categoryList do:
-		[ :cat |
-		classes addAll: (Siren organization superclassOrder: cat)].
-	mw classList: classes.
-	mw methodBody value: false.
-	mw doReport! !
-
-!SirenUtility class methodsFor: 'utilities'!
-writeSirenManualToHTML: folder
-	"Create the doxygen-style manual in an HTML folder"
-	"SirenUtility writeSirenManualToHTML: 'Manual'"
-
-	| mw index classes fn book |
-	mw := ManualWriter new.
-	mw methodBody value: false.
-	index := WriteStream on: (String new: 2048).
-	book := TextStream on: (String new: 2048).
-	classes := OrderedCollection new: 512.
-	fn := Filename named: folder.
-	fn exists
-		ifTrue: [fn isDirectory
-			ifFalse: [self error: 'File exists']]
-		ifFalse: [fn makeDirectory].
-	index nextPutAll: '<HTML>
-<HEAD>
-<TITLE>The Siren 7.5 Reference Manual</TITLE>
-</HEAD>
-<BODY BGCOLOR="#ffffcc">
-<H2>The Siren 7.5 Reference Manual</H2>
-<font size=+1><UL>
-<a href=#cat><LI>Classes listed by category</A>
-<a href=#alpha><LI>Classes listed alphabetically</A>
-<a href="SirenReferenceManual.html"><LI>The entire manual in one file</A>
-</UL></font><a name="cat">'; cr.
-	book emphasis: #(#large #bold); nextPutAll: 'The Siren 7.5 Reference Manual'; emphasis: nil; cr.
-	self categoryList do:
-		[ :cat | | catClasses |
-		index cr; nextPutAll: '<H4>', cat asString, '</H4><UL>'; cr.
-		book cr; nextPutAll: '<H2>', cat asString, '</H2><HR>'; cr.
-		catClasses := Siren organization superclassOrder: cat.
-		classes addAll: (catClasses collect: [ :each | each name]).
-		catClasses do:
-			[ :theClass | | text |
-			index cr; nextPutAll: '<LI><A HREF="', theClass name, '.html">', theClass name, '</A>'.
-			mw classList: (Array with: theClass).
-			text := mw reportText.
-			book cr; nextPutAllText: text, '<HR>'; cr.
-			Smalltalk.Heeg.HtmlWriter write: text
-				into: (folder, Filename separatorString, theClass name, '.html')].
-		index cr; nextPutAll: '</UL><P><HR>'; cr].
-	index cr; nextPutAll: '<a name="alpha"><H3>Classes Listed Alphabetically</H3><UL>'; cr.
-	classes asSortedCollection do:
-		[ :theClass |
-			index cr; nextPutAll: '<LI><A HREF="', theClass asString, '.html">', theClass asString, '</A>'].
-	index cr; nextPutAll: '</UL><HR><br></BODY></HTML>'; cr.
-	((Filename named: (folder, Filename separatorString, 'index.html')) writeStream) 
-			nextPutAll: index contents; close.
-	Smalltalk.Heeg.HtmlWriter write: book contents
-				into: (folder, Filename separatorString, 'SirenReferenceManual.html').! !
 
 
 !SirenUtility class methodsFor: 'example access'!
@@ -2828,7 +2941,7 @@ nextName: aName type: extension
 	^(base asString, Filename separatorString, aName, ind, extension)! !
 
 
-!classDefinition: #Timer category: #'Music-Support'!
+!classDefinition: #Timer category: 'Music-Support'!
 Model subclass: #Timer
 	instanceVariableNames: 'startTime accumulator lastUpdate interval running name'
 	classVariableNames: ''
@@ -2947,7 +3060,7 @@ stop
 	self changed! !
 
 
-!classDefinition: #SEventQueue category: #'Music-Support'!
+!classDefinition: #SEventQueue category: 'Music-Support'!
 SequenceableCollection subclass: #SEventQueue
 	instanceVariableNames: 'first last'
 	classVariableNames: 'CurrentRecord RecordPool'
@@ -3029,11 +3142,12 @@ itemNamed: theName
 	self do: [ :item | (item value name == theName) ifTrue: [^item]].
 	^nil! !
 
-!SEventQueue methodsFor: 'accessing'!
+!SEventQueue methodsFor: 'accessing' stamp: 'stp 12/27/2022 10:04:20'!
 ready: now
 	"Answer whether there's an event ready within 5000 usec of the given time"
 
 	first ifNil: [^false].
+	first start ifNil: [^false].
 "	Transcript show: (now - first start) printString; cr."
 "	^(now - first start) abs < 1000"
 	^(now - first start) > 1000! !
@@ -3079,7 +3193,7 @@ size
 	^ tally! !
 
 
-!SEventQueue methodsFor: 'private'!
+!SEventQueue methodsFor: 'private' stamp: 'stp 12/27/2022 10:03:54'!
 locateSlotFor: start
 	"Find the proper slot for inserting a new event with the given start time."
 
@@ -3090,6 +3204,7 @@ locateSlotFor: start
 		[first := new.
 		last := nil.
 		^new].
+	first start ifNil: [^first].
 	first start >= start					"If it's before the first scheduled event, prepend."
 		ifTrue: [first previous: new.
 			new next: first.
@@ -3126,11 +3241,11 @@ printOn: aStream
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SEventQueue class' category: #'Music-Support'!
+!classDefinition: 'SEventQueue class' category: 'Music-Support'!
 SEventQueue class
 	instanceVariableNames: ''!
 
-!SEventQueue class methodsFor: 'record pool'!
+!SEventQueue class methodsFor: 'record pool' stamp: 'stp 12/27/2022 11:57:58'!
 initialize
 	"Set up the class's record pool"
 	"SEventQueue initialize"
@@ -3141,7 +3256,7 @@ initialize
 	RecordPool := Array new: poolSize.
 	1 to: poolSize do:
 		[ :count |
-		RecordPool at: count put: ScheduleRecord new].! !
+		RecordPool at: count put: ScheduleRecord new]! !
 
 !SEventQueue class methodsFor: 'record pool'!
 nextRecord

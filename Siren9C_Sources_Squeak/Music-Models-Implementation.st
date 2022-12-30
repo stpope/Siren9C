@@ -18,7 +18,7 @@ See the class examples.
 	"Cycle the receiver until the argument fulfills the receiver's block."
 
 	[value value: anArg value] 
-		whileFalse: ["Processor yield" (Delay forMilliseconds: 10) wait]! !!ConditionalDuration methodsFor: 'private'!species
+		whileFalse: ["Processor yield" (Delay forMilliseconds: 10) wait]! !!ConditionalDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:13'!species
 	"Answer Duration."
 
 	^MDuration! !!ConditionalDuration methodsFor: 'converting'!mostGeneral
@@ -269,10 +269,10 @@ Instance Variables:
 !!MeasureDuration methodsFor: 'printing'!units
 	"Answer the units string of the receiver."
 
-	^' measures'! !!MeasureDuration methodsFor: 'private'!species
+	^' measures'! !!MeasureDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:23'!species
 	"Answer Duration."
 
-	^ MDuration! !MusicMagnitude subclass: #OrdinalMagnitude	instanceVariableNames: 'table'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Implementation'!!OrdinalMagnitude commentStamp: '<historical>' prior: 0!Instances of the OrdinalMagnitude classes are order-only magnitudes.
+	^MDuration! !MusicMagnitude subclass: #OrdinalMagnitude	instanceVariableNames: 'table'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Implementation'!!OrdinalMagnitude commentStamp: '<historical>' prior: 0!Instances of the OrdinalMagnitude classes are order-only magnitudes.
 They use the instance or class instance tables for holding comparative relationships among instances (e.g., mag1 might know that it's > mag2).
 The relation-setting (i.e., order assignment) messages are: ==, >>, <<, =<, and =>.
 The query messages are: =?, > < <=, and >=.
@@ -465,10 +465,10 @@ Class Instance Variable:
 	Table := Dictionary new.! !OrdinalMagnitude subclass: #Length	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Implementation'!!Length commentStamp: '<historical>' prior: 0!Instances of Length represent subjective length (~ duration * loudness) values.
 The instance variable tables are used for the name -> relation symbol map.
 
-See the class examples.!!Length methodsFor: 'private'!species
+See the class examples.!!Length methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:38'!species
 	"Answer Duration."
 
-	^ MDuration! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Length class	instanceVariableNames: ''!!Length class methodsFor: 'examples'!example
+	^MDuration! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Length class	instanceVariableNames: ''!!Length class methodsFor: 'examples'!example
 	"Demonstrate the use of an OrdinalMagnitude with a scale of length."
 	"Length example"
 
@@ -525,10 +525,10 @@ They can be expanded into msec. relative to some given event (a whole note), or 
 	aStream nextPutAll: "'d:'," value printString! !!RatioDuration methodsFor: 'printing'!units
 	"Answer the units string of the receiver."
 
-	^' beat'! !!RatioDuration methodsFor: 'private'!species
+	^' beat'! !!RatioDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:27'!species
 	"Answer Duration."
 
-	^ MDuration! !!RatioDuration methodsFor: 'double dispatching'!quotientFromInteger: numerator
+	^MDuration! !!RatioDuration methodsFor: 'double dispatching'!quotientFromInteger: numerator
 	"Answer a MM whose value is the argument over the receiver's value."
 	"1/4 beat"
 
@@ -661,14 +661,7 @@ They can be transformed into other values (e.g., note names or key numbers), but
 	"Answer the selector to be used in coercing double-dispatching messages."
 
 	^#asStep! !NumericalMagnitude subclass: #SecondDuration	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Implementation'!!SecondDuration commentStamp: '<historical>' prior: 0!Instances of SecondDuration are duration times in floating-point seconds.
-This is among the most general duration time representations.!!SecondDuration methodsFor: 'printing'!printOn: aStream
-	"Print the receiver on the argument as a MM declaration."
-
-	| valstr |
-	valstr := value printString.
-	valstr size > 6
-		ifTrue: [valstr := valstr copyFrom: 1 to: 5].
-	aStream nextPutAll: '(', valstr, self units, ')'! !!SecondDuration methodsFor: 'printing'!units
+This is among the most general duration time representations.!!SecondDuration methodsFor: 'printing' stamp: 'stp 12/28/2022 16:49'!printOn: aStream 	"Print the receiver on the argument as a MM declaration."	| digits |	Sensor shiftPressed		ifTrue: [digits := 10]		ifFalse: ["4 digits by default"   digits := 4].	aStream nextPutAll: '('.	value isFloat		ifTrue: [value printOn: aStream maxDecimalPlaces: digits]		ifFalse: [value printOn: aStream].	aStream nextPutAll: self units , ')'! !!SecondDuration methodsFor: 'printing'!units
 	"Answer the units string of the receiver."
 
 	^' sec'! !!SecondDuration methodsFor: 'process delay'!wait
@@ -678,10 +671,10 @@ This is among the most general duration time representations.!!SecondDuration
 	(Delay forMicroseconds: self asUseconds value) wait! !!SecondDuration methodsFor: 'private'!mostGeneral
 	"Answer the receiver in seconds."
 
-	^self asSec! !!SecondDuration methodsFor: 'private'!species
+	^self asSec! !!SecondDuration methodsFor: 'private' stamp: 'stp 12/28/2022 13:37:35'!species
 	"Answer Duration."
 
-	^ MDuration! !!SecondDuration methodsFor: 'converting'!adaptToFloat
+	^MDuration! !!SecondDuration methodsFor: 'converting'!adaptToFloat
 	"Answer a float of seconds."
 
 	^self asSeconds value! !!SecondDuration methodsFor: 'converting'!asBeat

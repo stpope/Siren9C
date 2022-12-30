@@ -30,7 +30,10 @@ Object subclass: #Scale	instanceVariableNames: 'root notes'	classVariableNames
 	(aNote pitchClass natural pitchEqual: N C)	
 		ifTrue: [^answer octave: aNote oct - 1]
 		ifFalse: [^answer octave: aNote oct]! !!Scale methodsFor: 'accessing'!notes
-	^notes! !!Scale methodsFor: 'accessing'!root
+	^notes! !!Scale methodsFor: 'accessing' stamp: 'stp 12/26/2022 18:13:15'!octaveScale
+	"Most scales repeat in octaves of 2.0"
+
+	^2.0! !!Scale methodsFor: 'accessing'!root
 	^root! !!Scale methodsFor: 'accessing'!root: value
 	root := value! !!Scale methodsFor: 'scale tone chords'!arpeggioFrom: startNote poly: n interval: int 
 	"yields n notes from startNote by intervals of int"
@@ -129,7 +132,43 @@ Object subclass: #Scale	instanceVariableNames: 'root notes'	classVariableNames
 	^self class intervalList! !!Scale methodsFor: 'computing notes'!leadingNote
 	"N la minorScale leadingNote"
 
-	^self notes last! !!Scale methodsFor: 'computing notes' stamp: 'stp 12/18/2022 11:32'!nearestNoteTo: aHzPitch	"Answer the frequency of the scale degree closest to the given pitch in Hz."	"(PentatonicScale root: N re) nearestNoteTo: 450"	| oct nNum bNote |	nNum := (((aHzPitch / 8.17579891564371) log: 2) * 12) truncated.	oct:= (nNum / 12) truncated.	bNote := oct * 12."	Transcript show: 'nearestNoteTo: ', aHzPitch printString; cr."	0 to: notes size do: 		[ :ind | | nt0 nt1 t0 t1 p0 p1 |		(ind = 0)			ifFalse: [nt0 := notes at: ind.						"get the note degrees"				t0 := bNote + nt0 semiToneCount.				"adjust to oct base"				p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0))]		"lower/higher pitch of interval"			ifTrue:  [nt0 := notes last.									t0 := bNote + nt0 semiToneCount.								p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0)) / self octaveScale].		(ind < notes size)			ifTrue: [nt1 := notes at: ind + 1.				t1 := bNote + nt1 semiToneCount.				p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0))]			ifFalse: [nt1 := (notes at: 1).				t1 := bNote + nt1 semiToneCount.								p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0)) * self octaveScale]."		Transcript tab; show: 'Between: ', p0 printString, ' and: ', p1 printString; cr."		(p0 <= aHzPitch and: [p1 >= aHzPitch])			"loop over intervals looking for the one that includes the given freq"			ifTrue:  [ |  a b  | 				a := (aHzPitch - p0).				b := (p1 - aHzPitch).				^(a >= b)					ifTrue:  [p1]					ifFalse: [p0]]].	self error: 'Pitch class member not found'! !!Scale methodsFor: 'computing notes'!reverseNotes
+	^self notes last! !!Scale methodsFor: 'computing notes' stamp: 'stp 12/18/2022 11:32'!nearestNoteTo: aHzPitch
+	"Answer the frequency of the scale degree closest to the given pitch in Hz."
+	"(PentatonicScale root: N re) nearestNoteTo: 450"
+
+	| oct nNum bNote |
+	nNum := (((aHzPitch / 8.17579891564371) log: 2) * 12) truncated.
+	oct:= (nNum / 12) truncated.
+	bNote := oct * 12.
+
+"	Transcript show: 'nearestNoteTo: ', aHzPitch printString; cr."
+	0 to: notes size do: 
+		[ :ind | | nt0 nt1 t0 t1 p0 p1 |
+		(ind = 0)
+			ifFalse: [nt0 := notes at: ind.						"get the note degrees"
+				t0 := bNote + nt0 semiToneCount.				"adjust to oct base"
+				p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0))]		"lower/higher pitch of interval"
+			ifTrue:  [nt0 := notes last.					
+				t0 := bNote + nt0 semiToneCount.				
+				p0 := 8.17579891564371 * (2.0 raisedTo: ((t0 asFloat) / 12.0)) / self octaveScale].
+		(ind < notes size)
+			ifTrue: [nt1 := notes at: ind + 1.
+				t1 := bNote + nt1 semiToneCount.
+				p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0))]
+			ifFalse: [nt1 := (notes at: 1).
+				t1 := bNote + nt1 semiToneCount.				
+				p1 := 8.17579891564371 * (2.0 raisedTo: ((t1 asFloat) / 12.0)) * self octaveScale].
+
+"		Transcript tab; show: 'Between: ', p0 printString, ' and: ', p1 printString; cr."
+		(p0 <= aHzPitch and: [p1 >= aHzPitch])			"loop over intervals looking for the one that includes the given freq"
+			ifTrue:  [ |  a b  | 
+				a := (aHzPitch - p0).
+				b := (p1 - aHzPitch).
+				^(a >= b)
+					ifTrue:  [p1]
+					ifFalse: [p0]]].
+
+	self error: 'Pitch class member not found'! !!Scale methodsFor: 'computing notes'!reverseNotes
 	"first is root, others following descending order"
 
 	^(notes copyFrom: 2 to: notes size) asOrderedCollection reverse
@@ -145,7 +184,7 @@ Object subclass: #Scale	instanceVariableNames: 'root notes'	classVariableNames
 	s nextPutAll: ' root: ', root storeString.
 	s nextPut: $).! !!Scale methodsFor: 'degres'!degreDeAccord: unAccord
 	^(root intervalBetween: unAccord root) type! !!Scale methodsFor: 'degres'!degreeOfNote: aNote 
-	^(root intervalBetween: aNote) type! !!Scale methodsFor: 'transpose' stamp: 'stp 12/18/2022 11:31'!octaveScale	"Most scales repeate in octaves of 2.0"	^2.0! !!Scale methodsFor: 'transpose'!transposeOf: anInterval 
+	^(root intervalBetween: aNote) type! !!Scale methodsFor: 'transpose'!transposeOf: anInterval 
 	^self class root: (root transposeOf: anInterval)! !!Scale methodsFor: 'testing'!= g  
 	^root = g root and: [self class == g class]! !!Scale methodsFor: 'testing'!containsAllOfTheseNotes: listOfNotes
 	listOfNotes do: 
@@ -194,14 +233,14 @@ Object subclass: #Scale	instanceVariableNames: 'root notes'	classVariableNames
 	| count |
 	count := root numberOfSemiTonesBetween: p.
 	count = 0 ifTrue: [^ root].
-	^ self allNotes at: (1 + (count \\ 12))! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Scale class	instanceVariableNames: ''!!Scale class methodsFor: 'creation' stamp: 'stp 12/18/2022 08:48'!askScale
+	^ self allNotes at: (1 + (count \\ 12))! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Scale class	instanceVariableNames: ''!!Scale class methodsFor: 'creation'!askScale
 	"self askScale"
 
 	| scales scaleType pitch |
 	scales := Scale subclasses asArray.
 	scaleType := (PopUpMenu labelArray: (scales collect: [:s | s printString])) startUp.
 	scaleType = 0 ifTrue: [^nil].
-	pitch := N noteNamed: (FillInTheBlank request: 'note' initialAnswer: 'Do').
+	pitch := N noteNamed: (Dialog request: 'note' initialAnswer: 'Do').
 	^(scales at: scaleType)
 		root: pitch! !!Scale class methodsFor: 'creation'!root: aNote 
 	| g |
@@ -314,5 +353,7 @@ ListeDAnalyses ({I de Re HungarianMinor} {VII de Mib HungarianMinor} )
 	^#(#unison #minorSecond #minorThird #perfectFourth #perfectFifth #minorSixth #majorSeventh )! !Scale subclass: #Oriental	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Oriental class	instanceVariableNames: ''!!Oriental class methodsFor: 'interval list'!intervalList
 	"tire de McLaughlin et le Mahavishnu Orchestra"
 
-	^#(#unison #minorSecond #minorThird #perfectFourth #diminishedFifth #majorSixth #majorSeventh )! !Scale subclass: #PentatonicScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!PentatonicScale class	instanceVariableNames: ''!!PentatonicScale class methodsFor: 'interval list' stamp: 'stp 12/18/2022 11:35'!intervalList	^#(#unison #majorSecond #perfectFourth #perfectFifth #majorSixth)! !Scale subclass: #PseudoMinorScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!PseudoMinorScale class	instanceVariableNames: ''!!PseudoMinorScale class methodsFor: 'interval list'!intervalList
+	^#(#unison #minorSecond #minorThird #perfectFourth #diminishedFifth #majorSixth #majorSeventh )! !Scale subclass: #PentatonicScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!PentatonicScale class	instanceVariableNames: ''!!PentatonicScale class methodsFor: 'interval list' stamp: 'stp 12/18/2022 11:35'!intervalList
+
+	^#(#unison #majorSecond #perfectFourth #perfectFifth #majorSixth)! !Scale subclass: #PseudoMinorScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!PseudoMinorScale class	instanceVariableNames: ''!!PseudoMinorScale class methodsFor: 'interval list'!intervalList
 	^#(#unison #second #minorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !Scale initialize!

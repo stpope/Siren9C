@@ -1,242 +1,4 @@
-!classDefinition: #Sound category: #'Music-Sound'!
-Function subclass: #Sound
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Sound'!
-!Sound commentStamp: '<historical>' prior: 0!
-Instances of the subclasses of Sound are used to represent sound objects.
-The abstract class Sound is vacuous.
-Sounds use their Function and DurationEvent behaviors actively.
-!
-
-
-!Sound methodsFor: 'testing'!
-isSound
-	"Answer true."
-
-	^true! !
-
-
-!Sound methodsFor: 'initialize-release'!
-finalize
-	"Free the receiver's external data, if any"
-
-	| fileNumber |
-	fileNumber := self at: #fileIndex.
-	fileNumber ifNotNil:
-		[SoundFile releaseFileIndex: fileNumber]! !
-
-!Sound methodsFor: 'initialize-release'!
-initialize
-	"Set up a default sound."
-
-	self propCheck.
-	range := -1.0 to: 1.0! !
-
-
-!Sound methodsFor: 'cue accessing'!
-addCueNamed: cName from: start to: stop
-	"Add the given named cue region to the receiver's list."
-
-	| list key |
-	self cueList == nil
-		ifTrue: [self cueList: OrderedCollection new].
-	list := self cueList.
-	key := cName asSymbol.
-	1 to: list size do:
-		[ :ind |
-		((list at: ind) key == key)
-			ifTrue: [^list at: ind put: (key -> (start to: stop))]].
-	list add: (cName asSymbol -> (start to: stop)).! !
-
-!Sound methodsFor: 'cue accessing'!
-cueList
-	"Answer the receiver's 'cueList'."
-
-	properties ifNil: [^nil].
-	^properties at: #cueList ifAbsent: [nil]! !
-
-!Sound methodsFor: 'cue accessing'!
-cueList: CollectionOfCues
-	"Set the receiver's 'cueList' to be the given OrderedCollection of (#name -> (start to: stop)) cues."
-
-	^properties at: #cueList put: CollectionOfCues! !
-
-!Sound methodsFor: 'cue accessing'!
-cueNamed: cName
-	"Answer a sound derived from the receiver using the samples between the named cue points."
-
-	^self subclassResponsibility! !
-
-!Sound methodsFor: 'cue accessing'!
-cueRegionNamed: cName
-	"Answer a indices for the samples between the named cue points."
-
-	| q |
-	self cueList == nil
-		ifTrue: [self error: 'There is no cue by the name ', 
-				cName printString, ' in this sound.'].
-	q := self cueList detect: [ :c | c key == cName] ifNone: [nil].
-	q == nil
-		ifTrue: [self error: 'There is no cue by the name ', 
-				cName printString, ' in this sound.'].
-	^q value! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Sound class' category: #'Music-Sound'!
-Sound class
-	instanceVariableNames: ''!
-
-!Sound class methodsFor: 'instance accessing'!
-named: aName
-	"Answer the sound by the given name, or nil."
-
-	^SirenSession sounds at: aName asSymbol ifAbsent: [nil]! !
-
-!Sound class methodsFor: 'instance accessing'!
-named: aName put: aSound
-	"Put the given sound in the shared dictionary under the given name."
-
-	SirenSession sounds ifNil: [^nil].
-	^SirenSession sounds at: aName asSymbol put: aSound! !
-
-
-!Sound class methodsFor: 'utilities'!
-fromFile: nameString
-	"Open the given file (AIFF, IRCAM, NeXT, or SPARC soundfile format)"
-	"Sound fromFile: 'kombination.snd'"
-
-	| snd |
-	[snd := (SoundFile readFileNamed: nameString).
-	snd ifNotNil: [snd := snd sound]]
-		on: Core.Error
-		do: [ :ex |  "ignore " "self error: 'Cannot read sound file named ', nameString"].
-	^snd! !
-
-!Sound class methodsFor: 'utilities'!
-playFile: theName
-	"Play the sound file with the given name"
-
-	SirenUtility playSoundFile: theName! !
-
-
-!classDefinition: #ComponentSound category: #'Music-Sound'!
-Sound subclass: #ComponentSound
-	instanceVariableNames: 'start stop sound'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Sound'!
-!ComponentSound commentStamp: '<historical>' prior: 0!
-A ComponentSound is used as a component (a "splice" element, if you will).
-It represents another sound that "composes" the composite.
-
-Instance Variables:
-	sound <StoredSound> the "subject" sound 
-	start <Integer> the starting sample in the composite
-	stop <Integer> the ending sample in the composite
-	offset <Number> the offset into the selection!
-
-
-!ComponentSound methodsFor: 'accessing'!
-offset
-	"Answer the receiver's 'offset'."
-
-	^offset! !
-
-!ComponentSound methodsFor: 'accessing'!
-offset: anObject
-	"Set the receiver's 'offset' to be anObject."
-
-	offset := anObject! !
-
-!ComponentSound methodsFor: 'accessing'!
-sound
-	"Answer the receiver's 'sound'."
-
-	^sound! !
-
-!ComponentSound methodsFor: 'accessing'!
-sound: anObject
-	"Set the receiver's 'sound' to be anObject."
-
-	sound := anObject! !
-
-!ComponentSound methodsFor: 'accessing'!
-start
-	"Answer the receiver's 'start'."
-
-	^start! !
-
-!ComponentSound methodsFor: 'accessing'!
-start: anObject
-	"Set the receiver's 'start' to be anObject."
-
-	start := anObject! !
-
-!ComponentSound methodsFor: 'accessing'!
-stop
-	"Answer the receiver's 'stop'."
-
-	^stop! !
-
-!ComponentSound methodsFor: 'accessing'!
-stop: anObject
-	"Set the receiver's 'stop' to be anObject."
-
-	stop := anObject.
-	((start ~~ nil) & (sound ~~ nil))
-		ifTrue: [self duration: (stop - start / sound rate) asFloat]! !
-
-
-!ComponentSound methodsFor: 'printing'!
-printOn: aStream
-	"Pretty-print the receiver on the argument."
-
-	| ra |
-	sound ifNil: [^super printOn: aStream].
-	ra := sound rate asFloat.
-	aStream nextPutAll: '(ComponentSound on ', sound name, 
-			' from ', ((start asFloat / ra) printWidth: 6), 
-			' to ', ((stop asFloat / ra) printWidth: 6).
-	offset ifNotNil: 
-		[aStream nextPutAll: ' starting at ', offset printString].
-	aStream nextPutAll: ')'; cr.! !
-
-
-!ComponentSound methodsFor: 'testing'!
-includes: anIndex
-	"Answer whether the argument is within the range of the receiver."
-
-	^(anIndex >= start) & (anIndex <= stop)! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'ComponentSound class' category: #'Music-Sound'!
-ComponentSound class
-	instanceVariableNames: ''!
-
-!ComponentSound class methodsFor: 'instance creation'!
-on: sound from: start to: stop
-	"Answer a new instance initialized with the arguments."
-
-	^(self new) sound: sound; start: start; stop: stop! !
-
-!ComponentSound class methodsFor: 'instance creation'!
-on: sound start: start stop: stop
-	"Answer a new instance initialized with the arguments."
-
-	^(self new) sound: sound; start: start; stop: stop! !
-
-!ComponentSound class methodsFor: 'instance creation'!
-on: sound start: start stop: stop offset: offset
-	"Answer a new instance initialized with the arguments."
-
-	^(self new) sound: sound; start: start; stop: stop; offset: offset! !
-
-
-!classDefinition: #FloatSound category: #'Music-Sound'!
+!classDefinition: #FloatSound category: 'Music-Sound'!
 SampledSound subclass: #FloatSound
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -287,7 +49,7 @@ intSampleAt: index put: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FloatSound class' category: #'Music-Sound'!
+!classDefinition: 'FloatSound class' category: 'Music-Sound'!
 FloatSound class
 	instanceVariableNames: ''!
 
@@ -318,7 +80,7 @@ fileExample
 	^FloatSound fromFile: 'snd/new/orchestra.f.snd'! !
 
 
-!classDefinition: #VirtualSound category: #'Music-Sound'!
+!classDefinition: #VirtualSound category: 'Music-Sound'!
 SampledSound subclass: #VirtualSound
 	instanceVariableNames: 'source'
 	classVariableNames: ''
@@ -413,7 +175,7 @@ isVirtual
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'VirtualSound class' category: #'Music-Sound'!
+!classDefinition: 'VirtualSound class' category: 'Music-Sound'!
 VirtualSound class
 	instanceVariableNames: ''!
 
@@ -439,7 +201,7 @@ exampleView
 				cue: #stream3)! !
 
 
-!classDefinition: #CompositeSound category: #'Music-Sound'!
+!classDefinition: #CompositeSound category: 'Music-Sound'!
 VirtualSound subclass: #CompositeSound
 	instanceVariableNames: 'components'
 	classVariableNames: ''
@@ -533,7 +295,7 @@ isComposite
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CompositeSound class' category: #'Music-Sound'!
+!classDefinition: 'CompositeSound class' category: 'Music-Sound'!
 CompositeSound class
 	instanceVariableNames: ''!
 
@@ -560,7 +322,7 @@ exampleView
 	SoundView openOn: (ramp paste: sine from: 200 to: 400 at: 1000)! !
 
 
-!classDefinition: #GapSound category: #'Music-Sound'!
+!classDefinition: #GapSound category: 'Music-Sound'!
 VirtualSound subclass: #GapSound
 	instanceVariableNames: 'cutList'
 	classVariableNames: ''
@@ -630,7 +392,7 @@ samples
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'GapSound class' category: #'Music-Sound'!
+!classDefinition: 'GapSound class' category: 'Music-Sound'!
 GapSound class
 	instanceVariableNames: ''!
 
@@ -655,3 +417,241 @@ exampleView
 
 	SoundView openOn: ((SampledSound rampDur: 1.0 rate: 16000 chans: 1) 
 			cutFrom: 1000 to: 10000)! !
+
+
+!classDefinition: #Sound category: 'Music-Sound'!
+Function subclass: #Sound
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Sound'!
+!Sound commentStamp: '<historical>' prior: 0!
+Instances of the subclasses of Sound are used to represent sound objects.
+The abstract class Sound is vacuous.
+Sounds use their Function and DurationEvent behaviors actively.
+!
+
+
+!Sound methodsFor: 'testing'!
+isSound
+	"Answer true."
+
+	^true! !
+
+
+!Sound methodsFor: 'initialize-release'!
+finalize
+	"Free the receiver's external data, if any"
+
+	| fileNumber |
+	fileNumber := self at: #fileIndex.
+	fileNumber ifNotNil:
+		[SoundFile releaseFileIndex: fileNumber]! !
+
+!Sound methodsFor: 'initialize-release'!
+initialize
+	"Set up a default sound."
+
+	self propCheck.
+	range := -1.0 to: 1.0! !
+
+
+!Sound methodsFor: 'cue accessing'!
+addCueNamed: cName from: start to: stop
+	"Add the given named cue region to the receiver's list."
+
+	| list key |
+	self cueList == nil
+		ifTrue: [self cueList: OrderedCollection new].
+	list := self cueList.
+	key := cName asSymbol.
+	1 to: list size do:
+		[ :ind |
+		((list at: ind) key == key)
+			ifTrue: [^list at: ind put: (key -> (start to: stop))]].
+	list add: (cName asSymbol -> (start to: stop)).! !
+
+!Sound methodsFor: 'cue accessing'!
+cueList
+	"Answer the receiver's 'cueList'."
+
+	properties ifNil: [^nil].
+	^properties at: #cueList ifAbsent: [nil]! !
+
+!Sound methodsFor: 'cue accessing'!
+cueList: CollectionOfCues
+	"Set the receiver's 'cueList' to be the given OrderedCollection of (#name -> (start to: stop)) cues."
+
+	^properties at: #cueList put: CollectionOfCues! !
+
+!Sound methodsFor: 'cue accessing'!
+cueNamed: cName
+	"Answer a sound derived from the receiver using the samples between the named cue points."
+
+	^self subclassResponsibility! !
+
+!Sound methodsFor: 'cue accessing'!
+cueRegionNamed: cName
+	"Answer a indices for the samples between the named cue points."
+
+	| q |
+	self cueList == nil
+		ifTrue: [self error: 'There is no cue by the name ', 
+				cName printString, ' in this sound.'].
+	q := self cueList detect: [ :c | c key == cName] ifNone: [nil].
+	q == nil
+		ifTrue: [self error: 'There is no cue by the name ', 
+				cName printString, ' in this sound.'].
+	^q value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Sound class' category: 'Music-Sound'!
+Sound class
+	instanceVariableNames: ''!
+
+!Sound class methodsFor: 'instance accessing'!
+named: aName
+	"Answer the sound by the given name, or nil."
+
+	^SirenSession sounds at: aName asSymbol ifAbsent: [nil]! !
+
+!Sound class methodsFor: 'instance accessing'!
+named: aName put: aSound
+	"Put the given sound in the shared dictionary under the given name."
+
+	SirenSession sounds ifNil: [^nil].
+	^SirenSession sounds at: aName asSymbol put: aSound! !
+
+
+!Sound class methodsFor: 'utilities'!
+fromFile: nameString
+	"Open the given file (AIFF, IRCAM, NeXT, or SPARC soundfile format)"
+	"Sound fromFile: 'kombination.snd'"
+
+	| snd |
+	[snd := (SoundFile readFileNamed: nameString).
+	snd ifNotNil: [snd := snd sound]]
+		on: Core.Error
+		do: [ :ex |  "ignore " "self error: 'Cannot read sound file named ', nameString"].
+	^snd! !
+
+!Sound class methodsFor: 'utilities'!
+playFile: theName
+	"Play the sound file with the given name"
+
+	SirenUtility playSoundFile: theName! !
+
+
+!classDefinition: #ComponentSound category: 'Music-Sound'!
+Sound subclass: #ComponentSound
+	instanceVariableNames: 'start stop sound'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Sound'!
+!ComponentSound commentStamp: '<historical>' prior: 0!
+A ComponentSound is used as a component (a "splice" element, if you will).
+It represents another sound that "composes" the composite.
+
+Instance Variables:
+	sound <StoredSound> the "subject" sound 
+	start <Integer> the starting sample in the composite
+	stop <Integer> the ending sample in the composite
+	offset <Number> the offset into the selection!
+
+
+!ComponentSound methodsFor: 'accessing'!
+offset
+	"Answer the receiver's 'offset'."
+
+	^offset! !
+
+!ComponentSound methodsFor: 'accessing'!
+offset: anObject
+	"Set the receiver's 'offset' to be anObject."
+
+	offset := anObject! !
+
+!ComponentSound methodsFor: 'accessing'!
+sound
+	"Answer the receiver's 'sound'."
+
+	^sound! !
+
+!ComponentSound methodsFor: 'accessing'!
+sound: anObject
+	"Set the receiver's 'sound' to be anObject."
+
+	sound := anObject! !
+
+!ComponentSound methodsFor: 'accessing'!
+start
+	"Answer the receiver's 'start'."
+
+	^start! !
+
+!ComponentSound methodsFor: 'accessing'!
+start: anObject
+	"Set the receiver's 'start' to be anObject."
+
+	start := anObject! !
+
+!ComponentSound methodsFor: 'accessing'!
+stop
+	"Answer the receiver's 'stop'."
+
+	^stop! !
+
+!ComponentSound methodsFor: 'accessing'!
+stop: anObject
+	"Set the receiver's 'stop' to be anObject."
+
+	stop := anObject.
+	((start ~~ nil) & (sound ~~ nil))
+		ifTrue: [self duration: (stop - start / sound rate) asFloat]! !
+
+
+!ComponentSound methodsFor: 'printing'!
+printOn: aStream
+	"Pretty-print the receiver on the argument."
+
+	| ra |
+	sound ifNil: [^super printOn: aStream].
+	ra := sound rate asFloat.
+	aStream nextPutAll: '(ComponentSound on ', sound name, 
+			' from ', ((start asFloat / ra) printWidth: 6), 
+			' to ', ((stop asFloat / ra) printWidth: 6).
+	offset ifNotNil: 
+		[aStream nextPutAll: ' starting at ', offset printString].
+	aStream nextPutAll: ')'; cr.! !
+
+
+!ComponentSound methodsFor: 'testing'!
+includes: anIndex
+	"Answer whether the argument is within the range of the receiver."
+
+	^(anIndex >= start) & (anIndex <= stop)! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ComponentSound class' category: 'Music-Sound'!
+ComponentSound class
+	instanceVariableNames: ''!
+
+!ComponentSound class methodsFor: 'instance creation'!
+on: sound from: start to: stop
+	"Answer a new instance initialized with the arguments."
+
+	^(self new) sound: sound; start: start; stop: stop! !
+
+!ComponentSound class methodsFor: 'instance creation'!
+on: sound start: start stop: stop
+	"Answer a new instance initialized with the arguments."
+
+	^(self new) sound: sound; start: start; stop: stop! !
+
+!ComponentSound class methodsFor: 'instance creation'!
+on: sound start: start stop: stop offset: offset
+	"Answer a new instance initialized with the arguments."
+
+	^(self new) sound: sound; start: start; stop: stop; offset: offset! !

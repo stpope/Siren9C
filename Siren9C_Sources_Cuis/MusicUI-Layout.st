@@ -1,4 +1,4 @@
-!classDefinition: #LayoutManager category: #'MusicUI-Layout'!
+!classDefinition: #LayoutManager category: 'MusicUI-Layout'!
 Object subclass: #LayoutManager
 	instanceVariableNames: 'view orientation itemAccessor'
 	classVariableNames: ''
@@ -65,7 +65,7 @@ generateDisplayList
 	^list! !
 
 
-!classDefinition: #HierarchyLayoutManager category: #'MusicUI-Layout'!
+!classDefinition: #HierarchyLayoutManager category: 'MusicUI-Layout'!
 LayoutManager subclass: #HierarchyLayoutManager
 	instanceVariableNames: 'length xStep yStep treeAccessor'
 	classVariableNames: ''
@@ -164,7 +164,7 @@ generateDisplayList
 	^list! !
 
 
-!classDefinition: #IndentedListLayoutManager category: #'MusicUI-Layout'!
+!classDefinition: #IndentedListLayoutManager category: 'MusicUI-Layout'!
 HierarchyLayoutManager subclass: #IndentedListLayoutManager
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -197,7 +197,7 @@ displayPositionFor: aPath
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'IndentedListLayoutManager class' category: #'MusicUI-Layout'!
+!classDefinition: 'IndentedListLayoutManager class' category: 'MusicUI-Layout'!
 IndentedListLayoutManager class
 	instanceVariableNames: ''!
 
@@ -233,7 +233,7 @@ listExample
 	^me displayList! !
 
 
-!classDefinition: #IndentedTreeLayoutManager category: #'MusicUI-Layout'!
+!classDefinition: #IndentedTreeLayoutManager category: 'MusicUI-Layout'!
 IndentedListLayoutManager subclass: #IndentedTreeLayoutManager
 	instanceVariableNames: 'list'
 	classVariableNames: ''
@@ -290,7 +290,7 @@ generateDisplayList
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'IndentedTreeLayoutManager class' category: #'MusicUI-Layout'!
+!classDefinition: 'IndentedTreeLayoutManager class' category: 'MusicUI-Layout'!
 IndentedTreeLayoutManager class
 	instanceVariableNames: ''!
 
@@ -311,7 +311,7 @@ listExample
 	^me displayList! !
 
 
-!classDefinition: #TimeSequenceLayoutManager category: #'MusicUI-Layout'!
+!classDefinition: #TimeSequenceLayoutManager category: 'MusicUI-Layout'!
 LayoutManager subclass: #TimeSequenceLayoutManager
 	instanceVariableNames: 'timeScale timeOffset'
 	classVariableNames: ''
@@ -372,7 +372,7 @@ timeScale: aNumber
 	timeScale := aNumber! !
 
 
-!classDefinition: #PitchTimeLayoutManager category: #'MusicUI-Layout'!
+!classDefinition: #PitchTimeLayoutManager category: 'MusicUI-Layout'!
 TimeSequenceLayoutManager subclass: #PitchTimeLayoutManager
 	instanceVariableNames: 'pitchScale pitchOffset'
 	classVariableNames: ''
@@ -414,7 +414,7 @@ displayPointFor: anAss
 			- ((pch asMIDI value - pitchOffset) * pitchScale))! !
 
 
-!classDefinition: #PositionTimeLayoutManager category: #'MusicUI-Layout'!
+!classDefinition: #PositionTimeLayoutManager category: 'MusicUI-Layout'!
 PitchTimeLayoutManager subclass: #PositionTimeLayoutManager
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -433,7 +433,7 @@ displayPointFor: anAss
 		@ ((anAss event position - pitchOffset) * pitchScale)! !
 
 
-!classDefinition: #StructureAccessor category: #'MusicUI-Layout'!
+!classDefinition: #StructureAccessor category: 'MusicUI-Layout'!
 Object subclass: #StructureAccessor
 	instanceVariableNames: 'subject itemGenerator'
 	classVariableNames: ''
@@ -489,7 +489,7 @@ itemFor: aModel
 	self error: 'Unknown item generator type.'! !
 
 
-!classDefinition: #STreeAccessor category: #'MusicUI-Layout'!
+!classDefinition: #STreeAccessor category: 'MusicUI-Layout'!
 StructureAccessor subclass: #STreeAccessor
 	instanceVariableNames: 'terminalQuery childAccessor'
 	classVariableNames: ''
@@ -570,7 +570,7 @@ leavesOf: aRoot
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'STreeAccessor class' category: #'MusicUI-Layout'!
+!classDefinition: 'STreeAccessor class' category: 'MusicUI-Layout'!
 STreeAccessor class
 	instanceVariableNames: ''!
 

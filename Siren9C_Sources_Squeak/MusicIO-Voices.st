@@ -69,13 +69,13 @@ The global object Voices is a dictionary that note events can refer to with inte
 		ifTrue: [name := aName printString]
 		ifFalse: [name := aName].
 	SirenSession voices ~~ nil
-		ifTrue: [SirenSession voices at: name asSymbol put: self]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Voice class	instanceVariableNames: ''!!Voice class methodsFor: 'class initialization' stamp: 'stp 12/10/2022 14:12'!initialize
+		ifTrue: [SirenSession voices at: name asSymbol put: self]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Voice class	instanceVariableNames: ''!!Voice class methodsFor: 'class initialization'!initialize
 	"set up the shared dictionary for caching voices"
 	"Voice initialize"
 	"Voice allSubclassesDo: [ :each | each initialize]"
 
 	SirenSession initializeVoices.
-	DefaultVoiceClass := #MIDIVoice.
+	DefaultVoiceClass := #OSCVoice.
 ! !!Voice class methodsFor: 'class initialization'!reset
 	"Reset all sub-instances of Voice."
 	"Voice reset"
@@ -260,7 +260,7 @@ Instance Variables:
 	stream nextPutAll: aStringOrValue! !!NotelistVoice methodsFor: 'events'!endLine
 	"Put the proper command terminator on the receiver's stream."
 
-	stream cr! !!NotelistVoice methodsFor: 'events'!mapProperty: item of: ass within: list 
+	stream cr! !!NotelistVoice methodsFor: 'events' stamp: 'stp 12/28/2022 16:52'!mapProperty: item of: ass within: list 
 	"Write the given event association to the receiver's stream in the appropriate format."
 
 	| event time |
@@ -276,7 +276,7 @@ Instance Variables:
 	item isString
 		ifTrue: [self dump: item.
 			^self].
-	(item isMemberOf: BlockClosure)
+	(item isKindOf: BlockClosure)
 		ifTrue: [item numArgs = 1
 				ifTrue: ["1-arg blocks = send event"
 					self dump: (item value: event)
@@ -339,11 +339,11 @@ Instance Variables:
 	"Set up a NotelistVoice on the given output stream"
 	"CmusicVoice newNamed: 'violin' onStream: Transcript"
 
-	^self new initializeNamed: aName onStream: aStream! !!NotelistVoice class methodsFor: 'instance creation'!onFileNamed: fName
+	^self new initializeNamed: aName onStream: aStream! !!NotelistVoice class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:51'!onFileNamed: fName
 	"Set up a NotelistVoice on the given output file"
 	"CmusicVoice onFile: 't.out.cmusic'"
 
-	^self new initializeOnStream: fName asFilename writeStream! !NotelistVoice subclass: #CmixVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!CmixVoice commentStamp: '<historical>' prior: 0!A CmixVoice can write an event list to a MINC format file for use by cmix.!!CmixVoice methodsFor: 'events'!endLine
+	^self new initializeOnStream: (FileStream fileNamed: fName)! !NotelistVoice subclass: #CmixVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!CmixVoice commentStamp: '<historical>' prior: 0!A CmixVoice can write an event list to a MINC format file for use by cmix.!!CmixVoice methodsFor: 'events'!endLine
 
 	stream nextPutAll: ');'; cr.
 	^self! !!CmixVoice methodsFor: 'events'!playEvent: evt at: start 
@@ -503,16 +503,7 @@ Instance Variables:
 	vox play: list.
 	strm close.
 	(Filename named: fnam) edit.
-	^self! !!CsoundVoice class methodsFor: 'instance creation'!defaultPMap
-
-	| map |
-	(map := OrderedCollection new: 8) add: [:t2 | 'i' , (t2 voice == nil
-				ifTrue: [1]
-				ifFalse: [t2 voice]) printString].
-	map add: #start.
-	map add: [ :t3 | t3 duration asSec value asFloat printString: 4].
-	map add: [ :t4 | t4 loudness asDB positiveDB printString: 4].
-	^map! !Voice subclass: #SoundVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!SoundVoice commentStamp: '<historical>' prior: 0!SoundVoice is unfinished; it is intended for putting sound objects in scores.!!SoundVoice methodsFor: 'events'!playEvent: t1 at: t2 
+	^self! !!CsoundVoice class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:56'!defaultPMap	| map |	(map := OrderedCollection new: 8)		add: [:t2 | 'i' , (t2 voice == nil					ifTrue: [1]					ifFalse: [t2 voice]) printString].	map add: #start.	map		add: [:t3 | t3 duration asSec value asFloat printString: 4].	map		add: [:t4 | t4 loudness asDB positiveDB printString: 4].	^ map! !Voice subclass: #SoundVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!SoundVoice commentStamp: '<historical>' prior: 0!SoundVoice is unfinished; it is intended for putting sound objects in scores.!!SoundVoice methodsFor: 'events'!playEvent: t1 at: t2 
 
 	stream play: t1.
 	^self! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SoundVoice class	instanceVariableNames: ''!!SoundVoice class methodsFor: 'constant access'!default

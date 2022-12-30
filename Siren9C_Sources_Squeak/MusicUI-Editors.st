@@ -58,7 +58,7 @@ Instance variables:
 		ifTrue: [selections := mo]
 		ifFalse: [selections == nil
 				ifTrue: [selections := EventList newNamed: EventList nextName ].
-			selections add: mo]! !!EventListEditor methodsFor: 'accessing'!ampl
+			selections add: mo]! !!EventListEditor methodsFor: 'links and groups' stamp: 'stp 12/29/2022 00:17'!selections	"Answer the list of selected items."	^selections! !!EventListEditor methodsFor: 'accessing'!ampl
 	"Answer the amplitude of the default event."
 
 	^defaultEvent == nil
@@ -325,7 +325,7 @@ self halt.
 				pGC := pixmap graphicsContext.
 				self reallyDisplayOn: pGC].
 			pixmap displayOn: aGC]
-		ifTrue: [self reallyDisplayOn: aGC]"! !!TimeSequenceView methodsFor: 'displaying'!highlightFrom: pt1 to: pt2
+		ifTrue: [self reallyDisplayOn: aGC]"! !!TimeSequenceView methodsFor: 'displaying' stamp: 'stp 12/29/2022 03:23'!drawOn: gc 	"Display the receiver on its cached form."	| ins |	ins := 0.	gc fillColor: Color lightYellow.	clefForm == nil		ifFalse: [gc drawImage: clefForm at: 0 @ 0.			ins := clefForm width].	background == nil		ifFalse: [gc drawImage: background at: ins @ 0].	dList drawOn: gc at: ins * 2 @ 0.	model selections == nil		ifFalse: [Sensor shiftPressed				ifTrue: [self halt].			gc displayRectangularBorder: model selections bounds]! !!TimeSequenceView methodsFor: 'displaying'!highlightFrom: pt1 to: pt2
 	"Show selection of the range pt1--pt2."
 
 	| gc |
@@ -410,23 +410,7 @@ self halt.
 	^((aTime - (page x) / xScale) asInteger)! !!TimeSequenceView methodsFor: 'transforming'!timeFromX: aNumber
 	"Answer an event list time from the argument."
 
-	^(aNumber x - inset x - self bounds width * xScale + page x) max: 0! !!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 12/2/2022 03:53:31'!generateItemFor: anAss
-	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."
-
-	| dItem vox arr |
-	arr := DisplayListView constants at: #NoteIcons.
-	vox := anAss value voice.
-	vox == nil 
-		ifTrue: [vox := 1] 
-		ifFalse: [vox isInteger
-			ifTrue: [vox := (vox max: 1) min: arr size]
-			ifFalse: [vox := vox first asInteger \\ arr size]].	"hack -- take the first letter as the key for note heads"
-	dItem := (arr at: (vox )) copy.
-	dItem color: (headColor == nil
-				ifTrue: [Color white]
-				ifFalse: [headColor]).
-	dItem model: anAss.
-	^dItem! !!TimeSequenceView methodsFor: 'layout manager access'!itemFor: anAss
+	^(aNumber x - inset x - self bounds width * xScale + page x) max: 0! !!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 12/29/2022 00:42'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from	layoutManagers). "	| dItem vox arr |	arr := DisplayListView constants at: #NoteIcons.	vox := anAss value voice.	vox == nil		ifTrue: [vox := 1]		ifFalse: [vox isInteger				ifTrue: [vox := (vox max: 1)								min: arr size]				ifFalse: [vox := vox first asInteger \\ arr size]].	"hack -- take the first letter as the key for note heads"	dItem := (arr at: vox) copy.	"dItem		color: (headColor == nil				ifTrue: [Color white]				ifFalse: [headColor])."	dItem model: anAss.	^ dItem! !!TimeSequenceView methodsFor: 'layout manager access'!itemFor: anAss
 	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."
 
 	itemAccessors == nil
@@ -473,19 +457,11 @@ self halt.
 	dls setComponent: me component.
 	DisplayListView openOn: dls
 "	
-	DisplayListWindow open: me label: 'TimeSequenceView'! !!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 12/2/2022 05:54:44'!openOnEventList: anEventList label: lab
-	"Open the receiver on the given event list."
-	"TimeSequenceView openOnEventList: EventList randomExample"
-
-	| me |
-	me := self new initialize model: (EventListEditor new eventList: anEventList).
-	me list: (me layoutManager displayListFor: me).
-"	dls := DisplayListView new.
+	DisplayListWindow open: me label: 'TimeSequenceView'! !!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 23:53'!openOnEventList: anEventList label: lab 	"Open the receiver on the given event list."	"TimeSequenceView openOnEventList: EventList randomExample"	| me |	me := self new initialize				model: (EventListEditor new eventList: anEventList).	me		list: (me layoutManager displayListFor: me).	"dls := DisplayListView new.
 	dls setDisplayList: me displayList.
-	dls setComponent: me component.
+	dls	setComponent: me component.
 	DisplayListView openOn: dls
-"	
-	DisplayListWindow open: me label: lab! !!TimeSequenceView class methodsFor: 'constant access'!defaultCacheExtent
+"	DisplayListWindow open: me label: lab! !!TimeSequenceView class methodsFor: 'constant access'!defaultCacheExtent
 	"Answer the default extent of the receiver's instances' cache."
 
 	^600@200! !!TimeSequenceView class methodsFor: 'constant access'!inset
@@ -563,47 +539,8 @@ Instance Variables:
 		super zoom: aPoint]! !!PitchTimeView methodsFor: 'transforming'!pitchFromY: aPoint
 	"Answer the transformed pitch represented by the y-coordinate of the argument."
 
-	^(aPoint y - self class inset y / yScale + pitchOffset) max: 0! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 12/2/2022 04:03:37'!generateItemFor: anAss
-	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."
-	"ColorValue constantNames"
-	"EventList randomSWSSExample2 edit"
-
-"	^super generateItemFor: anAss.
-"
-	| yHeight x y list event |
-	event := anAss value.
-	yHeight := 24.
-	event duration == nil
-			ifTrue: [x := 250 / xScale]
-			ifFalse: [x := event duration asMS value / xScale].
-	((event ampl == nil) or: [event ampl value == nil])
-		ifFalse: [y := (event ampl asRatio value * yHeight) truncated]
-		ifTrue: [y := 0].
-	list := (DisplayList new) model: anAss.
-	list add: (super generateItemFor: anAss).
-	list add: ((DisplayLine new)
-				offset: 0@0;
-				extent: x@0;
-				color: (xColor == nil ifTrue: [Color cyan] ifFalse: [xColor])).
-	list add: ((DisplayLine new)
-				offset: 0@0;
-				extent: 0@y negated;
-				color: (yColor == nil ifTrue: [Color red] ifFalse: [yColor])).
-	(event at: #envelope) == nil
-		ifFalse: [ | fcn points | fcn := event at: #envelope.
-				points := fcn data collect: [ :pt | (pt x * x) @ (pt y * y negated)].
-				list add: ((DisplayPolyline offset: (1@0) vertices: points) color: Color black)].
-	(event at: #position) == nil
-		ifFalse: [list add: ((DisplayLine new)
-				offset: 2@0;
-				extent: 0@((event at: #position) - 0.5 * yHeight);
-				color: (yColor == nil ifTrue: [Color green] ifFalse: [yColor]))].
-	(event at: #duty) == nil
-		ifFalse: [list add: ((DisplayLine new)
-				offset: 0@2;
-				extent: ((event at: #duty) * x)@0;
-				color: (yColor == nil ifTrue: [Color yellow] ifFalse: [yColor]))].
-	^list! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 12/2/2022 04:04:00'!itemFor: anAss
+	^(aPoint y - self class inset y / yScale + pitchOffset) max: 0! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 12/28/2022 23:41'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from	layoutManagers). "	"ColorValue constantNames"	"EventList randomSWSSExample2 edit"	"^super generateItemFor: anAss.
+"	| yHeight x y list event |	event := anAss value.	yHeight := 24.	event duration == nil		ifTrue: [x := 250 / xScale]		ifFalse: [x := event duration asMS value / xScale].	(event ampl == nil			or: [event ampl value == nil])		ifTrue: [y := 0]		ifFalse: [y := (event ampl asRatio value * yHeight) truncated].	list := DisplayList new model: anAss.	list		add: (super generateItemFor: anAss).	"list add: (DisplayLine new offset: 0 @ 0;			 extent: x @ 0;						color: (xColor == nil					ifTrue: [Color cyan]					ifFalse: [xColor]))."	list add: (DisplayLine new offset: 0 @ 0;			 extent: 0 @ y negated;						color: (yColor == nil					ifTrue: [Color red]					ifFalse: [yColor])).	(event at: #envelope)			== nil		ifFalse: [| fcn points |			fcn := event at: #envelope.			points := fcn data						collect: [:pt | pt x * x @ (pt y * y negated)].			list				add: ((DisplayPolyline offset: 1 @ 0 vertices: points)						color: Color black)].	(event at: #position)			== nil		ifFalse: [list add: (DisplayLine new offset: 2 @ 0;					 extent: 0 @ ((event at: #position)							- 0.5 * yHeight);										color: (yColor == nil							ifTrue: [Color green]							ifFalse: [yColor]))].	(event at: #duty)			== nil		ifFalse: [list add: (DisplayLine new offset: 0 @ 2;					 extent: (event at: #duty)						* x @ 0;										color: (yColor == nil							ifTrue: [Color yellow]							ifFalse: [yColor]))].	^ list! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 12/2/2022 04:04:00'!itemFor: anAss
 	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."
 	"ColorValue constantNames "
 	"PitchTimeView openOnEventList: (EventList scaleFrom: 48 to: 84 in: 4)"
@@ -714,54 +651,14 @@ Instance Variables:
 		doing: [:model :value | dled doPropEdit] 
 		in: (LayoutFrame new leftFraction: 0.87;	topFraction: y0; 
 							rightFraction: 1.0;	bottomFraction: y1) 
-		to: container.! !PitchTimeView subclass: #HauerSteffensView	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!HauerSteffensView methodsFor: 'initialize-release'!initialize
-	"Initialize the instance variables of the receiver."
-
-	super initialize.
-	self initForm.
-	pitchOffset := 30! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 05:03:16'!clef: anInteger at: aPoint bottom: aBottom form: cForm
+		to: container.! !PitchTimeView subclass: #HauerSteffensView	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!HauerSteffensView methodsFor: 'initialize-release' stamp: 'stp 12/29/2022 00:33'!initialize	"Initialize the instance variables of the receiver."	super initialize.	self initForm.	pitchOffset := 30.	self backgroundColor: Color lightYellow! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 05:03:16'!clef: anInteger at: aPoint bottom: aBottom form: cForm
 	"Display a C clef for the given octave at the given point."
 self halt.
 	(aPoint y + 20) < aBottom ifTrue: 
 		[(Text string: ('c', anInteger printString) emphasis: 2) 
-				displayOn: cForm at: aPoint + (2 @ -3)]! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 12:14:31'!drawStaff
-	"Display a Hauer-Stephens-type staff onto the given pixmap."
-
-	| box top1 bottom1 left1 right1  left2 right2 aGC cGC aNum count octave co wp |
-	box := background bounds.
-	co _ Color darkGray.
-	wp _ 2.
-"	background border: box width: 2 fillColor: co.
-	clefForm border: clefForm bounds width: 2 fillColor: co.
-"	aGC _ background getCanvas.
-	cGC _ clefForm getCanvas.
-
-	top1 := box top.
-	bottom1 := box bottom.
-	left1 := box left.
-	right1 := box right.
-	left2 := clefForm bounds left.
-	right2 := clefForm bounds right.
-							"count number of octaves"
-	octave := (bottom1 - top1 / (3 + (yScale * 8) + yScale)) asInteger.
-	aNum := top1.
-	count := 3.
-	[aNum < bottom1] whileTrue: 	"loop from top1 to bottom1 drawing lines"
-		[aGC line: left1@aNum to: right1@aNum width: wp color: co.
-		cGC line: left2@aNum to: right2@aNum width: wp color: co.
-		count := count + 1.
-		count \\ 5 = 1			"skip @ c"
-			ifTrue: [(aNum + 20) < bottom1
-					ifTrue: [ | str |
-						str _ 'c', octave printString.
-						cGC drawString: str at: (left1@aNum) + (4 @ 0) 
-							font: (FontFamily familyName: 'Amaranth' pointSize: 12)
-							color: co].
-				octave := octave - 1.
-				aNum := aNum + yScale].			
-		count \\ 5 = 4			"skip @ e"
-			ifTrue: [aNum := aNum + yScale].
-		aNum := aNum +  (yScale * 2)]! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 04:55:35'!initForm
+				displayOn: cForm at: aPoint + (2 @ -3)]! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/29/2022 00:36'!drawStaff	"Display a Hauer-Stephens-type staff onto the given pixmap."	| box top1 bottom1 left1 right1 left2 right2 aGC cGC aNum count octave co wp |	box := background boundingBox.	co := Color darkGray.	wp := 1.	"background border: box width: 2 fillColor: co.
+	clefForm border:	clefForm bounds width: 2 fillColor: co.
+"	aGC := background getCanvas.	cGC := clefForm getCanvas.	top1 := box top.	bottom1 := box bottom.	left1 := box left.	right1 := box right.	left2 := clefForm boundingBox left.	right2 := clefForm boundingBox right.	"count number of octaves"	octave := (bottom1 - top1 / (3 + (yScale * 8) + yScale)) asInteger.	aNum := top1.	count := 3.	[aNum < bottom1]		whileTrue: ["loop from top1 to bottom1 drawing lines"			aGC				line: left1 @ aNum				to: right1 @ aNum				width: wp				color: co.			cGC				line: left2 @ aNum				to: right2 @ aNum				width: wp				color: co.			count := count + 1.			count \\ 5 = 1				ifTrue: ["skip @ c"					aNum + 20 < bottom1						ifTrue: [| str |							str := 'c' , octave printString.							cGC								drawString: str								at: left1 @ aNum + (4 @ 0)								font: (StrikeFont familyName: 'Amaranth' pointSize: 12)								color: co].					octave := octave - 1.					aNum := aNum + yScale].			count \\ 5 = 4				ifTrue: ["skip @ e"					aNum := aNum + yScale].			aNum := aNum + (yScale * 2)].	cGC		line: right2 - 2 @ 0		to: right2 - 2 @ bottom1		width: wp		color: co! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 04:55:35'!initForm
 	"Copy the default backgroundForm and draw a H-S staff on it."
 
 	| depth |
@@ -771,7 +668,7 @@ self halt.
 	clefForm := Form extent: 32@400 depth: depth.
 	clefForm fillColor: self backgroundColor.
 	yScale == nil
-		ifFalse: [self drawStaff]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!HauerSteffensView class	instanceVariableNames: ''!!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 12/2/2022 05:55:25'!randomExample
+		ifFalse: [self drawStaff]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!HauerSteffensView class	instanceVariableNames: ''!!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 12/29/2022 01:00'!cloudExample	"Open a HSView on two merged random event lists."	"HauerSteffensView cloudExample"	HauerSteffensView openOnEventList: (DynamicCloud			dur: 8000			pitch: #(#(60 #to: 84) #(71 #to: 72))			ampl: #(#(90 #to: 100) #(20 #to: 20))			voice: (1 to: 4)			density: 10) eventList label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 12/2/2022 05:55:25'!randomExample
 	"Open a HSView on two merged random event lists."
 	"HauerSteffensView randomExample"
 	"HauerSteffensView openOnEventList: EventList new"
@@ -791,7 +688,7 @@ self halt.
 		((EventList newNamed: #sRand)
 			addAll: (EventList randomSWSSExample2);
 			addAll: (EventList randomSWSSExample2);
-			addAll: (EventList randomSWSSExample2))! !!HauerSteffensView class methodsFor: 'instance creation'!label
+			addAll: (EventList randomSWSSExample2))! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 12/29/2022 00:37'!scaleExample	"Open a HSView on two merged random event lists."	"HauerSteffensView scaleExample"	HauerSteffensView		openOnEventList: (EventList				scaleFrom: 60				to: 72				in: 4.0)		label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'instance creation'!label
 	"Answer the view label for the receiver's instances."
 
 	^'Hauer-Steffens Event List View'! !!HauerSteffensView class methodsFor: 'constant access'!defaultCacheExtent

@@ -1,4 +1,4 @@
-!classDefinition: #Peal category: #'Music-EventGenerators'!
+!classDefinition: #Peal category: 'Music-EventGenerators'!
 SequenceableCollection subclass: #Peal
 	instanceVariableNames: 'base directions position finished'
 	classVariableNames: ''
@@ -163,7 +163,7 @@ change
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Peal class' category: #'Music-EventGenerators'!
+!classDefinition: 'Peal class' category: 'Music-EventGenerators'!
 Peal class
 	instanceVariableNames: ''!
 
@@ -194,7 +194,7 @@ upon: baseSet
 	^ newPeal! !
 
 
-!classDefinition: #EventGenerator category: #'Music-EventGenerators'!
+!classDefinition: #EventGenerator category: 'Music-EventGenerators'!
 EventList subclass: #EventGenerator
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -226,7 +226,7 @@ play
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventGenerator class' category: #'Music-EventGenerators'!
+!classDefinition: 'EventGenerator class' category: 'Music-EventGenerators'!
 EventGenerator class
 	instanceVariableNames: ''!
 
@@ -273,7 +273,7 @@ randomExample
 		randomExample) play! !
 
 
-!classDefinition: #Cloud category: #'Music-EventGenerators'!
+!classDefinition: #Cloud category: 'Music-EventGenerators'!
 EventGenerator subclass: #Cloud
 	instanceVariableNames: 'density'
 	classVariableNames: ''
@@ -345,7 +345,7 @@ eventList0
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cloud class' category: #'Music-EventGenerators'!
+!classDefinition: 'Cloud class' category: 'Music-EventGenerators'!
 Cloud class
 	instanceVariableNames: ''!
 
@@ -469,7 +469,7 @@ fromDictionary: aDictionary
 	^me! !
 
 
-!classDefinition: #DynamicCloud category: #'Music-EventGenerators'!
+!classDefinition: #DynamicCloud category: 'Music-EventGenerators'!
 Cloud subclass: #DynamicCloud
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -536,7 +536,7 @@ eventList
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DynamicCloud class' category: #'Music-EventGenerators'!
+!classDefinition: 'DynamicCloud class' category: 'Music-EventGenerators'!
 DynamicCloud class
 	instanceVariableNames: ''!
 
@@ -607,7 +607,7 @@ randomExample
 		density: (rand nextIntFrom: 4 to: 16)! !
 
 
-!classDefinition: #SelectionCloud category: #'Music-EventGenerators'!
+!classDefinition: #SelectionCloud category: 'Music-EventGenerators'!
 Cloud subclass: #SelectionCloud
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -673,7 +673,7 @@ eventListWithDensityFunction
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SelectionCloud class' category: #'Music-EventGenerators'!
+!classDefinition: 'SelectionCloud class' category: 'Music-EventGenerators'!
 SelectionCloud class
 	instanceVariableNames: ''!
 
@@ -735,7 +735,7 @@ randomExample
 "! !
 
 
-!classDefinition: #DynamicSelectionCloud category: #'Music-EventGenerators'!
+!classDefinition: #DynamicSelectionCloud category: 'Music-EventGenerators'!
 SelectionCloud subclass: #DynamicSelectionCloud
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -771,7 +771,7 @@ eventList
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DynamicSelectionCloud class' category: #'Music-EventGenerators'!
+!classDefinition: 'DynamicSelectionCloud class' category: 'Music-EventGenerators'!
 DynamicSelectionCloud class
 	instanceVariableNames: ''!
 
@@ -831,7 +831,7 @@ randomExample
 	score edit! !
 
 
-!classDefinition: #ExtDynamicSelectionCloud category: #'Music-EventGenerators'!
+!classDefinition: #ExtDynamicSelectionCloud category: 'Music-EventGenerators'!
 DynamicSelectionCloud subclass: #ExtDynamicSelectionCloud
 	instanceVariableNames: 'list'
 	classVariableNames: ''
@@ -883,7 +883,7 @@ list: aList
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ExtDynamicSelectionCloud class' category: #'Music-EventGenerators'!
+!classDefinition: 'ExtDynamicSelectionCloud class' category: 'Music-EventGenerators'!
 ExtDynamicSelectionCloud class
 	instanceVariableNames: ''!
 
@@ -916,7 +916,7 @@ chordExample
 	score play! !
 
 
-!classDefinition: #Cluster category: #'Music-EventGenerators'!
+!classDefinition: #Cluster category: 'Music-EventGenerators'!
 EventGenerator subclass: #Cluster
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -948,7 +948,7 @@ eventList
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cluster class' category: #'Music-EventGenerators'!
+!classDefinition: 'Cluster class' category: 'Music-EventGenerators'!
 Cluster class
 	instanceVariableNames: ''!
 
@@ -1000,7 +1000,7 @@ example2
 		voice: 6) play! !
 
 
-!classDefinition: #Chord category: #'Music-EventGenerators'!
+!classDefinition: #Chord category: 'Music-EventGenerators'!
 Cluster subclass: #Chord
 	instanceVariableNames: 'root inversion type arity'
 	classVariableNames: ''
@@ -1162,7 +1162,7 @@ minorTriad
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Chord class' category: #'Music-EventGenerators'!
+!classDefinition: 'Chord class' category: 'Music-EventGenerators'!
 Chord class
 	instanceVariableNames: ''!
 
@@ -1230,7 +1230,7 @@ example
 	((Chord majorTetradOn: 'g5' inversion: 1) duration: 1.0) edit! !
 
 
-!classDefinition: #Arpeggio category: #'Music-EventGenerators'!
+!classDefinition: #Arpeggio category: 'Music-EventGenerators'!
 Chord subclass: #Arpeggio
 	instanceVariableNames: 'delay'
 	classVariableNames: ''
@@ -1283,7 +1283,7 @@ delay: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Arpeggio class' category: #'Music-EventGenerators'!
+!classDefinition: 'Arpeggio class' category: 'Music-EventGenerators'!
 Arpeggio class
 	instanceVariableNames: ''!
 
@@ -1298,7 +1298,7 @@ on: aChordOrList delay: aDelay
 	^me! !
 
 
-!classDefinition: #Roll category: #'Music-EventGenerators'!
+!classDefinition: #Roll category: 'Music-EventGenerators'!
 Cluster subclass: #Roll
 	instanceVariableNames: 'number delta noteDuration'
 	classVariableNames: ''
@@ -1359,7 +1359,7 @@ duration
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Roll class' category: #'Music-EventGenerators'!
+!classDefinition: 'Roll class' category: 'Music-EventGenerators'!
 Roll class
 	instanceVariableNames: ''!
 
@@ -1386,7 +1386,7 @@ rollExample
 "	MIDIPort allNotesOff."! !
 
 
-!classDefinition: #Trill category: #'Music-EventGenerators'!
+!classDefinition: #Trill category: 'Music-EventGenerators'!
 Roll subclass: #Trill
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1413,7 +1413,7 @@ eventList
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Trill class' category: #'Music-EventGenerators'!
+!classDefinition: 'Trill class' category: 'Music-EventGenerators'!
 Trill class
 	instanceVariableNames: ''!
 
@@ -1430,7 +1430,7 @@ length: aNumber rhythm: aDuration notes: aNote
 	^self new length: aNumber rhythm: aDuration note: aNote! !
 
 
-!classDefinition: #Ostinato category: #'Music-EventGenerators'!
+!classDefinition: #Ostinato category: 'Music-EventGenerators'!
 EventGenerator subclass: #Ostinato
 	instanceVariableNames: 'list playing process'
 	classVariableNames: ''
@@ -1540,7 +1540,7 @@ printOn: aStream
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Ostinato class' category: #'Music-EventGenerators'!
+!classDefinition: 'Ostinato class' category: 'Music-EventGenerators'!
 Ostinato class
 	instanceVariableNames: ''!
 

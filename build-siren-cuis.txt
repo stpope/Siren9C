@@ -27,6 +27,7 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'Cuis-GUI-changes.st'
 	'ZPoint.st'
 	'SirenSystemChanges.st'
+	'ST80-compatibility.st'
 	'SixPanedBrowser.st'
 	'SixPanedBrowserWindow.st'
 	'WorkbookWindowCuis.st'

@@ -396,4 +396,19 @@ printOSCTypeOn: aStream
 toOSCTypeOn: aConvertor
 	aConvertor nextPutType: $F! !
 
-!LoopedSampledSound class methodsFor: 'instance creation' stamp: 'stp 12/29/2022 10:56'!fromAIFFFileNamed: fileName mergeIfStereo: mergeFlag 	"Initialize this sound from the data in the given AIFF file. If mergeFlag	is true and the file is stereo, its left and right channels are mixed	together to produce a mono sampled sound."	| aiffFileReader |	aiffFileReader := AIFFFileReader new.	aiffFileReader		readFromFile: fileName		mergeIfStereo: mergeFlag		skipDataChunk: false.	^self new fromAIFFFileReader: aiffFileReader mergeIfStereo: mergeFlag! !!FileDirectory class methodsFor: 'platform specific' stamp: 'stp 12/29/2022 11:06'!separatorString	^ self pathNameDelimiter asString! !
+!LoopedSampledSound class methodsFor: 'instance creation' stamp: 'stp 12/29/2022 10:56'!fromAIFFFileNamed: fileName mergeIfStereo: mergeFlag 	"Initialize this sound from the data in the given AIFF file. If mergeFlag	is true and the file is stereo, its left and right channels are mixed	together to produce a mono sampled sound."	| aiffFileReader |	aiffFileReader := AIFFFileReader new.	aiffFileReader		readFromFile: fileName		mergeIfStereo: mergeFlag		skipDataChunk: false.	^self new fromAIFFFileReader: aiffFileReader mergeIfStereo: mergeFlag! !!FileDirectory class methodsFor: 'platform specific' stamp: 'stp 12/29/2022 11:06'!separatorString	^ self pathNameDelimiter asString! !
+
+!Time class methodsFor: 'general inquiries' stamp: 'stp 12/30/2022 16:05'!microsecondClock	"Answer the value of the millisecond clock. Unlike older	implementations, this is a clock; it will never roll-over."	^ self utcMicrosecondClock! !!Debugger methodsFor: 'initialize' stamp: 'cmm 6/22/2018 23:04'!initialExtent	"Initial extent for the full debugger. For the notifier's extent see #initialExtentForNotifier."		^ SavedExtent ifNil: [ 600@700]! !!Inspector methodsFor: 'initialization' stamp: 'stp 12/7/2022 11:45'!initialExtent	"Answer the desired extent for the receiver when it is first opened on the screen.  "	^ 450 @ 450! !!ObjectExplorer methodsFor: 'user interface' stamp: 'stp 12/7/2022 11:46'!initialExtent	^450@450! !!Color class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 11:59'!random: aRand	"Return a random color that isn't too dark or under-saturated."	^ self basicNew		setHue: 360.0 * aRand next		saturation: 0.3 + (aRand next * 0.7)		brightness: 0.4 + (aRand next * 0.6)! !
+!#ByteArray methodsFor: 'printing' stamp: 'stp 12/29/2022 17:32:37'!
+printIP
+	| printSize stream |
+	stream := WriteStream on: (String new: 32).
+	printSize := self size.
+"	printSize > self maxPrintElements
+		ifTrue: [printSize := self maxPrintElements].
+"	(1 to: printSize)
+		do: [ :index | (self at: index) printOn: stream]
+		separatedBy: [stream nextPut: $.].
+	^stream contents! !
+
+!Number methodsFor: 'converting' stamp: 'stp 12/30/2022 14:33'!asSec	^ SecondDuration value: self asFloat! !!Form methodsFor: 'display box access' stamp: 'stp 12/31/2022 10:43'!bounds	^ Rectangle origin: 0 @ 0 corner: width @ height! !!FileStream class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 07:09'!named: fileName 	^ self concreteStream		fileNamed: (self fullName: fileName)! !!Delay class methodsFor: 'instance creation' stamp: 'stp 12/30/2022 17:25'!forMicroseconds: anInteger 	"Return a new Delay for the given number of milliseconds. Sending	'wait' to this Delay will cause the sender's process to be suspended for	approximately that length of time."	anInteger < 0		ifTrue: [self error: 'delay times cannot be negative'].	^ self new setDelay: (anInteger asInteger / 1000) forSemaphore: Semaphore new! !

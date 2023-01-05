@@ -99,7 +99,7 @@ Integer ranges such as 0 to 127 can also be used in subclasses.
 
 One may want to add range-checking for these cases.
 
-Note that the class NumericalMagnitude is vacuous at present, and exists solely for representational modeling.!!NumericalMagnitude methodsFor: 'double dispatching'!adaptInteger: val
+Note that the class NumericalMagnitude is vacuous at present, and exists solely for representational modeling.!!NumericalMagnitude methodsFor: 'printing' stamp: 'stp 12/30/2022 13:46'!printValue	value isString		ifTrue: [^ value].	"value isFloat ifTrue: [^value printPlaces: 4]."	^ value printString! !!NumericalMagnitude methodsFor: 'double dispatching'!adaptInteger: val
 	^self class value: val! !!NumericalMagnitude methodsFor: 'double dispatching'!adaptToInteger
 	^self value! !NumericalMagnitude subclass: #HertzPitch	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Implementation'!!HertzPitch commentStamp: '<historical>' prior: 0!Instances of HertzPitch are frequency values in Hertz.
 This is the most general Pitch representation.
@@ -435,7 +435,7 @@ Class Instance Variable:
 	^self error: 'Arithmetic is undefined for this receiver.'! !!OrdinalMagnitude methodsFor: 'arithmetic'!= aValue
 	"Answer whether the receiver and the argument are equivalent."
 
-	^self == aValue! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!OrdinalMagnitude class	instanceVariableNames: ''!!OrdinalMagnitude class methodsFor: 'table access'!table
+	^self == aValue! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!OrdinalMagnitude class	instanceVariableNames: 'Table'!!OrdinalMagnitude class methodsFor: 'table access'!table
 	"Answer the class' instance look-up table."
 
 	^Table! !!OrdinalMagnitude class methodsFor: 'table access'!values
@@ -572,7 +572,7 @@ They can be expanded into msec. relative to some given event (a whole note), or 
 	^Amplitude! !!RatioLoudness methodsFor: 'printing'!printOn0: aStream
 	"Print the receiver as a ratio."
 
-	aStream nextPutAll: "'a:'," value printString! !!RatioLoudness methodsFor: 'converting'!asDB
+	aStream nextPutAll: "'a:'," value printString! !!RatioLoudness methodsFor: 'printing' stamp: 'stp 12/30/2022 12:43'!printOn: aStream 	"Print the receiver as a ratio."	| digits |	Sensor shiftPressed		ifTrue: [digits := 10]		ifFalse: ["4 digits by default"			digits := 4].	aStream nextPutAll: '('.	value isFloat		ifTrue: [value printOn: aStream maxDecimalPlaces: digits]		ifFalse: [value printOn: aStream].	aStream nextPutAll: self units , ')'! !!RatioLoudness methodsFor: 'printing' stamp: 'stp 12/30/2022 12:50'!printOn: aStream parens: useParens 	"Print the receiver as a ratio."	| digits |	Sensor shiftPressed		ifTrue: [digits := 10]		ifFalse: ["4 digits by default"			digits := 4].	useParens		ifTrue: [aStream nextPutAll: '('].	value isFloat		ifTrue: [value printOn: aStream maxDecimalPlaces: digits]		ifFalse: [value printOn: aStream].	aStream nextPutAll: ' dB'.	useParens		ifTrue: [aStream nextPutAll: ')']! !!RatioLoudness methodsFor: 'converting'!asDB
 	"Answer a dB loudness; ratio 1 = 0dB, ratio 0.5 = -6dB, etc."
 	"(RatioLoudness value: 0.25) asDB"
 

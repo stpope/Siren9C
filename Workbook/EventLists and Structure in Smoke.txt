@@ -107,7 +107,7 @@ Here's another example of creating a simple melody
 		fromSelectors: #(pitch: duration:)
 		values: (Array with: #(c d e f g) 
 					with: #(4 8 8 4 4) reciprocal)) open]
-
+Event lists can have mixed properties in the events; inspect this	[EventList scaleExample2] 
 You can create event lists with snippets of code such as the following whole-tone scale.
 
 	[ | elist |

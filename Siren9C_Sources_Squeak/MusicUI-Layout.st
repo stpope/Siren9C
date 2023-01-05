@@ -51,26 +51,7 @@ Instance Variables:
 	xStep := aNumber! !!HierarchyLayoutManager methodsFor: 'accessing'!yStep: aNumber
 	"Set the receiver's y step size to the argument."
 
-	yStep := aNumber! !!HierarchyLayoutManager methodsFor: 'generating'!addItem1: aModelNode atNode: aPath in: aDisplayList
-	"Add the given item to the display list."
-
-	| wrapper displayPoint item path2 displayList2 |
-	displayPoint := self displayPositionFor: aPath.
-	length := length + 1.
-	item := treeAccessor itemFor: aModelNode.
-	wrapper := TranslatingWrapper on: item at: displayPoint.
-	(treeAccessor isTerminal: aModelNode)
-		ifFalse: [displayList2 := DisplayList new.
-			displayList2 model: aModelNode.
-			(treeAccessor childrenOf: aModelNode) do: [ :i | 
-				path2 := aPath copy.
-				path2 addLast: aModelNode.
-				self addItem: i
-					atNode: path2
-					in: displayList2].
-			displayList2 add: wrapper.
-			aDisplayList add: displayList2 atPath: aPath]
-		ifTrue: [aDisplayList add: item atPath: aPath]! !!HierarchyLayoutManager methodsFor: 'generating'!addItem: aModelNode atNode: aPath in: aDisplayList
+	yStep := aNumber! !!HierarchyLayoutManager methodsFor: 'generating'!addItem: aModelNode atNode: aPath in: aDisplayList
 	"Add the given item to the display list."
 
 	| displayPoint item path2 displayList2 |
@@ -128,51 +109,7 @@ Instance Variables:
 									string: c name;
 									color: [c color]].
 	me := (self new) accessor: acc; xStep: 16; yStep: 16.
-	^me displayList display! !!IndentedListLayoutManager class methodsFor: 'examples'!listExample
-	"IndentedListLayoutManager listExample display"
-	"DisplayListView classListExample"
-
-	| acc me |
-	acc := STreeAccessor subject: Magnitude
-			terminalQuery: [ :c | c subclasses size = 0]
-			childAccessor: #sortedSubclasses
-			itemGenerator: [ :c | (DisplayString new)
-									model: c;
-									string: c name;
-									color: ColorValue darkGray].
-	me := (self new) accessor: acc; xStep: 16; yStep: 16.
-	^me displayList! !IndentedListLayoutManager subclass: #IndentedTreeLayoutManager	instanceVariableNames: 'list'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!IndentedTreeLayoutManager commentStamp: '<historical>' prior: 0!Instances of IndentedTreeLayoutManager are used to generate display lists which mirror the hierarchy of their models (accessed using a TreeAccessor) in the indentation of a list-like tree.!!IndentedTreeLayoutManager methodsFor: 'generating'!addItem: aModelNode atNode: aPath under: parentPoint in: aDisplayList
-	"Add the given item to the display list."
-
-	|  displayPoint item path2 displayList2 |
-	displayPoint := (self displayPositionFor: aPath) + (parentPoint x@0).
-	length := length + 1.
-	item := treeAccessor itemFor: aModelNode.
-	item offset: displayPoint.
-	(treeAccessor isTerminal: aModelNode)
-		ifFalse: [displayList2 := DisplayList new.
-			displayList2 model: aModelNode.
-			(treeAccessor childrenOf: aModelNode) do: [ :i | 
-				path2 := aPath copy.
-				path2 addLast: aModelNode.
-				self addItem: i
-					atNode: path2
-					under: item bounds rightCenter
-					in: displayList2].
-			displayList2 add: item.
-			aDisplayList add: displayList2 atPath: aPath.
-			parentPoint = (0@0)
-				ifFalse: [aDisplayList add:
-						((DisplayLine new)
-							offset: item bounds leftCenter + (-2@4);
-							corner: parentPoint + (2@4); color: ColorValue black)
-					atPath: aPath]]
-				ifTrue: [aDisplayList add: item atPath: aPath.
-					aDisplayList add:
-							((DisplayLine new)
-								offset: item bounds leftCenter + (-2@4);
-								corner: parentPoint + (2@4); color: ColorValue black)
-						atPath: aPath]! !!IndentedTreeLayoutManager methodsFor: 'generating'!generateDisplayList
+	^me displayList display! !!IndentedListLayoutManager class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:01'!listExample	"IndentedListLayoutManager listExample display"	"DisplayListView classListExample"	| acc me |	acc := STreeAccessor				subject: Magnitude				terminalQuery: [:c | c subclasses size = 0]				childAccessor: #sortedSubclasses				itemGenerator: [:c | DisplayString new model: c;						 string: c name;						 color: Color darkGray].	me := self new accessor: acc;				 xStep: 16;				 yStep: 16.	^ me displayList! !IndentedListLayoutManager subclass: #IndentedTreeLayoutManager	instanceVariableNames: 'list'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!IndentedTreeLayoutManager commentStamp: '<historical>' prior: 0!Instances of IndentedTreeLayoutManager are used to generate display lists which mirror the hierarchy of their models (accessed using a TreeAccessor) in the indentation of a list-like tree.!!IndentedTreeLayoutManager methodsFor: 'generating' stamp: 'stp 12/31/2022 11:01'!addItem: aModelNode atNode: aPath under: parentPoint in: aDisplayList 	"Add the given item to the display list."	| displayPoint item path2 displayList2 |	displayPoint := (self displayPositionFor: aPath)				+ (parentPoint x @ 0).	length := length + 1.	item := treeAccessor itemFor: aModelNode.	item offset: displayPoint.	(treeAccessor isTerminal: aModelNode)		ifTrue: [aDisplayList add: item atPath: aPath.			aDisplayList add: (DisplayLine new offset: item bounds leftCenter + (-2 @ 4);					 corner: parentPoint + (2 @ 4);					 color: Color black) atPath: aPath]		ifFalse: [displayList2 := DisplayList new.			displayList2 model: aModelNode.			(treeAccessor childrenOf: aModelNode)				do: [:i | 					path2 := aPath copy.					path2 addLast: aModelNode.					self						addItem: i						atNode: path2						under: item bounds rightCenter						in: displayList2].			displayList2 add: item.			aDisplayList add: displayList2 atPath: aPath.			parentPoint = (0 @ 0)				ifFalse: [aDisplayList add: (DisplayLine new offset: item bounds leftCenter + (-2 @ 4);							 corner: parentPoint + (2 @ 4);							 color: Color black) atPath: aPath]]! !!IndentedTreeLayoutManager methodsFor: 'generating'!generateDisplayList
 	"Generate and answer the receiver's display list."
 
 	list := DisplayList new.
@@ -180,20 +117,7 @@ Instance Variables:
 			atNode: (OrderedCollection new)
 			under: 0@0
 			in: list.
-	^list! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!IndentedTreeLayoutManager class	instanceVariableNames: ''!!IndentedTreeLayoutManager class methodsFor: 'examples'!listExample
-	"IndentedTreeLayoutManager listExample display"
-	"DisplayListView classTreeExample"
-
-	| acc me |
-	acc := STreeAccessor subject: "View" Magnitude
-			terminalQuery: [ :c | c subclasses size = 0]
-			childAccessor: #sortedSubclasses
-			itemGenerator: [ :c | (DisplayString new)
-							model: c; 
-							string: c name; 
-							color: ColorValue black].
-	me := (self new) accessor: acc; xStep: 4; yStep: 12.
-	^me displayList! !Object subclass: #StructureAccessor	instanceVariableNames: 'subject itemGenerator'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!StructureAccessor commentStamp: '<historical>' prior: 0!Instances of StructureAccessor and its subclasses are 'protocol convertors' which provide predictable interfaces (e.g., tree-speak), for diverse data structures.
+	^list! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!IndentedTreeLayoutManager class	instanceVariableNames: ''!!IndentedTreeLayoutManager class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:01'!listExample	"IndentedTreeLayoutManager listExample display"	"DisplayListView classTreeExample"	| acc me |	acc := STreeAccessor				subject: Magnitude				terminalQuery: [:c | "View"					c subclasses size = 0]				childAccessor: #sortedSubclasses				itemGenerator: [:c | DisplayString new model: c;						 string: c name;						 color: Color black].	me := self new accessor: acc;				 xStep: 4;				 yStep: 12.	^ me displayList! !Object subclass: #StructureAccessor	instanceVariableNames: 'subject itemGenerator'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!StructureAccessor commentStamp: '<historical>' prior: 0!Instances of StructureAccessor and its subclasses are 'protocol convertors' which provide predictable interfaces (e.g., tree-speak), for diverse data structures.
 The basic display item generating protocol is: 
 	(aStructureAccessor itemFor: aModelNode).
 

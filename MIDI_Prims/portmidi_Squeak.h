@@ -21,7 +21,7 @@
 #include "string.h"
 #include "assert.h"
 
-/* Verbose logging to stdout */
+// Logging macros
 
 //#define DEBUG_SIREN            // verbose debugging to stdout
 
@@ -55,7 +55,7 @@ int32_t pm_count_devices(void);		// answer # devices
 char * pm_get_name(int32_t which);	// answer string name
 int32_t pm_dev_dir(int32_t which);	// answer direction 0 = out, 1 = in
 
-int32_t pm_default_input_device(void);	// answerf index of default in or out
+int32_t pm_default_input_device(void);	// answer index of default in or out
 int32_t pm_default_output_device(void);
 
 // I/O 

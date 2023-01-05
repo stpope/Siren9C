@@ -86,16 +86,7 @@ Sounds use their Function and DurationEvent behaviors actively.
 	"Put the given sound in the shared dictionary under the given name."
 
 	SirenSession sounds ifNil: [^nil].
-	^SirenSession sounds at: aName asSymbol put: aSound! !!Sound class methodsFor: 'utilities'!fromFile: nameString
-	"Open the given file (AIFF, IRCAM, NeXT, or SPARC soundfile format)"
-	"Sound fromFile: 'kombination.snd'"
-
-	| snd |
-	[snd := (SoundFile readFileNamed: nameString).
-	snd ifNotNil: [snd := snd sound]]
-		on: Core.Error
-		do: [ :ex |  "ignore " "self error: 'Cannot read sound file named ', nameString"].
-	^snd! !!Sound class methodsFor: 'utilities'!playFile: theName
+	^SirenSession sounds at: aName asSymbol put: aSound! !!Sound class methodsFor: 'utilities' stamp: 'stp 12/31/2022 11:07'!fromFile: nameString 	"Open the given file (AIFF, IRCAM, NeXT, or SPARC soundfile format)"	"Sound fromFile: 'kombination.snd'"	| snd |	[snd := LoopedSampledSound fromAIFFFileNamed: nameString mergeIfStereo: false.	snd		ifNotNil: [snd := snd sound]]		on: Error.	Error		do: [:ex | "ignore"			"self error: 'Cannot read sound file named ', nameString"			].	^ snd! !!Sound class methodsFor: 'utilities'!playFile: theName
 	"Play the sound file with the given name"
 
 	SirenUtility playSoundFile: theName! !Sound subclass: #ComponentSound	instanceVariableNames: 'start stop sound'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Sound'!!ComponentSound commentStamp: '<historical>' prior: 0!A ComponentSound is used as a component (a "splice" element, if you will).

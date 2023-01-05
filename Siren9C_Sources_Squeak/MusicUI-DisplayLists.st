@@ -12,11 +12,7 @@ This implementation is MODE 1.1, STEIM, Amsterdam, May/June 1990; updated at the
 
 The entirety of this software is Copyright (c) 1990, Stephen Travis Pope, Nomad Object Design/Nomad Computer Music Research. 
 All Rights Reserved.
-!!DisplayItem methodsFor: 'transforming'!asVisualComponent
-	"Answer an encapsulated version of the receiver which understands
-	VisualComponent protocol."
-
-	^TranslatingWrapper on: self! !!DisplayItem methodsFor: 'transforming'!scaleBy: aPoint
+!!DisplayItem methodsFor: 'transforming'!scaleBy: aPoint
 	"Translate the receiver's offset by the argument."
 
 	self extent: self extent * aPoint! !!DisplayItem methodsFor: 'transforming'!scaledBy: aPoint
@@ -185,8 +181,7 @@ Instance Variables:
 	^((self new) offset: oPoint) extent: ePoint! !DisplayItem subclass: #DisplayList	instanceVariableNames: 'components'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-DisplayLists'!!DisplayList commentStamp: '<historical>' prior: 0!Instances of DisplayList are used for representing composed structured graphics. They can be nested (see the class examples) and can display themselves and their components.
 
 Instance Variables:
-	offset		<Point> the object's offset distance relative to its container!!DisplayList methodsFor: 'accessing'!color
-	^ColorValue black! !!DisplayList methodsFor: 'accessing'!flatten
+	offset		<Point> the object's offset distance relative to its container!!DisplayList methodsFor: 'accessing' stamp: 'stp 12/31/2022 11:01'!color	^ Color black! !!DisplayList methodsFor: 'accessing'!flatten
 	"Answer a copy of the receiver with its hierarchy flattened."
 
 	| new |
@@ -683,38 +678,7 @@ Instance Variables:
 	"Open a display list view with randomly-placed random-color strings over the given extent."
 	"DisplayList stringExample"
 
-	(DisplayList stringsX: 4000 byY: 4000) display! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/28/2022 21:43'!stringsX: x byY: y 	"Answer a display list with randomly-placed random-color strings over	the given extent."	"(DisplayList stringsX: 800 byY: 1600) display"	| dList rand inset fonts |	inset := 16.	dList := DisplayList new.	rand := Random new.	fonts := StrikeFont familyNames.	x / 5 + (y / 5)		timesRepeat: [| pos |			pos := (rand nextIntFrom: inset to: x - inset)						@ (rand nextIntFrom: inset to: y - inset).			dList				add: ((DisplayString						string: pos printString						offset: pos						font: (StrikeFont familyName: fonts atRandom pointSize: 12))						color: Color random)].	^ dList! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/1/2022 21:31:48'!visualsX: x byY: y
-	"Answer a display list with randomly-placed random-color visuals over the given extent."
-	"(DisplayList visualsX: 2000 byY: 2000) display"
-	"DisplayListView exampleVisuals"
-
-	| dList rand inset images |
-	inset := 16.
-	dList := DisplayList new.
-	rand := Random new.
-	images _ OrderedCollection new.
-"Collect forms"
-	(DisplayListView constants at: #forms) valuesDo:
-		[ :item | images addLast: item].
-
-"Collect notes"
-	(DisplayListView constants at: #NoteIcons) do:
-		[ :item | images addLast: item image].
-
-"Collect notes"
-	(DisplayListView constants at: #StdNoteIcons) valuesDo:
-		[ :item | images addLast: item image.
-			item image image offset: item offset].
-		
-"Create display list"
-	((x/10) + (y/10)) timesRepeat:
-		[ | vis |
-		vis _ 	images atRandom: rand.
-		dList add: ((DisplayVisual
-				visual: vis
-				offset: ((rand nextIntFrom: inset to: x - inset)
-						@(rand nextIntFrom: inset to: y - inset) "+ vis image offset")))].
-	^dList! !DisplayLine subclass: #DisplayRectangle	instanceVariableNames: 'fill stroke'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-DisplayLists'!!DisplayRectangle commentStamp: '<historical>' prior: 0!Instances of DisplayRectangle can be used to display bordered or filled rectangles in display lists. This is a subclass of DisplayLine for reasons of practicality. a "purist" (e.g., David Liebs), would create an intermediate abstract class (e.g., BoundedDisplayItem) for both DisplayLine and DisplayRectangle.
+	(DisplayList stringsX: 4000 byY: 4000) display! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/28/2022 21:43'!stringsX: x byY: y 	"Answer a display list with randomly-placed random-color strings over	the given extent."	"(DisplayList stringsX: 800 byY: 1600) display"	| dList rand inset fonts |	inset := 16.	dList := DisplayList new.	rand := Random new.	fonts := StrikeFont familyNames.	x / 5 + (y / 5)		timesRepeat: [| pos |			pos := (rand nextIntFrom: inset to: x - inset)						@ (rand nextIntFrom: inset to: y - inset).			dList				add: ((DisplayString						string: pos printString						offset: pos						font: (StrikeFont familyName: fonts atRandom pointSize: 12))						color: Color random)].	^ dList! !!DisplayList class methodsFor: 'examples' stamp: 'stp 12/30/2022 07:41'!visualsX: x byY: y 	"Answer a display list with randomly-placed random-color visuals over	the given extent."	"(DisplayList visualsX: 2000 byY: 2000) display"	"DisplayListView exampleVisuals"	| dList rand inset images |	inset := 16.	dList := DisplayList new.	rand := Random new.	images := OrderedCollection new.	"Collect forms"	(DisplayListView constants at: #forms)		valuesDo: [:item | images addLast: item deepCopy].	"Collect notes"	(DisplayListView constants at: #NoteIcons)		do: [:item | images addLast: item image deepCopy].	"Collect notes"	(DisplayListView constants at: #StdNoteIcons)		valuesDo: [:item | | im |			im := item image deepCopy.			images addLast: im.			im image offset: item offset].	"Create display list"	x / 10 + (y / 10)		timesRepeat: [| vis |			vis := images atRandom: rand.			dList				add: (DisplayVisual visual: vis offset: (rand nextIntFrom: inset to: x - inset)							@ (rand nextIntFrom: inset to: y - inset))			"+ vis image offset"].	^ dList! !DisplayLine subclass: #DisplayRectangle	instanceVariableNames: 'fill stroke'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-DisplayLists'!!DisplayRectangle commentStamp: '<historical>' prior: 0!Instances of DisplayRectangle can be used to display bordered or filled rectangles in display lists. This is a subclass of DisplayLine for reasons of practicality. a "purist" (e.g., David Liebs), would create an intermediate abstract class (e.g., BoundedDisplayItem) for both DisplayLine and DisplayRectangle.
 
 Instanve Variables:
 	fill		<Boolean or nil> whether or not to fill the receiver on display (no by default)!!DisplayRectangle methodsFor: 'accessing'!fill: aBoolean
@@ -764,25 +728,7 @@ Instance Variables:
 
 	|  newPts |
 	newPts := vertices collect: [ :pt | (pt * aPoint) truncated].
-	^self class offset: offset vertices: newPts! !!DisplayPolyline methodsFor: 'displaying'!displayOn: aGraphicsContext
-	"Stroke the receiver's edges on the supplied GraphicsContext."
-
-	| cachedLW |
-	color == nil
-		ifTrue: [aGraphicsContext paint: ColorValue black]
-		ifFalse: [aGraphicsContext paint: ColorValue black].
-	stroke == nil
-		ifFalse: [cachedLW := aGraphicsContext lineWidth.
-			aGraphicsContext lineWidth: stroke].
-	offset == nil
-		ifFalse: [aGraphicsContext translateBy: offset].
-	(fill == true)
-		ifFalse: [aGraphicsContext displayPolyline: vertices at: Point zero]
-		ifTrue: [aGraphicsContext displayPolygon: vertices at: Point zero].
-	offset == nil
-		ifFalse: [aGraphicsContext translateBy: offset negated].
-	stroke == nil
-		ifFalse: [aGraphicsContext lineWidth: cachedLW].! !!DisplayPolyline methodsFor: 'displaying' stamp: 'stp 12/1/2022 10:34:18'!drawOn: aCanvas
+	^self class offset: offset vertices: newPts! !!DisplayPolyline methodsFor: 'displaying' stamp: 'stp 12/31/2022 11:01'!displayOn: aGraphicsContext 	"Stroke the receiver's edges on the supplied GraphicsContext."	| cachedLW |	color == nil		ifTrue: [aGraphicsContext paint: Color black]		ifFalse: [aGraphicsContext paint: Color black].	stroke == nil		ifFalse: [cachedLW := aGraphicsContext lineWidth.			aGraphicsContext lineWidth: stroke].	offset == nil		ifFalse: [aGraphicsContext translateBy: offset].	fill == true		ifTrue: [aGraphicsContext displayPolygon: vertices at: Point zero]		ifFalse: [aGraphicsContext displayPolyline: vertices at: Point zero].	offset == nil		ifFalse: [aGraphicsContext translateBy: offset negated].	stroke == nil		ifFalse: [aGraphicsContext lineWidth: cachedLW]! !!DisplayPolyline methodsFor: 'displaying' stamp: 'stp 12/1/2022 10:34:18'!drawOn: aCanvas
 	"Display the polyline on the given canvas"
 
 	| pt1 pt2 |
@@ -916,31 +862,7 @@ Instance Variables:
 	aPostscriptContext imageWidth: image width 
 			height: image height 
 			bits: image bits.
-	aPostscriptContext translate: offset negated! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/29/2022 00:57'!drawOn: aCanvas 	"Display a rect on the given canvas"	aCanvas stencil: image image at: offset color: Color black! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:46'!drawOn: aCanvas 	"Display a rect on the given canvas"	drawImage: image image at: offset 	! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayVisual class	instanceVariableNames: ''!!DisplayVisual class methodsFor: 'examples'!convertMusicConstants
-	"Convert all the forms to opaque forms"
-	"DisplayVisual convertMusicConstants. DisplayVisual displayMusicConstants"
-
-	| all |
-	all := DisplayListView constants.
-	all keysAndValuesDo: [ :key :group |
-		Transcript show: key printString; cr.
-		(group isMemberOf: Dictionary)
-			ifTrue: [group keysAndValuesDo:
-				[ :str :item | | newI |
-				(item isKindOf: DisplayVisual)
-					ifTrue: [newI := item.
-						item visual: (OpaqueImage figure: item visual 
-							shape: (item visual convertToCoverageWithOpaquePixel: 1))]
-					ifFalse: [(item isMemberOf: Depth1Image)
-							ifTrue: [newI := OpaqueImage figure: item 
-												shape: (item convertToCoverageWithOpaquePixel: 1)]].
-				group at: str put: newI]].
-		((group isMemberOf: Array) or: [(group isMemberOf: OrderedCollection)])
-			ifTrue: [group do:
-					[ :item |
-					(item isMemberOf: OpaqueImage)
-						ifFalse: [item visual: (OpaqueImage figure: item visual 
-								shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/28/2022 20:59'!displayMusicConstants	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicConstants"	| xstep y i ystep dl dlv |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	DisplayListView constants		keysAndValuesDo: [:title :dict | 			i := 0.			dl				add: (DisplayString string: title asString)				at: xstep @ y.			y := y + (ystep / 2).			dict				keysAndValuesDo: [:str :item | 					dl						add: (DisplayString								string: (str isNumber										ifTrue: [str printString]										ifFalse: [str asString contractTo: 11]))						at: i * xstep + 8 @ y.					dl						add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item image extent printString]))						at: i * xstep + 8 @ (y + 16).					item isDisplayItem						ifTrue: [dl add: item at: i * xstep + 8 @ (y + 40)]						ifFalse: [dl								add: (DisplayVisual image: item)								at: i * xstep + 8 @ (y + 40)].					i := i + 1.					i = 14						ifTrue: [i := 0.							y := y + (ystep * 1.5)]].			y := y + ystep + 24].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Constants'! !!DisplayVisual class methodsFor: 'examples'!storeMusicConstants
+	aPostscriptContext translate: offset negated! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/29/2022 00:57'!drawOn: aCanvas 	"Display a rect on the given canvas"	aCanvas stencil: image image at: offset color: Color black! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:46'!drawOn: aCanvas 	"Display a rect on the given canvas"	drawImage: image image at: offset 	! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayVisual class	instanceVariableNames: ''!!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:08'!convertMusicConstants	"Convert all the forms to opaque forms"	"DisplayVisual convertMusicConstants. DisplayVisual	displayMusicConstants "	| all |	all := DisplayListView constants.	all		keysAndValuesDo: [:key :group | 			Transcript show: key printString;				 cr.			(group isMemberOf: Dictionary)				ifTrue: [group						keysAndValuesDo: [:str :item | 							| newI |							(item isKindOf: DisplayVisual)								ifTrue: [newI := item.									item										visual: (OpaqueImage												figure: item visual												shape: (item visual convertToCoverageWithOpaquePixel: 1))]								ifFalse: [(item isKindOf: Form)										ifTrue: [newI := OpaqueImage														figure: item														shape: (item convertToCoverageWithOpaquePixel: 1)]].							group at: str put: newI]].			((group isMemberOf: Array)					or: [group isMemberOf: OrderedCollection])				ifTrue: [group						do: [:item | (item isMemberOf: OpaqueImage)								ifFalse: [item										visual: (OpaqueImage												figure: item visual												shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/28/2022 20:59'!displayMusicConstants	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicConstants"	| xstep y i ystep dl dlv |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	DisplayListView constants		keysAndValuesDo: [:title :dict | 			i := 0.			dl				add: (DisplayString string: title asString)				at: xstep @ y.			y := y + (ystep / 2).			dict				keysAndValuesDo: [:str :item | 					dl						add: (DisplayString								string: (str isNumber										ifTrue: [str printString]										ifFalse: [str asString contractTo: 11]))						at: i * xstep + 8 @ y.					dl						add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item image extent printString]))						at: i * xstep + 8 @ (y + 16).					item isDisplayItem						ifTrue: [dl add: item at: i * xstep + 8 @ (y + 40)]						ifFalse: [dl								add: (DisplayVisual image: item)								at: i * xstep + 8 @ (y + 40)].					i := i + 1.					i = 14						ifTrue: [i := 0.							y := y + (ystep * 1.5)]].			y := y + ystep + 24].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Constants'! !!DisplayVisual class methodsFor: 'examples'!storeMusicConstants
 	"Write out all the forms to opaque forms"
 	"DisplayVisual storeMusicConstants"
 

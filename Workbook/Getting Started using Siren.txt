@@ -3,9 +3,9 @@ Getting Started with Siren
 Depending on what your background, you may take any one of several paths to get started with Siren. 
 
 RTFM: Please read the in-depth book chapter,
-	http://FASTLabInc.com/Siren/Doc/SirenBookChapter.pdf
-
-If you're impatient to see what Siren can do, jump ahead to the demo script near the end of this outline.
+	http://FASTLabInc.com/Siren/Doc/SirenBookChapter.pdf
+This workbook is also available on-line at,	http://fastlabinc.com/Siren/Workbook	
+If you're impatient to see what Siren can do, jump ahead to the demo script near the end of this outline (Chapter 32 or so).
 
 If you're a literate programmer, but unfamiliar with the Smalltalk language or environment, skip ahead to the short introduction to reading the Smalltalk language at the end of this document.
 

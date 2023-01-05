@@ -931,43 +931,7 @@ Instance Variables:
 	"Set the receiver's instance variable 'windowSize' to be aNum."
 
 	windowSize := aNum.
-! !!Spectrum methodsFor: 'computing' stamp: 'stp 12/5/2022 15:39:36'!compute
-	"Do the FFT and store the results into the receiver's data."
-	"Spectrum sweepExample"
-	"Spectrum fileExample"
-
-	| fft dSize min max samples spectrum |
-	dSize := (sound size / stepSize) truncated.		"# of windows"
-	data := Array new: dSize.						"array of arrays"
-	min := 1.0e30.  max := -1.0e30.
-	samples := ByteArray new: (windowSize * 4).		"FFT's private data"
-	samples gcCopyToHeap.
-	spectrum := ByteArray new: (windowSize * 4 + 1).
-	spectrum gcCopyToHeap.
-	fft := FFTWInterface new.						"set up the FFT"
-	[fft fftw_initialize: windowSize with: samples with: spectrum]
-		on: Error
-		do: [ :ex | self error: 'FFT not installed'].
-	Cursor execute showWhile:
-		[1 to: dSize do:
-			[ :winCount | | buffer slice |
-			buffer := self window: winCount.	"window the data buffer"
-			1 to: windowSize do:							"copy it to the FFT's input buffer"
-				[ :count | samples floatAt: (count - 1 * 4 + 1) put: (buffer at: count)].
-			fft fftw_forward_transform.				"do the FFT"
-			slice := Array new: (windowSize / 2).
-			magReal == #real				"pack data--real or complex"
-				ifFalse: [self error: 'Complex FFT not supported']
-				ifTrue: [1 to: windowSize / 2 do:	"copy the magnitude spectrum out"
-					[ :ind | | re im mag |
-						re := spectrum floatAt: (ind * 2 - 2 * 4 + 1).
-						im := spectrum floatAt: (ind * 2 - 1 * 4 + 1).
-						mag := ((re * re) + (im * im)) sqrt.
-						slice at: ind  put: mag.
-						min := mag min: min.
-						max := mag max: max].
-					data at: winCount put: slice]]].
-	self range: (min to: max)! !!Spectrum methodsFor: 'computing'!compute0
+! !!Spectrum methodsFor: 'computing' stamp: 'stp 12/31/2022 07:12'!compute	"Do the FFT and store the results into the receiver's data."	"Spectrum sweepExample"	"Spectrum fileExample"	| fft dSize min max samples spectrum |	dSize := (sound size / stepSize) truncated.	"# of windows"	data := Array new: dSize.	"array of arrays"	min := 1.0e30.	max := -1.0e30.	samples := ByteArray new: windowSize * 4.	"FFT's private data"	samples gcCopyToHeap.	spectrum := ByteArray new: windowSize * 4 + 1.	spectrum gcCopyToHeap.	fft := FFT new.	"set up the FFT"	[fft		fftw_initialize: windowSize		with: samples		with: spectrum]		on: Error		do: [:ex | self error: 'FFT not installed'].	Cursor execute		showWhile: [1				to: dSize				do: [:winCount | 					| buffer slice |					buffer := self window: winCount.					"window the data buffer"					1						to: windowSize						do: [:count | "copy it to the FFT's input buffer"							samples								floatAt: count - 1 * 4 + 1								put: (buffer at: count)].					fft fftw_forward_transform.					"do the FFT"					slice := Array new: windowSize / 2.					magReal == #real						ifTrue: [1								to: windowSize / 2								do: [:ind | 									| re im mag |									"copy the magnitude spectrum out"									re := spectrum floatAt: ind * 2 - 2 * 4 + 1.									im := spectrum floatAt: ind * 2 - 1 * 4 + 1.									mag := (re * re + (im * im)) sqrt.									slice at: ind put: mag.									min := mag min: min.									max := mag max: max].							data at: winCount put: slice]						ifFalse: ["pack data--real or complex"							self error: 'Complex FFT not supported']]].	self		range: (min to: max)! !!Spectrum methodsFor: 'computing'!compute0
 	"Do the FFT and store the results into the receiver's data."
 	"Display restoreAfter: [Spectrum sweepExample]"
 	"Display restoreAfter: [Spectrum fileExample]"
@@ -1152,15 +1116,15 @@ Instance Variables:
 	^me! !LinearFunction subclass: #SplineFunction	instanceVariableNames: 'linSeg'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!SplineFunction commentStamp: '<historical>' prior: 0!Instances of SplineSeg are cubic splines betwen their points.
 
 Instance Variable:
-	linSeg		<LinearFunction> my linear twin!!SplineFunction methodsFor: 'computing'!computeCurve
+	linSeg		<LinearFunction> my linear twin!!SplineFunction methodsFor: 'computing' stamp: 'stp 12/30/2022 10:42'!computeCurve
 	"Compute the receiver by cubic interpolation; use the Geometric spline."
 
 	| points spline |
 	points := OrderedCollection new: data size.
 	data do: [ :pt |
 			points add: (pt * 100)].
-	spline := Spline controlPoints: points.
-	points := spline computeCurve; computePoints.
+	spline := Spline new.	points do: [ :pt | spline add: pt].
+	points := spline computeCurve.
 	1 to: points size do: [ :i |
 			points at: i put: ((points at: i) / 100)].
 	linSeg := LinearFunction from: points! !!SplineFunction methodsFor: 'accessing'!at: anIndex
@@ -1170,7 +1134,7 @@ Instance Variable:
 	linSeg == nil
 		ifTrue: [self computeCurve].
 	val := linSeg at: anIndex.
-	^(val * scale) + offset! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SplineFunction class	instanceVariableNames: ''!!SplineFunction class methodsFor: 'examples'!splineExample
+	^(val * scale) + offset! !!SplineFunction methodsFor: 'accessing' stamp: 'stp 12/30/2022 11:22'!scaleBy: aPt 	| points |	points := Array new: data size.	1		to: data size		do: [:ind | points at: ind put: (data at: ind)					* aPt].	^ SplineFunction from: points! !!SplineFunction methodsFor: 'accessing' stamp: 'stp 12/30/2022 11:24'!spline	| points spline |	points := OrderedCollection new: data size.	data		do: [:pt | points add: pt].	spline := Spline new.	points		do: [:pt | spline add: pt].	spline computeCurve.	^ spline! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SplineFunction class	instanceVariableNames: ''!!SplineFunction class methodsFor: 'examples'!splineExample
 	"Make a SplineSeg."
 	"SplineFunction splineExample"
 

@@ -233,16 +233,7 @@ Object subclass: #Scale	instanceVariableNames: 'root notes'	classVariableNames
 	| count |
 	count := root numberOfSemiTonesBetween: p.
 	count = 0 ifTrue: [^ root].
-	^ self allNotes at: (1 + (count \\ 12))! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Scale class	instanceVariableNames: ''!!Scale class methodsFor: 'creation'!askScale
-	"self askScale"
-
-	| scales scaleType pitch |
-	scales := Scale subclasses asArray.
-	scaleType := (PopUpMenu labelArray: (scales collect: [:s | s printString])) startUp.
-	scaleType = 0 ifTrue: [^nil].
-	pitch := N noteNamed: (Dialog request: 'note' initialAnswer: 'Do').
-	^(scales at: scaleType)
-		root: pitch! !!Scale class methodsFor: 'creation'!root: aNote 
+	^ self allNotes at: (1 + (count \\ 12))! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Scale class	instanceVariableNames: ''!!Scale class methodsFor: 'creation' stamp: 'stp 12/31/2022 07:10'!askScale	"self askScale"	| scales scaleType pitch |	scales := Scale subclasses asArray.	scaleType := (PopUpMenu				labelArray: (scales						collect: [:s | s printString])) startUp.	scaleType = 0		ifTrue: [^ nil].	pitch := N				noteNamed: (FillInTheBlank request: 'note' initialAnswer: 'Do').	^ (scales at: scaleType)		root: pitch! !!Scale class methodsFor: 'creation'!root: aNote 
 	| g |
 	g := self new.
 	g root: aNote; computeNotes.
@@ -274,7 +265,60 @@ N re  HarmonicMinorScale generateChordsPoly: 3
 -> 4
 "! !!Scale class methodsFor: 'interval list'!intervalList
 	^self subclassResponsibility! !!Scale class methodsFor: 'Paleo class initialize'!initialize
-	AllNotes := Dictionary new! !Scale subclass: #ChromaticScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!ChromaticScale class	instanceVariableNames: ''!!ChromaticScale class methodsFor: 'interval list'!intervalList
+	AllNotes := Dictionary new! !Scale subclass: #BohlenPierceScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!!BohlenPierceScale methodsFor: 'computing notes'!computeNotes
+	"Make the note list for the 13th root of 3."
+	"(BohlenPierceScale root: N mi) inspect"
+
+	| bas |
+	bas := 8.17579891564371 * (2.0 raisedTo: (((root semiToneCount + 60) asFloat) / 12.0)).
+	notes := (0 to: 12) collect:
+		[ :ind |
+		bas * (3.0 raisedTo: (ind / 13) asFloat)]! !!BohlenPierceScale methodsFor: 'computing notes'!nearestNoteTo: aHzPitch
+	"Answer the frequency of the scale degree closest to the given pitch in Hz."
+	"(PentatonicScale root: N re) nearestNoteTo: 450"
+
+	| f0 fN oct |
+	oct := 0.0.
+	f0 := notes first.
+	fN := notes last.
+	[f0 > aHzPitch] whileTrue:
+		[oct := oct - 1.0.
+		f0 := f0 / 3.0. 
+		fN := fN / 3.0.].
+	[fN < aHzPitch] whileTrue: 
+		[oct := oct + 1.0.
+		f0 := f0 * 3.0.
+		fN := fN * 3.0].
+
+"	Transcript show: 'nearestNoteTo: ', aHzPitch printString; cr."
+	0 to: notes size do: 
+		[ :ind | | p0 p1 |
+		(ind = 0)
+			ifFalse: [p0 := (notes at: ind) * (3.0 raisedTo: oct)]		"get the note degrees"
+			ifTrue: [p0 := notes last * (3.0 raisedTo: oct - 1)].
+		(ind < notes size)
+			ifTrue: [p1 := (notes at: ind + 1)* (3.0 raisedTo: oct)]
+			ifFalse: [p1 := notes first * (3.0 raisedTo: oct + 1)].
+
+"		Transcript tab; show: 'Between: ', p0 printString, ' and: ', p1 printString; cr."
+		(p0 <= aHzPitch and: [p1 >= aHzPitch])			"loop over intervals looking for the one that includes the given freq"
+			ifTrue:  [ |  a b  | 
+				a := (aHzPitch - p0).
+				b := (p1 - aHzPitch).
+				^(a >= b)
+					ifTrue:  [p1]
+					ifFalse: [p0]]].
+
+	self error: 'Pitch class member not found'! !!BohlenPierceScale methodsFor: 'testing'!isMajor
+	^false! !!BohlenPierceScale methodsFor: 'testing'!isMinor
+	^false! !!BohlenPierceScale methodsFor: 'transpose'!octaveScale
+	"Most scales repeate in octaves of 2.0, but not BP"
+
+	^3.0! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!BohlenPierceScale class	instanceVariableNames: ''!!BohlenPierceScale class methodsFor: 'instance creation'!root: aNote 
+	| g |
+	g := self new.
+	g root: aNote; computeNotes.
+	^g! !Scale subclass: #ChromaticScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!ChromaticScale class	instanceVariableNames: ''!!ChromaticScale class methodsFor: 'interval list'!intervalList
 
 	^#(#unison #augmentedUnison #majorSecond #minorThird #majorThird #perfectFourth #augmentedFourth #perfectFifth #minorSixth #majorSixth #minorSeventh #majorSeventh )! !Scale subclass: #DoubleHarmonic	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DoubleHarmonic class	instanceVariableNames: ''!!DoubleHarmonic class methodsFor: 'interval list'!intervalList
 	"tire de McLaughlin et le Mahavishnu Orchestra"

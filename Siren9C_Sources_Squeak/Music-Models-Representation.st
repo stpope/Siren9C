@@ -30,17 +30,7 @@ Instance variables:
 	self changed: #value with: value! !!MusicMagnitude methodsFor: 'printing'!printOn: aStream
 	"Print the receiver on the argument as a MM declaration."
 
-	^self printOn: aStream parens: true! !!MusicMagnitude methodsFor: 'printing'!printOn: aStream parens: useParens
-	"Print the receiver on the argument as a MM declaration."
-
-	useParens
-		ifTrue: [self isImmediate
-			ifFalse: [aStream nextPutAll: '(', self species name, ': ', 
-				self printValue, ')']
-			ifTrue: [aStream nextPutAll: '(', self printValue, self units, ')']]
-		ifFalse: [self isImmediate
-			ifFalse: [aStream nextPutAll: self species name, ': ', self printValue]
-			ifTrue: [aStream nextPutAll: self printValue, self units]]! !!MusicMagnitude methodsFor: 'printing'!printString
+	^self printOn: aStream parens: true! !!MusicMagnitude methodsFor: 'printing' stamp: 'stp 12/30/2022 14:02'!printOn: aStream parens: useParens 	"Print the receiver on the argument as a MM declaration."	| digits |	Sensor shiftPressed		ifTrue: [digits := 10]		ifFalse: [digits := 4].	useParens		ifTrue: [aStream nextPutAll: '('].	aStream nextPutAll: self species name , ': '.	value isFloat		ifTrue: [value printOn: aStream maxDecimalPlaces: digits]		ifFalse: [value printOn: aStream].	useParens		ifTrue: [aStream nextPutAll: ')']! !!MusicMagnitude methodsFor: 'printing'!printString
 	"Answer a String whose characters are a description of the receiver."
 
 	| aStream |
@@ -52,17 +42,10 @@ Instance variables:
 	| aStream |
 	aStream := WriteStream on: (String new: 16).
 	self printOn: aStream  parens: bool.
-	^aStream contents! !!MusicMagnitude methodsFor: 'printing'!printValue
-
-	value isString ifTrue: [^value].
-"	value isFloat ifTrue: [^value printPlaces: 4].
-"	^value printString! !!MusicMagnitude methodsFor: 'printing'!storeOn: aStream
+	^aStream contents! !!MusicMagnitude methodsFor: 'printing'!storeOn: aStream
 	"Store the receiver on the argument as a MM declaration."
 
-	aStream nextPutAll: '(', self class name, ' value: ', value printString, ')'! !!MusicMagnitude methodsFor: 'printing'!units
-	"Answer the units string of the receiver."
-
-	^nil! !!MusicMagnitude methodsFor: 'private'!species
+	aStream nextPutAll: '(', self class name, ' value: ', value printString, ')'! !!MusicMagnitude methodsFor: 'printing' stamp: 'stp 12/30/2022 12:49'!units	"Answer the units string of the receiver."	^ ''! !!MusicMagnitude methodsFor: 'private'!species
 	"Answer MusicMagnitude."
 
 	^MusicMagnitude! !!MusicMagnitude methodsFor: 'converting'!adaptToNumber: rcvr andSend: selector
@@ -171,14 +154,7 @@ Instance variables:
 	^value hash! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MusicMagnitude class	instanceVariableNames: ''!!MusicMagnitude class methodsFor: 'instance creation'!value: aValue
 	"Answer and instance with the argument as its value."
 
-	^self new value: aValue! !!MusicMagnitude class methodsFor: 'class constants'!color
-	"Answer the default color to display instances with (hack for making pretty graphs)."
-
-	| spec |
-	spec := self new species.
-	^(spec == MusicMagnitude)
-		ifTrue: [ColorValue gray]
-		ifFalse: [spec color]! !!MusicMagnitude class methodsFor: 'class constants'!propertyName
+	^self new value: aValue! !!MusicMagnitude class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:02'!color	"Answer the default color to display instances with (hack for making	pretty graphs)."	| spec |	spec := self new species.	^ spec == MusicMagnitude		ifTrue: [Color gray]		ifFalse: [spec color]! !!MusicMagnitude class methodsFor: 'class constants'!propertyName
 	"Answer the receiver class's default property name."
 
 	^self subclassResponsibility! !!MusicMagnitude class methodsFor: 'class constants'!relativeMember
@@ -228,10 +204,7 @@ Examples:
 	Amplitude value: 77		"create an MIDI instance - range 0 to 127"
 	Amplitude value: #mp		"create a symbolic instance - range #ppp to #fff"
 
-See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Amplitude class	instanceVariableNames: ''!!Amplitude class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:39'!value: aValue 	"Answer a new instance of a member of my species."	aValue species == Amplitude		ifTrue: [^ aValue].	(aValue isMemberOf: SmallInteger)		ifTrue: [^ MIDIVelocity new value: aValue].	(aValue isKindOf: Float)		ifTrue: [^ RatioLoudness new value: aValue].	(aValue isMemberOf: Fraction)		ifTrue: [^ RatioLoudness new value: aValue].	(aValue isKindOf: String)		ifTrue: [^ SymbolicLoudness new value: aValue asSymbol].	^ self new value: aValue! !!Amplitude class methodsFor: 'class constants'!color
-	"Answer the default color to display instances with."
-
-	^ColorValue blue! !!Amplitude class methodsFor: 'class constants'!initialize
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Amplitude class	instanceVariableNames: ''!!Amplitude class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:39'!value: aValue 	"Answer a new instance of a member of my species."	aValue species == Amplitude		ifTrue: [^ aValue].	(aValue isMemberOf: SmallInteger)		ifTrue: [^ MIDIVelocity new value: aValue].	(aValue isKindOf: Float)		ifTrue: [^ RatioLoudness new value: aValue].	(aValue isMemberOf: Fraction)		ifTrue: [^ RatioLoudness new value: aValue].	(aValue isKindOf: String)		ifTrue: [^ SymbolicLoudness new value: aValue asSymbol].	^ self new value: aValue! !!Amplitude class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:01'!color	"Answer the default color to display instances with."	^ Color blue! !!Amplitude class methodsFor: 'class constants'!initialize
 	"Set up the class inst var, a generality table."
 	"Amplitude initialize"
 	"Amplitude generalize: (21 dB) and: (88 velocity)"
@@ -273,10 +246,7 @@ Examples:
 	MDuration value: 1/4		"create an instance with beats as the unit"
 	MDuration value: [ :x | x > 4]	"create an instance for: 'until x > 4'"
 
-See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MDuration class	instanceVariableNames: ''!!MDuration class methodsFor: 'class constants'!color
-	"Answer the default color to display instances with."
-
-	^ColorValue red! !!MDuration class methodsFor: 'class constants' stamp: 'stp 12/28/2022 13:58:18'!initialize
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MDuration class	instanceVariableNames: ''!!MDuration class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:01'!color	"Answer the default color to display instances with."	^ Color red! !!MDuration class methodsFor: 'class constants' stamp: 'stp 12/28/2022 13:58:18'!initialize
 	"Set up the class inst var, a generality table."
 	"MDuration initialize"
 	"MDuration generalize: (100 msec) and: ((1/4) beat)"
@@ -293,10 +263,7 @@ See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 	^#asSec! !!MDuration class methodsFor: 'class constants'!propertyName
 	"Answer the receiver class's default property name."
 
-	^#duration:! !!MDuration class methodsFor: 'class constants'!relativeMember
-	"Answer the receiver class's species member used as a relative magnitude."
-
-	^RatioMDuration! !!MDuration class methodsFor: 'class constants'!species
+	^#duration:! !!MDuration class methodsFor: 'class constants' stamp: 'stp 12/31/2022 07:06'!relativeMember	"Answer the receiver class's species member used as a relative	magnitude. "	^ RatioDuration! !!MDuration class methodsFor: 'class constants'!species
 	"Answer MDuration."
 
 	^MDuration! !!MDuration class methodsFor: 'examples'!example
@@ -371,10 +338,7 @@ Examples:
 
 Note that new pitch representations such as music11-like pch (4.11 = 11th note in oct 4) or oct (4.1100 = oct4 + 1100 cts) notations can be added by overriding the float-to-Hz or float-to-midi conversions.
 
-See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Pitch class	instanceVariableNames: ''!!Pitch class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:38'!value: aValue 	"Answer a new instance of a member of my species."	aValue species == Pitch		ifTrue: [^ aValue].	(aValue isMemberOf: SmallInteger)		ifTrue: [^ MIDIPitch new value: aValue].	(aValue isKindOf: Float)		ifTrue: [^ HertzPitch new value: aValue].	(aValue isMemberOf: Fraction)		ifTrue: [^ RatioPitch new value: aValue].	(aValue isKindOf: String)		ifTrue: [^ SymbolicPitch new value: aValue asSymbol].	^ self new value: aValue! !!Pitch class methodsFor: 'class constants'!color
-	"Answer the default color to display instances with."
-
-	^ColorValue green! !!Pitch class methodsFor: 'class constants'!initialize
+See also the class example.!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Pitch class	instanceVariableNames: ''!!Pitch class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:38'!value: aValue 	"Answer a new instance of a member of my species."	aValue species == Pitch		ifTrue: [^ aValue].	(aValue isMemberOf: SmallInteger)		ifTrue: [^ MIDIPitch new value: aValue].	(aValue isKindOf: Float)		ifTrue: [^ HertzPitch new value: aValue].	(aValue isMemberOf: Fraction)		ifTrue: [^ RatioPitch new value: aValue].	(aValue isKindOf: String)		ifTrue: [^ SymbolicPitch new value: aValue asSymbol].	^ self new value: aValue! !!Pitch class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:02'!color	"Answer the default color to display instances with."	^ Color green! !!Pitch class methodsFor: 'class constants'!initialize
 	"Set up the class inst var, a generality table."
 	"Pitch initialize"
 	"Pitch generalize: (#c pitch) and: (21 key)"

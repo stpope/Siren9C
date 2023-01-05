@@ -223,12 +223,7 @@ The global object Voices is a dictionary that note events can refer to with inte
 	^answer! !!MIDIFileVoice methodsFor: 'initialize-release'!close
 	"Close the stream, device, or whatever."
 
-	stream close! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MIDIFileVoice class	instanceVariableNames: ''!!MIDIFileVoice class methodsFor: 'instance creation'!newOn: fnam 
-
-	| inst realName |
-	realName := SirenUtility findFile: fnam.
-	(inst := self new) stream: (Filename named: realName) readStream binary.
-	^inst! !!MIDIFileVoice class methodsFor: 'examples'!midiFileExample
+	stream close! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MIDIFileVoice class	instanceVariableNames: ''!!MIDIFileVoice class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 07:18'!newOn: fnam 	| inst realName |	realName := SirenUtility findFile: fnam.	(inst := self new) stream: (FileStream named: realName).	^ inst! !!MIDIFileVoice class methodsFor: 'examples'!midiFileExample
 	"MIDIFileVoice midiFileExample"
 
 	(MIDIFileVoice newOn: 'K194.MID')
@@ -331,11 +326,7 @@ Instance Variables:
 	stream := theStream! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!NotelistVoice class	instanceVariableNames: ''!!NotelistVoice class methodsFor: 'instance creation'!defaultPMap
 	"Answer the default parameterMap of the receiver class's instances."
 
-	self subclassResponsibility! !!NotelistVoice class methodsFor: 'instance creation'!newNamed: aName onFile: fName
-	"Set up a NotelistVoice on the given output file"
-	"CmusicVoice newNamed: 'violin' onFile: 't.out.cmusic'"
-
-	^self new initializeNamed: aName onStream: (Filename named: fName) readStream! !!NotelistVoice class methodsFor: 'instance creation'!newNamed: aName onStream: aStream
+	self subclassResponsibility! !!NotelistVoice class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 07:18'!newNamed: aName onFile: fName 	"Set up a NotelistVoice on the given output file"	"CmusicVoice newNamed: 'violin' onFile: 't.out.cmusic'"	^ self new initializeNamed: aName onStream: (FileStream named: fName)! !!NotelistVoice class methodsFor: 'instance creation'!newNamed: aName onStream: aStream
 	"Set up a NotelistVoice on the given output stream"
 	"CmusicVoice newNamed: 'violin' onStream: Transcript"
 
@@ -382,28 +373,7 @@ Instance Variables:
 	"CmixVoice randomExampleToFileAndEdit"
 
 	self randomExampleToFileNamed: 'rand.m'.
-	^self! !!CmixVoice class methodsFor: 'examples'!randomExampleToFileNamed: fnam 
-	"Create a random event list and store it on a file."
-
-	| evt strm list rand vox |
-	strm := (Filename named: fnam) writeStream.
-	rand := Random new.
-"Create the event list and add a few additional properties"
-	(list := EventList randomExample: 64)
-		do: 
-			[ :ass | 
-			(evt := ass event) at: #pos put: rand next.
-			evt at: #prop1 put: (rand nextFrom: 320 to: 480).
-			evt at: #prop2 put: (rand nextIntFrom: 12000 to: 23000)].
-"Create a cmix voice and customize its parameter map."
-	(vox := CmixVoice newNamed: 'file:=two' onStream: strm) addMap: #pos.
-	vox addMap: [ :item | ((item at: #prop1) / 1000) printString].
-	vox addMap: #prop2.
-"Play the list on the voice."
-	vox play: list.
-	strm close.
-	(Filename named: fnam) edit.
-	^self! !!CmixVoice class methodsFor: 'instance creation'!default
+	^self! !!CmixVoice class methodsFor: 'examples' stamp: 'stp 12/31/2022 07:16'!randomExampleToFileNamed: fnam 	"Create a random event list and store it on a file."	| evt strm list rand vox |	strm := FileStream named: fnam.	rand := Random new.	"Create the event list and add a few additional properties"	(list := EventList randomExample: 64)		do: [:ass | 			(evt := ass event) at: #pos put: rand next.			evt				at: #prop1				put: (rand nextFrom: 320 to: 480).			evt				at: #prop2				put: (rand nextIntFrom: 12000 to: 23000)].	"Create a cmix voice and customize its parameter map."	(vox := CmixVoice newNamed: 'filetwo.cmx' onStream: strm) addMap: #pos.	vox		addMap: [:item | ((item at: #prop1)				/ 1000) printString].	vox addMap: #prop2.	"Play the list on the voice."	vox play: list.	strm close.	(FileStream named: fnam) edit! !!CmixVoice class methodsFor: 'instance creation'!default
 
 	CmixVoice newNamed: 'fm' onStream: 'tmp.m' asFilename writeStream.
 	^self! !!CmixVoice class methodsFor: 'instance creation'!defaultPMap
@@ -431,31 +401,7 @@ Instance Variables:
 	"CmusicVoice randomExampleToFileAndEdit"
 
 	self randomExampleToFileNamed: 'rand.sc'.
-	^self! !!CmusicVoice class methodsFor: 'examples'!randomExampleToFileNamed: fnam 
-	"Store the given score to a file"
-
-	| ev strm list rand vox |
-	strm := (Filename named: fnam) writeStream.
-	rand := Random new.
-"Create the event list and add a few additional properties"
-	(list := EventList randomExample: 64)
-		do: 
-			[ :ass | 
-			(ev := ass event) at: #pos put: rand next.
-			ev at: #prop1 put: (rand nextFrom: 320 to: 480).
-			ev at: #prop2 put: (rand nextIntFrom: 12000 to: 23000)].
-"Create a cmusic voice and customize its parameter map."
-	(vox := CmusicVoice newNamed: 'violin' onStream: strm) parameterMap at: 3 
-			put: [ :t8 | #(#in1 #in2 #in3 #in4) at: t8 voice \\ 4 + 1].
-	vox addMap: [ :t9 | (t9 pitch asHz value printString: 5), 'Hz'].
-	vox addMap: #pos.
-	vox addMap: [ :it | ((it at: #prop1) / 10) truncated printString].
-	vox addMap: #prop2.
-"Play the list on the voice."
-	vox play: list.
-	strm close.
-	(Filename named: fnam) edit.
-	^self! !!CmusicVoice class methodsFor: 'examples'!randomExampleToTranscript
+	^self! !!CmusicVoice class methodsFor: 'examples' stamp: 'stp 12/31/2022 07:17'!randomExampleToFileNamed: fnam 	"Store the given score to a file"	| ev strm list rand vox |	strm := FileStream named: fnam.	rand := Random new.	"Create the event list and add a few additional properties"	(list := EventList randomExample: 64)		do: [:ass | 			(ev := ass event) at: #pos put: rand next.			ev				at: #prop1				put: (rand nextFrom: 320 to: 480).			ev				at: #prop2				put: (rand nextIntFrom: 12000 to: 23000)].	"Create a cmusic voice and customize its parameter map."	(vox := CmusicVoice newNamed: 'violin' onStream: strm) parameterMap		at: 3		put: [:t8 | #(#in1 #in2 #in3 #in4) at: t8 voice \\ 4 + 1].	vox		addMap: [:t9 | (t9 pitch asHz value printString: 5)				, 'Hz'].	vox addMap: #pos.	vox		addMap: [:it | ((it at: #prop1)				/ 10) truncated printString].	vox addMap: #prop2.	"Play the list on the voice."	vox play: list.	strm close.	(FileStream named: fnam) edit! !!CmusicVoice class methodsFor: 'examples'!randomExampleToTranscript
 	"CmusicVoice randomExampleToTranscript"
 
 	(CmusicVoice newNamed: 'violin' onStream: Transcript)
@@ -482,28 +428,7 @@ Instance Variables:
 	"CsoundVoice randomExampleToFileAndEdit"
 
 	self randomExampleToFileNamed: 'rand.sco'.
-	^self! !!CsoundVoice class methodsFor: 'examples'!randomExampleToFileNamed: fnam 
-	"Create a random event list and store it on a file."
-	"CsoundVoice randomExampleToFileAndEdit"
-
-	| evt strm list rand vox |
-	strm := (Filename named: fnam) writeStream.
-	rand := Random new.
-"Create the event list and add a few additional properties"
-	(list := EventList randomExample: 64)
-		do: [ :ass | 
-			(evt := ass event) at: #pos put: rand next.
-			evt at: #prop1 put: (rand nextFrom: 320 to: 480).
-			evt at: #prop2 put: (rand nextIntFrom: 12000 to: 23000)].
-"Create a csounc voice and customize its parameter map."
-	(vox := CsoundVoice newNamed: '1' onStream: strm) addMap: #pos.
-	vox addMap: [ :item | ((item at: #prop1) / 1000) printString: 4].
-	vox addMap: #prop2.
-"Play the list on the voice."
-	vox play: list.
-	strm close.
-	(Filename named: fnam) edit.
-	^self! !!CsoundVoice class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:56'!defaultPMap	| map |	(map := OrderedCollection new: 8)		add: [:t2 | 'i' , (t2 voice == nil					ifTrue: [1]					ifFalse: [t2 voice]) printString].	map add: #start.	map		add: [:t3 | t3 duration asSec value asFloat printString: 4].	map		add: [:t4 | t4 loudness asDB positiveDB printString: 4].	^ map! !Voice subclass: #SoundVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!SoundVoice commentStamp: '<historical>' prior: 0!SoundVoice is unfinished; it is intended for putting sound objects in scores.!!SoundVoice methodsFor: 'events'!playEvent: t1 at: t2 
+	^self! !!CsoundVoice class methodsFor: 'examples' stamp: 'stp 12/31/2022 07:15'!randomExampleToFileNamed: fnam 	"Create a random event list and store it on a file."	"CsoundVoice randomExampleToFileAndEdit"	| evt strm list rand vox |	strm := FileStream named: fnam.	rand := Random new.	"Create the event list and add a few additional properties"	(list := EventList randomExample: 64)		do: [:ass | 			(evt := ass event) at: #pos put: rand next.			evt				at: #prop1				put: (rand nextFrom: 320 to: 480).			evt				at: #prop2				put: (rand nextIntFrom: 12000 to: 23000)].	"Create a csounc voice and customize its parameter map."	(vox := CsoundVoice newNamed: '1' onStream: strm) addMap: #pos.	vox		addMap: [:item | (item at: #prop1)				/ 1000 printString: 4].	vox addMap: #prop2.	"Play the list on the voice."	vox play: list.	strm close.	(FileStream named: fnam) edit! !!CsoundVoice class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:56'!defaultPMap	| map |	(map := OrderedCollection new: 8)		add: [:t2 | 'i' , (t2 voice == nil					ifTrue: [1]					ifFalse: [t2 voice]) printString].	map add: #start.	map		add: [:t3 | t3 duration asSec value asFloat printString: 4].	map		add: [:t4 | t4 loudness asDB positiveDB printString: 4].	^ map! !Voice subclass: #SoundVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!SoundVoice commentStamp: '<historical>' prior: 0!SoundVoice is unfinished; it is intended for putting sound objects in scores.!!SoundVoice methodsFor: 'events'!playEvent: t1 at: t2 
 
 	stream play: t1.
 	^self! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SoundVoice class	instanceVariableNames: ''!!SoundVoice class methodsFor: 'constant access'!default
@@ -535,28 +460,7 @@ score = #[
 	"SuperColliderVoice randomExampleToFileAndEdit"
 
 	self randomExampleToFileNamed: 'rand.sc'.
-	^self! !!SuperColliderVoice class methodsFor: 'examples'!randomExampleToFileNamed: fnam 
-	"Create a random event list and store it on a file."
-	"SuperColliderVoice randomExampleToFileAndEdit"
-
-	| evt strm list rand vox |
-	strm := (Filename named: fnam) writeStream.
-	rand := Random new.
-"Create the event list and add a few additional properties"
-	(list := EventList randomExample: 64)
-		do: [ :ass | 
-			evt := ass event.
-			evt at: #attack put: (rand nextFrom: 0.001 to: 0.03).
-			evt at: #decay put: (rand nextFrom: 0.2 to: 0.3).
-			evt at: #index put: (rand nextFrom: 0.2 to: 2.3).
-			evt at: #decay put: (rand nextFrom: 0.2 to: 0.3)].
-"Create a SuperCollider voice and customize its parameter map."
-	vox := SuperColliderVoice newNamed: '1' onStream: strm.
-"Play the list on the voice."
-	vox play: list.
-	strm close.
-	(Filename named: fnam) edit.
-	^self! !!SuperColliderVoice class methodsFor: 'instance creation'!defaultPMap
+	^self! !!SuperColliderVoice class methodsFor: 'examples' stamp: 'stp 12/31/2022 07:59'!randomExampleToFileNamed: fnam 	"Create a random event list and store it on a file."	"SuperColliderVoice randomExampleToFileAndEdit"	| evt strm list rand vox |	strm :=  FileStream named: fnam..	rand := Random new.	"Create the event list and add a few additional properties"	(list := EventList randomExample: 64)		do: [:ass | 			evt := ass event.			evt				at: #attack				put: (rand nextFrom: 0.001 to: 0.03).			evt				at: #decay				put: (rand nextFrom: 0.2 to: 0.3).			evt				at: #index				put: (rand nextFrom: 0.2 to: 2.3).			evt				at: #decay				put: (rand nextFrom: 0.2 to: 0.3)].	"Create a SuperCollider voice and customize its parameter map."	vox := SuperColliderVoice newNamed: '1' onStream: strm.	"Play the list on the voice."	vox play: list.	strm close.	( FileStream named: fnam) edit! !!SuperColliderVoice class methodsFor: 'instance creation'!defaultPMap
 	"Answer up the parameter map for the default instance."
 	"Instrument format
 		[ delT, 'fm', fname, dur, att, dec, ampl, index ] "

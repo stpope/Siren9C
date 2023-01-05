@@ -61,15 +61,13 @@ Screen background image
 
 Undeclared inspect
 Smalltalk garbageCollect
-
-TTFontDescription addFromFileNamed: '/Users/stp/Code/Smalltalk/Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' 
-
-TTCFont installFromFileNames: #( '/Users/stp/Code/Smalltalk/Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' ).
-
-
+Load some new fonts
+[TTCFont installFromFileNames:  #('./Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf').
+TTCFont installFromFileNames: #( './Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' ).TTCFont installFromFileNames: #('./Cuis-Smalltalk-Dev/TrueTypeFonts/Cream/ParcPlaceLegacy.ttf' ) ]
+Set system fonts[ | family |	family := 'Palatino'.#(   (setButtonFontTo:      		family		14)   (setListFontTo:        			family		16)   (setMenuFontTo:        		family		14)   (setWindowTitleFontTo: 	family		18)   (setSystemFontTo:      		family		16)) do:      [:triplet |         Preferences perform: triplet first with: (StrikeFont familyName: triplet second size: triplet third)]]
 ToDo
 
 DisplayList editing
 OSC I/O via sockets
 MIDI I/O via plug-in
-Function & Sound editors
+Function & Sound editorsFile-out[SirenUtility fileoutCategories]

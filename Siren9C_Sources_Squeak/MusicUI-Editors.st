@@ -10,12 +10,7 @@ Instance variables:
 	"Add the given EventAssociation to the model list."
 
 	list add: anAss.
-	self changed: #added.! !!EventListEditor methodsFor: 'list access'!doInspect
-	"Inspect the receiver's list."
-
-	InputState default shiftDown
-		ifTrue: [self inspect]
-		ifFalse: [list inspect]! !!EventListEditor methodsFor: 'list access'!eraseList
+	self changed: #added.! !!EventListEditor methodsFor: 'list access' stamp: 'stp 12/31/2022 11:33'!doInspect	"Inspect the receiver's list."	Sensor shiftPressed		ifTrue: [self inspect]		ifFalse: [eventList inspect]! !!EventListEditor methodsFor: 'list access'!eraseList
 	"Flush the receiver's list."
 
 	list empty.
@@ -173,8 +168,7 @@ Instance variables:
 	listTree list: model! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!EventListTreeEditor class	instanceVariableNames: ''!!EventListTreeEditor class methodsFor: 'interface specs'!windowSpec
 	"Tools.UIPainter new openOnClass: self andSelector: #windowSpec"
 
-	! !!EventListTreeEditor class methodsFor: 'resources'!treeMenu	
-	^Menu labelArray: #(copy cut paste again undo)! !Model subclass: #EventListTreeItem	instanceVariableNames: 'lists'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!EventListTreeItem methodsFor: 'initialize-release'!lists: aCollection
+	! !!EventListTreeEditor class methodsFor: 'resources' stamp: 'stp 12/31/2022 11:39'!treeMenu	^ PopUpMenu labelArray: #(#copy #cut #paste #again #undo)! !Model subclass: #EventListTreeItem	instanceVariableNames: 'lists'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!EventListTreeItem methodsFor: 'initialize-release'!lists: aCollection
 
 	lists := aCollection! !!EventListTreeItem methodsFor: 'accessing'!children
 	
@@ -210,32 +204,7 @@ Instance variables:
 	"Play the list."
 
 	model eventList play.
-	MIDIPort allNotesOffIn: (model eventList duration asSec value + 3)! !!TimeSequenceController methodsFor: 'menu messages'!readList
-	"Copy the model list from the global dictionary."
-
-	| name |
-	name := Dialog request: 'EventList name for storing model:'
-			initialAnswer: model list name.
-	name = '' ifTrue: [^self].
-	(SirenSession eventLists includesKey: name)
-		ifTrue: [model eventList: (SirenSession eventLists at: name) copy]
-		ifFalse: [Transcript cr; show: 'No such event list.'; cr.]! !!TimeSequenceController methodsFor: 'menu messages'!storeList
-	"Copy the model list into the global dictionary."
-
-	| name count |
-	name := Dialog request: 'EventList name for storing model:'
-			initialAnswer: model list name.
-	name = '' ifTrue: [^self].
-	(SirenSession eventLists includesKey: name)
-		ifTrue: [(Dialog confirm: 'Store over existing event list?')
-			ifTrue: [SirenSession eventLists at: name put: model list copy]
-			ifFalse: [count := 2.
-				[SirenSession eventLists includesKey: (name, '.', count printString)]
-					whileTrue: [count := count + 1].
-				SirenSession eventLists at: (name, '.', count printString) asSymbol
-						put: (SirenSession eventLists at: name).
-				SirenSession eventLists at: name put: model list copy]]
-		ifFalse: [SirenSession eventLists at: name put: model list copy]! !!TimeSequenceController methodsFor: 'selecting'!selectFromPoint: aPoint toPoint: anotherPoint
+	MIDIPort allNotesOffIn: (model eventList duration asSec value + 3)! !!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 12/31/2022 07:10'!readList	"Copy the model list from the global dictionary."	| name model |	name := FillInTheBlank request: 'EventList name for storing model:' initialAnswer: model list name.	name = ''		ifTrue: [^ self].	(SirenSession eventLists includesKey: name)		ifTrue: [model eventList: (SirenSession eventLists at: name) copy]		ifFalse: [Transcript cr; show: 'No such event list.'; cr]! !!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 12/31/2022 07:11'!storeList	"Copy the model list into the global dictionary."	| name count model |	name := FillInTheBlank request: 'EventList name for storing model:' initialAnswer: model list name.	name = ''		ifTrue: [^ self].	(SirenSession eventLists includesKey: name)		ifTrue: [(FillInTheBlank confirm: 'Store over existing event list?')				ifTrue: [SirenSession eventLists at: name put: model list copy]				ifFalse: [count := 2.					[SirenSession eventLists includesKey: name , '.' , count printString]						whileTrue: [count := count + 1].					SirenSession eventLists						at: (name , '.' , count printString) asSymbol						put: (SirenSession eventLists at: name).					SirenSession eventLists at: name put: model list copy]]		ifFalse: [SirenSession eventLists at: name put: model list copy]! !!TimeSequenceController methodsFor: 'selecting'!selectFromPoint: aPoint toPoint: anotherPoint
 	"Hit-detect the model for the given range."
 
 	| collection eList |
@@ -581,15 +550,7 @@ Instance Variables:
 			timeScale: xScale;
 			timeOffset: page x;
 			pitchScale: yScale;
-			pitchOffset: pitchOffset! !!PitchTimeView methodsFor: 'initialize-release' stamp: 'stp 12/2/2022 12:11:27'!initialize
-	"Initialize the instance variables of the receiver."
-
-	super initialize.
-	xScale := 12.
-	xScaleDefault := xScale.
-	yScale := 8.
-	yScaleDefault := yScale.
-	pitchOffset := 32! !!PitchTimeView methodsFor: 'controller access'!defaultControllerClass
+			pitchOffset: pitchOffset! !!PitchTimeView methodsFor: 'initialize-release' stamp: 'stp 12/30/2022 14:38'!initialize	"Initialize the instance variables of the receiver."	super initialize.	xScale := 12.	xScaleDefault := xScale.	yScale := 6.	yScaleDefault := yScale.	pitchOffset := 32! !!PitchTimeView methodsFor: 'controller access'!defaultControllerClass
 	"Answer the class of the default controller for the receiver."
 
 	^PitchTimeController! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!PitchTimeView class	instanceVariableNames: ''!!PitchTimeView class methodsFor: 'examples'!randomExample
@@ -651,14 +612,12 @@ Instance Variables:
 		doing: [:model :value | dled doPropEdit] 
 		in: (LayoutFrame new leftFraction: 0.87;	topFraction: y0; 
 							rightFraction: 1.0;	bottomFraction: y1) 
-		to: container.! !PitchTimeView subclass: #HauerSteffensView	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!HauerSteffensView methodsFor: 'initialize-release' stamp: 'stp 12/29/2022 00:33'!initialize	"Initialize the instance variables of the receiver."	super initialize.	self initForm.	pitchOffset := 30.	self backgroundColor: Color lightYellow! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 05:03:16'!clef: anInteger at: aPoint bottom: aBottom form: cForm
+		to: container.! !PitchTimeView subclass: #HauerSteffensView	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!HauerSteffensView methodsFor: 'initialize-release' stamp: 'stp 12/30/2022 14:41'!initialize	"Initialize the instance variables of the receiver."	super initialize.	self initForm.	pitchOffset := 42.	self backgroundColor: Color lightYellow! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 05:03:16'!clef: anInteger at: aPoint bottom: aBottom form: cForm
 	"Display a C clef for the given octave at the given point."
 self halt.
 	(aPoint y + 20) < aBottom ifTrue: 
 		[(Text string: ('c', anInteger printString) emphasis: 2) 
-				displayOn: cForm at: aPoint + (2 @ -3)]! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/29/2022 00:36'!drawStaff	"Display a Hauer-Stephens-type staff onto the given pixmap."	| box top1 bottom1 left1 right1 left2 right2 aGC cGC aNum count octave co wp |	box := background boundingBox.	co := Color darkGray.	wp := 1.	"background border: box width: 2 fillColor: co.
-	clefForm border:	clefForm bounds width: 2 fillColor: co.
-"	aGC := background getCanvas.	cGC := clefForm getCanvas.	top1 := box top.	bottom1 := box bottom.	left1 := box left.	right1 := box right.	left2 := clefForm boundingBox left.	right2 := clefForm boundingBox right.	"count number of octaves"	octave := (bottom1 - top1 / (3 + (yScale * 8) + yScale)) asInteger.	aNum := top1.	count := 3.	[aNum < bottom1]		whileTrue: ["loop from top1 to bottom1 drawing lines"			aGC				line: left1 @ aNum				to: right1 @ aNum				width: wp				color: co.			cGC				line: left2 @ aNum				to: right2 @ aNum				width: wp				color: co.			count := count + 1.			count \\ 5 = 1				ifTrue: ["skip @ c"					aNum + 20 < bottom1						ifTrue: [| str |							str := 'c' , octave printString.							cGC								drawString: str								at: left1 @ aNum + (4 @ 0)								font: (StrikeFont familyName: 'Amaranth' pointSize: 12)								color: co].					octave := octave - 1.					aNum := aNum + yScale].			count \\ 5 = 4				ifTrue: ["skip @ e"					aNum := aNum + yScale].			aNum := aNum + (yScale * 2)].	cGC		line: right2 - 2 @ 0		to: right2 - 2 @ bottom1		width: wp		color: co! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 04:55:35'!initForm
+				displayOn: cForm at: aPoint + (2 @ -3)]! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/30/2022 14:38'!drawStaff	"Display a Hauer-Stephens-type staff onto the given pixmap."	| box top1 bottom1 left1 right1 left2 right2 aGC cGC aNum count octave co wp |	box := background boundingBox.	co := Color darkGray.	wp := 1.	aGC := background getCanvas.	cGC := clefForm getCanvas.	top1 := box top.	bottom1 := box bottom.	left1 := box left.	right1 := box right.	left2 := clefForm boundingBox left.	right2 := clefForm boundingBox right.	"count number of octaves"	octave := (bottom1 - top1 / (3 + (yScale * 8) + yScale)) asInteger.	aNum := top1.	count := 3.	[aNum < bottom1]		whileTrue: ["loop from top1 to bottom1 drawing lines"			aGC				line: left1 @ aNum				to: right1 @ aNum				width: wp				color: co.			cGC				line: left2 @ aNum				to: right2 @ aNum				width: wp				color: co.			count := count + 1.			count \\ 5 = 1				ifTrue: ["skip @ c"					aNum + 20 < bottom1						ifTrue: [| str |							str := 'c' , octave printString.							cGC								drawString: str								at: left1 @ aNum + (4 @ 0)								font: (StrikeFont familyName: 'Amaranth' pointSize: 12)								color: co].					octave := octave - 1.					aNum := aNum + yScale].			count \\ 5 = 4				ifTrue: ["skip @ e"					aNum := aNum + yScale].			aNum := aNum + (yScale * 2)].	cGC		line: right2 - 2 @ 0		to: right2 - 2 @ bottom1		width: wp		color: co! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 04:55:35'!initForm
 	"Copy the default backgroundForm and draw a H-S staff on it."
 
 	| depth |

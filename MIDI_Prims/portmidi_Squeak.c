@@ -14,6 +14,7 @@
 #include "porttime.h"               // PortMIDI includes
 #include "portmidi.h"
 #include "portmidi_Squeak.h"        // squeak prims
+#include <unistd.h>
 
 #define INPUT_BUFFER_SIZE 100	     // Defaults
 #define OUTPUT_BUFFER_SIZE 0
@@ -99,6 +100,21 @@ void pm_handle_error(PmError err) {
 
 // Primitives - most return 0 or a negative error code ---------------------------------------------
 
+/*
+ PM_terminate
+ PM_initialize
+ MIDI devices (9) CoreMIDI
+	 0: MIDIPLUS TBOX 2x2 Midi In 1 - IN -- default in
+	 1: Faders - IN
+	 2: IAC Driver Bus 1 - IN
+	 3: Nord Stage 3 MIDI Output - IN
+	 4: Nord Stage 3 - OUT -- default out
+	 5: MIDIPLUS TBOX 2x2 Midi Out 2 - OUT
+	 6: IAC Driver Bus 1 - OUT
+	 7: Nord Stage 3 MIDI Input - OUT
+	 8: Kontakt 7 Virtual Input - OUT
+ pm_count_devices answers 9
+ */
 // initialize/terminate calls
 
 int32_t pm_initialize(void) {
@@ -106,7 +122,7 @@ int32_t pm_initialize(void) {
 	PMSDevice * devPtr;
 	int i;
 
-	DEBUG_P("PM_init\n");
+	DEBUG_P("PM_initialize\n");
 	if (pm_is_inited)
 		return 0;
 	err = Pm_Initialize();		// call portMIDI
@@ -131,12 +147,13 @@ int32_t pm_initialize(void) {
 						|| (i == (int) Pm_GetDefaultOutputDeviceID())) ? 1 : 0;
 	}
 #ifdef DEBUG_SIREN							// dump the device list ----------------
-	printf("MIDI devices (%d):\n", numDevices);
+	printf("MIDI devices (%d) %s\n", numDevices,  Pm_GetDeviceInfo(0)->interf);
 	for (i = 0; i < numDevices; i++) {
 		const PmDeviceInfo * info = Pm_GetDeviceInfo(i);
-		printf("\t%d: %s, %s, ", i, info->interf, info->name);
-		if (info->input)		printf("in");
-		if (info->output)	printf("out");
+		//printf("\t%d: %s, %s, - ", i, info->interf, info->name);
+		printf("\t%d: %s - ", i, info->name);
+		if (info->input)		printf("IN");
+		if (info->output)	printf("OUT");
 		if (i == (int) Pm_GetDefaultInputDeviceID())	printf(" -- default in");
 		if (i == (int) Pm_GetDefaultOutputDeviceID())	printf(" -- default out");
 		printf("\n");
@@ -251,7 +268,7 @@ int32_t pm_count_devices(void) {
 	if ( ! pm_is_inited)
 		pm_initialize();
     int32_t val = Pm_CountDevices();
-//	DEBUG_P2("\tpm_count_devices answers %d\n", val);
+	DEBUG_P2("pm_count_devices answers %d\n", val);
 	return val;
 }
 
@@ -397,15 +414,16 @@ int32_t pm_read(int32_t which) {
 // write a pre-formatted message (a 32-bit long with 3 lower bytes as midi)
 
 int32_t pm_write_short(int32_t which, int32_t msg) {
-	DEBUG_P2("PM_write: %x\n", (unsigned int) msg);
+	DEBUG_P3("PM_writeS: %d - %x\n", which, (unsigned int) msg);
 	PmError err;
-	if ((which < 0) || (which > (numDevices - 1)))
+	if ((which < 0) || (which >= numDevices - 1))
 		return 0;
 	if (PM_Records[which].stream == NULL)
         return -1;
 	err = Pm_WriteShort(PM_Records[which].stream, 0 /* TIME_PROC(TIME_INFO) */, msg);
 	if (err != pmNoError) {
 		pm_handle_error(err);
+		printf("\tError in PM_write2 -- [%d: %x]", which, msg);
         return -1;
 	}
 	return 0;
@@ -414,23 +432,26 @@ int32_t pm_write_short(int32_t which, int32_t msg) {
 // write the 3 given bytes
 
 int32_t pm_write_data3(int32_t which, unsigned char d1, unsigned char d2, unsigned char d3){
-	if ((which < 0) || (which > (numDevices - 1)))
-		return -1;
 #ifdef DEBUG_SIREN
-	printf("PM_write3: %d: %u - %u - %u\n", which, d1, d2, d3);
+	printf("PM_write3 (%d) 0x%x - %u - %u\n", which, d1, d2, d3);
 #endif
+	if ((which < 0) || (which >= numDevices))
+		return -1;
 	PmError err;
 	unsigned ww = which;
-	if (PM_Records[which].stream == NULL) {
+	if (PM_Records[ww].stream == NULL) {
 		DEBUG_P("PM_write3--no stream\n");
-//		oeFail(-1);
 		ww = Pm_GetDefaultOutputDeviceID();
+		if (PM_Records[ww].stream == NULL) {
+			DEBUG_P("\t...twice\n");
+			return -2;
+		}
 	}
 	err = Pm_WriteShort(PM_Records[ww].stream, 0 /* TIME_PROC(TIME_INFO) */, Pm_Message(d1, d2, d3));
 	if (err != pmNoError) {
- //       printf("\tError in PM_write3 -- [%d: %u %u %u]", ww, d1, d2, d3);
+        printf("\tError in PM_write3 -- [%d: 0x%x %u %u]", ww, d1, d2, d3);
 		pm_handle_error(err);
-        return -2;
+        return -3;
 	}
 	return 0;
 }
@@ -446,7 +467,7 @@ int32_t pm_write_data2(int32_t which, unsigned char d1, unsigned char d2){
 int32_t pm_write_long(int32_t which, int32_t * msg, int32_t length) {
 	if ((which < 0) || (which > (numDevices - 1)))
 		return 0;
-	DEBUG_P2("PM_write: %x\n", (unsigned int) * msg);
+	DEBUG_P2("PM_writeL: %x\n", (unsigned int) * msg);
 	PmError err;
 	int i;
 	int todo = (length > PM_BUF_LEN) ? PM_BUF_LEN : length;

@@ -1,6 +1,6 @@
-Introduction to the Siren 9.0 Workbook
+Introduction to the Siren 9C Workbook
 
-Welcome to Siren 9.0!
+Welcome to Siren 9C!
 
 What is this?
 
@@ -25,4 +25,4 @@ If you're reading this within Siren, the window is a workspace-list view. You ca
 ----
 
 Stephen Travis Pope (stephen@HeavenEverywhere.com)
-Munich, October 1984 - Santa Barbara, May 2007 - May 2020 - Ojai, December, 2022
+Munich, October 1984 - Santa Barbara, May 2007-May 2020 - Ojai, December, 2022

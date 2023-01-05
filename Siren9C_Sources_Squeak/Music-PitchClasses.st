@@ -616,23 +616,10 @@ So intervals should be reduced to thirteenth, i.e. :
 	^int type = 2 
 		or: [int semiTones = 1]! !!OctaveDependentNote methodsFor: 'leading'!lowerLeadingToneInScale: s
 	^s noteBefore: self! !!OctaveDependentNote methodsFor: 'leading'!upperLeadingToneInScale: s
-	^s noteAfter: self! !!OctaveDependentNote methodsFor: 'private-pacts'!respectsBassTessitura
-	^self >= BassPlayer minPitch
-		and: [self <= BassPlayer maxPitch]! !!OctaveDependentNote methodsFor: 'modifying'!inTessitura: qualTessitura
+	^s noteAfter: self! !!OctaveDependentNote methodsFor: 'modifying'!inTessitura: qualTessitura
 	"modify octave according to the given tessitura"
 
-	self oct: (pc inTessitura: qualTessitura) oct! !!OctaveDependentNote methodsFor: 'mutations more'!dottedEighth
-	^self lapse: Lapse dottedEighth! !!OctaveDependentNote methodsFor: 'mutations more'!dottedFull
-	^self lapse: Lapse dottedFull! !!OctaveDependentNote methodsFor: 'mutations more'!dottedHalf
-	^self lapse: Lapse dottedHalf! !!OctaveDependentNote methodsFor: 'mutations more'!dottedQuarter
-	^self lapse: Lapse dottedQuarter! !!OctaveDependentNote methodsFor: 'mutations more'!eighth
-	^self lapse: Lapse eighth! !!OctaveDependentNote methodsFor: 'mutations more'!eighthInTriplet
-	^self lapse: Lapse eighthInTriplet! !!OctaveDependentNote methodsFor: 'mutations more'!full
-	^self lapse: Lapse full! !!OctaveDependentNote methodsFor: 'mutations more'!half
-	^self lapse: Lapse half! !!OctaveDependentNote methodsFor: 'mutations more'!quarter
-	^self lapse: Lapse quarter! !!OctaveDependentNote methodsFor: 'mutations more'!quarterInTriplet
-	^self lapse: Lapse quarterInTriplet! !!OctaveDependentNote methodsFor: 'mutations more'!sixteenth
-	^self lapse: Lapse sixteenth! !!OctaveDependentNote methodsFor: 'accessing delegation'!downAndUpOctaves: odNote
+	self oct: (pc inTessitura: qualTessitura) oct! !!OctaveDependentNote methodsFor: 'accessing delegation'!downAndUpOctaves: odNote
 	^pc downAndUpOctaves: odNote! !!OctaveDependentNote methodsFor: 'constraining'!intervalTypeModuloOctaveBetween: n 
 
 
@@ -1521,47 +1508,11 @@ although those should not be allowed to form chords"
 							with: self theFifth
 							with: self theSeventh.
 	^col select: [:each | (each == nil) not].! !!PitchClassChord methodsFor: 'compute possible tonalities'!= c 
-	^root = c root and: [structure = c structure]! !!PitchClassChord methodsFor: 'compute possible tonalities'!analyseIn: aScale
-	"en majeure, mineure harm et min mel"
-
-	| analysis |
-	analysis := Analysis new degree: (aScale degreDeAccord: self ).
-	analysis scale: aScale.
-	^analysis! !!PitchClassChord methodsFor: 'compute possible tonalities'!computePossibleTonalities
-	"self allInstancesDo: [:x| x computePossibleTonalities]"
-
-
-	possibleTonalities := AnalysisList new.
-	"Scale allSubclasses do:"
-	Scale standardScales do:
-		[:aScaleClass | possibleTonalities addAll: (self possibleTonalitiesInScaleClass: aScaleClass)].
-
-	self changed: #analysesPossibles! !!PitchClassChord methodsFor: 'compute possible tonalities'!matchWith: c 
+	^root = c root and: [structure = c structure]! !!PitchClassChord methodsFor: 'compute possible tonalities'!matchWith: c 
 	"((Chord new fromString: 'D  min 7') computeAllNotes) format 
 	matchAvec: ((N re majorScale genereAccordsPoly: 4) at: 3)."
 
-	^structure = c structure! !!PitchClassChord methodsFor: 'compute possible tonalities'!possibleTonalitiesInScaleClass: s 
-	"possible tonalities in scale class s. 
-	(PitchClassChord newFromString: 'C  ') possibleTonalitiesInScaleClass:  MajorScale  AnalysisList ({I de C MajorScale} {IV de G MajorScale} {V de F MajorScale} )
-	
-	There is a problem here, related to invalid scales. If you ask for 
-	instance the possible  tonalities of 'C# min', it will try to say that V of G# major is a 
-	possible tonality. But the creation of G# major raises an error since it 
-	is an invalid scale. For the moment I leave it as is because	I would 
-	like to have a model of reasoning in an object-oriented setting first"
-
-	| scale ana res c |
-	"self format."
-	res := AnalysisList new.
-	scale := s root: PitchClass do.
-	scale notes do: 
-			[:n | 
-			c := PitchClassChord root: n structure: structure copy.
-			(c allNotesInScale: scale) ifTrue: 
-					[ana := Analysis new degree: (scale degreeOfNote: n).
-					ana scale: (s root: (self root pitchClass transposeOf: (n intervalBetween: PitchClass do))).
-					res add: ana]].
-	^res! !!PitchClassChord methodsFor: 'compute possible tonalities'!standardPossibleTonalities
+	^structure = c structure! !!PitchClassChord methodsFor: 'compute possible tonalities'!standardPossibleTonalities
 	"possible tonalities in scale class major, minorMel and minorHarm 
 	(Chord new fromString: 'C min') standardPossibleTonalities 
 	ListeDAnalyses ({II de Sib MajorScale} {III de Lab MajorScale} {VI de 
@@ -1595,15 +1546,7 @@ although those should not be allowed to form chords"
 	^possibleTonalities! !!PitchClassChord methodsFor: 'initializations'!initAnalyse 
 	possibleTonalities:= OrderedCollection new.
 	notes := OrderedCollection new.
-	self changed: #analyse; changed: #analysesPossibles! !!PitchClassChord methodsFor: 'initializations'!initialize
-	notes := OrderedCollection new.
-	structure := ''.
-	possibleTonalities := AnalysisList new.! !!PitchClassChord methodsFor: 'initializations'!resetNotes
-	"reset notes to an empty collection when an important change occurred"
-	(notes isEmpty  or: [notes == nil])
-		ifFalse: [notes := OrderedCollection new].
-	(possibleTonalities isEmpty  or: [possibleTonalities == nil])
-		ifFalse: [possibleTonalities := AnalysisList new]! !!PitchClassChord methodsFor: 'accessing by  intervals'!theFifth
+	self changed: #analyse; changed: #analysesPossibles! !!PitchClassChord methodsFor: 'initializations' stamp: 'stp 12/31/2022 06:55'!initialize	notes := OrderedCollection new.	structure := ''."	possibleTonalities := AnalysisList new"! !!PitchClassChord methodsFor: 'initializations' stamp: 'stp 12/31/2022 06:56'!resetNotes	"reset notes to an empty collection when an important change	occurred "	(notes isEmpty			or: [notes == nil])		ifFalse: [notes := OrderedCollection new]."	(possibleTonalities isEmpty			or: [possibleTonalities == nil])		ifFalse: [possibleTonalities := AnalysisList new]"! !!PitchClassChord methodsFor: 'accessing by  intervals'!theFifth
 
 	self  hasNoFifth
 		ifTrue: [^nil].
@@ -1716,8 +1659,7 @@ although those should not be allowed to form chords"
 	"computes the list of notes fom the name acording to our syntax"
 
 	^self new fromString: l! !!PitchClassChord class methodsFor: 'creation'!root: r structure: s
-	^self new root: r; structure: s! !!PitchClassChord class methodsFor: 'editing'!openEditor
-	ChordNameEditor open! !!PitchClassChord class methodsFor: 'examples'!allChordsFromListOfNotes: aList 
+	^self new root: r; structure: s! !!PitchClassChord class methodsFor: 'examples'!allChordsFromListOfNotes: aList 
 	"self allChordsFromListOfNotes: (Array with: N do with: N mi with: N sol)
  #(Do  Mi #min #no5 #no11 #no9 #no7 #dim13  Sol #sus4 #no5 #sixth  )
 	self allChordsFromListOfNotes: (Array with: N do with: N mi with: N sol with: N si)"
@@ -1817,23 +1759,13 @@ obtained by:
 	o := OredredCollection new.
 	o add: ch theTonic; add: ch theThird; ch theFifth; theTonic.
 the first and last must be different objects in the case we will assign 
-them todifferents PlayableNotes.!!OctaveDependentChord methodsFor: 'saving'!save
-	| bos fileName |
-	fileName := DialogView request: 'file name' initialAnswer: 'cc.chord'.
-	fileName isEmpty ifTrue: [^nil].
-	bos := BinaryObjectStorage onNew: (Filename named: fileName) writeStream.
-	[bos nextPut: self]
-		valueNowOrOnUnwindDo: [bos close]! !!OctaveDependentChord methodsFor: 'saving'!storeOn: s
+them todifferents PlayableNotes.!!OctaveDependentChord methodsFor: 'saving'!storeOn: s
 	s nextPut: $(.
 	self quotedPrintOn: s.
 	s nextPutAll: ' asChordOct: '.
 	root oct printOn: s.
 	s nextPut: $).! !!OctaveDependentChord methodsFor: 'mutations'!asMelody
-	^self asPlayableObject asMelody! !!OctaveDependentChord methodsFor: 'mutations'!asPlayableObject
-	^PlayableChord new chord: self! !!OctaveDependentChord methodsFor: 'mutations'!lapse: l
-	^(PlayableChord new chord: self) lapse: l! !!OctaveDependentChord methodsFor: 'mutations'!startBeat: s duration: d
-	^(PlayableChord new chord: self) startBeat: s; duration: d! !!OctaveDependentChord methodsFor: 'mutations'!startTime: s duration: d
-	^(PlayableChord new chord: self) startTime: s; duration: d! !!OctaveDependentChord methodsFor: 'accessing'!addNote: c 
+	^self asPlayableObject asMelody! !!OctaveDependentChord methodsFor: 'accessing'!addNote: c 
 	notes add: c! !!OctaveDependentChord methodsFor: 'accessing'!notes: value
 	notes := value! !!OctaveDependentChord methodsFor: 'accessing'!removeNote: c 
 	notes remove: c! !!OctaveDependentChord methodsFor: 'alteration'!octave: o
@@ -2015,16 +1947,7 @@ them todifferents PlayableNotes.!!OctaveDependentChord methodsFor: 'saving'!
 	self resetNotes! !!OctaveDependentChord methodsFor: 'transposing'!beTransposedOneStepUp
 	root beTransposedOneStepUp.
 	self resetNotes! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!OctaveDependentChord class	instanceVariableNames: ''!!OctaveDependentChord class methodsFor: 'cation'!newWithValues: anArray 
-	^self new newWithValues: anArray! !!OctaveDependentChord class methodsFor: 'cation'!readFromFile
-	| n |
-	n := DialogView request: 'name of the file' initialAnswer: 'cc.chord'.
-	n isEmpty ifTrue: [^nil].
-	^self readFromFile: n! !!OctaveDependentChord class methodsFor: 'cation'!readFromFile: fileName 
-	| bos x |
-	bos := BinaryObjectStorage onOld: (Filename named: fileName) readStream.
-	[x := bos next]
-		valueNowOrOnUnwindDo: [bos close].
-	^x! !!OctaveDependentChord class methodsFor: 'cation'!root: r notes: n 
+	^self new newWithValues: anArray! !!OctaveDependentChord class methodsFor: 'cation' stamp: 'stp 12/31/2022 07:11'!readFromFile	| n |	n := FillInTheBlank request: 'name of the file' initialAnswer: 'cc.chord'.	n isEmpty		ifTrue: [^ nil].	^ self readFromFile: n! !!OctaveDependentChord class methodsFor: 'cation'!root: r notes: n 
 	^(self new) root: r; notes: n! !!OctaveDependentChord class methodsFor: 'examples'!example
 	^N C majorTriad fondamental! !!OctaveDependentChord class methodsFor: 'examples'!example1
 	"self example1"
@@ -2245,28 +2168,7 @@ but I am not sure how!!Signature methodsFor: 'printing'!printOn: s
 	
 	Signature fromTonality: N D minorScale -> 1 sharps; 1 flats 
 	Signature sharps: (Array with: N F sharp) flats: (Array with: (N E flat)) -> 1 sharps; 1 flats
-	(Signature fromTonality: N D minorScale) tonality -> error"! !!Signature class methodsFor: 'creation'!choseSignature
-	"Signature choseSignature"
-
-	| choice s |
-	s := Signature new.
-	choice := Dialog 
-
-		choose: 'Choose a signature' 
-
-		fromList: #('no sharp/falt [C Major]' '1 sharp [G Major]' '2 sharps [D Major]' '3 sharps [A Major]' '4 sharps [E Major]' '5 sharps [B Major]' '6 sharps [F# Major]' '7 sharps [C# Major]' '1 flat [F Major]' '2 flats [Bb Major]' '3 flats [Eb Major]' '4 flats [Ab Major]' '5 flats [Dd Major]' '6 flats [Gg Major]' '7 flats [Cb Major]' ) 
-
-		values: (1 to: 15)
-
-		lines: 15
-
-		cancel: [nil] .
-
-	choice == nil ifTrue: [^s].
-	choice < 9
-		ifTrue: [s nbSharps: choice - 1]
-		ifFalse: [s nbFlats: choice - 8].
-	^s! !!Signature class methodsFor: 'creation'!fromTonality: aScale 
+	(Signature fromTonality: N D minorScale) tonality -> error"! !!Signature class methodsFor: 'creation' stamp: 'stp 12/31/2022 07:10'!choseSignature	"Signature choseSignature"	| choice s |	s := Signature new.	choice := FillInTheBlank				choose: 'Choose a signature'				fromList: #('no sharp/falt [C Major]' '1 sharp [G Major]' '2 sharps [D Major]' '3 sharps [A Major]' '4 sharps [E Major]' '5 sharps [B Major]' '6 sharps [F# Major]' '7 sharps [C# Major]' '1 flat [F Major]' '2 flats [Bb Major]' '3 flats [Eb Major]' '4 flats [Ab Major]' '5 flats [Dd Major]' '6 flats [Gg Major]' '7 flats [Cb Major]')				values: (1 to: 15)				lines: 15				cancel: [].	choice == nil		ifTrue: [^ s].	choice < 9		ifTrue: [s nbSharps: choice - 1]		ifFalse: [s nbFlats: choice - 8].	^ s! !!Signature class methodsFor: 'creation'!fromTonality: aScale 
 	"Signature fromTonality: N E flat majorScale"
 
 	^self new sharps: aScale sharpNotesInSignature flats: aScale flatNotesInSignature! !!Signature class methodsFor: 'creation'!new

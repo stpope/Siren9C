@@ -1,0 +1,1 @@
+﻿'From Squeak6.0 of 21 October 2022 [latest update: #22114] on 4 January 2023 at 8:33:14 am'!!Object methodsFor: '*morphic' stamp: 'stp 1/4/2023 08:33'!asText	"Answer a text for the receiver"	^ self asStringOrText! !

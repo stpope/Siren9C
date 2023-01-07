@@ -1,219 +1,3 @@
 
-Siren 9C (Squeak/Cuis) Class list
-
-Category Music-Models-Representation
-
-MusicMagnitude
-MusicModel
-Chroma
-ModeMember
-Pitch
-Chronos
-Duration
-Meter
-Ergon
-Amplitude
-Positus
-Directionality
-Position
-Spatialization
-PField
-
-Category Music-Models-Implementation
-
-ConditionalDuration
-NominalMagnitude
-SymbolicLoudness
-SymbolicPitch
-NumericalMagnitude
-HertzPitch
-IntervalMagnitude
-MIDIPitch
-MIDIVelocity
-MeasureDuration
-RatioMagnitude
-RatioDuration
-RatioLoudness
-DBLoudness
-RatioPitch
-SecondDuration
-MSecondDuration
-USecondDuration
-OrdinalMagnitude
-Length
-Sharpness
-
-Category Music-Events
-
-AbstractEvent
-DurationEvent
-ActionEvent
-MusicEvent
-EventList
-
-Category Music-EventGenerators
-
-Peal
-EventGenerator
-Cloud
-DynamicCloud
-SelectionCloud
-DynamicSelectionCloud
-ExtDynamicSelectionCloud
-Cluster
-Chord
-Arpeggio
-Roll
-Trill
-Ostinato
-
-Category Music-EventModifiers
-
-EventModifier
-Rubato
-Swell
-
-Category Music-Functions
-
-FunctionEvent
-Function
-FourierSummation
-FunctionGraph
-LinearFunction
-ExponentialFunction
-SplineFunction
-Spectrum
-
-Category Music-PitchClasses
-
-MusicalInterval
-ChromaticInterval
-DiatonicInterval
-MusicalDescendingInterval
-OctaveDependentNote
-PitchClass
-PitchClassAltered
-PitchClassDoubleFlat
-PitchClassDoubleSharp
-PitchClassFlat
-PitchClassSharp
-PitchClassNatural
-PitchClassChord
-OctaveDependentChord
-Triad
-Signature
-
-Category Music-PitchScales
-
-Scale
-ChromaticScale
-DoubleHarmonic
-HarmonicMinorScale
-HungarianMinor
-MajorScale
-MelodicMinorScale
-NeapolitanMajor
-NeapolitanMinor
-Oriental
-PseudoMinorScale
-
-Category Music-Sound
-
-Sound
-ComponentSound
-SampledSound
-FloatSound
-VirtualSound
-CompositeSound
-GapSound
-
-Category Music-Support
-
-EventAssociation
-ScheduleRecord
-DeviceModel
-EditorModel
-EventScheduler
-PortModel
-SirenSession
-SirenUtility
-Timer
-SEventQueue
-
-Category MusicIO-Voices
-
-Voice
-MIDIFileVoice
-NotelistVoice
-CmixVoice
-CmusicVoice
-CsoundVoice
-SuperColliderVoice
-SoundVoice
-
-Category MusicIO-MIDI
-MIDIDevice
-MIDIFB01
-MIDIPF70
-MIDIPort
-PortMIDIPort
-MIDIVoice
-MIDIDump
-MIDIPacket
-
-Category MusicIO-OSC
-
-OSCPort
-OSCVoice
-AbstractOSCPacket
-OSCBundle
-OSCMessage
-TypedOSCMessage
-OSCByteConvertor
-
-Category MusicUI-DisplayLists
-
-DisplayItem
-DisplayLine
-DisplayRectangle
-DisplayPolyline
-DisplayList
-DisplayString
-DisplayVisual
-OpaqueImage
-
-Category MusicUI-DisplayListViews
-
-InnerDisplayListMorph
-DisplayListView
-DisplayListWindow
-DisplayListController
-
-Category MusicUI-Layout
-
-LayoutManager
-HierarchyLayoutManager
-IndentedListLayoutManager
-IndentedTreeLayoutManager
-TimeSequenceLayoutManager
-PitchTimeLayoutManager
-PositionTimeLayoutManager
-StructureAccessor
-STreeAccessor
-
-Category MusicUI-Editors
-
-EventListPanel
-EventListText
-EventListTreeEditor
-EventListTreeItem
-ScoreView
-TimeSequenceView
-PhraseView
-PitchTimeView
-HauerSteffensView
-PositionTimeView
-TimeSequenceController
-PitchTimeController
-EventListEditor
-EventListFileViewer
+Siren 9C (Squeak/Cuis) class list by category in subclass order
+------Music-Models-RepresentationMusicMagnitudeMusicModelChromaChronosErgonAmplitudeMDurationMeterModeMemberPFieldPitchPositusDirectionalityPositionSpatialization------Music-Models-ImplementationConditionalDurationNominalMagnitudeNumericalMagnitudeHertzPitchIntervalMagnitudeMIDIPitchMIDIVelocityMeasureDurationOrdinalMagnitudeLengthRatioMagnitudeRatioDurationRatioLoudnessDBLoudnessRatioPitchSecondDurationMSecondDurationSharpnessSymbolicLoudnessSymbolicPitchUSecondDuration------Music-EventsMAbstractEventDurationEventActionEventMusicEventEventListRestEvent------Music-EventGeneratorsEventGeneratorCloudClusterChordArpeggioDynamicCloudOstinatoPealRollScore11SelectionCloudDynamicSelectionCloudExtDynamicSelectionCloudTrill------Music-EventModifiersEventModifierRubatoSwell------Music-FunctionsFunctionFourierSummationFunctionEventFunctionGraphLinearFunctionExponentialFunctionSpectrumSplineFunction------Music-PitchClassesMusicalIntervalChromaticIntervalDiatonicIntervalMusicalDescendingIntervalOctaveDependentNotePitchClassPitchClassAlteredPitchClassChordOctaveDependentChordPitchClassDoubleFlatPitchClassDoubleSharpPitchClassFlatPitchClassNaturalPitchClassSharpSignatureTriad------Music-PitchScalesScaleBohlenPierceScaleChromaticScaleDoubleHarmonicHarmonicMinorScaleHungarianMinorMajorScaleMelodicMinorScaleNeapolitanMajorNeapolitanMinorOrientalPentatonicScalePseudoMinorScale------Music-SoundFloatSoundSoundComponentSoundVirtualSoundCompositeSoundGapSound------Music-SupportDeviceModelEditorModelEventAssociationEventSchedulerPortModelSEventQueueScheduleRecordSirenSessionSirenUtilityTimer------MusicIO-VoicesVoiceMIDIFileVoiceNotelistVoiceCmixVoiceCmusicVoiceCsoundVoiceSoundVoiceSuperColliderVoice------MusicIO-MIDIMIDIDeviceMIDIDumpMIDIFB01MIDIPF70MIDIPacketMIDIPortMIDIVoicePortMIDILibraryPortMIDIPort------MusicIO-OSCAbstractOSCPacketOSCBundleOSCByteConvertorOSCMessageOSCPortOSCVoiceTypedOSCMessage------MusicUI-DisplayListsDisplayItemDisplayLineDisplayListDisplayRectangleDisplayPolylineDisplayStringDisplayVisualOpaqueImage------MusicUI-DisplayListViewsDisplayListControllerDisplayListViewDisplayListWindowInnerDisplayListMorph------MusicUI-LayoutLayoutManagerHierarchyLayoutManagerIndentedListLayoutManagerIndentedTreeLayoutManagerStructureAccessorSTreeAccessorTimeSequenceLayoutManagerPitchTimeLayoutManagerPositionTimeLayoutManager------MusicUI-EditorsEventListEditorEventListFileViewerEventListPanelEventListTextEventListTreeEditorEventListTreeItemScoreViewTimeSequenceControllerPitchTimeControllerTimeSequenceViewPhraseViewPitchTimeViewHauerSteffensViewPositionTimeView

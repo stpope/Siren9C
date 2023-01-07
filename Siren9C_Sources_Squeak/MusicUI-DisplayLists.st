@@ -198,7 +198,7 @@ Instance Variables:
 	"Set up the receiver"
 
 	components _ OrderedCollection new.
-	offset _ 0 @ 0! !!DisplayList methodsFor: 'accessing'!itemWithin: dist of: point
+	offset _ 0 @ 0! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/5/2023 17:01'!itemWithin: dist of: point
 	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."
 
 	components do: 
@@ -207,7 +207,7 @@ Instance Variables:
 			ifTrue: [ | item |
 				(item := comp itemWithin: dist of: (point - self offset)) == nil
 					ifFalse: [^item]]
-			ifFalse: [((comp bounds expandedBy: dist) containsPoint: point)
+			ifFalse: [((comp bounds expandBy: dist) containsPoint: point)
 					ifTrue: [^comp]]].
 	^nil! !!DisplayList methodsFor: 'accessing'!itemsFromX: x1 toX: x2
 	"Answer the list of items whose offsets are within the given X range."
@@ -243,29 +243,7 @@ Instance Variables:
 		ifTrue: [nil]
 		ifFalse: [(dList components size = 1)
 			ifTrue: [dList components first]
-			ifFalse: [dList]]! !!DisplayList methodsFor: 'accessing'!itemsWithin: rect
-	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."
-
-	| dList movedRect |
-	movedRect := rect moveBy: self offset negated.
-	dList := DisplayList new.
-	components do: 
-		[ :comp |
-		comp hasItems
-			ifTrue: [ | items |
-				items := comp itemsWithin: movedRect.
-				items == nil ifFalse: [dList add: items]]
-			ifFalse: [(movedRect contains: comp bounds) 
-					ifTrue: [dList add: comp]]].
-	(dList components isEmpty)
-		ifTrue: [^nil]
-		ifFalse: [(dList components size = 1)
-			ifTrue: [ | first |
-				first := dList components first.
-				first hasItems
-					ifTrue: [first container: nil].
-				^first copy translateBy: self offset]
-			ifFalse: [^dList translateBy: self offset]]! !!DisplayList methodsFor: 'accessing'!itemsWithin: dist of: point
+			ifFalse: [dList]]! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/6/2023 18:25'!itemsWithin: rect 	"Answer the list of items whose boundingBoxes are entirely within	the given rectangle."	| dList movedRect |	movedRect := rect translateBy: self offset negated.	dList := DisplayList new.	components		do: [:comp | comp hasItems				ifTrue: [| items |					items := comp itemsWithin: movedRect.					items == nil						ifFalse: [dList add: items]]				ifFalse: [(movedRect containsRect: comp bounds)						ifTrue: [dList add: comp]]]."	dList components isEmpty		ifTrue: [^ dList]		ifFalse: [dList components size = 1				ifTrue: [| first |					first := dList components first.					first hasItems						ifTrue: [first container: nil].					^ first copy translateBy: self offset]				ifFalse: [^ dList translateBy: self offset]]"			^dList! !!DisplayList methodsFor: 'accessing'!itemsWithin: dist of: point
 	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."
 
 	| dList |
@@ -395,7 +373,7 @@ Instance Variables:
 	^preferredBounds! !!DisplayList methodsFor: 'bounds accessing' stamp: 'stp 11/29/2022 16:04:32'!extent
 	"Answer the extent of the receiver."
 
-	^self computePreferredBounds extent! !!DisplayList methodsFor: 'enumerating'!do: aBlock
+	^self computePreferredBounds extent! !!DisplayList methodsFor: 'enumerating' stamp: 'stp 1/6/2023 15:16'!components	"Answer the receiver's components."	^components! !!DisplayList methodsFor: 'enumerating'!do: aBlock
 	"Iterate the argument block over the receiver's components."
 
 	components do: aBlock! !!DisplayList methodsFor: 'displaying' stamp: 'stp 12/2/2022 02:28:49'!display
@@ -406,24 +384,7 @@ Instance Variables:
 	DisplayListWindow open: view label: 'DisplayListView'! !!DisplayList methodsFor: 'displaying'!displayNonCached
 	"Open a DisplayListView on the receiver."
 
-	^DisplayListView openNonCached: self! !!DisplayList methodsFor: 'displaying'!displayOn: aGraphicsContext
-	"Display each of the receiver's components."
-
-	| clipBox |
-	clipBox := aGraphicsContext clippingBounds.
-	offset ifNotNil: [aGraphicsContext translateBy: offset].
-	components do:
-		[ :c | (c intersects: clipBox)
-			ifTrue: [c displayOn: aGraphicsContext]].
-	offset ifNotNil: [aGraphicsContext translateBy: offset negated].! !!DisplayList methodsFor: 'displaying'!displayPostScriptOn: aPostscriptContext
-	"Display each of the receiver's components."
-
-	offset == nil
-		ifFalse: [aPostscriptContext translate: offset].
-	1 to: components size do:
-		[ :i | (components at: i) displayPostScriptOn: aPostscriptContext].
-	offset == nil
-		ifFalse: [aPostscriptContext translateBy: offset negated].! !!DisplayList methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:37'!drawOn: aContext
+	^DisplayListView openNonCached: self! !!DisplayList methodsFor: 'displaying' stamp: 'stp 1/6/2023 11:56'!drawOn: aContext
 	"Display each of the receiver's components."
 	aContext translateBy: offset during: [:canvas | components do:
 		[ :comp | comp drawOn: canvas]]
@@ -687,23 +648,7 @@ Instanve Variables:
 	fill := aBoolean! !!DisplayRectangle methodsFor: 'accessing'!stroke: aNum
 	"Set the receiver's stroke line thickness."
 
-	stroke := aNum! !!DisplayRectangle methodsFor: 'displaying'!displayOn: aGraphicsContext
-	"Display a line between startPoint and endPoint."
-
-"	Transcript show: start printString, '	', end printString; cr."
-	color == nil
-		ifFalse: [aGraphicsContext paint: color].
-	(fill == nil or: [fill not])
-		ifFalse: [aGraphicsContext displayRectangle: (offset extent: extent)]
-		ifTrue: [aGraphicsContext displayRectangularBorder: (offset extent: extent)]! !!DisplayRectangle methodsFor: 'displaying'!displayPostScriptOn: aPostscriptContext
-	"Display the receiver on the argument as a PostScript item."
-
-	aPostscriptContext translate: offset.
-	aPostscriptContext box: extent y width: extent x.
-	aPostscriptContext translate: offset negated.! !!DisplayRectangle methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:40'!drawOn: aCanvas
-	"Display a rect on the given canvas"
-
-"	aCanvas fillRectangle: self bounds		color: color		borderWidth: 1		borderStyleSymbol: #simple		baseColorForBorder: Color darkGray"		aCanvas fillRectangle: self bounds		color: Color random	! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayRectangle class	instanceVariableNames: ''!!DisplayRectangle class methodsFor: 'examples'!rectangleExample
+	stroke := aNum! !!DisplayRectangle methodsFor: 'displaying' stamp: 'stp 1/6/2023 11:08'!drawOn: aCanvas 	"Display a rect on the given canvas"	"aCanvas fillRectangle: self bounds	color: color	borderWidth: 1	borderStyleSymbol: #simple	baseColorForBorder: Color darkGray"	| col |	col := color.	col ifNil: [col := Color gray].	aCanvas fillRectangle: self bounds color: col! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayRectangle class	instanceVariableNames: ''!!DisplayRectangle class methodsFor: 'examples'!rectangleExample
 	"Open a display list view with randomly-placed random-color rectangles over the given extent."
 	"DisplayRectangle rectangleExample"
 
@@ -728,7 +673,7 @@ Instance Variables:
 
 	|  newPts |
 	newPts := vertices collect: [ :pt | (pt * aPoint) truncated].
-	^self class offset: offset vertices: newPts! !!DisplayPolyline methodsFor: 'displaying' stamp: 'stp 12/31/2022 11:01'!displayOn: aGraphicsContext 	"Stroke the receiver's edges on the supplied GraphicsContext."	| cachedLW |	color == nil		ifTrue: [aGraphicsContext paint: Color black]		ifFalse: [aGraphicsContext paint: Color black].	stroke == nil		ifFalse: [cachedLW := aGraphicsContext lineWidth.			aGraphicsContext lineWidth: stroke].	offset == nil		ifFalse: [aGraphicsContext translateBy: offset].	fill == true		ifTrue: [aGraphicsContext displayPolygon: vertices at: Point zero]		ifFalse: [aGraphicsContext displayPolyline: vertices at: Point zero].	offset == nil		ifFalse: [aGraphicsContext translateBy: offset negated].	stroke == nil		ifFalse: [aGraphicsContext lineWidth: cachedLW]! !!DisplayPolyline methodsFor: 'displaying' stamp: 'stp 12/1/2022 10:34:18'!drawOn: aCanvas
+	^self class offset: offset vertices: newPts! !!DisplayPolyline methodsFor: 'displaying' stamp: 'stp 12/1/2022 10:34:18'!drawOn: aCanvas
 	"Display the polyline on the given canvas"
 
 	| pt1 pt2 |

@@ -402,38 +402,38 @@ Voices</br>
 &emsp;&emsp;&emsp;&emsp;CsoundVoice</br>
 &emsp;&emsp;&emsp;SoundVoice</br>
 </p><hr><h3 id="Siren9CClassList">6 - Siren 9C Class List</h3></br>
-Siren 9C (Squeak/Cuis) Class list</br>
+Siren 9C (Squeak/Cuis) class list by category in subclass order</br>
 </br>
-Category Music-Models-Representation</br>
+------Music-Models-Representation</br>
 </br>
 MusicMagnitude</br>
 MusicModel</br>
 Chroma</br>
-ModeMember</br>
-Pitch</br>
 Chronos</br>
-Duration</br>
-Meter</br>
 Ergon</br>
 Amplitude</br>
+MDuration</br>
+Meter</br>
+ModeMember</br>
+PField</br>
+Pitch</br>
 Positus</br>
 Directionality</br>
 Position</br>
 Spatialization</br>
-PField</br>
 </br>
-Category Music-Models-Implementation</br>
+------Music-Models-Implementation</br>
 </br>
 ConditionalDuration</br>
 NominalMagnitude</br>
-SymbolicLoudness</br>
-SymbolicPitch</br>
 NumericalMagnitude</br>
 HertzPitch</br>
 IntervalMagnitude</br>
 MIDIPitch</br>
 MIDIVelocity</br>
 MeasureDuration</br>
+OrdinalMagnitude</br>
+Length</br>
 RatioMagnitude</br>
 RatioDuration</br>
 RatioLoudness</br>
@@ -441,53 +441,55 @@ DBLoudness</br>
 RatioPitch</br>
 SecondDuration</br>
 MSecondDuration</br>
-USecondDuration</br>
-OrdinalMagnitude</br>
-Length</br>
 Sharpness</br>
+SymbolicLoudness</br>
+SymbolicPitch</br>
+USecondDuration</br>
 </br>
-Category Music-Events</br>
+------Music-Events</br>
 </br>
-AbstractEvent</br>
+MAbstractEvent</br>
 DurationEvent</br>
 ActionEvent</br>
 MusicEvent</br>
 EventList</br>
+RestEvent</br>
 </br>
-Category Music-EventGenerators</br>
+------Music-EventGenerators</br>
 </br>
-Peal</br>
 EventGenerator</br>
 Cloud</br>
-DynamicCloud</br>
-SelectionCloud</br>
-DynamicSelectionCloud</br>
-ExtDynamicSelectionCloud</br>
 Cluster</br>
 Chord</br>
 Arpeggio</br>
-Roll</br>
-Trill</br>
+DynamicCloud</br>
 Ostinato</br>
+Peal</br>
+Roll</br>
+Score11</br>
+SelectionCloud</br>
+DynamicSelectionCloud</br>
+ExtDynamicSelectionCloud</br>
+Trill</br>
 </br>
-Category Music-EventModifiers</br>
+------Music-EventModifiers</br>
 </br>
 EventModifier</br>
 Rubato</br>
 Swell</br>
 </br>
-Category Music-Functions</br>
+------Music-Functions</br>
 </br>
-FunctionEvent</br>
 Function</br>
 FourierSummation</br>
+FunctionEvent</br>
 FunctionGraph</br>
 LinearFunction</br>
 ExponentialFunction</br>
-SplineFunction</br>
 Spectrum</br>
+SplineFunction</br>
 </br>
-Category Music-PitchClasses</br>
+------Music-PitchClasses</br>
 </br>
 MusicalInterval</br>
 ChromaticInterval</br>
@@ -496,19 +498,21 @@ MusicalDescendingInterval</br>
 OctaveDependentNote</br>
 PitchClass</br>
 PitchClassAltered</br>
+PitchClassChord</br>
+OctaveDependentChord</br>
 PitchClassDoubleFlat</br>
 PitchClassDoubleSharp</br>
 PitchClassFlat</br>
-PitchClassSharp</br>
 PitchClassNatural</br>
-PitchClassChord</br>
-OctaveDependentChord</br>
-Triad</br>
+PitchClassSharp</br>
 Signature</br>
+Triad</br>
 </br>
-Category Music-PitchScales</br>
+------Music-PitchScales</br>
+</br>
 </br>
 Scale</br>
+BohlenPierceScale</br>
 ChromaticScale</br>
 DoubleHarmonic</br>
 HarmonicMinorScale</br>
@@ -518,32 +522,32 @@ MelodicMinorScale</br>
 NeapolitanMajor</br>
 NeapolitanMinor</br>
 Oriental</br>
+PentatonicScale</br>
 PseudoMinorScale</br>
 </br>
-Category Music-Sound</br>
+------Music-Sound</br>
 </br>
+FloatSound</br>
 Sound</br>
 ComponentSound</br>
-SampledSound</br>
-FloatSound</br>
 VirtualSound</br>
 CompositeSound</br>
 GapSound</br>
 </br>
-Category Music-Support</br>
+------Music-Support</br>
 </br>
-EventAssociation</br>
-ScheduleRecord</br>
 DeviceModel</br>
 EditorModel</br>
+EventAssociation</br>
 EventScheduler</br>
 PortModel</br>
+SEventQueue</br>
+ScheduleRecord</br>
 SirenSession</br>
 SirenUtility</br>
 Timer</br>
-SEventQueue</br>
 </br>
-Category MusicIO-Voices</br>
+------MusicIO-Voices</br>
 </br>
 Voice</br>
 MIDIFileVoice</br>
@@ -551,75 +555,82 @@ NotelistVoice</br>
 CmixVoice</br>
 CmusicVoice</br>
 CsoundVoice</br>
-SuperColliderVoice</br>
 SoundVoice</br>
+SuperColliderVoice</br>
 </br>
-Category MusicIO-MIDI</br>
+------MusicIO-MIDI</br>
+</br>
 MIDIDevice</br>
+MIDIDump</br>
 MIDIFB01</br>
 MIDIPF70</br>
-MIDIPort</br>
-PortMIDIPort</br>
-MIDIVoice</br>
-MIDIDump</br>
 MIDIPacket</br>
+MIDIPort</br>
+MIDIVoice</br>
+PortMIDILibrary</br>
+PortMIDIPort</br>
 </br>
-Category MusicIO-OSC</br>
+------MusicIO-OSC</br>
 </br>
-OSCPort</br>
-OSCVoice</br>
+</br>
 AbstractOSCPacket</br>
 OSCBundle</br>
-OSCMessage</br>
-TypedOSCMessage</br>
 OSCByteConvertor</br>
+OSCMessage</br>
+OSCPort</br>
+OSCVoice</br>
+TypedOSCMessage</br>
 </br>
-Category MusicUI-DisplayLists</br>
+------MusicUI-DisplayLists</br>
+</br>
 </br>
 DisplayItem</br>
 DisplayLine</br>
+DisplayList</br>
 DisplayRectangle</br>
 DisplayPolyline</br>
-DisplayList</br>
 DisplayString</br>
 DisplayVisual</br>
 OpaqueImage</br>
 </br>
-Category MusicUI-DisplayListViews</br>
+------MusicUI-DisplayListViews</br>
 </br>
-InnerDisplayListMorph</br>
+</br>
+DisplayListController</br>
 DisplayListView</br>
 DisplayListWindow</br>
-DisplayListController</br>
+InnerDisplayListMorph</br>
 </br>
-Category MusicUI-Layout</br>
+------MusicUI-Layout</br>
+</br>
 </br>
 LayoutManager</br>
 HierarchyLayoutManager</br>
 IndentedListLayoutManager</br>
 IndentedTreeLayoutManager</br>
+StructureAccessor</br>
+STreeAccessor</br>
 TimeSequenceLayoutManager</br>
 PitchTimeLayoutManager</br>
 PositionTimeLayoutManager</br>
-StructureAccessor</br>
-STreeAccessor</br>
 </br>
-Category MusicUI-Editors</br>
+------MusicUI-Editors</br>
 </br>
+</br>
+EventListEditor</br>
+EventListFileViewer</br>
 EventListPanel</br>
 EventListText</br>
 EventListTreeEditor</br>
 EventListTreeItem</br>
 ScoreView</br>
+TimeSequenceController</br>
+PitchTimeController</br>
 TimeSequenceView</br>
 PhraseView</br>
 PitchTimeView</br>
 HauerSteffensView</br>
 PositionTimeView</br>
-TimeSequenceController</br>
-PitchTimeController</br>
-EventListEditor</br>
-EventListFileViewer</br>
 </p><hr><h3 id="TheSmokeMusicRepresentation">7 - The Smoke Music Representation</h3>The Smoke Music Representation</br>
 </br>
 The "kernel" of Siren is in the classes related to representing the basic musical magnitudes (pitch, loudness, duration, etc.), and for creating and manipulating event and event list objects. This package is known as the Smallmusic Object Kernel (Smoke--name suggested by Danny Oppenheim).</br>
@@ -991,6 +1002,9 @@ Here's another example of creating a simple melody</br>
 &emsp;&emsp;values: (Array with: #(c d e f g) </br>
 &emsp;&emsp;&emsp;&emsp;&emsp;with: #(4 8 8 4 4) reciprocal)) open]</br>
 </br>
+Event lists can have mixed properties in the events; inspect this</br>
+&emsp;[EventList scaleExample2]</br>
+ </br>
 You can create event lists with snippets of code such as the following whole-tone scale.</br>
 </br>
 &emsp;[ | elist |</br>
@@ -3895,6 +3909,16 @@ PortMIDILibrary new pm_test: PortMIDILibrary new pm_default_output_device </br>
 [MIDIVoice scaleExample]</br>
 [MIDIVoice randomExample]</br>
 </br>
+[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 0)]</br>
+[EventList scaleExample1 playOn: (MIDIVoice on: (MIDIDevice outOnDeviceNamed: 'Kontakt') channel: 1)]</br>
+</br>
+"Most verbose method"</br>
+[EventList scaleExample1 playOn: (MIDIVoice on: </br>
+&emsp;&emsp;(MIDIDevice </br>
+&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
+&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
+&emsp;&emsp;channel: 1)]</br>
+&emsp;&emsp;&emsp;&emsp;</br>
 OSC Tests</br>
 </br>
 Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>

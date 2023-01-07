@@ -455,13 +455,13 @@ Instance variables:
 		ifFalse: [false]
 		ifTrue: [(self pitch = anObject pitch) and: 
 			[(self loudness = anObject loudness) and: 
-				[super = anObject]]]! !!MusicEvent methodsFor: 'scheduling'!playOn: aVoice at: aTime
+				[super = anObject]]]! !!MusicEvent methodsFor: 'scheduling' stamp: 'stp 1/5/2023 10:22'!playOn: aVoice at: aTime
 	"Play the receiver on the voice then."
 
 	aVoice == nil
 		ifTrue: [^Voice default playEvent: self at: aTime].
 	aVoice isVoice
-		ifTrue: [aVoice playEvent: self at: aTime].
+		ifTrue: [^aVoice playEvent: self at: aTime].
 	(SirenSession voices includesKey: aVoice)
 			ifTrue: [^(SirenSession voices at: aVoice) playEvent: self at: aTime].
 	aVoice isInteger

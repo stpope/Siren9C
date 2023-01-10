@@ -1,0 +1,107 @@
+Script to build Siren in Cuis (Version 9C)
+	Do not file this in - step through the blocks 1 by 1
+
+Set-up
+
+Load themes, choose light theme
+Choose small GUI features
+Load a couple extra fonts for fun
+
+[TrueTypeFontFamily readAllTrueTypeFontsIn: DirectoryEntry smalltalkImageDirectory / 'TrueTypeFonts/ComputerModern/ComputerModernSerif'.
+TrueTypeFontFamily readAllTrueTypeFontsIn: DirectoryEntry smalltalkImageDirectory / 'TrueTypeFonts/Cream']
+
+Set font Computer Modern Serif
+
+
+Load packages - optional for now
+
+[	Feature require: 'Network-Kernel'.
+	Feature require: 'FFI'.
+	Feature require: 'Tests-FFI'.
+	Feature require: 'Sound'.
+	Feature require: 'SqueakCompatibility' ]   "SqueakCompatibility broken at present; debugger because Utf8String gone"
+
+STP world file-ins (Edit the relative paths below to suit your installation)
+
+[ #(
+	'Cuis-GUI-changes.st'
+	'ZPoint.st'
+	'SirenSystemChanges.st'
+	'ST80-compatibility.st'
+	'SixPanedBrowser.st'
+	'SixPanedBrowserWindow.st'
+	'WorkbookWindowCuis.st'
+	'STPTheme.st'
+) do: [ :file |
+	Transcript show: 'Filing in ', file; cr.
+	('./Siren9C/FileIns/', file) asFileEntry readStreamDo: 
+		[ :stream | stream ifNotNil: [stream fileIn]]]]
+
+Siren file-ins using packages (WIP) or source code files (works)
+
+[ "In the future - use packages"
+	Feature require: 'Music-Support.pck.st'.
+	Feature require: 'MusicUI-DisplayListViews.pck.st'.
+	Feature require: 'MusicIO-MIDI.pck.st' ]
+
+OR src code file-in (Edit the relative paths below to suit your installation)
+
+[ #(	"'Music-Models-Representation.st'
+	'Music-Models-Implementation.st'
+	'Music-Events.st'
+	'Music-EventGenerators.st'
+	'Music-EventModifiers.st'
+	'Music-Functions.st'
+	'Music-Sound.st'
+	'Music-PitchScales.st'
+	'Music-PitchClasses.st'
+	'Music-Support.st'
+
+	'MusicIO-Voices.st'
+	'MusicIO-OSC.st'
+	'MusicIO-MIDI.st'
+"
+	'MusicUI-DisplayLists.st'
+	'MusicUI-DisplayListViews.st'
+	'MusicUI-Layout.st'
+	'MusicUI-Editors.st'
+
+) do: [ :file |
+	Transcript show: 'Filing in ', file; cr.
+	('./Siren9C/Siren9C_Sources_Squeak/', file) asFileEntry readStreamDo:
+		[ :stream | stream ifNotNil: [stream fileIn]]]]
+
+Lastly: the music notation glyph set
+
+[ './Siren9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn]
+
+Clean up
+
+[	MDuration initialize.
+	MusicModel initializeGenerality.
+	PortModel initialize.
+	SirenUtility initialize.
+	SirenSession initialize.
+	SirenSession new.
+]
+
+Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)
+
+[WorkbookWindow openFolder: './Siren9C/Workbook2' named: 'Siren Workbook' ]
+Undeclared inspect
+Smalltalk garbageCollect
+
+Screen background image (edit to taste)
+
+[self runningWorld backgroundImageData:
+	(UniFileStream new open: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' forWrite: false) 
+	binary contentsOfEntireFile]
+
+ToDo
+
+DisplayList editing
+OSC I/O via sockets
+MIDI I/O via plug-in
+Function & Sound editors
+
+[SirenUtility fileoutCategories]

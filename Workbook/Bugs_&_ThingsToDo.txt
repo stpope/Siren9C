@@ -1,0 +1,31 @@
+Known bugs
+
+This is a test release; both the Squeak and Cuis ports are work-in-progress and many features are still to be ported.  See the startup demo script for what works in Siren9c.
+
+There are certainly many bugs in Siren.
+
+Some of the demos don't work any more; sorry.
+
+The SWIG code is no longer supported (sadly)
+
+The old ManualWriter and ComposedTextEditor packages have disappeared, so the list workbook is single-font.
+
+The display list views have no notion of pages, so longer musical examples don't display well. We need a fancier document model with page layout.
+
+----
+
+
+ToDo
+
+EventListEditor selection 
+
+Workbook clean-up
+
+Score-11
+
+Ostinato doesn't wait right.
+
+Function & Sound editors
+
+
+FullSystemBrowser: can't compile if no protocol selected, gives "Nothing more expected ->" error

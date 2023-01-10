@@ -1,7 +1,7 @@
-!classDefinition: #MIDIDevice category: 'MusicIO-MIDI'!
+!classDefinition: #MIDIDevice category: #'MusicIO-MIDI'!
 DeviceModel subclass: #MIDIDevice
 	instanceVariableNames: ''
-	classVariableNames: 'MStream'
+	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MusicIO-MIDI'!
 !MIDIDevice commentStamp: '<historical>' prior: 0!
@@ -95,49 +95,103 @@ initialize: thePort
 	port == nil
 		ifTrue: [port := thePort].! !
 
-!MIDIDevice methodsFor: 'initialization'!
-play: anAss on: channelNumber
-	"play the given event on my port as a default MIDI noteOn/noteOff pair"
 
-	| s e |
-	s := anAss key.
-	e := anAss value.
-	self checkPort.
-	port ifNil:
-		[^MIDIPort default play: (self mapPitch: e pitch) 
-			at: s value 
-			dur: (self mapDuration: e dur) 
-			amp: (self mapAmplitude: e ampl) 
-			voice: channelNumber].
-	port play: (self mapPitch: e pitch) 
-			at: s value 
-			dur: (self mapDuration: e dur) 
-			amp: (self mapAmplitude: e ampl) 
-			voice: channelNumber! !
-
-
-!MIDIDevice methodsFor: 'note events'!
-play: anEvent at: aTime
-	"Play the given event on my port as a default MIDI noteOn/noteOff pair."
-
-	| p d a v now strm ch |
+!MIDIDevice methodsFor: 'note events' stamp: 'stp 1/5/2023 07:25'!
+play: anEvent at: aTime 
+	"Play the given event on my port as a default MIDI
+	noteOn/noteOff pair."
+	| p d a v now ch |
 	now := Time microsecondClock.
-	strm := stream.
-	strm ifNil: [strm := 0].
-	(Delay forMicroseconds: aTime - now) wait.
+	port
+		ifNil: [self halt.
+			port := MIDIPort concreteClass default].
+	(Delay
+		forMicroseconds: (aTime - now max: 1000)) wait.
 	self checkPort.
 	v := self mapVoice: anEvent voice.
 	anEvent pitch isNil
+		ifTrue: [a := anEvent value rounded.
+			"if it's a control change"
+			ch := anEvent controller.
+			ch
+				ifNotNil: [port
+						controlChange: index
+						controller: ch
+						to: a]]
 		ifFalse: [p := self mapPitch: anEvent pitch.
 			d := self mapDuration: anEvent dur.
 			a := self mapAmplitude: anEvent ampl.
-			debug ifNotNil: [MStream nextPutAll: 
-					aTime value printString, ' ', p printString, ' ', 
-					d printString,' ', a printString,' ', v printString; cr].
-			port play: strm pitch: p value dur: d amp: a voice: v]
-		ifTrue: [a := anEvent value rounded.		"if it's a control change"
+			port
+				play: index
+				pitch: p value
+				dur: d
+				amp: a
+				voice: v]! !
+
+!MIDIDevice methodsFor: 'note events' stamp: 'stp 1/5/2023 10:31'!
+play: anEvent at: aTime chan: chan 
+	"Play the given event on my port as a default MIDI
+	noteOn/noteOff pair."
+	| p d a v now ch |
+	now := Time microsecondClock.
+	port ifNil:
+		 [port := MIDIPort concreteClass default].
+	(port status ~~ #open) ifTrue:
+			[port openOutput: index].
+	(Delay
+		forMicroseconds: (aTime - now max: 1000)) wait.
+	self checkPort.
+	v := self mapVoice: anEvent voice.
+	anEvent pitch isNil
+		ifTrue: [a := anEvent value rounded.
+			"if it's a control change"
 			ch := anEvent controller.
-			ch ifNotNil: [port controlChange: v controller: ch to: a]]! !
+			ch
+				ifNotNil: [port
+						controlChange: v
+						controller: ch
+						to: a]]
+		ifFalse: [p := self mapPitch: anEvent pitch.
+			d := self mapDuration: anEvent dur.
+			a := self mapAmplitude: anEvent ampl.
+			port
+				play: index
+				pitch: p value
+				dur: d
+				amp: a
+				voice: chan]! !
+
+!MIDIDevice methodsFor: 'note events' stamp: 'stp 1/5/2023 07:26'!
+play: anEvent at: aTime on: chan 
+	"Play the given event on my port as a default MIDI
+	noteOn/noteOff pair."
+	| p d a v now ch |
+	now := Time microsecondClock.
+	port
+		ifNil: [self halt.
+			port := MIDIPort concreteClass default].
+	(Delay
+		forMicroseconds: (aTime - now max: 1000)) wait.
+	self checkPort.
+	v := self mapVoice: anEvent voice.
+	anEvent pitch isNil
+		ifTrue: [a := anEvent value rounded.
+			"if it's a control change"
+			ch := anEvent controller.
+			ch
+				ifNotNil: [port
+						controlChange: v
+						controller: ch
+						to: a]]
+		ifFalse: [p := self mapPitch: anEvent pitch.
+			d := self mapDuration: anEvent dur.
+			a := self mapAmplitude: anEvent ampl.
+			port
+				play: index
+				pitch: p value
+				dur: d
+				amp: a
+				voice: v]! !
 
 
 !MIDIDevice methodsFor: 'parameter mapping'!
@@ -155,19 +209,14 @@ mapAmplitude: aVal
 				ifTrue: [64]
 				ifFalse: [Amplitude value: aVal asMIDI]]])! !
 
-!MIDIDevice methodsFor: 'parameter mapping'!
-mapDuration: aVal
-	"Map a numerical or symbolic duration value to a 
-	 MIDI-compatible duration in msec."
-
-	^(aVal species == Duration
-		ifTrue: [aVal asMS value]"if duration type, answer msec"
-		ifFalse: [aVal class == SmallInteger
-			ifTrue: [aVal]		"if Int, assume mec"
-									"else assume a symbolic or float dur"
-			ifFalse: [aVal isNil
-				ifTrue: [nil]
-				ifFalse: [Duration value: aVal asMidi]]])! !
+!MIDIDevice methodsFor: 'parameter mapping' stamp: 'stp 12/30/2022 17:29'!
+mapDuration: t1 
+	^ t1 species == MDuration
+		ifTrue: [t1 asMS value]
+		ifFalse: [t1 class == SmallInteger
+				ifTrue: [t1]
+				ifFalse: [t1 isNil
+						ifFalse: [Duration value: t1 asMidi]]]! !
 
 !MIDIDevice methodsFor: 'parameter mapping'!
 mapPitch: aVal
@@ -181,19 +230,20 @@ mapPitch: aVal
 										"assume a note name or freq"
 			ifFalse: [Pitch value: aVal asMidi]])! !
 
-!MIDIDevice methodsFor: 'parameter mapping'!
-mapVoice: aVal
-	"Map a numerical or symbolic pitch to a MIDI-compatible note number."
-
-	^(aVal isInteger
-		ifTrue: [(aVal truncated min: 15) max: 0]
+!MIDIDevice methodsFor: 'parameter mapping' stamp: 'stp 1/4/2023 16:07'!
+mapVoice: aVal 
+	"Map a numerical or symbolic pitch to a MIDI-compatible note
+	number. "
+	^ aVal isInteger
+		ifTrue: [(aVal truncated min: 15)
+				max: 0]
 		ifFalse: [aVal species == Voice
-			ifTrue: [aVal asNumber]
-			ifFalse: [1]])! !
+				ifTrue: [aVal channel]
+				ifFalse: [0]]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIDevice class' category: 'MusicIO-MIDI'!
+!classDefinition: 'MIDIDevice class' category: #'MusicIO-MIDI'!
 MIDIDevice class
 	instanceVariableNames: ''!
 
@@ -235,37 +285,101 @@ scheduleExample
 	EventScheduler run! !
 
 
-!MIDIDevice class methodsFor: 'instance creation'!
+!MIDIDevice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 07:30'!
+inOn: port 
+	"Open a generic MidiDevice on the given Port"
+	| me |
+	me := self new.
+	me port: port.
+	me index: SirenUtility defaultMIDIIn.
+	me name: 'A MIDI Device'.
+	me direction: #in.
+		^ me! !
+
+!MIDIDevice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 07:29'!
+inOn: ind port: po 
+	"Open a generic MidiDevice on the given Port"
+	| me |
+	me := self new.
+	me port: po.
+	me index: ind.
+	me name: 'A MIDI Device'.
+	me direction: #in.
+	^me! !
+
+!MIDIDevice class methodsFor: 'instance creation' stamp: 'stp 1/2/2023 12:15'!
 new
 	"Open a generic MidiDevice on the default Port"
 	"MIDIDevice new"
-
-	| me |
+	"| me |
 	me := super new initialize.
-"	me port: MIDIPort default open."
-	^me! !
+	me port: MIDIPort default open.
+	^ m
+	"
+	^ super new initialize.
+! !
 
-!MIDIDevice class methodsFor: 'instance creation'!
-on: port
+!MIDIDevice class methodsFor: 'instance creation' stamp: 'stp 1/2/2023 12:09'!
+on: port 
+	"Open a generic MidiDevice on the given Port for output"
+	^ self outOn: port! !
+
+!MIDIDevice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 07:29'!
+outOn: port 
 	"Open a generic MidiDevice on the given Port"
-
 	| me |
-	me := super new initialize.
+	me := self new.
 	me port: port.
-	^me! !
+	me index: SirenUtility defaultMIDIOut.
+	me name: 'A MIDI Device'.
+	me direction: #out.
+	^ me! !
+
+!MIDIDevice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 15:11'!
+outOn: ind port: po 
+	"Open a generic MidiDevice on the given device index on the given
+	Port. "
+	"MIDIVoice on: 
+	(MIDIDevice 
+	outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') 
+	port: MIDIPort concreteClass default) 
+	channel: 1"
+	| me |
+	me := self new.
+	me index: ind.
+	me port: po.
+	(po class streams includesKey: ind)
+		ifFalse: [po openOutput: ind].
+	me name: 'A MIDI Device'.
+	me direction: #out.
+	^ me! !
+
+!MIDIDevice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 07:36'!
+outOnDeviceNamed: devNam 
+	"Open a generic MidiDevice on the given Port"
+	"MIDIDevice outOnDeviceNamed: 'Kontakt'"
+	| ind me |
+	ind := me := self new.
+	me port: MIDIPort concreteClass default.
+	me
+		index: (PortMIDIPort indexOfOutNamed: '*' , devNam , '*').
+	me name: 'A MIDI Device'.
+	me direction: #out.
+	^ me! !
 
 
-!MIDIDevice class methodsFor: 'class initialization'!
+!MIDIDevice class methodsFor: 'class initialization' stamp: 'stp 1/3/2023 13:34'!
 initialize
 	"Set up the one class variable"
 	"MIDIDevice initialize"
-
-"	MStream := Transcript.
-	MStream := WriteStream on: (String new: 4096).
-"	MStream := nil! !
+	"MStream := Transcript.
+	MStream := WriteStream on: (String
+	new: 4096).
+"
+	! !
 
 
-!classDefinition: #MIDIFB01 category: 'MusicIO-MIDI'!
+!classDefinition: #MIDIFB01 category: #'MusicIO-MIDI'!
 MIDIDevice subclass: #MIDIFB01
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -280,26 +394,33 @@ The standard FB01 note command is like:
 !
 
 
-!MIDIFB01 methodsFor: 'note events'!
-play: anEvent on: aChannel
+!MIDIFB01 methodsFor: 'note events' stamp: 'stp 1/3/2023 13:34'!
+play: anEvent on: aChannel 
 	"send FB01-specific code for note with fraction and duration
-		2n k f v d1 d2 = cmd:channel, noteNum, frac, vel, durLow, durHigh"
-
+		2n k
+	f v d1 d2 = cmd:channel, noteNum, frac, vel, durLow, durHigh"
 	| bytes realDur |
 	bytes := ByteArray new: 6.
-	bytes at: 1 put: (16r20 + aChannel).
-	bytes at: 2 put: (self mapPitch: anEvent pitch).
+	bytes at: 1 put: 32 + aChannel.
+	bytes
+		at: 2
+		put: (self mapPitch: anEvent pitch).
 	bytes at: 3 put: 0.
-	bytes at: 4 put: (self mapAmplitude: anEvent ampl).
+	bytes
+		at: 4
+		put: (self mapAmplitude: anEvent ampl).
 	realDur := self mapDuration: anEvent duration.
-	bytes at: 5 put: (realDur bitAnd: 127).
-	bytes at: 6 put: (realDur bitShift: -7 ).
+	bytes
+		at: 5
+		put: (realDur bitAnd: 127).
+	bytes
+		at: 6
+		put: (realDur bitShift: -7).
 	port == nil
-		ifTrue: [MStream nextPutAll: 'FB01: ', bytes printString; cr]
 		ifFalse: [port put: bytes length: 6]! !
 
 
-!classDefinition: #MIDIPF70 category: 'MusicIO-MIDI'!
+!classDefinition: #MIDIPF70 category: #'MusicIO-MIDI'!
 MIDIDevice subclass: #MIDIPF70
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -315,10 +436,10 @@ The standard PF70 note command is like:
 
 
 
-!classDefinition: #MIDIPort category: 'MusicIO-MIDI'!
+!classDefinition: #MIDIPort category: #'MusicIO-MIDI'!
 PortModel subclass: #MIDIPort
 	instanceVariableNames: 'inputData readProcess'
-	classVariableNames: 'Streams'
+	classVariableNames: 'GeneralMIDIMap MIDICommands Streams'
 	poolDictionaries: ''
 	category: 'MusicIO-MIDI'!
 !MIDIPort commentStamp: '<historical>' prior: 0!
@@ -473,12 +594,11 @@ open
 
 	self openOutput: self class out! !
 
-!MIDIPort methodsFor: 'open/close'!
+!MIDIPort methodsFor: 'open/close' stamp: 'stp 12/31/2022 14:33'!
 openInput
 	"Open the MIDI driver -- start the lower-level driver up."
 	"MIDIPort default"
-
-	self openInput: self class in! !
+	self openInput: SirenUtility defaultMIDIIn! !
 
 !MIDIPort methodsFor: 'open/close'!
 openInput: which
@@ -487,12 +607,11 @@ openInput: which
 
 	self subclassResponsibility! !
 
-!MIDIPort methodsFor: 'open/close'!
+!MIDIPort methodsFor: 'open/close' stamp: 'stp 12/31/2022 14:33'!
 openOutput
 	"Open the MIDI driver -- start the lower-level driver up."
 	"MIDIPort default"
-
-	self openOutput: self class out! !
+	self openOutput: SirenUtility defaultMIDIOut! !
 
 !MIDIPort methodsFor: 'open/close'!
 openOutput: which
@@ -590,12 +709,13 @@ stopMIDIInput
 	self breakDependents.! !
 
 
-!MIDIPort methodsFor: 'initialize release'!
+!MIDIPort methodsFor: 'initialize release' stamp: 'stp 1/5/2023 07:31'!
 initialize
 	"Setup the receiver's instance variables."
-
 	status := #Init.
-	device := self class out! !
+	"self openOutput: SirenUtility defaultMIDIOut.
+	device := SirenUtility defaultMIDIOut
+	"! !
 
 !MIDIPort methodsFor: 'initialize release'!
 release
@@ -653,20 +773,30 @@ play: aPitch dur: aDur amp: anAmp voice: aVoice
 		ifFalse: [[(Delay forMilliseconds: aDur) wait.
 				self playOff: aPitch amp: anAmp voice: aVoice] fork]! !
 
-!MIDIPort methodsFor: 'read/write'!
-play: streamID pitch: aPitch dur: aDur amp: anAmp voice: aVoice
-	"Play a note (on/off message pair) with the given parameters on the receiver."
-	"This is the default method for drivers with no 1-call noteOn/Off command."
-
-	 | s v |
-	v := (aVoice - 1) max: 0.		"zero-based stream and voice index"
-	s := (streamID - 1) max: 0.
-	(#open == status) ifFalse: [self openOutput].
-	self playOn: s pitch: aPitch amp: anAmp voice: v.
-"Schedule note-off in a forked wait block."
+!MIDIPort methodsFor: 'read/write' stamp: 'stp 1/5/2023 10:26'!
+play: streamID pitch: aPitch dur: aDur amp: anAmp voice: aVoice 
+	"Play a note (on/off message pair) with the given parameters on
+	the receiver."
+	"This is the default method for drivers with no 1-call noteOn/Off
+	command."
+	#open == status
+		ifFalse: [Transcript show: 'Lazy MIDI port open';
+				 cr.
+			self error: 'port not open'"
+			self openOutput: device"].
+	self
+		playOn: streamID
+		pitch: aPitch
+		amp: anAmp
+		voice: aVoice.
+	"Schedule note-off in a forked wait block."
 	aDur isNil
 		ifFalse: [[(Delay forMilliseconds: aDur) wait.
-				self playOff: s pitch: aPitch amp: anAmp voice: v] fork]! !
+			self
+				playOff: streamID
+				pitch: aPitch
+				amp: anAmp
+				voice: aVoice] fork]! !
 
 !MIDIPort methodsFor: 'read/write'!
 playOff: streamID pitch: aPitch amp: anAmp voice: aVoice
@@ -702,9 +832,19 @@ readControllersFrom: lo to: hi into: array
 
 	self subclassResponsibility! !
 
+
+!MIDIPort methodsFor: 'printing' stamp: 'stp 1/2/2023 11:26'!
+printOn: aStream 
+	"Append to the argument aStream a sequence of characters 
+	that
+	identifies the collection."
+	super printOn: aStream.
+	device
+		ifNotNil: [aStream nextPutAll: ' on device ' , device printString]! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIPort class' category: 'MusicIO-MIDI'!
+!classDefinition: 'MIDIPort class' category: #'MusicIO-MIDI'!
 MIDIPort class
 	instanceVariableNames: ''!
 
@@ -862,18 +1002,21 @@ testRollLowLevel: num dur: dur
 		inst put: data length: 3]! !
 
 
-!MIDIPort class methodsFor: 'output tests'!
+!MIDIPort class methodsFor: 'output tests' stamp: 'stp 1/3/2023 18:51'!
 testANote
-	"Open MIDI, play a note."
+	"Open MIDI, play a note - low level."
 	"MIDIPort release"
 	"MIDIPort testANote"
-
 	| inst |
 	inst := MIDIPort new.
-	inst openOutput: self concreteClass out.
-	inst play: 48 dur: 500 amp: 120 voice: 0.
+	inst openOutput: SirenUtility defaultMIDIOut.
+	inst
+		play: 60
+		dur: 500
+		amp: 100
+		voice: 1.
 	1 wait.
-	inst close.! !
+	inst close! !
 
 !MIDIPort class methodsFor: 'output tests'!
 testARandomNote
@@ -947,23 +1090,25 @@ testInspect
 	Transcript show: 'close --> ', err printString; cr.
 "! !
 
-!MIDIPort class methodsFor: 'output tests'!
+!MIDIPort class methodsFor: 'output tests' stamp: 'stp 12/31/2022 10:17'!
 testMouseMIDI
 	"Open MIDI, play notes based on the mouse position."
 	"x --> voice; y --> pitch."
 	"MIDIPort testMouseMIDI"
-
 	| inst moPt ht |
 	inst := MIDIPort default.
 	inst open.
 	MIDIPort setupTunedPercussion.
 	(Delay forMilliseconds: 200) wait.
-	ht := Screen default bounds height.
-	[InputState default mouseButtons = 0] whileTrue:
-		[moPt := InputSensor cursorPoint.
-		inst play: (ht - moPt y // 20 + 24) dur: 250 amp: 96 
-				voice: (moPt x // 50).
-		(Delay forMilliseconds: 100) wait].! !
+	ht := DisplayScreen actualScreenSize y.
+	[Sensor anyButtonPressed]
+		whileFalse: [moPt := Sensor cursorPoint.
+			inst
+				play: ht - moPt y // 20 + 24
+				dur: 250
+				amp: 96
+				voice: moPt x // 50.
+			(Delay forMilliseconds: 100) wait]! !
 
 !MIDIPort class methodsFor: 'output tests'!
 testNoteOnOff
@@ -1075,65 +1220,74 @@ testInputStop
 	port close.! !
 
 
-!MIDIPort class methodsFor: 'controller tests'!
+!MIDIPort class methodsFor: 'controller tests' stamp: 'stp 12/31/2022 11:35'!
 testControllerCaching
-	"Set up uncached controller reading--make a loop that reads and prints controller 48 
+	"Set up uncached controller reading--make a loop that reads and
+	prints controller 48 
 		twice a second (until you press the shift button)."
 	"MIDIPort testControllerCaching"
 	"MIDIPort testInputStop"
-
 	| inst |
 	inst := self new.
-	inst openInput: self concreteClass in.			"Edit your controller device # here"
+	inst openInput: self concreteClass in.
+	"Edit your controller device # here"
 	inst startControllerCaching.
 	inst startMIDIInput.
-	[InputState default shiftDown]
-		whileFalse:
-		[Transcript show: 'Ctrl 48: ', (inst readController: 48) printString; cr.
-		(Delay forMilliseconds: 500) wait].
+	[Sensor shiftPressed]
+		whileFalse: [Transcript show: 'Ctrl 48: ' , (inst readController: 48) printString;
+				 cr.
+			(Delay forMilliseconds: 500) wait].
 	MIDIPort testInputStop! !
 
-!MIDIPort class methodsFor: 'controller tests'!
+!MIDIPort class methodsFor: 'controller tests' stamp: 'stp 12/31/2022 11:35'!
 testControllerCaching2
-	"Set up uncached controller reading--read controllers 48-52 as an array and print it; stop on mouse press."
+	"Set up uncached controller reading--read controllers 48-52 as an
+	array and print it; stop on mouse press."
 	"MIDIPort testControllerCaching2"
 	"MIDIPort testInputStop"
-
 	| array inst |
 	inst := self new.
-	inst openInput: self concreteClass in.			"Edit your controller device # here"
+	inst openInput: self concreteClass in.
+	"Edit your controller device # here"
 	inst startControllerCaching.
 	inst startMIDIInput.
 	array := Array new: 5.
-	[InputState default shiftDown]
-		whileFalse:
-		[inst readControllersFrom: 48 to: 52 into: array.
-		Transcript tab; show: array printString; cr.
-		(Delay forMilliseconds: 500) wait].
+	[Sensor shiftPressed]
+		whileFalse: [inst
+				readControllersFrom: 48
+				to: 52
+				into: array.
+			Transcript tab; show: array printString; cr.
+			(Delay forMilliseconds: 500) wait].
 	MIDIPort testInputStop! !
 
-!MIDIPort class methodsFor: 'controller tests'!
-testControllerCachingFrom: lo to: hi
-	"Set up uncached controller reading--read controllers from lo to hi (inclusive) as an array and print it; 
+!MIDIPort class methodsFor: 'controller tests' stamp: 'stp 12/31/2022 11:35'!
+testControllerCachingFrom: lo to: hi 
+	"Set up uncached controller reading--read controllers from lo to hi
+	(inclusive) as an array and print it; 
 		stop on <SHIFT> press."
 	"MIDIPort testControllerCachingFrom: 48 to: 55"
 	"MIDIPort testInputStop"
-
 	| inst array count |
 	inst := self new.
-	inst openInput: 3.			"Edit your controller device # here"
+	inst openInput: 3.
+	"Edit your controller device # here"
 	inst startControllerCaching.
 	inst startMIDIInput.
-	array := WordArray new: (hi - lo + 1).
-	array gcCopyToHeap.		"this is so that you can pass this ptr to C"
+	array := WordArray new: hi - lo + 1.
+	array gcCopyToHeap.
+	"this is so that you can pass this ptr to C"
 	count := 0.
-	[InputState default shiftDown]
-		whileFalse:
-		[inst readControllersFrom: lo to: hi into: array.
-		Transcript tab; show: count printString, '	', array printString; cr.
-		(Delay forMilliseconds: 500) wait.
-		count := count + 1.].
-		Transcript show: 'Done'; cr.
+	[Sensor shiftPressed]
+		whileFalse: [inst
+				readControllersFrom: lo
+				to: hi
+				into: array.
+			Transcript tab; show: count printString , '	' , array printString; cr.
+			(Delay forMilliseconds: 500) wait.
+			count := count + 1].
+	Transcript show: 'Done';
+		 cr.
 	MIDIPort testInputStop! !
 
 !MIDIPort class methodsFor: 'controller tests'!
@@ -1372,246 +1526,475 @@ concreteClass
 	^PortMIDIPort! !
 
 
-!MIDIPort class methodsFor: 'class initialization'!
+!MIDIPort class methodsFor: 'class initialization' stamp: 'stp 12/29/2022 04:52'!
+initialize
+	"Set up the dictionaries of commands, ioctl primitive selectors and
+	arguments, and general MIDI maps."
+	"MIDIPort initialize"
+
+	self initializeData! !
+
+!MIDIPort class methodsFor: 'class initialization' stamp: 'stp 1/7/2023 21:42:57'!
 initializeData
-	"Set up the dictionaries of commands, ioctl primitive selectors and arguments, and general MIDI maps."
-	"MIDIPort initializeData"
+	"Set up the dictionaries of commands, ioctl primitive selectors and
+	arguments, and general MIDI maps."
+	"PortModel initialize"
 
 	instance := nil.
-	Streams := IdentityDictionary new.
 	useSingleton := true.
-	MIDIPort initializeMIDITables.
-	self concreteClass initializeData! !
-
-!MIDIPort class methodsFor: 'class initialization'!
-initializeGeneralMIDI1
-	Siren at: #GeneralMIDIMap put: Dictionary new.
-	(Siren at: #GeneralMIDIMap) add: ('Acoustic Grand Piano' asSymbol -> 1).
-	(Siren at: #GeneralMIDIMap) add: ('Bright Acoustic Piano' asSymbol -> 2).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Grand Piano' asSymbol -> 3).
-	(Siren at: #GeneralMIDIMap) add: ('Honky-tonk Piano' asSymbol -> 4).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Piano 1' asSymbol -> 5).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Piano 2' asSymbol -> 6).
-	(Siren at: #GeneralMIDIMap) add: ('Harpsichord' asSymbol -> 7).
-	(Siren at: #GeneralMIDIMap) add: ('Clavinet' asSymbol -> 8).
-	(Siren at: #GeneralMIDIMap) add: ('Celesta' asSymbol -> 9).
-	(Siren at: #GeneralMIDIMap) add: ('Glockenspiel' asSymbol -> 10).
-	(Siren at: #GeneralMIDIMap) add: ('Music Box' asSymbol -> 11).
-	(Siren at: #GeneralMIDIMap) add: ('Vibraphone' asSymbol -> 12).
-	(Siren at: #GeneralMIDIMap) add: ('Marimba' asSymbol -> 13).
-	(Siren at: #GeneralMIDIMap) add: ('Xylophone' asSymbol -> 14).
-	(Siren at: #GeneralMIDIMap) add: ('Tubular Bells' asSymbol -> 15).
-	(Siren at: #GeneralMIDIMap) add: ('Dulcimer' asSymbol -> 16).
-	(Siren at: #GeneralMIDIMap) add: ('Drawbar Organ' asSymbol -> 17).
-	(Siren at: #GeneralMIDIMap) add: ('Percussive Organ' asSymbol -> 18).
-	(Siren at: #GeneralMIDIMap) add: ('Rock Organ' asSymbol -> 19).
-	(Siren at: #GeneralMIDIMap) add: ('Church Organ' asSymbol -> 20).
-	(Siren at: #GeneralMIDIMap) add: ('Reed Organ' asSymbol -> 21).
-	(Siren at: #GeneralMIDIMap) add: ('Accordion' asSymbol -> 22).
-	(Siren at: #GeneralMIDIMap) add: ('Harmonica' asSymbol -> 23).
-	(Siren at: #GeneralMIDIMap) add: ('Tango Accordion' asSymbol -> 24).
-	(Siren at: #GeneralMIDIMap) add: ('Acoustic Guitar (nylon)' asSymbol -> 25).
-	(Siren at: #GeneralMIDIMap) add: ('Acoustic Guitar (steel)' asSymbol -> 26).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Guitar (jazz)' asSymbol -> 27).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Guitar (clean)' asSymbol -> 28).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Guitar (muted)' asSymbol -> 29).
-	(Siren at: #GeneralMIDIMap) add: ('Overdriven Guitar' asSymbol -> 30).
-	(Siren at: #GeneralMIDIMap) add: ('Distortion Guitar' asSymbol -> 31).
-	(Siren at: #GeneralMIDIMap) add: ('Guitar harmonics' asSymbol -> 32).
-	(Siren at: #GeneralMIDIMap) add: ('Acoustic Bass' asSymbol -> 33).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Bass (finger)' asSymbol -> 34).
-	(Siren at: #GeneralMIDIMap) add: ('Electric Bass (pick)' asSymbol -> 35).
-	(Siren at: #GeneralMIDIMap) add: ('Fretless Bass' asSymbol -> 36).
-	(Siren at: #GeneralMIDIMap) add: ('Slap Bass 1' asSymbol -> 37).
-	(Siren at: #GeneralMIDIMap) add: ('Slap Bass 2' asSymbol -> 38).
-	(Siren at: #GeneralMIDIMap) add: ('Synth Bass 1' asSymbol -> 39).
-	(Siren at: #GeneralMIDIMap) add: ('Synth Bass 2' asSymbol -> 40).
-	(Siren at: #GeneralMIDIMap) add: ('Violin' asSymbol -> 41).
-	(Siren at: #GeneralMIDIMap) add: ('Viola' asSymbol -> 42).
-	(Siren at: #GeneralMIDIMap) add: ('Cello' asSymbol -> 43).
-	(Siren at: #GeneralMIDIMap) add: ('Contrabass' asSymbol -> 44).
-	(Siren at: #GeneralMIDIMap) add: ('Tremolo Strings' asSymbol -> 45).
-	(Siren at: #GeneralMIDIMap) add: ('Pizzicato Strings' asSymbol -> 46).
-	(Siren at: #GeneralMIDIMap) add: ('Orchestral Harp' asSymbol -> 47).
-	(Siren at: #GeneralMIDIMap) add: ('Timpani' asSymbol -> 48).
-	(Siren at: #GeneralMIDIMap) add: ('String Ensemble 1' asSymbol -> 49).
-	(Siren at: #GeneralMIDIMap) add: ('String Ensemble 2' asSymbol -> 50).
-	(Siren at: #GeneralMIDIMap) add: ('SynthStrings 1' asSymbol -> 51).
-	(Siren at: #GeneralMIDIMap) add: ('SynthStrings 2' asSymbol -> 52).
-	(Siren at: #GeneralMIDIMap) add: ('Choir Aahs' asSymbol -> 53).
-	(Siren at: #GeneralMIDIMap) add: ('Voice Oohs' asSymbol -> 54).
-	(Siren at: #GeneralMIDIMap) add: ('Synth Voice' asSymbol -> 55).
-	(Siren at: #GeneralMIDIMap) add: ('Orchestra Hit' asSymbol -> 56).
-	(Siren at: #GeneralMIDIMap) add: ('Trumpet' asSymbol -> 57).
-	(Siren at: #GeneralMIDIMap) add: ('Trombone' asSymbol -> 58).
-	(Siren at: #GeneralMIDIMap) add: ('Tuba' asSymbol -> 59).
-	(Siren at: #GeneralMIDIMap) add: ('Muted Trumpet' asSymbol -> 60).
-	(Siren at: #GeneralMIDIMap) add: ('French Horn' asSymbol -> 61).
-	(Siren at: #GeneralMIDIMap) add: ('Brass Section' asSymbol -> 62).
-	(Siren at: #GeneralMIDIMap) add: ('SynthBrass 1' asSymbol -> 63).
-	(Siren at: #GeneralMIDIMap) add: ('SynthBrass 2' asSymbol -> 64)! !
-
-!MIDIPort class methodsFor: 'class initialization'!
-initializeGeneralMIDI2
-	(Siren at: #GeneralMIDIMap) add: ('Soprano Sax' asSymbol -> 65).
-	(Siren at: #GeneralMIDIMap) add: ('Alto Sax' asSymbol -> 66).
-	(Siren at: #GeneralMIDIMap) add: ('Tenor Sax' asSymbol -> 67).
-	(Siren at: #GeneralMIDIMap) add: ('Baritone Sax' asSymbol -> 68).
-	(Siren at: #GeneralMIDIMap) add: ('Oboe' asSymbol -> 69).
-	(Siren at: #GeneralMIDIMap) add: ('English Horn' asSymbol -> 70).
-	(Siren at: #GeneralMIDIMap) add: ('Bassoon' asSymbol -> 71).
-	(Siren at: #GeneralMIDIMap) add: ('Clarinet' asSymbol -> 72).
-	(Siren at: #GeneralMIDIMap) add: ('Piccolo' asSymbol -> 73).
-	(Siren at: #GeneralMIDIMap) add: ('Flute' asSymbol -> 74).
-	(Siren at: #GeneralMIDIMap) add: ('Recorder' asSymbol -> 75).
-	(Siren at: #GeneralMIDIMap) add: ('Pan Flute' asSymbol -> 76).
-	(Siren at: #GeneralMIDIMap) add: ('Blown Bottle' asSymbol -> 77).
-	(Siren at: #GeneralMIDIMap) add: ('Shakuhachi' asSymbol -> 78).
-	(Siren at: #GeneralMIDIMap) add: ('Whistle' asSymbol -> 79).
-	(Siren at: #GeneralMIDIMap) add: ('Ocarina' asSymbol -> 80).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 1 (square)' asSymbol -> 81).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 2 (sawtooth)' asSymbol -> 82).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 3 (calliope)' asSymbol -> 83).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 4 (chiff)' asSymbol -> 84).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 5 (charang)' asSymbol -> 85).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 6 (voice)' asSymbol -> 86).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 7 (fifths)' asSymbol -> 87).
-	(Siren at: #GeneralMIDIMap) add: ('Lead 8 (bass + lead)' asSymbol -> 88).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 1 (new age)' asSymbol -> 89).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 2 (warm)' asSymbol -> 90).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 3 (polysynth)' asSymbol -> 91).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 4 (choir)' asSymbol -> 92).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 5 (bowed)' asSymbol -> 93).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 6 (metallic)' asSymbol -> 94).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 7 (halo)' asSymbol -> 95).
-	(Siren at: #GeneralMIDIMap) add: ('Pad 8 (sweep)' asSymbol -> 96).
-	(Siren at: #GeneralMIDIMap) add: ('FX 1 (rain)' asSymbol -> 97).
-	(Siren at: #GeneralMIDIMap) add: ('FX 2 (soundtrack)' asSymbol -> 98).
-	(Siren at: #GeneralMIDIMap) add: ('FX 3 (crystal)' asSymbol -> 99).
-	(Siren at: #GeneralMIDIMap) add: ('FX 4 (atmosphere)' asSymbol -> 100).
-	(Siren at: #GeneralMIDIMap) add: ('FX 5 (brightness)' asSymbol -> 101).
-	(Siren at: #GeneralMIDIMap) add: ('FX 6 (goblins)' asSymbol -> 102).
-	(Siren at: #GeneralMIDIMap) add: ('FX 7 (echoes)' asSymbol -> 103).
-	(Siren at: #GeneralMIDIMap) add: ('FX 8 (sci-fi)' asSymbol -> 104).
-	(Siren at: #GeneralMIDIMap) add: ('Sitar' asSymbol -> 105).
-	(Siren at: #GeneralMIDIMap) add: ('Banjo' asSymbol -> 106).
-	(Siren at: #GeneralMIDIMap) add: ('Shamisen' asSymbol -> 107).
-	(Siren at: #GeneralMIDIMap) add: ('Koto' asSymbol -> 108).
-	(Siren at: #GeneralMIDIMap) add: ('Kalimba' asSymbol -> 109).
-	(Siren at: #GeneralMIDIMap) add: ('Bag pipe' asSymbol -> 110).
-	(Siren at: #GeneralMIDIMap) add: ('Fiddle' asSymbol -> 111).
-	(Siren at: #GeneralMIDIMap) add: ('Shanai' asSymbol -> 112).
-	(Siren at: #GeneralMIDIMap) add: ('Tinkle Bell' asSymbol -> 113).
-	(Siren at: #GeneralMIDIMap) add: ('Agogo' asSymbol -> 114).
-	(Siren at: #GeneralMIDIMap) add: ('Steel Drums' asSymbol -> 115).
-	(Siren at: #GeneralMIDIMap) add: ('Woodblock' asSymbol -> 116).
-	(Siren at: #GeneralMIDIMap) add: ('Taiko Drum' asSymbol -> 117).
-	(Siren at: #GeneralMIDIMap) add: ('Melodic Tom' asSymbol -> 118).
-	(Siren at: #GeneralMIDIMap) add: ('Synth Drum' asSymbol -> 119).
-	(Siren at: #GeneralMIDIMap) add: ('Reverse Cymbal' asSymbol -> 120).
-	(Siren at: #GeneralMIDIMap) add: ('Guitar Fret Noise' asSymbol -> 121).
-	(Siren at: #GeneralMIDIMap) add: ('Breath Noise' asSymbol -> 122).
-	(Siren at: #GeneralMIDIMap) add: ('Seashore' asSymbol -> 123).
-	(Siren at: #GeneralMIDIMap) add: ('Bird Tweet' asSymbol -> 124).
-	(Siren at: #GeneralMIDIMap) add: ('Telephone Ring' asSymbol -> 125).
-	(Siren at: #GeneralMIDIMap) add: ('Helicopter' asSymbol -> 126).
-	(Siren at: #GeneralMIDIMap) add: ('Applause' asSymbol -> 127).
-	(Siren at: #GeneralMIDIMap) add: ('Gunshot' asSymbol -> 128)! !
-
-!MIDIPort class methodsFor: 'class initialization' stamp: 'Install-Music-Support 11/30/2022 15:52:41'!
-initializeMIDITables
-	"MIDIPort initializeMIDITables"
-
-	Smalltalk at: #Siren put: Dictionary new.
-	Siren at: #MIDICommands put: Dictionary new.
-	(Siren at: #MIDICommands) at: #noteOn put: 16r90.
-	(Siren at: #MIDICommands) at: #noteOff put: 16r80.
-	(Siren at: #MIDICommands) at: #polyTouch put: 16rA0.
-	(Siren at: #MIDICommands) at: #chanTouch put: 16rD0.
-	(Siren at: #MIDICommands) at: #ctrlChange put: 16rB0.
-	(Siren at: #MIDICommands) at: #progChange put: 16rC0.
-	(Siren at: #MIDICommands) at: #pitchWheel put: 16rE0.
-	(Siren at: #MIDICommands) at: #sysEx put: 16rF0.
-
+	Streams := IdentityDictionary new.
+	self initializeMIDITables.
 	self initializeGeneralMIDI1.
 	self initializeGeneralMIDI2.
-"	self initializeMIDIDrums.
-	self initializeMIDIFamilies
-	"! !
+	"self concreteClass initializeData"! !
 
-!MIDIPort class methodsFor: 'class initialization'!
-self initializeMIDIDrums
-	Siren at: #GeneralMIDIDrums put: Dictionary new.
-	(Siren at: #GeneralMIDIDrums) add: ('Open Cuica' asSymbol -> 79).
-	(Siren at: #GeneralMIDIDrums) add: ('Mute Triangle' asSymbol -> 80).
-	(Siren at: #GeneralMIDIDrums) add: ('Open Triangle' asSymbol -> 81).
-	(Siren at: #GeneralMIDIDrums) add: ('Acoustic Bass Drum' asSymbol -> 35).
-	(Siren at: #GeneralMIDIDrums) add: ('Bass Drum 1' asSymbol -> 36).
-	(Siren at: #GeneralMIDIDrums) add: ('Side Stick' asSymbol -> 37).
-	(Siren at: #GeneralMIDIDrums) add: ('Acoustic Snare' asSymbol -> 38).
-	(Siren at: #GeneralMIDIDrums) add: ('Hand Clap' asSymbol -> 39).
-	(Siren at: #GeneralMIDIDrums) add: ('Electric Snare' asSymbol -> 40).
-	(Siren at: #GeneralMIDIDrums) add: ('Low Floor Tom' asSymbol -> 41).
-	(Siren at: #GeneralMIDIDrums) add: ('Closed Hi Hat' asSymbol -> 42).
-	(Siren at: #GeneralMIDIDrums) add: ('High Floor Tom' asSymbol -> 43).
-	(Siren at: #GeneralMIDIDrums) add: ('Pedal Hi-Hat' asSymbol -> 44).
-	(Siren at: #GeneralMIDIDrums) add: ('Low Tom' asSymbol -> 45).
-	(Siren at: #GeneralMIDIDrums) add: ('Open Hi-Hat' asSymbol -> 46).
-	(Siren at: #GeneralMIDIDrums) add: ('Low-Mid Tom' asSymbol -> 47).
-	(Siren at: #GeneralMIDIDrums) add: ('Hi Mid Tom' asSymbol -> 48).
-	(Siren at: #GeneralMIDIDrums) add: ('Crash Cymbal 1' asSymbol -> 49).
-	(Siren at: #GeneralMIDIDrums) add: ('High Tom' asSymbol -> 50).
-	(Siren at: #GeneralMIDIDrums) add: ('Ride Cymbal 1' asSymbol -> 51).
-	(Siren at: #GeneralMIDIDrums) add: ('Chinese Cymbal' asSymbol -> 52).
-	(Siren at: #GeneralMIDIDrums) add: ('Ride Bell' asSymbol -> 53).
-	(Siren at: #GeneralMIDIDrums) add: ('Tambourine' asSymbol -> 54).
-	(Siren at: #GeneralMIDIDrums) add: ('Splash Cymbal' asSymbol -> 55).
-	(Siren at: #GeneralMIDIDrums) add: ('Cowbell' asSymbol -> 56).
-	(Siren at: #GeneralMIDIDrums) add: ('Crash Cymbal 2' asSymbol -> 57).
-	(Siren at: #GeneralMIDIDrums) add: ('Vibraslap' asSymbol -> 58).
-	(Siren at: #GeneralMIDIDrums) add: ('Ride Cymbal 2' asSymbol -> 59).
-	(Siren at: #GeneralMIDIDrums) add: ('Hi Bongo' asSymbol -> 60).
-	(Siren at: #GeneralMIDIDrums) add: ('Low Bongo' asSymbol -> 61).
-	(Siren at: #GeneralMIDIDrums) add: ('Mute Hi Conga' asSymbol -> 62).
-	(Siren at: #GeneralMIDIDrums) add: ('Open Hi Conga' asSymbol -> 63).
-	(Siren at: #GeneralMIDIDrums) add: ('Low Conga' asSymbol -> 64).
-	(Siren at: #GeneralMIDIDrums) add: ('High Timbale' asSymbol -> 65).
-	(Siren at: #GeneralMIDIDrums) add: ('Low Timbale' asSymbol -> 66).
-	(Siren at: #GeneralMIDIDrums) add: ('High Agogo' asSymbol -> 67).
-	(Siren at: #GeneralMIDIDrums) add: ('Low Agogo' asSymbol -> 68).
-	(Siren at: #GeneralMIDIDrums) add: ('Cabasa' asSymbol -> 69).
-	(Siren at: #GeneralMIDIDrums) add: ('Maracas' asSymbol -> 70).
-	(Siren at: #GeneralMIDIDrums) add: ('Short Whistle' asSymbol -> 71).
-	(Siren at: #GeneralMIDIDrums) add: ('Long Whistle' asSymbol -> 72).
-	(Siren at: #GeneralMIDIDrums) add: ('Short Guiro' asSymbol -> 73).
-	(Siren at: #GeneralMIDIDrums) add: ('Long Guiro' asSymbol -> 74).
-	(Siren at: #GeneralMIDIDrums) add: ('Claves' asSymbol -> 75).
-	(Siren at: #GeneralMIDIDrums) add: ('Hi Wood Block' asSymbol -> 76).
-	(Siren at: #GeneralMIDIDrums) add: ('Low Wood Block' asSymbol -> 77).
-	(Siren at: #GeneralMIDIDrums) add: ('Mute Cuica' asSymbol -> 78).
+!MIDIPort class methodsFor: 'class initialization' stamp: 'stp 12/29/2022 04:48'!
+initializeGeneralMIDI1
+	GeneralMIDIMap := Dictionary new.
+	GeneralMIDIMap
+		add: 'Acoustic Grand Piano' asSymbol -> 1.
+	GeneralMIDIMap
+		add: 'Bright Acoustic Piano' asSymbol -> 2.
+	GeneralMIDIMap
+		add: 'Electric Grand Piano' asSymbol -> 3.
+	GeneralMIDIMap
+		add: 'Honky-tonk Piano' asSymbol -> 4.
+	GeneralMIDIMap
+		add: 'Electric Piano 1' asSymbol -> 5.
+	GeneralMIDIMap
+		add: 'Electric Piano 2' asSymbol -> 6.
+	GeneralMIDIMap
+		add: 'Harpsichord' asSymbol -> 7.
+	GeneralMIDIMap
+		add: 'Clavinet' asSymbol -> 8.
+	GeneralMIDIMap
+		add: 'Celesta' asSymbol -> 9.
+	GeneralMIDIMap
+		add: 'Glockenspiel' asSymbol -> 10.
+	GeneralMIDIMap
+		add: 'Music Box' asSymbol -> 11.
+	GeneralMIDIMap
+		add: 'Vibraphone' asSymbol -> 12.
+	GeneralMIDIMap
+		add: 'Marimba' asSymbol -> 13.
+	GeneralMIDIMap
+		add: 'Xylophone' asSymbol -> 14.
+	GeneralMIDIMap
+		add: 'Tubular Bells' asSymbol -> 15.
+	GeneralMIDIMap
+		add: 'Dulcimer' asSymbol -> 16.
+	GeneralMIDIMap
+		add: 'Drawbar Organ' asSymbol -> 17.
+	GeneralMIDIMap
+		add: 'Percussive Organ' asSymbol -> 18.
+	GeneralMIDIMap
+		add: 'Rock Organ' asSymbol -> 19.
+	GeneralMIDIMap
+		add: 'Church Organ' asSymbol -> 20.
+	GeneralMIDIMap
+		add: 'Reed Organ' asSymbol -> 21.
+	GeneralMIDIMap
+		add: 'Accordion' asSymbol -> 22.
+	GeneralMIDIMap
+		add: 'Harmonica' asSymbol -> 23.
+	GeneralMIDIMap
+		add: 'Tango Accordion' asSymbol -> 24.
+	GeneralMIDIMap
+		add: 'Acoustic Guitar (nylon)' asSymbol -> 25.
+	GeneralMIDIMap
+		add: 'Acoustic Guitar (steel)' asSymbol -> 26.
+	GeneralMIDIMap
+		add: 'Electric Guitar (jazz)' asSymbol -> 27.
+	GeneralMIDIMap
+		add: 'Electric Guitar (clean)' asSymbol -> 28.
+	GeneralMIDIMap
+		add: 'Electric Guitar (muted)' asSymbol -> 29.
+	GeneralMIDIMap
+		add: 'Overdriven Guitar' asSymbol -> 30.
+	GeneralMIDIMap
+		add: 'Distortion Guitar' asSymbol -> 31.
+	GeneralMIDIMap
+		add: 'Guitar harmonics' asSymbol -> 32.
+	GeneralMIDIMap
+		add: 'Acoustic Bass' asSymbol -> 33.
+	GeneralMIDIMap
+		add: 'Electric Bass (finger)' asSymbol -> 34.
+	GeneralMIDIMap
+		add: 'Electric Bass (pick)' asSymbol -> 35.
+	GeneralMIDIMap
+		add: 'Fretless Bass' asSymbol -> 36.
+	GeneralMIDIMap
+		add: 'Slap Bass 1' asSymbol -> 37.
+	GeneralMIDIMap
+		add: 'Slap Bass 2' asSymbol -> 38.
+	GeneralMIDIMap
+		add: 'Synth Bass 1' asSymbol -> 39.
+	GeneralMIDIMap
+		add: 'Synth Bass 2' asSymbol -> 40.
+	GeneralMIDIMap
+		add: 'Violin' asSymbol -> 41.
+	GeneralMIDIMap
+		add: 'Viola' asSymbol -> 42.
+	GeneralMIDIMap
+		add: 'Cello' asSymbol -> 43.
+	GeneralMIDIMap
+		add: 'Contrabass' asSymbol -> 44.
+	GeneralMIDIMap
+		add: 'Tremolo Strings' asSymbol -> 45.
+	GeneralMIDIMap
+		add: 'Pizzicato Strings' asSymbol -> 46.
+	GeneralMIDIMap
+		add: 'Orchestral Harp' asSymbol -> 47.
+	GeneralMIDIMap
+		add: 'Timpani' asSymbol -> 48.
+	GeneralMIDIMap
+		add: 'String Ensemble 1' asSymbol -> 49.
+	GeneralMIDIMap
+		add: 'String Ensemble 2' asSymbol -> 50.
+	GeneralMIDIMap
+		add: 'SynthStrings 1' asSymbol -> 51.
+	GeneralMIDIMap
+		add: 'SynthStrings 2' asSymbol -> 52.
+	GeneralMIDIMap
+		add: 'Choir Aahs' asSymbol -> 53.
+	GeneralMIDIMap
+		add: 'Voice Oohs' asSymbol -> 54.
+	GeneralMIDIMap
+		add: 'Synth Voice' asSymbol -> 55.
+	GeneralMIDIMap
+		add: 'Orchestra Hit' asSymbol -> 56.
+	GeneralMIDIMap
+		add: 'Trumpet' asSymbol -> 57.
+	GeneralMIDIMap
+		add: 'Trombone' asSymbol -> 58.
+	GeneralMIDIMap
+		add: 'Tuba' asSymbol -> 59.
+	GeneralMIDIMap
+		add: 'Muted Trumpet' asSymbol -> 60.
+	GeneralMIDIMap
+		add: 'French Horn' asSymbol -> 61.
+	GeneralMIDIMap
+		add: 'Brass Section' asSymbol -> 62.
+	GeneralMIDIMap
+		add: 'SynthBrass 1' asSymbol -> 63.
+	GeneralMIDIMap
+		add: 'SynthBrass 2' asSymbol -> 64! !
 
-self initializeMIDIFamilies
+!MIDIPort class methodsFor: 'class initialization' stamp: 'stp 12/29/2022 04:50'!
+initializeGeneralMIDI2
+	GeneralMIDIMap
+		add: 'Soprano Sax' asSymbol -> 65.
+	GeneralMIDIMap
+		add: 'Alto Sax' asSymbol -> 66.
+	GeneralMIDIMap
+		add: 'Tenor Sax' asSymbol -> 67.
+	GeneralMIDIMap
+		add: 'Baritone Sax' asSymbol -> 68.
+	GeneralMIDIMap
+		add: 'Oboe' asSymbol -> 69.
+	GeneralMIDIMap
+		add: 'English Horn' asSymbol -> 70.
+	GeneralMIDIMap
+		add: 'Bassoon' asSymbol -> 71.
+	GeneralMIDIMap
+		add: 'Clarinet' asSymbol -> 72.
+	GeneralMIDIMap
+		add: 'Piccolo' asSymbol -> 73.
+	GeneralMIDIMap
+		add: 'Flute' asSymbol -> 74.
+	GeneralMIDIMap
+		add: 'Recorder' asSymbol -> 75.
+	GeneralMIDIMap
+		add: 'Pan Flute' asSymbol -> 76.
+	GeneralMIDIMap
+		add: 'Blown Bottle' asSymbol -> 77.
+	GeneralMIDIMap
+		add: 'Shakuhachi' asSymbol -> 78.
+	GeneralMIDIMap
+		add: 'Whistle' asSymbol -> 79.
+	GeneralMIDIMap
+		add: 'Ocarina' asSymbol -> 80.
+	GeneralMIDIMap
+		add: 'Lead 1 (square)' asSymbol -> 81.
+	GeneralMIDIMap
+		add: 'Lead 2 (sawtooth)' asSymbol -> 82.
+	GeneralMIDIMap
+		add: 'Lead 3 (calliope)' asSymbol -> 83.
+	GeneralMIDIMap
+		add: 'Lead 4 (chiff)' asSymbol -> 84.
+	GeneralMIDIMap
+		add: 'Lead 5 (charang)' asSymbol -> 85.
+	GeneralMIDIMap
+		add: 'Lead 6 (voice)' asSymbol -> 86.
+	GeneralMIDIMap
+		add: 'Lead 7 (fifths)' asSymbol -> 87.
+	GeneralMIDIMap
+		add: 'Lead 8 (bass + lead)' asSymbol -> 88.
+	GeneralMIDIMap
+		add: 'Pad 1 (new age)' asSymbol -> 89.
+	GeneralMIDIMap
+		add: 'Pad 2 (warm)' asSymbol -> 90.
+	GeneralMIDIMap
+		add: 'Pad 3 (polysynth)' asSymbol -> 91.
+	GeneralMIDIMap
+		add: 'Pad 4 (choir)' asSymbol -> 92.
+	GeneralMIDIMap
+		add: 'Pad 5 (bowed)' asSymbol -> 93.
+	GeneralMIDIMap
+		add: 'Pad 6 (metallic)' asSymbol -> 94.
+	GeneralMIDIMap
+		add: 'Pad 7 (halo)' asSymbol -> 95.
+	GeneralMIDIMap
+		add: 'Pad 8 (sweep)' asSymbol -> 96.
+	GeneralMIDIMap
+		add: 'FX 1 (rain)' asSymbol -> 97.
+	GeneralMIDIMap
+		add: 'FX 2 (soundtrack)' asSymbol -> 98.
+	GeneralMIDIMap
+		add: 'FX 3 (crystal)' asSymbol -> 99.
+	GeneralMIDIMap
+		add: 'FX 4 (atmosphere)' asSymbol -> 100.
+	GeneralMIDIMap
+		add: 'FX 5 (brightness)' asSymbol -> 101.
+	GeneralMIDIMap
+		add: 'FX 6 (goblins)' asSymbol -> 102.
+	GeneralMIDIMap
+		add: 'FX 7 (echoes)' asSymbol -> 103.
+	GeneralMIDIMap
+		add: 'FX 8 (sci-fi)' asSymbol -> 104.
+	GeneralMIDIMap
+		add: 'Sitar' asSymbol -> 105.
+	GeneralMIDIMap
+		add: 'Banjo' asSymbol -> 106.
+	GeneralMIDIMap
+		add: 'Shamisen' asSymbol -> 107.
+	GeneralMIDIMap
+		add: 'Koto' asSymbol -> 108.
+	GeneralMIDIMap
+		add: 'Kalimba' asSymbol -> 109.
+	GeneralMIDIMap
+		add: 'Bag pipe' asSymbol -> 110.
+	GeneralMIDIMap
+		add: 'Fiddle' asSymbol -> 111.
+	GeneralMIDIMap
+		add: 'Shanai' asSymbol -> 112.
+	GeneralMIDIMap
+		add: 'Tinkle Bell' asSymbol -> 113.
+	GeneralMIDIMap
+		add: 'Agogo' asSymbol -> 114.
+	GeneralMIDIMap
+		add: 'Steel Drums' asSymbol -> 115.
+	GeneralMIDIMap
+		add: 'Woodblock' asSymbol -> 116.
+	GeneralMIDIMap
+		add: 'Taiko Drum' asSymbol -> 117.
+	GeneralMIDIMap
+		add: 'Melodic Tom' asSymbol -> 118.
+	GeneralMIDIMap
+		add: 'Synth Drum' asSymbol -> 119.
+	GeneralMIDIMap
+		add: 'Reverse Cymbal' asSymbol -> 120.
+	GeneralMIDIMap
+		add: 'Guitar Fret Noise' asSymbol -> 121.
+	GeneralMIDIMap
+		add: 'Breath Noise' asSymbol -> 122.
+	GeneralMIDIMap
+		add: 'Seashore' asSymbol -> 123.
+	GeneralMIDIMap
+		add: 'Bird Tweet' asSymbol -> 124.
+	GeneralMIDIMap
+		add: 'Telephone Ring' asSymbol -> 125.
+	GeneralMIDIMap
+		add: 'Helicopter' asSymbol -> 126.
+	GeneralMIDIMap
+		add: 'Applause' asSymbol -> 127.
+	GeneralMIDIMap
+		add: 'Gunshot' asSymbol -> 128! !
 
-	Siren at: #GeneralMIDIFamilies put: Dictionary new.
-	(Siren at: #GeneralMIDIFamilies) add: ('Pianos' asSymbol -> (1 to: 8)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Tuned Pecussion' asSymbol -> (9 to: 16)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Organs' asSymbol -> (17 to: 24)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Guitars' asSymbol -> (25 to: 32)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Bass' asSymbol -> (33 to: 40)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Solo Strings' asSymbol -> (41 to: 48)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Ensembles' asSymbol -> (49 to: 56)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Brass' asSymbol -> (57 to: 64)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Reeds' asSymbol -> (65 to: 72)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Pipes' asSymbol -> (73 to: 80)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Synth Lead' asSymbol -> (81 to: 88)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Synth Pad' asSymbol -> (89 to: 96)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Synth Effects' asSymbol -> (97 to: 104)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Ethnic' asSymbol -> (105 to: 112)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Percussion' asSymbol -> (113 to: 120)).
-	(Siren at: #GeneralMIDIFamilies) add: ('Sound Effects' asSymbol -> (121 to: 128))! !
+!MIDIPort class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 07:05'!
+initializeMIDIDrums
+ Siren at: #GeneralMIDIDrums put: Dictionary new.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Open Cuica' asSymbol -> 79.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Mute Triangle' asSymbol -> 80.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Open Triangle' asSymbol -> 81.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Acoustic Bass Drum' asSymbol -> 35.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Bass Drum 1' asSymbol -> 36.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Side Stick' asSymbol -> 37.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Acoustic Snare' asSymbol -> 38.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Hand Clap' asSymbol -> 39.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Electric Snare' asSymbol -> 40.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low Floor Tom' asSymbol -> 41.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Closed Hi Hat' asSymbol -> 42.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'High Floor Tom' asSymbol -> 43.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Pedal Hi-Hat' asSymbol -> 44.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low Tom' asSymbol -> 45.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Open Hi-Hat' asSymbol -> 46.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low-Mid Tom' asSymbol -> 47.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Hi Mid Tom' asSymbol -> 48.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Crash Cymbal 1' asSymbol -> 49.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'High Tom' asSymbol -> 50.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Ride Cymbal 1' asSymbol -> 51.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Chinese Cymbal' asSymbol -> 52.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Ride Bell' asSymbol -> 53.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Tambourine' asSymbol -> 54.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Splash Cymbal' asSymbol -> 55.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Cowbell' asSymbol -> 56.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Crash Cymbal 2' asSymbol -> 57.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Vibraslap' asSymbol -> 58.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Ride Cymbal 2' asSymbol -> 59.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Hi Bongo' asSymbol -> 60.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low Bongo' asSymbol -> 61.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Mute Hi Conga' asSymbol -> 62.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Open Hi Conga' asSymbol -> 63.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low Conga' asSymbol -> 64.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'High Timbale' asSymbol -> 65.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low Timbale' asSymbol -> 66.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'High Agogo' asSymbol -> 67.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low Agogo' asSymbol -> 68.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Cabasa' asSymbol -> 69.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Maracas' asSymbol -> 70.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Short Whistle' asSymbol -> 71.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Long Whistle' asSymbol -> 72.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Short Guiro' asSymbol -> 73.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Long Guiro' asSymbol -> 74.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Claves' asSymbol -> 75.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Hi Wood Block' asSymbol -> 76.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Low Wood Block' asSymbol -> 77.
+	(Siren at: #GeneralMIDIDrums)
+		add: 'Mute Cuica' asSymbol -> 78.
+	self initializeMIDIFamilies Siren at: #GeneralMIDIFamilies put: Dictionary new.
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Pianos' asSymbol
+				-> (1 to: 8).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Tuned Pecussion' asSymbol
+				-> (9 to: 16).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Organs' asSymbol
+				-> (17 to: 24).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Guitars' asSymbol
+				-> (25 to: 32).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Bass' asSymbol
+				-> (33 to: 40).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Solo Strings' asSymbol
+				-> (41 to: 48).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Ensembles' asSymbol
+				-> (49 to: 56).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Brass' asSymbol
+				-> (57 to: 64).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Reeds' asSymbol
+				-> (65 to: 72).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Pipes' asSymbol
+				-> (73 to: 80).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Synth Lead' asSymbol
+				-> (81 to: 88).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Synth Pad' asSymbol
+				-> (89 to: 96).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Synth Effects' asSymbol
+				-> (97 to: 104).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Ethnic' asSymbol
+				-> (105 to: 112).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Percussion' asSymbol
+				-> (113 to: 120).
+	(Siren at: #GeneralMIDIFamilies)
+		add: 'Sound Effects' asSymbol
+				-> (121 to: 128)! !
+
+!MIDIPort class methodsFor: 'class initialization' stamp: 'stp 12/29/2022 04:51'!
+initializeMIDITables
+	"MIDIPort initializeMIDITables"
+	MIDICommands := Dictionary new.
+	MIDICommands
+		at: #noteOn
+		put: 144.
+	MIDICommands
+		at: #noteOff
+		put: 128.
+	MIDICommands
+		at: #polyTouch
+		put: 160.
+	MIDICommands
+		at: #chanTouch
+		put: 208.
+	MIDICommands
+		at: #ctrlChange
+		put: 176.
+	MIDICommands
+		at: #progChange
+		put: 192.
+	MIDICommands
+		at: #pitchWheel
+		put: 224.
+	MIDICommands
+		at: #sysEx
+		put: 240.
+	self initializeGeneralMIDI1.
+	self initializeGeneralMIDI2! !
+
+!MIDIPort class methodsFor: 'class initialization' stamp: 'stp 1/5/2023 13:34'!
+streams
+^Streams! !
 
 
-!classDefinition: #PortMIDIPort category: 'MusicIO-MIDI'!
+!classDefinition: #PortMIDIPort category: #'MusicIO-MIDI'!
 MIDIPort subclass: #PortMIDIPort
 	instanceVariableNames: 'driver'
 	classVariableNames: ''
@@ -1627,6 +2010,36 @@ Shared Variables:
 	Devices	<Dictionary>  unised
 	Streams	<IdentityDictionary key: Integer value: Integer>  the map between Siren devices and interface ports
 !
+
+
+!PortMIDIPort methodsFor: 'initialize release' stamp: 'stp 1/7/2023 13:58:02'!
+initialize
+	"Setup the receiver's instance variables."
+	"MIDIPort testANote"
+	"PortMIDIPort devices"
+	| return |
+	super initialize.
+	driver _ PortMIDILibrary.
+	return := driver pm_initialize.
+	return = 0
+		ifFalse: [self error: 'MIDI initialize failed'].
+	status := #init! !
+
+!PortMIDIPort methodsFor: 'initialize release'!
+release
+	"Release--break and dependencies on the error value."
+
+	super release.
+	[driver ifNotNil: [self critical: [driver pm_terminate]]]
+		on: Error
+		do: [ :ex | "ignore" ]! !
+
+
+!PortMIDIPort methodsFor: 'accessing'!
+isActive
+	"Answer whether the receiver is active."
+
+	^(status == #open)! !
 
 
 !PortMIDIPort methodsFor: 'open/close'!
@@ -1655,49 +2068,55 @@ close: stream
 	status := #closed.
 	^#OK! !
 
-!PortMIDIPort methodsFor: 'open/close'!
+!PortMIDIPort methodsFor: 'open/close' stamp: 'stp 1/2/2023 14:54'!
 open
 	"Open the MIDI driver -- start the lower-level driver up."
 	"MIDIPort default"
 
 	self isActive
 		ifTrue: [^self].
-	^self openOutput: self class out! !
+	^self openOutput: SirenUtility defaultMIDIOut! !
 
-!PortMIDIPort methodsFor: 'open/close'!
-openInput: dev
+!PortMIDIPort methodsFor: 'open/close' stamp: 'stp 1/3/2023 18:53'!
+openInput: dev 
 	"Open the MIDI driver -- start the lower-level driver up."
 	"MIDIPort default"
-
 	| which |
+	status == #open
+		ifTrue: [^ self].
+	super openInput: dev.
 	[which := driver pm_open: dev with: 1]
 		on: Error
-		do: [ :ex | Transcript show: 'MIDI openInput error'; cr.
-				which := -1].
-	(which < 0)
+		do: [:ex | 
+			Transcript show: 'MIDI openInput error';
+				 cr.
+			which := -1].
+	which < 0
 		ifTrue: [self error: 'MIDI open failed'].
 	device := dev.
 	Streams at: dev put: which.
 	status := #open.
-	^which! !
+	^ which! !
 
-!PortMIDIPort methodsFor: 'open/close'!
-openOutput: dev
+!PortMIDIPort methodsFor: 'open/close' stamp: 'stp 1/5/2023 13:58'!
+openOutput: dev 
 	"Open the MIDI driver -- start the lower-level driver up."
 	"MIDIPort default"
-
 	| which |
-	status == #open ifTrue: [^self].
-	self critical: [[which := driver pm_open: dev with: 0]
-		on: Error
-		do: [ :ex | which := 0.		"assume first slot"
-				Transcript show: 'MIDI open failed'; cr]].
-	(which < 0)
+	((status == #open) and: [Streams includesKey: dev]) ifTrue: [^self].
+	self
+		critical: [[which := driver pm_open: dev with: 0]
+				on: Error
+				do: [:ex | 
+					which := -1.
+					"assume first slot"
+					Transcript show: 'MIDI open failed';
+						 cr]].
+	which < 0
 		ifTrue: [self error: 'MIDI open failed'].
 	Streams at: dev put: which.
 	status := #open.
-	device := dev.
-	^which! !
+	device := dev! !
 
 !PortMIDIPort methodsFor: 'open/close'!
 terminate
@@ -1741,95 +2160,118 @@ stopControllerCaching
 	self critical: [driver pm_stop_controller_cacheing]! !
 
 
-!PortMIDIPort methodsFor: 'initialize release'!
-initialize
-	"Setup the receiver's instance variables."
-	"MIDIPort testANote"
-	"PortMIDIPort devices"
-
-	| return | 
-	super initialize.
-	driver := PortMidiInterface new.
-	return := driver pm_initialize.
-	(return = 0)
-		ifFalse: [self error: 'MIDI initialize failed'].
-	status := #init.
-	self class resetDevices.
-	self critical: [1 to: driver pm_count_devices do:
-		[ :cnt | | nam |
-		nam := driver pm_get_name: cnt.
-		self class devices add: (DeviceModel new name: nam asNullTermString asSymbol; 
-						port: (cnt - 1); out: (driver pm_dev_dir: cnt))]].
-	(SirenUtility verbosity > 1)
-		ifTrue: [Transcript cr; show: 'Midi Device Table'; crtab.
-			self class devices do: [ :aDev | Transcript show: aDev port printString, ': ', aDev name.
-					(aDev out = 1) ifTrue: [Transcript show: ' - in'] ifFalse: [Transcript show: ' - out']]
-				separatedBy: [Transcript crtab].
-			Transcript cr]! !
-
-!PortMIDIPort methodsFor: 'initialize release'!
-release
-	"Release--break and dependencies on the error value."
-
-	super release.
-	[driver ifNotNil: [self critical: [driver pm_terminate]]]
-		on: Error
-		do: [ :ex | "ignore" ]! !
-
-
-!PortMIDIPort methodsFor: 'read/write'!
-playOff: aPitch amp: anAmp voice: aVoice
+!PortMIDIPort methodsFor: 'read/write' stamp: 'stp 1/4/2023 07:36'!
+playOff: aPitch amp: anAmp voice: aVoice 
 	"Play the argument on the receiver--no duration-->no note-off."
-
-	[self critical: [driver pm_write_data3: (Streams at: device) 
-			with: ((MIDICommands at: #noteOff) bitOr: aVoice) 
-			with: aPitch with: anAmp]]
+	SirenUtility
+		ifVerbose: [Transcript show: 'MIDI playOff (' , (Streams at: device) printString , ') ' , 
+					aVoice printString , ' - ' , aPitch printString , ' - ' , anAmp printString;
+				 cr].
+	[self
+		critical: [driver
+				pm_write_data3: (Streams at: device)
+				with: ((MIDICommands at: #noteOff)
+						bitOr: aVoice)
+				with: aPitch
+				with: 0]]
 		on: Error
-		do: [ :ex | Transcript show: 'MIDI write error'; cr]! !
+		do: [:ex | Transcript show: 'MIDI write error';
+				 cr]! !
 
-!PortMIDIPort methodsFor: 'read/write'!
-playOff: streamID pitch: pitch amp: amp voice: voice
+!PortMIDIPort methodsFor: 'read/write' stamp: 'stp 1/5/2023 13:22'!
+playOff: streamID pitch: pitch amp: amp voice: voice 
 	"Play the argument on the receiver."
+	SirenUtility
+		ifVerbose: [Transcript show: 'MIDI playOffS (' , streamID printString , ') ' , voice printString , ' - ' , pitch printString , ' - ' , amp printString;
+				 cr].
+	self
+		critical: [driver
+				pm_write_data3: (Streams at: streamID ifAbsent: [0])
+				with: ((MIDICommands at: #noteOn)
+						bitOr: voice)
+				with: pitch
+				with: 0]! !
 
-	self critical: [driver pm_write_data3: streamID with: ((MIDICommands at: #noteOn) bitOr: voice) with: pitch with: 0]! !
-
-!PortMIDIPort methodsFor: 'read/write'!
-playOn: aPitch amp: anAmp voice: aVoice
+!PortMIDIPort methodsFor: 'read/write' stamp: 'stp 1/3/2023 19:08'!
+playOn: aPitch amp: anAmp voice: aVoice 
 	"Play the argument on the receiver--no duration-->no note-off."
-
-	[self critical: [driver pm_write_data3: (Streams at: device) 
-			with: ((MIDICommands at: #noteOn) bitOr: aVoice) 
-			with: aPitch with: anAmp]]
+	SirenUtility
+		ifVerbose: [Transcript show: 'MIDI playOn (' ,  (Streams at: device) printString , ') ' , aVoice printString , ' - ' , aPitch printString , ' - ' , anAmp printString;
+				 cr].
+	[self
+		critical: [driver
+				pm_write_data3: (Streams at: device)
+				with: ((MIDICommands at: #noteOn)
+						bitOr: aVoice)
+				with: aPitch
+				with: anAmp]]
 		on: Error
-		do: [ :ex | Transcript show: 'MIDI write error.'; cr]! !
+		do: [:ex | Transcript show: 'MIDI write error.';
+				 cr]! !
 
-!PortMIDIPort methodsFor: 'read/write'!
-playOn: streamID pitch: pitch amp: amp voice: voice
-	"Play the argument on the receiver--no duration-->no note-off."
+!PortMIDIPort methodsFor: 'read/write' stamp: 'stp 1/4/2023 07:33'!
+playOn: streamID pitch: pitch amp: amp voice: voice 
+	SirenUtility
+		ifVerbose: [Transcript show: 'MIDI playOnS (' , streamID printString , ' - ' , (Streams at: device) printString , ') ' , voice printString , ' - ' , pitch printString , ' - ' , amp printString;
+				 cr].
+	self
+		critical: [driver
+				pm_write_data3: (Streams at: device)
+				with: ((MIDICommands at: #noteOn)
+						bitOr: voice)
+				with: pitch
+				with: amp]
+! !
 
-	self critical: [driver pm_write_data3: streamID with: ((MIDICommands at: #noteOn) bitOr: voice) with: pitch with: amp]! !
+!PortMIDIPort methodsFor: 'read/write' stamp: 'stp 1/2/2023 15:49'!
+put: streamID data: data length: size 
+	"Send the argument (a ByteArray for historical reasons) to the
+	receiver now."
+	[size < 2
+		ifTrue: [^ self error: 'Unknown MIDI command format -- illegal length'].
+	SirenUtility
+		ifVerbose: [Transcript show: 'MIDI putS (' , streamID printString , ') ' , data printString;
+				 cr].
+	size = 2
+		ifTrue: [^ self
+				critical: [driver
+						pm_write_data2: streamID
+						with: (data at: 1)
+						with: (data at: 2)]].
+	size = 3
+		ifTrue: [^ self
+				critical: [driver
+						pm_write_data3: streamID
+						with: (data at: 1)
+						with: (data at: 2)
+						with: (data at: 3)]].
+	size > 3
+		ifTrue: [self halt
+			"not supported yet"]]
+		on: Error
+		do: [:ex | Transcript show: 'MIDI write error';
+				 cr].
+	^ nil! !
 
-!PortMIDIPort methodsFor: 'read/write'!
-put: streamID data: data length: size
-	"Send the argument (a ByteArray for historical reasons) to the receiver now."
-
-	[(size < 2)
-		ifTrue: [^self error: 'Unknown MIDI command format -- illegal length'].
-	(size = 2)
-		ifTrue: [^self critical: [driver pm_write_data2: streamID with: (data at: 1) with: (data at: 2)]].
-	(size = 3)
-		ifTrue: [^self critical: [driver pm_write_data3: streamID with: (data at: 1) with: (data at: 2) with: (data at: 3)]].
-	(size > 3)
-		ifTrue: [self halt]] 		"not supported yet"
-			on: Error
-			do: [ :ex | Transcript show: 'MIDI write error'; cr].
-	^nil! !
-
-!PortMIDIPort methodsFor: 'read/write'!
-put: data length: size
-	"Send the argument (a ByteArray for historical reasons) to the receiver now."
-
-	^self put: (Streams at: device ifAbsent: [self error: 'MIDI port not found']) data: data length: size! !
+!PortMIDIPort methodsFor: 'read/write' stamp: 'stp 1/3/2023 18:31'!
+put: data length: size 
+	"Send the argument (a ByteArray for historical reasons) to the
+	receiver now."
+	SirenUtility
+		ifVerbose: [Transcript show: 'MIDI put (' , device printString , ') ' , data printString;
+				 cr]. 
+	size = 2
+		ifTrue: [^ driver
+				pm_write_data2: device
+				with: (data at: 1)
+				with: (data at: 2)].
+	size = 3
+		ifTrue: [^ driver
+				pm_write_data3: device
+				with: (data at: 1)
+				with: (data at: 2)
+				with: (data at: 3)].
+	self error: 'Invalid MIDI message'! !
 
 !PortMIDIPort methodsFor: 'read/write'!
 readControllersFrom: lo to: hi into: array
@@ -1838,53 +2280,156 @@ readControllersFrom: lo to: hi into: array
 	self critical: [driver pm_read_controllers: (Streams at: device) with: lo with: hi with: array].! !
 
 
-!PortMIDIPort methodsFor: 'accessing'!
-isActive
-	"Answer whether the receiver is active."
-
-	^(status == #open)! !
+!PortMIDIPort methodsFor: 'printing' stamp: 'stp 1/2/2023 11:27'!
+printOn: aStream 
+	"Append to the argument aStream a sequence of characters 
+	that
+	identifies the collection."
+	super printOn: aStream.
+	aStream nextPutAll: ' of driver ' , driver printString! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PortMIDIPort class' category: 'MusicIO-MIDI'!
+!classDefinition: 'PortMIDIPort class' category: #'MusicIO-MIDI'!
 PortMIDIPort class
 	instanceVariableNames: ''!
 
-!PortMIDIPort class methodsFor: 'examples'!
+!PortMIDIPort class methodsFor: 'examples' stamp: 'stp 1/4/2023 21:58'!
 testANote
 	"Open MIDI, play a note."
 	"PortMIDIPort testANote"
-
 	| inst |
-	inst := MIDIPort new.		"this answers an instance of me."
+	inst := MIDIPort  defaultOut: 0.
+	"this answers an instance of me."
 	inst open.
-	inst playOn: 48 amp: 100 voice: 0.
+	inst
+		playOn: 48
+		amp: 100
+		voice: 0.
 	1 wait.
-	inst playOff: 48 amp: 100 voice: 0.
+	inst
+		playOff: 48
+		amp: 100
+		voice: 0.
 	inst close.
 	inst terminate.
 	MIDIPort cleanUp! !
 
 
-!PortMIDIPort class methodsFor: 'class initialization'!
-initializeData
-	"Set up the class defaults."
-	"PortMIDIPort initializeData"
+!PortMIDIPort class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 13:29'!
+indexOfInNamed: nam 
+	"PortMIDIPort indexOfOutNamed: '*Nord*'"
+	| which |
+	devices
+		ifEmpty: [PortMIDILibrary resetMIDIDriver.
+			PortMIDIPort new].
+	1
+		to: devices size
+		do: [:ind | 
+			| aD |
+			aD := devices at: ind.
+			((nam match: aD name)
+					and: [aD direction == #in])
+				ifTrue: [which := ind]].
+	^ which - 1! !
 
+!PortMIDIPort class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 13:29'!
+indexOfOutNamed: nam 
+	"PortMIDIPort outDeviceNamed: '*Nord*'"
+	| which |
+	devices
+		ifEmpty: [PortMIDILibrary resetMIDIDriver.
+			PortMIDIPort new].
+	1
+		to: devices size
+		do: [:ind | 
+			| aD |
+			aD := devices at: ind.
+			((nam match: aD name)
+					and: [aD direction == #out])
+				ifTrue: [which := ind]].
+	^ which - 1! !
+
+
+!PortMIDIPort class methodsFor: 'class initialization' stamp: 'stp 1/7/2023 21:37:37'!
+initializeData
+	"Set up the class defaults and load the device table."
+	"PortMIDIPort initializeData"
+	"PortMIDIPort instanceCount"
+	| driver |
 	instance := nil.
-	devices := OrderedCollection new.
-	properties := Array new.
+	useSingleton := true.
 	mutex := Semaphore forMutualExclusion.
-	useSingleton := true.			"PortMIDI allows multiple port objects, but we don't use it..."
-	out := SirenUtility defaultMIDIOut.
-	in := SirenUtility defaultMIDIIn.
-	rate := 0.
-	blockSize := 0.! !
+	self resetDevices.
+	driver := PortMIDILibrary.
+	self mutex
+		critical: [0
+				to: driver pm_count_devices - 1
+				do: [:cnt | 
+					| nam dir dev |
+					nam := driver pm_get_name: cnt.
+					nam
+						ifNil: [nam := 'Anonymous'].
+					dir := driver pm_dev_dir: cnt.
+					dev := DeviceModel new name: nam asSymbol;
+								 port: cnt.
+					dir == 0
+						ifTrue: [dev out: 1]
+						ifFalse: [dev in: 1].
+					devices add: dev]].
+	self listDeviceTable! !
+
+!PortMIDIPort class methodsFor: 'class initialization' stamp: 'stp 1/7/2023 21:29:29'!
+listDeviceTable
+	"Print a list of devices to the transcript."
+	"PortModel initialize"
+	"PortMIDIPort listDeviceTable"
+	"MIDI reset; found 9 MIDI devices
+	MIDI Device Table (0 - 4)
+	# 0 - MIDIPLUS TBOX 2x2 Midi In 1 - out -- DEFAULT 
+	# 1 - Faders - out
+	# 2 - IAC Driver Bus 1 - out
+	# 3 - Nord Stage 3 MIDI Output - out
+	# 4 - Nord Stage 3 - in -- DEFAULT 
+	# 5 - MIDIPLUS TBOX 2x2 Midi Out 2 - in
+	# 6 - IAC Driver Bus 1 - in
+	# 7 - Nord Stage 3 MIDI Input - in
+	# 8 - Kontakt 7 Virtual Input - in"
+	| lib num din dout |
+	lib := PortMIDILibrary.
+	num := lib pm_count_devices.
+	din := lib pm_default_input_device.
+	dout := lib pm_default_output_device.
+	SirenUtility defaultMIDIIn: din.
+	SirenUtility defaultMIDIOut: dout.
+	Transcript show: 'MIDI Device Table, ', num printString, ' devices found';
+		 cr.
+	1
+		to: devices size
+		do: [:ind | 
+			| cnt dev |
+			cnt := ind - 1.
+			dev := devices at: ind.
+			Transcript tab; show: '# ' , cnt printString , ' - ' , dev name , ' - '.
+			dev in
+				ifTrue: [Transcript show: 'out'].
+			dev out
+				ifTrue: [Transcript show: 'in'].
+			(cnt == din
+					or: [cnt == dout])
+				ifTrue: [Transcript show: ' -- DEFAULT '].
+			Transcript cr].
+	Transcript cr! !
+
+!PortMIDIPort class methodsFor: 'class initialization' stamp: 'stp 1/5/2023 10:45'!
+resetDevices
+	"Flush the device list"
+	devices := OrderedCollection new! !
 
 
-!classDefinition: #MIDIVoice category: 'MusicIO-MIDI'!
+!classDefinition: #MIDIVoice category: #'MusicIO-MIDI'!
 Voice subclass: #MIDIVoice
-	instanceVariableNames: 'currentTime'
+	instanceVariableNames: 'currentTime channel'
 	classVariableNames: 'Instance UseSingleton'
 	poolDictionaries: ''
 	category: 'MusicIO-MIDI'!
@@ -1903,12 +2448,12 @@ close
 
 	instrument close! !
 
-!MIDIVoice methodsFor: 'initialize-release'!
+!MIDIVoice methodsFor: 'initialize-release' stamp: 'stp 1/2/2023 10:26'!
 initialize
 	"Set up a MIDIVoice's time counter."
-
 	super initialize.
-	currentTime := nil! !
+	currentTime := nil.
+	name := 'A MIDI Voice'! !
 
 !MIDIVoice methodsFor: 'initialize-release'!
 reset
@@ -1924,14 +2469,24 @@ play: anEventList
 	anEventList voice: self.
 	^anEventList play! !
 
-!MIDIVoice methodsFor: 'events'!
+!MIDIVoice methodsFor: 'events' stamp: 'stp 1/5/2023 10:23'!
 playEvent: anEvent at: aTime
 	"Send the given Event to the instrument."
 
 	^aTime isNil
-		ifTrue: [instrument play: anEvent at: Time microsecondClock]
-		ifFalse: [instrument play: anEvent at: aTime usec value]! !
+		ifTrue: [instrument play: anEvent at: Time microsecondClock chan: channel]
+		ifFalse: [instrument play: anEvent at: aTime usec value chan: channel]! !
 
+
+!MIDIVoice methodsFor: 'accessing' stamp: 'stp 1/4/2023 15:34'!
+channel
+	"Answer my MIDI channel"
+	^ channel! !
+
+!MIDIVoice methodsFor: 'accessing' stamp: 'stp 1/4/2023 15:34'!
+channel: anInt
+	"Set my MIDI channel"
+	channel := anInt! !
 
 !MIDIVoice methodsFor: 'accessing'!
 number
@@ -1944,7 +2499,7 @@ number
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIVoice class' category: 'MusicIO-MIDI'!
+!classDefinition: 'MIDIVoice class' category: #'MusicIO-MIDI'!
 MIDIVoice class
 	instanceVariableNames: ''!
 
@@ -1960,19 +2515,23 @@ randomExample
 	voice := MIDIVoice default.
 	events playOn: voice! !
 
-!MIDIVoice class methodsFor: 'examples'!
+!MIDIVoice class methodsFor: 'examples' stamp: 'stp 1/2/2023 12:40'!
 scaleExample
-	"Play a scale on a voice on a device on a port to the Apple MIDI Mgr."
+	"Play a scale on a voice on a device on a port to the Apple MIDI
+	Mgr."
 	"MIDIVoice scaleExample"
 	"MIDIPort allNotesOff"
-
 	| voice device port scale |
 	port := MIDIPort default.
 	device := MIDIDevice on: port.
 	voice := MIDIVoice on: device.
-	scale := EventList scaleFrom: 24 to: 100 in: 4.0.
-"	scale eventsDo: [ :e | e duration: (e duration * 3)]."
-	voice play: scale! !
+	scale := EventList
+				scaleFrom: 24
+				to: 48
+				in: 4.0.
+"	scale
+		eventsDo: [:e | e duration: e duration * 2].
+"	voice play: scale! !
 
 !MIDIVoice class methodsFor: 'examples'!
 voiceInspect
@@ -1981,25 +2540,50 @@ voiceInspect
 	(MIDIVoice on: (MIDIDevice on: (MIDIPort default))) inspect! !
 
 
-!MIDIVoice class methodsFor: 'instance creation'!
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 14:07'!
 default
 	"Answer the default MIDIVoice."
 	"MIDIVoice default"
+	^ self defaultOut! !
 
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 14:07'!
+defaultIn	
+	"Answer the default MIDIVoice."
+	"MIDIVoice default"
 	UseSingleton
-		ifTrue: [Instance ifNil: [Instance := MIDIVoice on: (MIDIDevice on: MIDIPort default)].
-			^Instance]
-		ifFalse: [^MIDIVoice on: (MIDIDevice on: MIDIPort default)]! !
+		ifTrue: [Instance
+				ifNil: [Instance := MIDIVoice
+								on: (MIDIDevice on: MIDIPort default)].
+			^ Instance]
+		ifFalse: [^ MIDIVoice
+				on: (MIDIDevice on: MIDIPort default)]! !
 
-!MIDIVoice class methodsFor: 'instance creation'!
-named: aName onDevice: aMidiDevice channel: aChannel
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 13:52'!
+defaultOut
+	"Answer the default MIDIVoice for channel 1."
+	"MIDIVoice default"
+	"MIDIVoice instanceCount"
+	^ self defaultOut: 1! !
+
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/4/2023 15:35'!
+defaultOut: chan
+	"Answer the default MIDIVoice."
+	"MIDIVoice default"
+	"MIDIVoice instanceCount"
+	| mv |
+	mv := MIDIVoice
+		on: (MIDIDevice outOn: MIDIPort default).
+	mv channel: chan.^ mv! !
+
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/9/2023 12:41:36'!
+named: aName onDevice: aMidiDevice channel: aChannel 
 	"set up a MidiVoice on the given device and channel"
 	"MIDIVoice named: 'xxx' onDevice: (MIDIDevice on: 1) channel: 1"
-
 	| me |
 	me := self new initializeNamed: aName.
-	me instrument add: (aChannel -> aMidiDevice).
-	^me! !
+	me instrument: aMidiDevice.
+	me channel: aChannel.
+	^ me! !
 
 !MIDIVoice class methodsFor: 'instance creation'!
 new
@@ -2007,33 +2591,75 @@ new
 
 	^self default! !
 
-!MIDIVoice class methodsFor: 'instance creation'!
-on: aMidiDevice
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/4/2023 16:16'!
+on: aMidiDevice 
 	"Answer up a MidiVoice on the given device."
 	"MIDIVoice on: (MIDIDevice on: (MIDIPort default openOutput))"
-
 	| me |
 	me := self basicNew initialize.
 	me instrument: aMidiDevice.
-	^me! !
+	me channel: 0.
+	^ me! !
 
-!MIDIVoice class methodsFor: 'instance creation'!
-on: aMidiDevice channel: aChannel
-	"set up a MidiVoice on the given device and channel"
-	"MidiVoice onDevice: (MidiFB01 newOn: 1) channel: 1"
-
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 13:43'!
+on: aMidiDevice channel: aChannel 
+	"Set up a MidiVoice on the given device and channel"
+	"MIDIVoice on: 
+	(MIDIDevice 
+	outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') 
+	port: MIDIPort concreteClass default) 
+	channel: 1"
 	| me |
-	me := self new initializeNamed: aChannel.
-	me instrument add: (aChannel -> aMidiDevice).
-	^me! !
+	me := self new initialize.
+	me instrument: aMidiDevice.
+	me channel: aChannel.
+	^ me! !
+
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 13:44'!
+onDevice: aMidiDevice channel: aChannel 
+	"Set up a MidiVoice on the given device and channel"
+	"MIDIVoice on: 
+	(MIDIDevice 
+	outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') 
+	port: MIDIPort concreteClass default) 
+	channel: 1"
+	| me |
+	me := self new initialize.
+	me instrument: aMidiDevice.
+	me channel: aChannel.
+	^ me! !
+
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 13:48'!
+onDeviceNamed: aName channel: aChannel 
+	"Set up a MidiVoice on the given device and channel"
+	"MIDIVoice onDeviceNamed: 'Kontakt' channel: 1"
+	| me |
+	me := self new initialize.
+	me
+		instrument: (MIDIDevice
+				outOn: (PortMIDIPort indexOfOutNamed: '*' , aName , '*')
+				port: MIDIPort concreteClass default).
+	me channel: aChannel.
+	^ me! !
+
+!MIDIVoice class methodsFor: 'instance creation' stamp: 'stp 1/5/2023 13:27'!
+outOn: dev chan: chan 
+	"Answer the selected MIDIVoice."
+	"MIDIVoice default"
+	"MIDIVoice instanceCount"
+	| mv |
+	mv := MIDIVoice
+				on: (MIDIDevice outOn: dev).
+	mv channel: chan.
+	^ mv! !
 
 
-!MIDIVoice class methodsFor: 'class initialization'!
+!MIDIVoice class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 13:59'!
 defaultOutInterface
-	"Answer the class's default intertface # (use external device list to get the right value)."
+	"Answer the class's default intertface # (use external device list to get
+	the right value)."
 	"MIDIVoice defaultOutInterface"
-
-	^10! !
+	^ 6! !
 
 !MIDIVoice class methodsFor: 'class initialization'!
 flushDefault
@@ -2051,7 +2677,7 @@ initialize
 	UseSingleton := false.! !
 
 
-!classDefinition: #MIDIDump category: 'MusicIO-MIDI'!
+!classDefinition: #MIDIDump category: #'MusicIO-MIDI'!
 Model subclass: #MIDIDump
 	instanceVariableNames: 'eventList live notesOn startedAt'
 	classVariableNames: ''
@@ -2124,7 +2750,7 @@ live: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIDump class' category: 'MusicIO-MIDI'!
+!classDefinition: 'MIDIDump class' category: #'MusicIO-MIDI'!
 MIDIDump class
 	instanceVariableNames: ''!
 
@@ -2215,241 +2841,7 @@ exampleList
 	list "inspect" edit! !
 
 
-!classDefinition: #PortMIDILibrary category: 'MusicIO-MIDI'!
-ExternalLibrary subclass: #PortMIDILibrary
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MusicIO-MIDI'!
-!PortMIDILibrary commentStamp: 'stp 12/9/2022 12:00' prior: 0!
-A PortMIDILibrary is an external library to interface with the PortMIDI library -- see https://portmedia.sourceforge.net
-
-Instance Variables
-
-	Interface
-	port
-
-Calls
-
-!
-
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:36:32'!
-pm_close: which
-	"Close the selected MIDI output device/port."
-
-"	<cdecl: int32_t pm_close(uint32_t)>"
-	<primitive: 'pm_close' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:37:17'!
-pm_initialize
-	"Start the MIDI back-end."
-	"PortMIDILibrary new pm_initialize"
-	
-"	<cdecl: int32_t pm_initialize(void)>"
-	<primitive: 'pm_initialize' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:37:54'!
-pm_open: which with: direction
-	"Open the selected MIDI output device/port."
-	
-"	<cdecl: int32_t pm_open(int32_t, uint32_t)>"
-	<primitive: 'pm_open' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'initialization' stamp: 'stp 12/27/2022 11:38:24'!
-pm_terminate
-	"Stop the MIDI back-end."
-	"PortMIDILibrary new pm_terminate"
-	
-"	<cdecl: int32_t pm_terminate(void)>"
-	<primitive: 'pm_terminate' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:39:43'!
-pm_count_devices
-	"Answer the number of MIDI ports"
-	"PortMIDILibrary new pm_count_devices"
-	
-"	<cdecl: int32_t pm_count_devices (void)>"
-	<primitive: 'pm_count_devices' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:40:16'!
-pm_default_input_device
-	"Answer the default MIDI input device/port."
-	"PortMIDILibrary new pm_default_input_device"
-
-"	<cdecl: int32_t pm_default_input_device (void)>"
-	<primitive: 'pm_default_input_device' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:40:43'!
-pm_default_output_device
-	"Answer the default MIDI output device/port."
-	"PortMIDILibrary new pm_default_output_device"
-
-"	<cdecl: int32_t pm_default_output_device (void)>"
-	<primitive: 'pm_default_output_device' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:41:13'!
-pm_dev_dir: which
-	"Answer the i/o direction of the selected MIDI output device/port."
-
-"	<cdecl: int32_t pm_dev_dir(int32_t)>"
-	<primitive: 'pm_dev_dir' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:41:40'!
-pm_get_name: which
-	"Answer the name of the selected MIDI output device/port."
-
-"	<cdecl: const char * pm_get_name(uint32_t)>"
-	<primitive: 'pm_get_name' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:42:09'!
-pm_start_controller_cacheing
-	"Start MIDI controller cacheing."
-
-"	<cdecl: int32_t pm_start_controller_cacheing(void)>"
-	<primitive: 'pm_start_controller_cacheing' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:42:35'!
-pm_stop_controller_cacheing
-	"Stop MIDI controller cacheing."
-
-"	<cdecl: int32_t pm_stop_controller_cacheing(void)>"
-	<primitive: 'pm_stop_controller_cacheing' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'operations' stamp: 'stp 12/27/2022 11:43:07'!
-pm_test
-	"Test MIDI by playing a note.."
-	
-"	<cdecl: void pm_test (void)>"
-	<primitive: 'pm_test' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:32:15'!
-pm_poll: which
-	"The MIDI driver input process poll."
-
-"	<cdecl: uint32_t pm_poll(uint32_t) >"
-	<primitive: 'pm_poll' module: 'PortMIDIPrims'>
-	
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:33:05'!
-pm_read: which
-	"The MIDI driver input read prim."
-
-"	<cdecl: uint64_t pm_read(uint32_t)>"
-	<primitive: 'pm_read' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:34:02'!
-pm_read_controllers: which with: lo with: hi with: array
-	"Read a range of controllers"
-
-"	<cdecl: int32_t pm_read_controllers(uint32_t, uint32_t, uint32_t, short *) >"
-	<primitive: 'pm_read_controllers:' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:35:32'!
-pm_write_data2: which with: d1 with: d2
-	"Write a 2-byte MIDI Command."
-
-"	<cdecl: int32_t pm_write_data2(uint32_t, char, char) >"
-	<primitive: 'pm_write_data2' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-!PortMIDILibrary methodsFor: 'i/o' stamp: 'stp 12/27/2022 11:35:23'!
-pm_write_data3: which with: d1 with: d2 with: d3
-	"Write a standard 3-byte MIDI Command."
-
-"	<cdecl: int32_t pm_write_data3(uint32_t, char, char, char) >"
-	<primitive: 'pm_write_data3:' module: 'PortMIDIPrims'>
-
-	^self externalCallFailed! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'PortMIDILibrary class' category: 'MusicIO-MIDI'!
-PortMIDILibrary class
-	instanceVariableNames: ''!
-
-!PortMIDILibrary class methodsFor: 'instance creation' stamp: 'stp 12/27/2022 11:45:34'!
-new
-	"Make certain to initialize instances."
-
-	^super new initialize! !
-
-
-!PortMIDILibrary class methodsFor: 'system startup' stamp: 'stp 12/27/2022 11:45:15'!
-initialize
-	"
-	self initialize
-	"
-	Smalltalk addToStartUpList: self after: (Smalltalk classNamed: #CStandardLibrary)! !
-
-
-!PortMIDILibrary class methodsFor: 'accessing' stamp: 'stp 12/27/2022 11:54:23'!
-moduleName
-	"Answer the module name"
-	
-	^'PortMIDIPrims'! !
-
-
-!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 12/27/2022 11:44:17'!
-listDeviceTable
-	"Print a list of devices to the transcript."
-	"PortMIDILibrary listDeviceTable"
-	
- 	| lib num |
-	lib := PortMIDILibrary new.
-	num := lib pm_count_devices.
-	Transcript cr; show: 'MIDI Device Table'; cr.
-	1 to: num do:
-		[ :ind |
-		Transcript show: '# ', ind printString, ' - ',
-				(lib pm_get_name: ind), ' - ', (lib pm_dev_dir: ind) printString; cr]! !
-
-!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 12/27/2022 11:44:32'!
-testANote
-	"Try playing a note."
-	"PortMIDILibrary listDeviceTable"
-	
-	"PortMIDILibrary new pm_count_devices "
-	"PortMIDILibrary new pm_default_input_device "
-	"PortMIDILibrary new pm_default_output_device "
-	"PortMIDILibrary new pm_test"
-
-	PortMIDILibrary new pm_test! !
-
-
-!classDefinition: #MIDIPacket category: 'MusicIO-MIDI'!
+!classDefinition: #MIDIPacket category: #'MusicIO-MIDI'!
 Object subclass: #MIDIPacket
 	instanceVariableNames: 'length time flags duration data'
 	classVariableNames: ''
@@ -2655,7 +3047,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIPacket class' category: 'MusicIO-MIDI'!
+!classDefinition: 'MIDIPacket class' category: #'MusicIO-MIDI'!
 MIDIPacket class
 	instanceVariableNames: ''!
 
@@ -2705,6 +3097,245 @@ setPitch: p dur: d loudness: vol
 
 	^self new pitch: p; velocity: vol; duration: d! !
 
+
+!classDefinition: #PortMIDILibrary category: #'MusicIO-MIDI'!
+ExternalLibrary subclass: #PortMIDILibrary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MusicIO-MIDI'!
+!PortMIDILibrary commentStamp: 'stp 12/9/2022 12:00' prior: 0!
+A PortMIDILibrary is an external library to interface with the PortMIDI library -- see https://portmedia.sourceforge.net
+
+Instance Variables
+
+	Interface
+	port
+
+Calls
+
+!
+
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PortMIDILibrary class' category: #'MusicIO-MIDI'!
+PortMIDILibrary class
+	instanceVariableNames: ''!
+
+!PortMIDILibrary class methodsFor: 'instance creation' stamp: 'stp 1/7/2023 21:10:15'!
+new
+	"Make certain to never create instances; return the class."
+	"PortMIDILibrary someInstance"
+	
+	self error: 'Do not instantiate this'.
+	
+	^PortMIDILibrary! !
+
+
+!PortMIDILibrary class methodsFor: 'class initialization' stamp: 'stp 12/27/2022 11:45:15'!
+initialize
+	"
+	self initialize
+	"
+	Smalltalk addToStartUpList: self after: (Smalltalk classNamed: #CStandardLibrary)! !
+
+
+!PortMIDILibrary class methodsFor: 'accessing' stamp: 'stp 1/7/2023 13:37:54'!
+moduleName
+	"Answer the module name"
+	
+	^'libportmidi.dylib'! !
+
+
+!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 1/7/2023 13:49:32'!
+pm_test
+	"Test MIDI by playing a note.."
+	"PortMIDILibrary pm_test"
+	
+	< cdecl: void 'pm_test' (void) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_test' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 1/7/2023 13:57:01'!
+resetMIDIDriver
+	"Close and reopen the low-level driver"
+	"PortMIDILibrary resetMIDIDriver"
+	"PortMIDILibrary instanceCount"
+	| lib num |
+	PortModel initialize.
+	Smalltalk garbageCollect.
+	lib := PortMIDILibrary.
+	lib pm_terminate.
+	lib pm_initialize.
+	num := lib pm_count_devices.
+	Transcript cr; show: 'MIDI reset; found ' , num printString , ' MIDI devices'; cr.
+	PortMIDIPort listDeviceTable! !
+
+!PortMIDILibrary class methodsFor: 'testing' stamp: 'stp 1/7/2023 13:38:13'!
+testANote
+	"Try playing a note."
+	"PortMIDILibrary listDeviceTable"
+	"PortMIDILibrary pm_count_devices "
+	"PortMIDILibrary pm_default_input_device "
+	"PortMIDILibrary pm_default_output_device "
+	"PortMIDILibrary pm_test"
+
+	PortMIDILibrary pm_test! !
+
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:42:15'!
+pm_close: which
+	"Close the selected MIDI output device/port."
+
+	< cdecl: long 'pm_close' (long) module: 'libportmidi.dylib' >
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:36:05'!
+pm_count_devices
+	"Answer the number of MIDI ports"
+	"PortMIDILibrary pm_count_devices"
+	
+	< cdecl: long 'pm_count_devices' (void) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_count_devices' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:44:46'!
+pm_default_input_device
+	"Answer the default MIDI input device/port."
+	"PortMIDILibrary pm_default_input_device"
+
+	<cdecl: long 'pm_default_input_device' (void) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_default_input_device' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:45:13'!
+pm_default_output_device
+	"Answer the default MIDI output device/port."
+	"PortMIDILibrary pm_default_output_device"
+
+	<cdecl: long 'pm_default_output_device' (void) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_default_output_device' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:46:16'!
+pm_dev_dir: which
+	"Answer the i/o direction of the selected MIDI output device/port."
+
+	< cdecl: long 'pm_dev_dir' (long) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_dev_dir' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 21:13:11'!
+pm_get_name: which
+	"Answer the name of the selected MIDI output device/port."
+
+	< cdecl:  char * 'pm_get_name' (long) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_get_name' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:35:51'!
+pm_initialize
+	"Start the MIDI back-end."
+	"PortMIDILibrary pm_initialize"
+	
+	< cdecl: long 'pm_initialize' (void) module: 'libportmidi.dylib' >
+	"<primitive: 'pm_initialize' module: 'libportmidi.dylib'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:43:33'!
+pm_open: which with: direction
+	"Open the selected MIDI output device/port."
+	
+	< cdecl: long 'pm_open' (long long) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_open' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'open/close prims' stamp: 'stp 1/7/2023 13:48:13'!
+pm_terminate
+	"Stop the MIDI back-end."
+	"PortMIDILibrary new pm_terminate"
+	
+	<cdecl: long 'pm_terminate' (void) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_terminate' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+
+!PortMIDILibrary class methodsFor: 'i/o prims' stamp: 'stp 1/7/2023 21:17:58'!
+pm_poll: which
+	"The MIDI driver input process poll."
+
+	< cdecl: long 'pm_poll' (long) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_poll' module: 'PortMIDIPrims'>"
+	
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'i/o prims' stamp: 'stp 1/7/2023 21:18:57'!
+pm_read: which
+	"The MIDI driver input read prim."
+
+	<cdecl: long 'pm_read' (long) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_read' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'i/o prims' stamp: 'stp 1/7/2023 21:16:54'!
+pm_write_data2: which with: d1 with: d2
+	"Write a standard 2-byte MIDI Command."
+
+	< cdecl: long 'pm_write_data2' (long char char) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_write_data2:' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'i/o prims' stamp: 'stp 1/7/2023 21:15:53'!
+pm_write_data3: which with: d1 with: d2 with: d3
+	"Write a standard 3-byte MIDI Command."
+
+	< cdecl: long 'pm_write_data3' (long char char char) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_write_data3:' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+
+!PortMIDILibrary class methodsFor: 'controllers' stamp: 'stp 1/7/2023 21:22:16'!
+pm_read_controllers: which with: lo with: hi with: array
+	"Read a range of controllers"
+
+	< cdecl: long 'pm_read_controllers' (long long long long *) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_read_controllers:' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'controllers' stamp: 'stp 1/7/2023 21:23:13'!
+pm_start_controller_cacheing
+	"Start MIDI controller cacheing."
+
+	<cdecl: long 'pm_start_controller_cacheing' (void) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_start_controller_cacheing' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
+!PortMIDILibrary class methodsFor: 'controllers' stamp: 'stp 1/7/2023 21:23:57'!
+pm_stop_controller_cacheing
+	"Stop MIDI controller cacheing."
+
+	<cdecl: long 'pm_stop_controller_cacheing' (void) module: 'libportmidi.dylib' >
+"	<primitive: 'pm_stop_controller_cacheing' module: 'PortMIDIPrims'>"
+
+	^self externalCallFailed! !
+
 MIDIDevice initialize!
+MIDIPort initialize!
 MIDIVoice initialize!
 PortMIDILibrary initialize!

@@ -1,4 +1,4 @@
-!classDefinition: #EventModifier category: 'Music-EventModifiers'!
+!classDefinition: #EventModifier category: #'Music-EventModifiers'!
 Object subclass: #EventModifier
 	instanceVariableNames: 'selector function scale start stop index'
 	classVariableNames: ''
@@ -101,7 +101,7 @@ valueIn: evtList at: time
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventModifier class' category: 'Music-EventModifiers'!
+!classDefinition: 'EventModifier class' category: #'Music-EventModifiers'!
 EventModifier class
 	instanceVariableNames: ''!
 
@@ -118,7 +118,7 @@ new
 	^ super new initialize.! !
 
 
-!classDefinition: #Rubato category: 'Music-EventModifiers'!
+!classDefinition: #Rubato category: #'Music-EventModifiers'!
 EventModifier subclass: #Rubato
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -134,7 +134,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Rubato class' category: 'Music-EventModifiers'!
+!classDefinition: 'Rubato class' category: #'Music-EventModifiers'!
 Rubato class
 	instanceVariableNames: ''!
 
@@ -150,7 +150,7 @@ example
 	roll play! !
 
 
-!classDefinition: #Swell category: 'Music-EventModifiers'!
+!classDefinition: #Swell category: #'Music-EventModifiers'!
 EventModifier subclass: #Swell
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -166,7 +166,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Swell class' category: 'Music-EventModifiers'!
+!classDefinition: 'Swell class' category: #'Music-EventModifiers'!
 Swell class
 	instanceVariableNames: ''!
 

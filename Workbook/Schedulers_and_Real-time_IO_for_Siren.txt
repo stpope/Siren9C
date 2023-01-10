@@ -1,0 +1,48 @@
+Schedulers and Real-time Performance
+
+Event lists have events sorted by their relative start times. One "performs" event lists by placing them in a schedule for performance. A schedule can have one or more client objects (usually event lists whose items are simple events, sound events, or function events) that are able to do something in response to the
+	scheduleAt: aTime
+message. The return value from this message is assumed to be the delay (in usec) before calling the client again. Event lists typically perform the next event (by passing it to its voice) and answer the relative delta time to the next event (which may be 0 for simultaneous events).
+
+The EventScheduler instance can be accessed by a class message (instance) to class EventScheduler; it can be used to sequence and synchronize event lists that may include a variety of events, event lists, and voices. The Scheduler messages for adding a new "client" and running the schedule are as shown below.
+
+Play some random notes on the devault voice
+	[EventScheduler addClient: (EventList randomExample: 20) at: 500 msec.
+	 EventScheduler run]
+
+Run the simple flashing rectangles example
+	[EventScheduler addClient: ActionEvent listExample in: 100 msec; run]
+	"Window currentWindow refresh"
+
+House-keeping messages
+	[EventScheduler isRunning]
+	[EventScheduler interrupt]
+	[EventScheduler flush]
+	[EventScheduler initialize]
+
+Get the instance
+	[EventScheduler instance]
+
+If the SirenUtility vertbosity is set to 2 (very verbose), and you hold down the <SHIFT> key, the schedule will print a timer to the Transcript (useful for testing).
+
+The standard voices for MIDI and OSC output use the built-in schedule for their timing.
+Play 64 notes lasting 80 msec--a good test of real-time performance.
+This is scheduled in the port, i.e., at the lowest-possible level.
+	[MIDIPort testRandomPlay2: 64 dur: 80]
+
+Test a roll--it's easier to hear scheduler jitter here. The first example uses the low-level port delays. (try it several times to hear the changes in the jitter.)
+	[MIDIPort testRoll: 40 dur: 60]
+
+This should sound about the same, but plays an event generator over the the high-level scheduler.
+	[((Roll length: 2400 rhythm: 60 note: 60) ampl: 96) play]
+
+This example uses the high-level EventScheduler to play a scale. (Jitter is harder to hear here.)
+	[MIDIDevice scheduleExample]
+
+Scheduler Internals
+
+The EventScheduler instance (Schedule) holds onto 2 SEventQueues, one for normal clients, and one for timers. The SEventQueue is a simple doubly-linked list of ScheduleRecord objects sorted by start time (with a class pool of ScheduleRecords and an efficient insert method). All times are in microseconds (meaning long integers).
+
+The main scheduler loop is in the method run forks a process running the loop
+	[running] whileTrue: [self callNextAppointment]
+It's the callNextAppointment method that looks for a client or timer that's ready and schedules it. If there's nothing to do, the loop sleeps a bit; the actual amount of the inner delay is a class variable.

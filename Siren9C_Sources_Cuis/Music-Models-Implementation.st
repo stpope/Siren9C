@@ -1,4 +1,4 @@
-!classDefinition: #ConditionalDuration category: 'Music-Models-Implementation'!
+!classDefinition: #ConditionalDuration category: #'Music-Models-Implementation'!
 MusicMagnitude subclass: #ConditionalDuration
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -89,7 +89,7 @@ mostGeneral
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ConditionalDuration class' category: 'Music-Models-Implementation'!
+!classDefinition: 'ConditionalDuration class' category: #'Music-Models-Implementation'!
 ConditionalDuration class
 	instanceVariableNames: ''!
 
@@ -155,7 +155,7 @@ exampleWithRands
 		Transcript show: ((t - t0) / 1000) truncated printString; cr.]! !
 
 
-!classDefinition: #NominalMagnitude category: 'Music-Models-Implementation'!
+!classDefinition: #NominalMagnitude category: #'Music-Models-Implementation'!
 MusicMagnitude subclass: #NominalMagnitude
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -171,7 +171,7 @@ Class Instance Variable:
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'NominalMagnitude class' category: 'Music-Models-Implementation'!
+!classDefinition: 'NominalMagnitude class' category: #'Music-Models-Implementation'!
 NominalMagnitude class
 	instanceVariableNames: 'nameMap'!
 
@@ -180,7 +180,7 @@ nameMap
 	^nameMap! !
 
 
-!classDefinition: #SymbolicLoudness category: 'Music-Models-Implementation'!
+!classDefinition: #SymbolicLoudness category: #'Music-Models-Implementation'!
 NominalMagnitude subclass: #SymbolicLoudness
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -250,7 +250,7 @@ mostGeneral
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SymbolicLoudness class' category: 'Music-Models-Implementation'!
+!classDefinition: 'SymbolicLoudness class' category: #'Music-Models-Implementation'!
 SymbolicLoudness class
 	instanceVariableNames: ''!
 
@@ -288,7 +288,7 @@ ddMsgName
 	^#asDynamic! !
 
 
-!classDefinition: #SymbolicPitch category: 'Music-Models-Implementation'!
+!classDefinition: #SymbolicPitch category: #'Music-Models-Implementation'!
 NominalMagnitude subclass: #SymbolicPitch
 	instanceVariableNames: 'fracPitch'
 	classVariableNames: ''
@@ -439,7 +439,7 @@ fracPitch: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SymbolicPitch class' category: 'Music-Models-Implementation'!
+!classDefinition: 'SymbolicPitch class' category: #'Music-Models-Implementation'!
 SymbolicPitch class
 	instanceVariableNames: ''!
 
@@ -523,7 +523,7 @@ ddMsgName
 	^#asNote! !
 
 
-!classDefinition: #NumericalMagnitude category: 'Music-Models-Implementation'!
+!classDefinition: #NumericalMagnitude category: #'Music-Models-Implementation'!
 MusicMagnitude subclass: #NumericalMagnitude
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -539,6 +539,15 @@ One may want to add range-checking for these cases.
 Note that the class NumericalMagnitude is vacuous at present, and exists solely for representational modeling.!
 
 
+!NumericalMagnitude methodsFor: 'printing' stamp: 'stp 12/30/2022 13:46'!
+printValue
+	value isString
+		ifTrue: [^ value].
+	"value isFloat ifTrue: [^value printPlaces: 4].
+"
+	^ value printString! !
+
+
 !NumericalMagnitude methodsFor: 'double dispatching'!
 adaptInteger: val
 	^self class value: val! !
@@ -548,7 +557,7 @@ adaptToInteger
 	^self value! !
 
 
-!classDefinition: #HertzPitch category: 'Music-Models-Implementation'!
+!classDefinition: #HertzPitch category: #'Music-Models-Implementation'!
 NumericalMagnitude subclass: #HertzPitch
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -630,7 +639,7 @@ asSymbol
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'HertzPitch class' category: 'Music-Models-Implementation'!
+!classDefinition: 'HertzPitch class' category: #'Music-Models-Implementation'!
 HertzPitch class
 	instanceVariableNames: ''!
 
@@ -641,7 +650,7 @@ ddMsgName
 	^#asHz! !
 
 
-!classDefinition: #IntervalMagnitude category: 'Music-Models-Implementation'!
+!classDefinition: #IntervalMagnitude category: #'Music-Models-Implementation'!
 NumericalMagnitude subclass: #IntervalMagnitude
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -664,7 +673,7 @@ value: theValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'IntervalMagnitude class' category: 'Music-Models-Implementation'!
+!classDefinition: 'IntervalMagnitude class' category: #'Music-Models-Implementation'!
 IntervalMagnitude class
 	instanceVariableNames: ''!
 
@@ -681,7 +690,7 @@ range: anInterval
 	range := anInterval! !
 
 
-!classDefinition: #MIDIPitch category: 'Music-Models-Implementation'!
+!classDefinition: #MIDIPitch category: #'Music-Models-Implementation'!
 IntervalMagnitude subclass: #MIDIPitch
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -777,7 +786,7 @@ mostGeneral
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIPitch class' category: 'Music-Models-Implementation'!
+!classDefinition: 'MIDIPitch class' category: #'Music-Models-Implementation'!
 MIDIPitch class
 	instanceVariableNames: ''!
 
@@ -796,7 +805,7 @@ ddMsgName
 	^#asKey! !
 
 
-!classDefinition: #MIDIVelocity category: 'Music-Models-Implementation'!
+!classDefinition: #MIDIVelocity category: #'Music-Models-Implementation'!
 IntervalMagnitude subclass: #MIDIVelocity
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -870,7 +879,7 @@ mostGeneral
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MIDIVelocity class' category: 'Music-Models-Implementation'!
+!classDefinition: 'MIDIVelocity class' category: #'Music-Models-Implementation'!
 MIDIVelocity class
 	instanceVariableNames: ''!
 
@@ -889,7 +898,7 @@ ddMsgName
 	^#asVelocity! !
 
 
-!classDefinition: #MeasureDuration category: 'Music-Models-Implementation'!
+!classDefinition: #MeasureDuration category: #'Music-Models-Implementation'!
 NumericalMagnitude subclass: #MeasureDuration
 	instanceVariableNames: 'timeSignature'
 	classVariableNames: ''
@@ -919,7 +928,7 @@ species
 	^MDuration! !
 
 
-!classDefinition: #RatioMagnitude category: 'Music-Models-Implementation'!
+!classDefinition: #RatioMagnitude category: #'Music-Models-Implementation'!
 NumericalMagnitude subclass: #RatioMagnitude
 	instanceVariableNames: 'relative'
 	classVariableNames: ''
@@ -969,7 +978,7 @@ relativeTo: aRelative
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'RatioMagnitude class' category: 'Music-Models-Implementation'!
+!classDefinition: 'RatioMagnitude class' category: #'Music-Models-Implementation'!
 RatioMagnitude class
 	instanceVariableNames: ''!
 
@@ -980,7 +989,7 @@ value: aValue relative: aMMagnitude
 	^(self new value: aValue) relativeTo: aMMagnitude! !
 
 
-!classDefinition: #RatioDuration category: 'Music-Models-Implementation'!
+!classDefinition: #RatioDuration category: #'Music-Models-Implementation'!
 RatioMagnitude subclass: #RatioDuration
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1069,7 +1078,7 @@ mostGeneral
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'RatioDuration class' category: 'Music-Models-Implementation'!
+!classDefinition: 'RatioDuration class' category: #'Music-Models-Implementation'!
 RatioDuration class
 	instanceVariableNames: ''!
 
@@ -1080,7 +1089,7 @@ ddMsgName
 	^#asBeat! !
 
 
-!classDefinition: #RatioLoudness category: 'Music-Models-Implementation'!
+!classDefinition: #RatioLoudness category: #'Music-Models-Implementation'!
 RatioMagnitude subclass: #RatioLoudness
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1104,6 +1113,37 @@ printOn0: aStream
 
 	aStream nextPutAll: "'a:'," value printString! !
 
+!RatioLoudness methodsFor: 'printing' stamp: 'stp 12/30/2022 12:43'!
+printOn: aStream 
+	"Print the receiver as a ratio."
+	| digits |
+	Sensor shiftPressed
+		ifTrue: [digits := 10]
+		ifFalse: ["4 digits by default"
+			digits := 4].
+	aStream nextPutAll: '('.
+	value isFloat
+		ifTrue: [value printOn: aStream maxDecimalPlaces: digits]
+		ifFalse: [value printOn: aStream].
+	aStream nextPutAll: self units , ')'! !
+
+!RatioLoudness methodsFor: 'printing' stamp: 'stp 1/7/2023 21:55:36'!
+printOn: aStream parens: useParens 
+	"Print the receiver as a ratio."
+	| digits |
+	Sensor shiftPressed
+		ifTrue: [digits := 10]
+		ifFalse: ["4 digits by default"
+			digits := 4].
+	useParens
+		ifTrue: [aStream nextPutAll: '('].
+	value isFloat
+		ifTrue: [value printOn: aStream fractionDigits: digits]
+		ifFalse: [value printOn: aStream].
+	aStream nextPutAll: ' dB'.
+	useParens
+		ifTrue: [aStream nextPutAll: ')']! !
+
 
 !RatioLoudness methodsFor: 'converting'!
 asDB
@@ -1126,7 +1166,7 @@ asSymbol
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'RatioLoudness class' category: 'Music-Models-Implementation'!
+!classDefinition: 'RatioLoudness class' category: #'Music-Models-Implementation'!
 RatioLoudness class
 	instanceVariableNames: ''!
 
@@ -1137,7 +1177,7 @@ ddMsgName
 	^#asAmpl! !
 
 
-!classDefinition: #DBLoudness category: 'Music-Models-Implementation'!
+!classDefinition: #DBLoudness category: #'Music-Models-Implementation'!
 RatioLoudness subclass: #DBLoudness
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1228,7 +1268,7 @@ positiveDB
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DBLoudness class' category: 'Music-Models-Implementation'!
+!classDefinition: 'DBLoudness class' category: #'Music-Models-Implementation'!
 DBLoudness class
 	instanceVariableNames: ''!
 
@@ -1239,7 +1279,7 @@ ddMsgName
 	^#asDB! !
 
 
-!classDefinition: #RatioPitch category: 'Music-Models-Implementation'!
+!classDefinition: #RatioPitch category: #'Music-Models-Implementation'!
 RatioMagnitude subclass: #RatioPitch
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1306,7 +1346,7 @@ mostGeneral
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'RatioPitch class' category: 'Music-Models-Implementation'!
+!classDefinition: 'RatioPitch class' category: #'Music-Models-Implementation'!
 RatioPitch class
 	instanceVariableNames: ''!
 
@@ -1317,7 +1357,7 @@ ddMsgName
 	^#asStep! !
 
 
-!classDefinition: #SecondDuration category: 'Music-Models-Implementation'!
+!classDefinition: #SecondDuration category: #'Music-Models-Implementation'!
 NumericalMagnitude subclass: #SecondDuration
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1328,16 +1368,18 @@ Instances of SecondDuration are duration times in floating-point seconds.
 This is among the most general duration time representations.!
 
 
-!SecondDuration methodsFor: 'printing' stamp: 'stp 12/28/2022 13:58:56'!
-printOn: aStream
+!SecondDuration methodsFor: 'printing' stamp: 'stp 1/7/2023 21:55:04'!
+printOn: aStream 
 	"Print the receiver on the argument as a MM declaration."
-
-	| valstr |
-	value isFloat ifTrue: [valstr := value printString: 4]
-			ifFalse: [valstr := value printString].    "4 digits"
-"	valstr size > 6
-		ifTrue: [valstr := valstr copyFrom: 1 to: 5]."
-	aStream nextPutAll: '(', valstr, self units, ')'! !
+	| digits |
+	Sensor shiftPressed
+		ifTrue: [digits := 10]
+		ifFalse: ["4 digits by default"   digits := 4].
+	aStream nextPutAll: '('.
+	value isFloat
+		ifTrue: [value printOn: aStream fractionDigits: digits]
+		ifFalse: [value printOn: aStream].
+	aStream nextPutAll: self units , ')'! !
 
 !SecondDuration methodsFor: 'printing'!
 units
@@ -1429,18 +1471,18 @@ asUseconds
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SecondDuration class' category: 'Music-Models-Implementation'!
+!classDefinition: 'SecondDuration class' category: #'Music-Models-Implementation'!
 SecondDuration class
 	instanceVariableNames: ''!
 
-!SecondDuration class methodsFor: '-- all --'!
+!SecondDuration class methodsFor: 'as yet unclassified'!
 ddMsgName
 	"Answer the selector to be used in coercing double-dispatching messages."
 
 	^#asSec! !
 
 
-!classDefinition: #MSecondDuration category: 'Music-Models-Implementation'!
+!classDefinition: #MSecondDuration category: #'Music-Models-Implementation'!
 SecondDuration subclass: #MSecondDuration
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1478,7 +1520,7 @@ asUseconds
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MSecondDuration class' category: 'Music-Models-Implementation'!
+!classDefinition: 'MSecondDuration class' category: #'Music-Models-Implementation'!
 MSecondDuration class
 	instanceVariableNames: ''!
 
@@ -1489,7 +1531,7 @@ ddMsgName
 	^#asMsec! !
 
 
-!classDefinition: #USecondDuration category: 'Music-Models-Implementation'!
+!classDefinition: #USecondDuration category: #'Music-Models-Implementation'!
 SecondDuration subclass: #USecondDuration
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1526,7 +1568,7 @@ asUseconds
 	^self! !
 
 
-!classDefinition: #OrdinalMagnitude category: 'Music-Models-Implementation'!
+!classDefinition: #OrdinalMagnitude category: #'Music-Models-Implementation'!
 MusicMagnitude subclass: #OrdinalMagnitude
 	instanceVariableNames: 'table'
 	classVariableNames: ''
@@ -1772,9 +1814,9 @@ mostGeneral
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OrdinalMagnitude class' category: 'Music-Models-Implementation'!
+!classDefinition: 'OrdinalMagnitude class' category: #'Music-Models-Implementation'!
 OrdinalMagnitude class
-	instanceVariableNames: ''!
+	instanceVariableNames: 'Table'!
 
 !OrdinalMagnitude class methodsFor: 'table access'!
 table
@@ -1824,7 +1866,7 @@ useTable
 	Table := Dictionary new.! !
 
 
-!classDefinition: #Length category: 'Music-Models-Implementation'!
+!classDefinition: #Length category: #'Music-Models-Implementation'!
 OrdinalMagnitude subclass: #Length
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1845,7 +1887,7 @@ species
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Length class' category: 'Music-Models-Implementation'!
+!classDefinition: 'Length class' category: #'Music-Models-Implementation'!
 Length class
 	instanceVariableNames: ''!
 
@@ -1878,7 +1920,7 @@ example
 	Length allInstances asSortedCollection inspect! !
 
 
-!classDefinition: #Sharpness category: 'Music-Models-Implementation'!
+!classDefinition: #Sharpness category: #'Music-Models-Implementation'!
 OrdinalMagnitude subclass: #Sharpness
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1899,7 +1941,7 @@ species
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Sharpness class' category: 'Music-Models-Implementation'!
+!classDefinition: 'Sharpness class' category: #'Music-Models-Implementation'!
 Sharpness class
 	instanceVariableNames: ''!
 

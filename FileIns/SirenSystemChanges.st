@@ -627,7 +627,7 @@ toOSCTypeOn: aConvertor
 	^false! !!Float methodsFor: 'converting' stamp: 'stp 12/11/2022 00:27'!toOSCBytes: aConvertor 	"Store a float in the proper byte-endian order"	"(1.5 asIEEE32BitWord bitShift: -16) bitAnd: 16rFF"		| int |	int := self asIEEE32BitWord.	Smalltalk isBigEndian		ifTrue: [aConvertor nextPut: (int bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -8) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -16) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -24) bitAnd: 16rFF)]		ifFalse: [aConvertor nextPut: ((int bitShift: -24) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -16) bitAnd: 16rFF).			aConvertor nextPut: ((int bitShift: -8) bitAnd: 16rFF).			aConvertor nextPut: (int bitAnd: 16rFF)]! !
 !Float methodsFor: 'converting' stamp: 'stp 12/11/2022 00:27'!toOSCTypeOn: aConvertor  
 	aConvertor nextPutType: $f! !
-!#ByteArray methodsFor: 'printing' stamp: 'stp 12/29/2022 17:32:37'!
+!ByteArray methodsFor: 'printing' stamp: 'stp 12/29/2022 17:32:37'!
 printIP
 	| printSize stream |
 	stream := WriteStream on: (String new: 32).
@@ -639,3 +639,20 @@ printIP
 		separatedBy: [stream nextPut: $.].
 	^stream contents! !
 
+
+!SequenceableCollection methodsFor: 'converting' stamp: 'stp 1/9/2023 11:52:18'!
+splitOn: element
+	"Break the receiver into subsets based on the element and return the collection of subsets."
+	"'127.0.0.1' asByteString splitOn: $. asCharacter"
+	
+	| ind0 ind1 coll |
+	coll _ OrderedCollection new.
+	ind0 _ 1.
+	[ind1 _ self indexOf: element  startingAt: ind0.
+	(ind1 == 0)
+		ifTrue: [coll addLast: (self copyFrom: ind0 to: self size).
+			^ coll].
+	coll addLast: (self copyFrom: ind0 to: ind1 - 1).
+	ind0 _ ind1 + 1.
+	true] whileTrue.
+	! !

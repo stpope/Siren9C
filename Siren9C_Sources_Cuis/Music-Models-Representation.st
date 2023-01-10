@@ -1,4 +1,4 @@
-!classDefinition: #MusicMagnitude category: 'Music-Models-Representation'!
+!classDefinition: #MusicMagnitude category: #'Music-Models-Representation'!
 Magnitude subclass: #MusicMagnitude
 	instanceVariableNames: 'value'
 	classVariableNames: ''
@@ -53,18 +53,21 @@ printOn: aStream
 
 	^self printOn: aStream parens: true! !
 
-!MusicMagnitude methodsFor: 'printing'!
-printOn: aStream parens: useParens
+!MusicMagnitude methodsFor: 'printing' stamp: 'stp 1/7/2023 21:55:27'!
+printOn: aStream parens: useParens 
 	"Print the receiver on the argument as a MM declaration."
-
+	| digits |
+	Sensor shiftPressed
+		ifTrue: [digits := 10]
+		ifFalse: [digits := 4].
 	useParens
-		ifTrue: [self isImmediate
-			ifFalse: [aStream nextPutAll: '(', self species name, ': ', 
-				self printValue, ')']
-			ifTrue: [aStream nextPutAll: '(', self printValue, self units, ')']]
-		ifFalse: [self isImmediate
-			ifFalse: [aStream nextPutAll: self species name, ': ', self printValue]
-			ifTrue: [aStream nextPutAll: self printValue, self units]]! !
+		ifTrue: [aStream nextPutAll: '('].
+	aStream nextPutAll: self species name , ': '.
+	value isFloat
+		ifTrue: [value printOn: aStream fractionDigits: digits]
+		ifFalse: [value printOn: aStream].
+	useParens
+		ifTrue: [aStream nextPutAll: ')']! !
 
 !MusicMagnitude methodsFor: 'printing'!
 printString
@@ -85,23 +88,15 @@ printStringParens: bool
 	^aStream contents! !
 
 !MusicMagnitude methodsFor: 'printing'!
-printValue
-
-	value isString ifTrue: [^value].
-"	value isFloat ifTrue: [^value printPlaces: 4].
-"	^value printString! !
-
-!MusicMagnitude methodsFor: 'printing'!
 storeOn: aStream
 	"Store the receiver on the argument as a MM declaration."
 
 	aStream nextPutAll: '(', self class name, ' value: ', value printString, ')'! !
 
-!MusicMagnitude methodsFor: 'printing'!
+!MusicMagnitude methodsFor: 'printing' stamp: 'stp 12/30/2022 12:49'!
 units
 	"Answer the units string of the receiver."
-
-	^nil! !
+	^ ''! !
 
 
 !MusicMagnitude methodsFor: 'private'!
@@ -264,7 +259,7 @@ hash
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicMagnitude class' category: 'Music-Models-Representation'!
+!classDefinition: 'MusicMagnitude class' category: #'Music-Models-Representation'!
 MusicMagnitude class
 	instanceVariableNames: ''!
 
@@ -275,14 +270,14 @@ value: aValue
 	^self new value: aValue! !
 
 
-!MusicMagnitude class methodsFor: 'class constants'!
+!MusicMagnitude class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:02'!
 color
-	"Answer the default color to display instances with (hack for making pretty graphs)."
-
+	"Answer the default color to display instances with (hack for making
+	pretty graphs)."
 	| spec |
 	spec := self new species.
-	^(spec == MusicMagnitude)
-		ifTrue: [ColorValue gray]
+	^ spec == MusicMagnitude
+		ifTrue: [Color gray]
 		ifFalse: [spec color]! !
 
 !MusicMagnitude class methodsFor: 'class constants'!
@@ -298,7 +293,7 @@ relativeMember
 	^self subclassResponsibility! !
 
 
-!classDefinition: #MusicModel category: 'Music-Models-Representation'!
+!classDefinition: #MusicModel category: #'Music-Models-Representation'!
 MusicMagnitude subclass: #MusicModel
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -316,7 +311,7 @@ Class inst Vars:
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicModel class' category: 'Music-Models-Representation'!
+!classDefinition: 'MusicModel class' category: #'Music-Models-Representation'!
 MusicModel class
 	instanceVariableNames: 'generalityTable'!
 
@@ -364,7 +359,7 @@ initializeGenerality
 	MusicModel allSubclassesDo: [ :cl | cl initialize]! !
 
 
-!classDefinition: #Chroma category: 'Music-Models-Representation'!
+!classDefinition: #Chroma category: #'Music-Models-Representation'!
 MusicModel subclass: #Chroma
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -376,7 +371,7 @@ Instances of its subclass species are used to model pitches, gamut members, and 
 
 
 
-!classDefinition: #ModeMember category: 'Music-Models-Representation'!
+!classDefinition: #ModeMember category: #'Music-Models-Representation'!
 Chroma subclass: #ModeMember
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -389,7 +384,7 @@ In the later case, the value instance variable could hold a number or pitch, and
 
 
 
-!classDefinition: #Pitch category: 'Music-Models-Representation'!
+!classDefinition: #Pitch category: #'Music-Models-Representation'!
 Chroma subclass: #Pitch
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -414,31 +409,30 @@ See also the class example.!
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Pitch class' category: 'Music-Models-Representation'!
+!classDefinition: 'Pitch class' category: #'Music-Models-Representation'!
 Pitch class
 	instanceVariableNames: ''!
 
-!Pitch class methodsFor: 'instance creation' stamp: 'stp 11/28/2022 21:41:59'!
-value: aValue
+!Pitch class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:38'!
+value: aValue 
 	"Answer a new instance of a member of my species."
-
-	aValue species == Pitch ifTrue: [^aValue].
+	aValue species == Pitch
+		ifTrue: [^ aValue].
 	(aValue isMemberOf: SmallInteger)
-			ifTrue: [^MIDIPitch new value: aValue].
+		ifTrue: [^ MIDIPitch new value: aValue].
 	(aValue isKindOf: Float)
-			ifTrue: [^HertzPitch new value: aValue].
+		ifTrue: [^ HertzPitch new value: aValue].
 	(aValue isMemberOf: Fraction)
-			ifTrue: [^RatioPitch new value: aValue].
-	(aValue isKindOf: CharacterSequence)
-			ifTrue: [^SymbolicPitch new value: aValue asSymbol].
-	^self new value: aValue! !
+		ifTrue: [^ RatioPitch new value: aValue].
+	(aValue isKindOf: String)
+		ifTrue: [^ SymbolicPitch new value: aValue asSymbol].
+	^ self new value: aValue! !
 
 
-!Pitch class methodsFor: 'class constants'!
+!Pitch class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:02'!
 color
 	"Answer the default color to display instances with."
-
-	^ColorValue green! !
+	^ Color green! !
 
 !Pitch class methodsFor: 'class constants'!
 initialize
@@ -514,7 +508,7 @@ exampleAdC
 	"Note that asMIDI and asSymbol can now be used to round pitches to 	chromatics, while asFracMIDI and asFracSymbol keep microtonal 	precision."! !
 
 
-!classDefinition: #Chronos category: 'Music-Models-Representation'!
+!classDefinition: #Chronos category: #'Music-Models-Representation'!
 MusicModel subclass: #Chronos
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -526,7 +520,7 @@ Instances of its subclass species are used to model times, durations and metrono
 
 
 
-!classDefinition: #MDuration category: 'Music-Models-Representation'!
+!classDefinition: #MDuration category: #'Music-Models-Representation'!
 Chronos subclass: #MDuration
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -548,15 +542,14 @@ See also the class example.!
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MDuration class' category: 'Music-Models-Representation'!
+!classDefinition: 'MDuration class' category: #'Music-Models-Representation'!
 MDuration class
 	instanceVariableNames: ''!
 
-!MDuration class methodsFor: 'class constants'!
+!MDuration class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:01'!
 color
 	"Answer the default color to display instances with."
-
-	^ColorValue red! !
+	^ Color red! !
 
 !MDuration class methodsFor: 'class constants' stamp: 'stp 12/28/2022 13:58:18'!
 initialize
@@ -584,11 +577,11 @@ propertyName
 
 	^#duration:! !
 
-!MDuration class methodsFor: 'class constants'!
+!MDuration class methodsFor: 'class constants' stamp: 'stp 12/31/2022 07:06'!
 relativeMember
-	"Answer the receiver class's species member used as a relative magnitude."
-
-	^RatioMDuration! !
+	"Answer the receiver class's species member used as a relative
+	magnitude. "
+	^ RatioDuration! !
 
 !MDuration class methodsFor: 'class constants'!
 species
@@ -633,7 +626,7 @@ value: aValue
 	^aValue! !
 
 
-!classDefinition: #Meter category: 'Music-Models-Representation'!
+!classDefinition: #Meter category: #'Music-Models-Representation'!
 Chronos subclass: #Meter
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -646,7 +639,7 @@ In the later case, the value instance variable could hold a number, process or b
 
 
 
-!classDefinition: #Ergon category: 'Music-Models-Representation'!
+!classDefinition: #Ergon category: #'Music-Models-Representation'!
 MusicModel subclass: #Ergon
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -658,7 +651,7 @@ Instances of its subclass species are used to model loudness values.!
 
 
 
-!classDefinition: #Amplitude category: 'Music-Models-Representation'!
+!classDefinition: #Amplitude category: #'Music-Models-Representation'!
 Ergon subclass: #Amplitude
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -679,31 +672,30 @@ See also the class example.!
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Amplitude class' category: 'Music-Models-Representation'!
+!classDefinition: 'Amplitude class' category: #'Music-Models-Representation'!
 Amplitude class
 	instanceVariableNames: ''!
 
-!Amplitude class methodsFor: 'instance creation' stamp: 'stp 11/28/2022 21:42:54'!
-value: aValue
+!Amplitude class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:39'!
+value: aValue 
 	"Answer a new instance of a member of my species."
-
-	aValue species == Amplitude ifTrue: [^aValue].
+	aValue species == Amplitude
+		ifTrue: [^ aValue].
 	(aValue isMemberOf: SmallInteger)
-			ifTrue: [^MIDIVelocity new value: aValue].
+		ifTrue: [^ MIDIVelocity new value: aValue].
 	(aValue isKindOf: Float)
-			ifTrue: [^RatioLoudness new value: aValue].
+		ifTrue: [^ RatioLoudness new value: aValue].
 	(aValue isMemberOf: Fraction)
-			ifTrue: [^RatioLoudness new value: aValue].
-	(aValue isKindOf: CharacterSequence)
-			ifTrue: [^SymbolicLoudness new value: aValue asSymbol].
-	^self new value: aValue! !
+		ifTrue: [^ RatioLoudness new value: aValue].
+	(aValue isKindOf: String)
+		ifTrue: [^ SymbolicLoudness new value: aValue asSymbol].
+	^ self new value: aValue! !
 
 
-!Amplitude class methodsFor: 'class constants'!
+!Amplitude class methodsFor: 'class constants' stamp: 'stp 12/31/2022 11:01'!
 color
 	"Answer the default color to display instances with."
-
-	^ColorValue blue! !
+	^ Color blue! !
 
 !Amplitude class methodsFor: 'class constants'!
 initialize
@@ -757,7 +749,7 @@ example
 	me inspect! !
 
 
-!classDefinition: #Positus category: 'Music-Models-Representation'!
+!classDefinition: #Positus category: #'Music-Models-Representation'!
 MusicModel subclass: #Positus
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -769,7 +761,7 @@ Instances of its subclass species are used to model spatial and positional value
 
 
 
-!classDefinition: #Directionality category: 'Music-Models-Representation'!
+!classDefinition: #Directionality category: #'Music-Models-Representation'!
 Positus subclass: #Directionality
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -782,7 +774,7 @@ In the later case, the value instance variable would hold a 1- or 2-dimensional 
 
 
 
-!classDefinition: #Position category: 'Music-Models-Representation'!
+!classDefinition: #Position category: #'Music-Models-Representation'!
 Positus subclass: #Position
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -795,7 +787,7 @@ In the later case, the value instance variable could hold a number or point.!
 
 
 
-!classDefinition: #Spatialization category: 'Music-Models-Representation'!
+!classDefinition: #Spatialization category: #'Music-Models-Representation'!
 Positus subclass: #Spatialization
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -808,7 +800,7 @@ In the later case, the value instance variable would hold a record with the geom
 
 
 
-!classDefinition: #PField category: 'Music-Models-Representation'!
+!classDefinition: #PField category: #'Music-Models-Representation'!
 MusicMagnitude subclass: #PField
 	instanceVariableNames: 'name field'
 	classVariableNames: ''
@@ -853,7 +845,7 @@ name: theName
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PField class' category: 'Music-Models-Representation'!
+!classDefinition: 'PField class' category: #'Music-Models-Representation'!
 PField class
 	instanceVariableNames: ''!
 

@@ -31,6 +31,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)
 	'SixPanedBrowser.st'
 	'SixPanedBrowserWindow.st'
 	'WorkbookWindowCuis.st'
+	'Cuis-OSC-Changes.st'
+	'STPTheme.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
 	('./Siren9C/FileIns/', file) asFileEntry readStreamDo: 
@@ -54,7 +56,6 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	'Music-Sound.st'
 	'Music-PitchScales.st'
 	'Music-PitchClasses.st'
-	'Music-Support.st'
 
 	'MusicIO-Voices.st'
 	'MusicIO-OSC.st'
@@ -64,7 +65,8 @@ OR src code file-in (Edit the relative paths below to suit your installation)
 	'MusicUI-DisplayListViews.st'
 	'MusicUI-Layout.st'
 	'MusicUI-Editors.st'
-
+	
+	'Music-Support.st'
 ) do: [ :file |
 	Transcript show: 'Filing in ', file; cr.
 	('./Siren9C/Siren9C_Sources_Cuis/', file) asFileEntry readStreamDo:
@@ -86,7 +88,7 @@ Clean up
 
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)
 
-[ WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]
+[WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]
 Undeclared inspect
 Smalltalk garbageCollect
 

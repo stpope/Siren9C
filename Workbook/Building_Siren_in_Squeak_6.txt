@@ -1,0 +1,98 @@
+Script to build Siren in Squeak6.0 (Version 9C)
+	Do not file this in - step through the blocks 1 by 1
+
+Set-up
+
+Use the Squeak customization process.
+
+STP world file-ins (Edit the relative paths below to suit your installation)
+
+[ #(
+	'ZPoint.st'
+	'SqueakChanges.st'
+	'WorkbookWindowSqueak.st'
+) do: [ :file |
+	Transcript show: 'Filing in ', file; cr.
+	(FileStream fileNamed: ('./Siren9C/FileIns/', file)) fileIn]]
+
+[#(	'Music-Models-Representation.st'
+	'Music-Models-Implementation.st'
+	'Music-Events.st'
+	'Music-EventGenerators.st'
+	'Music-EventModifiers.st'
+	'Music-Functions.st'
+	'Music-Sound.st'
+	'Music-PitchScales.st'
+	'Music-PitchClasses.st'
+	'Music-Support.st'
+
+	'MusicIO-Voices.st'
+	'MusicIO-OSC.st'
+	'MusicIO-MIDI.st'
+
+	'MusicUI-DisplayLists.st'
+	'MusicUI-DisplayListViews.st'
+	'MusicUI-Layout.st'
+	'MusicUI-Editors.st'
+	
+) do: [ :file |
+	Transcript show: 'Filing in ', file; cr.
+	(FileStream fileNamed: ('./Siren9C/Siren9C_Sources_Squeak/', file)) fileIn]].
+]
+	
+[ (FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn ]
+
+Clean up
+
+[	MusicModel initializeGenerality.
+	PortModel initialize.
+	SirenUtility initialize.
+	SirenSession initialize.
+	SirenSession new.
+]
+
+Reorganize system categories (for better 6-paned browsing)
+
+[WorkbookWindow openFolder: './Siren9C/Workbook/' named: 'Siren Workbook']
+
+Screen background image
+
+[Form openAsBackground: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' ]
+
+Undeclared inspect
+Smalltalk garbageCollect
+
+[SirenSession openUtility]
+
+Load some new fonts
+
+[TTCFont installFromFileNames:  #('./Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf').
+TTCFont installFromFileNames: #( './Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf' ).
+TTCFont installFromFileNames: #('./Cuis-Smalltalk-Dev/TrueTypeFonts/Cream/ParcPlaceLegacy.ttf' ) ]
+
+Set system fonts
+
+[ | family |
+	family := " 'BitstreamVeraSerif'."  'Palatino'.
+#(
+   (setButtonFontTo:      		family	  	 14)
+   (setListFontTo:        			family         16)
+   (setMenuFontTo:        		family         16)
+   (setWindowTitleFontTo: 	family         18)
+   (setSystemFontTo:      		family         16)
+) do:
+      [:triplet |
+         Preferences perform: triplet first with: (StrikeFont familyName: triplet second size: triplet third)]]
+
+
+ToDo
+
+DisplayList editing
+OSC I/O via sockets
+MIDI I/O via plug-in
+Function & Sound editors
+
+
+File-out
+
+[SirenUtility fileoutCategories]

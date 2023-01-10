@@ -1,4 +1,4 @@
-!classDefinition: #MusicalInterval category: 'Music-PitchClasses'!
+!classDefinition: #MusicalInterval category: #'Music-PitchClasses'!
 Object subclass: #MusicalInterval
 	instanceVariableNames: 'type semiTones'
 	classVariableNames: ''
@@ -159,7 +159,7 @@ descending
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicalInterval class' category: 'Music-PitchClasses'!
+!classDefinition: 'MusicalInterval class' category: #'Music-PitchClasses'!
 MusicalInterval class
 	instanceVariableNames: ''!
 
@@ -535,7 +535,7 @@ thirteenth
 	^self majorThirteenth! !
 
 
-!classDefinition: #ChromaticInterval category: 'Music-PitchClasses'!
+!classDefinition: #ChromaticInterval category: #'Music-PitchClasses'!
 MusicalInterval subclass: #ChromaticInterval
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -553,7 +553,7 @@ printOn: s
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ChromaticInterval class' category: 'Music-PitchClasses'!
+!classDefinition: 'ChromaticInterval class' category: #'Music-PitchClasses'!
 ChromaticInterval class
 	instanceVariableNames: ''!
 
@@ -569,7 +569,7 @@ semiTones: x
 	^self type: -1 semiTones: x! !
 
 
-!classDefinition: #DiatonicInterval category: 'Music-PitchClasses'!
+!classDefinition: #DiatonicInterval category: #'Music-PitchClasses'!
 MusicalInterval subclass: #DiatonicInterval
 	instanceVariableNames: 'ascending'
 	classVariableNames: ''
@@ -608,7 +608,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DiatonicInterval class' category: 'Music-PitchClasses'!
+!classDefinition: 'DiatonicInterval class' category: #'Music-PitchClasses'!
 DiatonicInterval class
 	instanceVariableNames: ''!
 
@@ -625,7 +625,7 @@ new
 	^super new initialize! !
 
 
-!classDefinition: #MusicalDescendingInterval category: 'Music-PitchClasses'!
+!classDefinition: #MusicalDescendingInterval category: #'Music-PitchClasses'!
 MusicalInterval subclass: #MusicalDescendingInterval
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -673,7 +673,7 @@ descending
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicalDescendingInterval class' category: 'Music-PitchClasses'!
+!classDefinition: 'MusicalDescendingInterval class' category: #'Music-PitchClasses'!
 MusicalDescendingInterval class
 	instanceVariableNames: ''!
 
@@ -684,7 +684,7 @@ example
 (N B flat octave: 3) intervalBetween: (N B flat flat octave: 2) descending augmented octave"! !
 
 
-!classDefinition: #OctaveDependentNote category: 'Music-PitchClasses'!
+!classDefinition: #OctaveDependentNote category: #'Music-PitchClasses'!
 Object subclass: #OctaveDependentNote
 	instanceVariableNames: 'oct pc midiPitch natural'
 	classVariableNames: ''
@@ -1322,62 +1322,11 @@ upperLeadingToneInScale: s
 	^s noteAfter: self! !
 
 
-!OctaveDependentNote methodsFor: 'private-pacts'!
-respectsBassTessitura
-	^self >= BassPlayer minPitch
-		and: [self <= BassPlayer maxPitch]! !
-
-
 !OctaveDependentNote methodsFor: 'modifying'!
 inTessitura: qualTessitura
 	"modify octave according to the given tessitura"
 
 	self oct: (pc inTessitura: qualTessitura) oct! !
-
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-dottedEighth
-	^self lapse: Lapse dottedEighth! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-dottedFull
-	^self lapse: Lapse dottedFull! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-dottedHalf
-	^self lapse: Lapse dottedHalf! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-dottedQuarter
-	^self lapse: Lapse dottedQuarter! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-eighth
-	^self lapse: Lapse eighth! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-eighthInTriplet
-	^self lapse: Lapse eighthInTriplet! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-full
-	^self lapse: Lapse full! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-half
-	^self lapse: Lapse half! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-quarter
-	^self lapse: Lapse quarter! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-quarterInTriplet
-	^self lapse: Lapse quarterInTriplet! !
-
-!OctaveDependentNote methodsFor: 'mutations more'!
-sixteenth
-	^self lapse: Lapse sixteenth! !
 
 
 !OctaveDependentNote methodsFor: 'accessing delegation'!
@@ -1394,7 +1343,7 @@ intervalTypeModuloOctaveBetween: n
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OctaveDependentNote class' category: 'Music-PitchClasses'!
+!classDefinition: 'OctaveDependentNote class' category: #'Music-PitchClasses'!
 OctaveDependentNote class
 	instanceVariableNames: ''!
 
@@ -1524,7 +1473,7 @@ tenorRangeInScale: aScale
 		to: (N la octave: 4)! !
 
 
-!classDefinition: #PitchClass category: 'Music-PitchClasses'!
+!classDefinition: #PitchClass category: #'Music-PitchClasses'!
 Object subclass: #PitchClass
 	instanceVariableNames: ''
 	classVariableNames: 'A AllNatural AllNotes B C D E English F G'
@@ -1971,7 +1920,7 @@ nameInScale: aScale
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PitchClass class' category: 'Music-PitchClasses'!
+!classDefinition: 'PitchClass class' category: #'Music-PitchClasses'!
 PitchClass class
 	instanceVariableNames: ''!
 
@@ -2436,7 +2385,7 @@ sharpflatAlgebraExample
 	"! !
 
 
-!classDefinition: #PitchClassAltered category: 'Music-PitchClasses'!
+!classDefinition: #PitchClassAltered category: #'Music-PitchClasses'!
 PitchClass subclass: #PitchClassAltered
 	instanceVariableNames: 'natural'
 	classVariableNames: ''
@@ -2477,7 +2426,7 @@ isNatural
 	^false! !
 
 
-!classDefinition: #PitchClassDoubleFlat category: 'Music-PitchClasses'!
+!classDefinition: #PitchClassDoubleFlat category: #'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassDoubleFlat
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -2547,7 +2496,7 @@ isDoubleFlat
 	^true! !
 
 
-!classDefinition: #PitchClassDoubleSharp category: 'Music-PitchClasses'!
+!classDefinition: #PitchClassDoubleSharp category: #'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassDoubleSharp
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -2615,7 +2564,7 @@ isDoubleSharp
 	^true! !
 
 
-!classDefinition: #PitchClassFlat category: 'Music-PitchClasses'!
+!classDefinition: #PitchClassFlat category: #'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassFlat
 	instanceVariableNames: 'flat'
 	classVariableNames: ''
@@ -2682,7 +2631,7 @@ sharp
 	^natural! !
 
 
-!classDefinition: #PitchClassSharp category: 'Music-PitchClasses'!
+!classDefinition: #PitchClassSharp category: #'Music-PitchClasses'!
 PitchClassAltered subclass: #PitchClassSharp
 	instanceVariableNames: 'sharp'
 	classVariableNames: ''
@@ -2750,7 +2699,7 @@ sharp: value
 	sharp := value! !
 
 
-!classDefinition: #PitchClassNatural category: 'Music-PitchClasses'!
+!classDefinition: #PitchClassNatural category: #'Music-PitchClasses'!
 PitchClass subclass: #PitchClassNatural
 	instanceVariableNames: 'semiToneCount nom name following preceding sharp flat'
 	classVariableNames: ''
@@ -2895,7 +2844,7 @@ representBinaryOn: s
 	^MessageSend receiver: self class selector:  name! !
 
 
-!classDefinition: #PitchClassChord category: 'Music-PitchClasses'!
+!classDefinition: #PitchClassChord category: #'Music-PitchClasses'!
 Object subclass: #PitchClassChord
 	instanceVariableNames: 'root structure notes possibleTonalities'
 	classVariableNames: ''
@@ -3319,56 +3268,11 @@ notesWithinOctave
 	^root = c root and: [structure = c structure]! !
 
 !PitchClassChord methodsFor: 'compute possible tonalities'!
-analyseIn: aScale
-	"en majeure, mineure harm et min mel"
-
-	| analysis |
-	analysis := Analysis new degree: (aScale degreDeAccord: self ).
-	analysis scale: aScale.
-	^analysis! !
-
-!PitchClassChord methodsFor: 'compute possible tonalities'!
-computePossibleTonalities
-	"self allInstancesDo: [:x| x computePossibleTonalities]"
-
-
-	possibleTonalities := AnalysisList new.
-	"Scale allSubclasses do:"
-	Scale standardScales do:
-		[:aScaleClass | possibleTonalities addAll: (self possibleTonalitiesInScaleClass: aScaleClass)].
-
-	self changed: #analysesPossibles! !
-
-!PitchClassChord methodsFor: 'compute possible tonalities'!
 matchWith: c 
 	"((Chord new fromString: 'D  min 7') computeAllNotes) format 
 	matchAvec: ((N re majorScale genereAccordsPoly: 4) at: 3)."
 
 	^structure = c structure! !
-
-!PitchClassChord methodsFor: 'compute possible tonalities'!
-possibleTonalitiesInScaleClass: s 
-	"possible tonalities in scale class s. 
-	(PitchClassChord newFromString: 'C  ') possibleTonalitiesInScaleClass:  MajorScale  AnalysisList ({I de C MajorScale} {IV de G MajorScale} {V de F MajorScale} )
-	
-	There is a problem here, related to invalid scales. If you ask for 
-	instance the possible  tonalities of 'C# min', it will try to say that V of G# major is a 
-	possible tonality. But the creation of G# major raises an error since it 
-	is an invalid scale. For the moment I leave it as is because	I would 
-	like to have a model of reasoning in an object-oriented setting first"
-
-	| scale ana res c |
-	"self format."
-	res := AnalysisList new.
-	scale := s root: PitchClass do.
-	scale notes do: 
-			[:n | 
-			c := PitchClassChord root: n structure: structure copy.
-			(c allNotesInScale: scale) ifTrue: 
-					[ana := Analysis new degree: (scale degreeOfNote: n).
-					ana scale: (s root: (self root pitchClass transposeOf: (n intervalBetween: PitchClass do))).
-					res add: ana]].
-	^res! !
 
 !PitchClassChord methodsFor: 'compute possible tonalities'!
 standardPossibleTonalities
@@ -3435,19 +3339,22 @@ initAnalyse
 	notes := OrderedCollection new.
 	self changed: #analyse; changed: #analysesPossibles! !
 
-!PitchClassChord methodsFor: 'initializations'!
+!PitchClassChord methodsFor: 'initializations' stamp: 'stp 12/31/2022 06:55'!
 initialize
 	notes := OrderedCollection new.
 	structure := ''.
-	possibleTonalities := AnalysisList new.! !
+"	possibleTonalities := AnalysisList new"! !
 
-!PitchClassChord methodsFor: 'initializations'!
+!PitchClassChord methodsFor: 'initializations' stamp: 'stp 12/31/2022 06:56'!
 resetNotes
-	"reset notes to an empty collection when an important change occurred"
-	(notes isEmpty  or: [notes == nil])
+	"reset notes to an empty collection when an important change
+	occurred "
+	(notes isEmpty
+			or: [notes == nil])
 		ifFalse: [notes := OrderedCollection new].
-	(possibleTonalities isEmpty  or: [possibleTonalities == nil])
-		ifFalse: [possibleTonalities := AnalysisList new]! !
+"	(possibleTonalities isEmpty
+			or: [possibleTonalities == nil])
+		ifFalse: [possibleTonalities := AnalysisList new]"! !
 
 
 !PitchClassChord methodsFor: 'accessing by  intervals'!
@@ -3652,7 +3559,7 @@ bestTonalityInIsolatedCase
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PitchClassChord class' category: 'Music-PitchClasses'!
+!classDefinition: 'PitchClassChord class' category: #'Music-PitchClasses'!
 PitchClassChord class
 	instanceVariableNames: ''!
 
@@ -3696,11 +3603,6 @@ newFromString: l
 !PitchClassChord class methodsFor: 'creation'!
 root: r structure: s
 	^self new root: r; structure: s! !
-
-
-!PitchClassChord class methodsFor: 'editing'!
-openEditor
-	ChordNameEditor open! !
 
 
 !PitchClassChord class methodsFor: 'examples'!
@@ -3810,7 +3712,7 @@ reallyAllChordsFromListOfNotes: aList
 	^PitchClass allPlausibleRootNotes collect: [:n | self new fromNotes: aList root: n]! !
 
 
-!classDefinition: #OctaveDependentChord category: 'Music-PitchClasses'!
+!classDefinition: #OctaveDependentChord category: #'Music-PitchClasses'!
 PitchClassChord subclass: #OctaveDependentChord
 	instanceVariableNames: 'notesByInterval'
 	classVariableNames: ''
@@ -3833,15 +3735,6 @@ them todifferents PlayableNotes.!
 
 
 !OctaveDependentChord methodsFor: 'saving'!
-save
-	| bos fileName |
-	fileName := DialogView request: 'file name' initialAnswer: 'cc.chord'.
-	fileName isEmpty ifTrue: [^nil].
-	bos := BinaryObjectStorage onNew: (Filename named: fileName) writeStream.
-	[bos nextPut: self]
-		valueNowOrOnUnwindDo: [bos close]! !
-
-!OctaveDependentChord methodsFor: 'saving'!
 storeOn: s
 	s nextPut: $(.
 	self quotedPrintOn: s.
@@ -3853,22 +3746,6 @@ storeOn: s
 !OctaveDependentChord methodsFor: 'mutations'!
 asMelody
 	^self asPlayableObject asMelody! !
-
-!OctaveDependentChord methodsFor: 'mutations'!
-asPlayableObject
-	^PlayableChord new chord: self! !
-
-!OctaveDependentChord methodsFor: 'mutations'!
-lapse: l
-	^(PlayableChord new chord: self) lapse: l! !
-
-!OctaveDependentChord methodsFor: 'mutations'!
-startBeat: s duration: d
-	^(PlayableChord new chord: self) startBeat: s; duration: d! !
-
-!OctaveDependentChord methodsFor: 'mutations'!
-startTime: s duration: d
-	^(PlayableChord new chord: self) startTime: s; duration: d! !
 
 
 !OctaveDependentChord methodsFor: 'accessing'!
@@ -4179,7 +4056,7 @@ beTransposedOneStepUp
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OctaveDependentChord class' category: 'Music-PitchClasses'!
+!classDefinition: 'OctaveDependentChord class' category: #'Music-PitchClasses'!
 OctaveDependentChord class
 	instanceVariableNames: ''!
 
@@ -4187,20 +4064,13 @@ OctaveDependentChord class
 newWithValues: anArray 
 	^self new newWithValues: anArray! !
 
-!OctaveDependentChord class methodsFor: 'cation'!
+!OctaveDependentChord class methodsFor: 'cation' stamp: 'stp 12/31/2022 07:11'!
 readFromFile
 	| n |
-	n := DialogView request: 'name of the file' initialAnswer: 'cc.chord'.
-	n isEmpty ifTrue: [^nil].
-	^self readFromFile: n! !
-
-!OctaveDependentChord class methodsFor: 'cation'!
-readFromFile: fileName 
-	| bos x |
-	bos := BinaryObjectStorage onOld: (Filename named: fileName) readStream.
-	[x := bos next]
-		valueNowOrOnUnwindDo: [bos close].
-	^x! !
+	n := FillInTheBlank request: 'name of the file' initialAnswer: 'cc.chord'.
+	n isEmpty
+		ifTrue: [^ nil].
+	^ self readFromFile: n! !
 
 !OctaveDependentChord class methodsFor: 'cation'!
 root: r notes: n 
@@ -4221,7 +4091,7 @@ example2
 	^N C majorTriad fondamental! !
 
 
-!classDefinition: #Triad category: 'Music-PitchClasses'!
+!classDefinition: #Triad category: #'Music-PitchClasses'!
 PitchClassChord subclass: #Triad
 	instanceVariableNames: 'type'
 	classVariableNames: ''
@@ -4242,7 +4112,7 @@ notes: x
 	notes := x! !
 
 
-!classDefinition: #Signature category: 'Music-PitchClasses'!
+!classDefinition: #Signature category: #'Music-PitchClasses'!
 Object subclass: #Signature
 	instanceVariableNames: 'sharps flats'
 	classVariableNames: ''
@@ -4358,7 +4228,7 @@ sharps: s flats: f
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Signature class' category: 'Music-PitchClasses'!
+!classDefinition: 'Signature class' category: #'Music-PitchClasses'!
 Signature class
 	instanceVariableNames: ''!
 
@@ -4387,29 +4257,23 @@ example4
 	(Signature fromTonality: N D minorScale) tonality -> error"! !
 
 
-!Signature class methodsFor: 'creation'!
+!Signature class methodsFor: 'creation' stamp: 'stp 12/31/2022 07:10'!
 choseSignature
 	"Signature choseSignature"
-
 	| choice s |
 	s := Signature new.
-	choice := Dialog 
-
-		choose: 'Choose a signature' 
-
-		fromList: #('no sharp/falt [C Major]' '1 sharp [G Major]' '2 sharps [D Major]' '3 sharps [A Major]' '4 sharps [E Major]' '5 sharps [B Major]' '6 sharps [F# Major]' '7 sharps [C# Major]' '1 flat [F Major]' '2 flats [Bb Major]' '3 flats [Eb Major]' '4 flats [Ab Major]' '5 flats [Dd Major]' '6 flats [Gg Major]' '7 flats [Cb Major]' ) 
-
-		values: (1 to: 15)
-
-		lines: 15
-
-		cancel: [nil] .
-
-	choice == nil ifTrue: [^s].
+	choice := FillInTheBlank
+				choose: 'Choose a signature'
+				fromList: #('no sharp/falt [C Major]' '1 sharp [G Major]' '2 sharps [D Major]' '3 sharps [A Major]' '4 sharps [E Major]' '5 sharps [B Major]' '6 sharps [F# Major]' '7 sharps [C# Major]' '1 flat [F Major]' '2 flats [Bb Major]' '3 flats [Eb Major]' '4 flats [Ab Major]' '5 flats [Dd Major]' '6 flats [Gg Major]' '7 flats [Cb Major]')
+				values: (1 to: 15)
+				lines: 15
+				cancel: [].
+	choice == nil
+		ifTrue: [^ s].
 	choice < 9
 		ifTrue: [s nbSharps: choice - 1]
 		ifFalse: [s nbFlats: choice - 8].
-	^s! !
+	^ s! !
 
 !Signature class methodsFor: 'creation'!
 fromTonality: aScale 

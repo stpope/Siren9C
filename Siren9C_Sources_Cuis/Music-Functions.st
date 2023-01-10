@@ -1,4 +1,4 @@
-!classDefinition: #FunctionEvent category: 'Music-Functions'!
+!classDefinition: #FunctionEvent category: #'Music-Functions'!
 MusicEvent subclass: #FunctionEvent
 	instanceVariableNames: 'function interval delta'
 	classVariableNames: ''
@@ -102,7 +102,7 @@ scheduleAt: aTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FunctionEvent class' category: 'Music-Functions'!
+!classDefinition: 'FunctionEvent class' category: #'Music-Functions'!
 FunctionEvent class
 	instanceVariableNames: ''!
 
@@ -113,7 +113,7 @@ new
 	^super new initialize! !
 
 
-!classDefinition: #Function category: 'Music-Functions'!
+!classDefinition: #Function category: #'Music-Functions'!
 DurationEvent subclass: #Function
 	instanceVariableNames: 'data range domain scale offset'
 	classVariableNames: ''
@@ -599,7 +599,7 @@ indexOfPointNearestX: anXValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Function class' category: 'Music-Functions'!
+!classDefinition: 'Function class' category: #'Music-Functions'!
 Function class
 	instanceVariableNames: ''!
 
@@ -828,7 +828,7 @@ defaultSize
 	^1024! !
 
 
-!classDefinition: #FourierSummation category: 'Music-Functions'!
+!classDefinition: #FourierSummation category: #'Music-Functions'!
 Function subclass: #FourierSummation
 	instanceVariableNames: 'myForm myArray lazy'
 	classVariableNames: ''
@@ -914,7 +914,7 @@ at: theIndex
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FourierSummation class' category: 'Music-Functions'!
+!classDefinition: 'FourierSummation class' category: #'Music-Functions'!
 FourierSummation class
 	instanceVariableNames: ''!
 
@@ -957,7 +957,7 @@ fourierViewExample
 							(7 0.17 0) (9 0.15 0) (11 0.1 0)))! !
 
 
-!classDefinition: #FunctionGraph category: 'Music-Functions'!
+!classDefinition: #FunctionGraph category: #'Music-Functions'!
 Function subclass: #FunctionGraph
 	instanceVariableNames: 'operandL operandR operation'
 	classVariableNames: ''
@@ -1004,7 +1004,7 @@ operation: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FunctionGraph class' category: 'Music-Functions'!
+!classDefinition: 'FunctionGraph class' category: #'Music-Functions'!
 FunctionGraph class
 	instanceVariableNames: ''!
 
@@ -1027,7 +1027,7 @@ opL: opL opR: opR operation: op
 	^self new operandL: opL; operandR: opR; operation: op! !
 
 
-!classDefinition: #LinearFunction category: 'Music-Functions'!
+!classDefinition: #LinearFunction category: #'Music-Functions'!
 Function subclass: #LinearFunction
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1132,7 +1132,7 @@ size
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'LinearFunction class' category: 'Music-Functions'!
+!classDefinition: 'LinearFunction class' category: #'Music-Functions'!
 LinearFunction class
 	instanceVariableNames: ''!
 
@@ -1211,7 +1211,7 @@ linearViewExample
 		(LinearFunction from: #((0 0) (0.1 1) (0.2 0.6) (0.9 0.4) (1 0)))! !
 
 
-!classDefinition: #ExponentialFunction category: 'Music-Functions'!
+!classDefinition: #ExponentialFunction category: #'Music-Functions'!
 LinearFunction subclass: #ExponentialFunction
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1291,7 +1291,7 @@ printOn: aStream
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ExponentialFunction class' category: 'Music-Functions'!
+!classDefinition: 'ExponentialFunction class' category: #'Music-Functions'!
 ExponentialFunction class
 	instanceVariableNames: ''!
 
@@ -1358,7 +1358,7 @@ expsegViewExample
 		(ExponentialFunction from: #((0 0 -3) (0.2 1 -5) (0.6 0.5 -1) (1 0)))! !
 
 
-!classDefinition: #SplineFunction category: 'Music-Functions'!
+!classDefinition: #SplineFunction category: #'Music-Functions'!
 LinearFunction subclass: #SplineFunction
 	instanceVariableNames: 'linSeg'
 	classVariableNames: ''
@@ -1371,7 +1371,7 @@ Instance Variable:
 	linSeg		<LinearFunction> my linear twin!
 
 
-!SplineFunction methodsFor: 'computing'!
+!SplineFunction methodsFor: 'computing' stamp: 'stp 12/30/2022 10:42'!
 computeCurve
 	"Compute the receiver by cubic interpolation; use the Geometric spline."
 
@@ -1379,8 +1379,9 @@ computeCurve
 	points := OrderedCollection new: data size.
 	data do: [ :pt |
 			points add: (pt * 100)].
-	spline := Spline controlPoints: points.
-	points := spline computeCurve; computePoints.
+	spline := Spline new.
+	points do: [ :pt | spline add: pt].
+	points := spline computeCurve.
 	1 to: points size do: [ :i |
 			points at: i put: ((points at: i) / 100)].
 	linSeg := LinearFunction from: points! !
@@ -1396,9 +1397,31 @@ at: anIndex
 	val := linSeg at: anIndex.
 	^(val * scale) + offset! !
 
+!SplineFunction methodsFor: 'accessing' stamp: 'stp 12/30/2022 11:22'!
+scaleBy: aPt 
+	| points |
+	points := Array new: data size.
+	1
+		to: data size
+		do: [:ind | points at: ind put: (data at: ind)
+					* aPt].
+	^ SplineFunction from: points! !
+
+!SplineFunction methodsFor: 'accessing' stamp: 'stp 12/30/2022 11:24'!
+spline
+	| points spline |
+	points := OrderedCollection new: data size.
+	data
+		do: [:pt | points add: pt].
+	spline := Spline new.
+	points
+		do: [:pt | spline add: pt].
+	spline computeCurve.
+	^ spline! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'SplineFunction class' category: 'Music-Functions'!
+!classDefinition: 'SplineFunction class' category: #'Music-Functions'!
 SplineFunction class
 	instanceVariableNames: ''!
 
@@ -1429,7 +1452,7 @@ default
 	^SplineFunction from: #((0 0.5) (0.35 0.7) (0.65 0.35) (1 0.5))! !
 
 
-!classDefinition: #Spectrum category: 'Music-Functions'!
+!classDefinition: #Spectrum category: #'Music-Functions'!
 Function subclass: #Spectrum
 	instanceVariableNames: 'sound window windowSize stepSize magReal'
 	classVariableNames: ''
@@ -1510,44 +1533,64 @@ windowSize: aNum
 ! !
 
 
-!Spectrum methodsFor: 'computing' stamp: 'stp 12/5/2022 15:39:36'!
+!Spectrum methodsFor: 'computing' stamp: 'stp 12/31/2022 07:12'!
 compute
 	"Do the FFT and store the results into the receiver's data."
 	"Spectrum sweepExample"
 	"Spectrum fileExample"
-
 	| fft dSize min max samples spectrum |
-	dSize := (sound size / stepSize) truncated.		"# of windows"
-	data := Array new: dSize.						"array of arrays"
-	min := 1.0e30.  max := -1.0e30.
-	samples := ByteArray new: (windowSize * 4).		"FFT's private data"
+	dSize := (sound size / stepSize) truncated.
+	"# of windows"
+	data := Array new: dSize.
+	"array of arrays"
+	min := 1.0e30.
+	max := -1.0e30.
+	samples := ByteArray new: windowSize * 4.
+	"FFT's private data"
 	samples gcCopyToHeap.
-	spectrum := ByteArray new: (windowSize * 4 + 1).
+	spectrum := ByteArray new: windowSize * 4 + 1.
 	spectrum gcCopyToHeap.
-	fft := FFTWInterface new.						"set up the FFT"
-	[fft fftw_initialize: windowSize with: samples with: spectrum]
+	fft := FFT new.
+	"set up the FFT"
+	[fft
+		fftw_initialize: windowSize
+		with: samples
+		with: spectrum]
 		on: Error
-		do: [ :ex | self error: 'FFT not installed'].
-	Cursor execute showWhile:
-		[1 to: dSize do:
-			[ :winCount | | buffer slice |
-			buffer := self window: winCount.	"window the data buffer"
-			1 to: windowSize do:							"copy it to the FFT's input buffer"
-				[ :count | samples floatAt: (count - 1 * 4 + 1) put: (buffer at: count)].
-			fft fftw_forward_transform.				"do the FFT"
-			slice := Array new: (windowSize / 2).
-			magReal == #real				"pack data--real or complex"
-				ifFalse: [self error: 'Complex FFT not supported']
-				ifTrue: [1 to: windowSize / 2 do:	"copy the magnitude spectrum out"
-					[ :ind | | re im mag |
-						re := spectrum floatAt: (ind * 2 - 2 * 4 + 1).
-						im := spectrum floatAt: (ind * 2 - 1 * 4 + 1).
-						mag := ((re * re) + (im * im)) sqrt.
-						slice at: ind  put: mag.
-						min := mag min: min.
-						max := mag max: max].
-					data at: winCount put: slice]]].
-	self range: (min to: max)! !
+		do: [:ex | self error: 'FFT not installed'].
+	Cursor execute
+		showWhile: [1
+				to: dSize
+				do: [:winCount | 
+					| buffer slice |
+					buffer := self window: winCount.
+					"window the data buffer"
+					1
+						to: windowSize
+						do: [:count | "copy it to the FFT's input buffer"
+							samples
+								floatAt: count - 1 * 4 + 1
+								put: (buffer at: count)].
+					fft fftw_forward_transform.
+					"do the FFT"
+					slice := Array new: windowSize / 2.
+					magReal == #real
+						ifTrue: [1
+								to: windowSize / 2
+								do: [:ind | 
+									| re im mag |
+									"copy the magnitude spectrum out"
+									re := spectrum floatAt: ind * 2 - 2 * 4 + 1.
+									im := spectrum floatAt: ind * 2 - 1 * 4 + 1.
+									mag := (re * re + (im * im)) sqrt.
+									slice at: ind put: mag.
+									min := mag min: min.
+									max := mag max: max].
+							data at: winCount put: slice]
+						ifFalse: ["pack data--real or complex"
+							self error: 'Complex FFT not supported']]].
+	self
+		range: (min to: max)! !
 
 !Spectrum methodsFor: 'computing'!
 compute0
@@ -1782,7 +1825,7 @@ frame: frm realAt: frq put: val
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Spectrum class' category: 'Music-Functions'!
+!classDefinition: 'Spectrum class' category: #'Music-Functions'!
 Spectrum class
 	instanceVariableNames: ''!
 

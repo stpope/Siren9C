@@ -1,4 +1,4 @@
-!classDefinition: #FloatSound category: 'Music-Sound'!
+!classDefinition: #FloatSound category: #'Music-Sound'!
 SampledSound subclass: #FloatSound
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -49,7 +49,7 @@ intSampleAt: index put: aValue
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'FloatSound class' category: 'Music-Sound'!
+!classDefinition: 'FloatSound class' category: #'Music-Sound'!
 FloatSound class
 	instanceVariableNames: ''!
 
@@ -80,7 +80,7 @@ fileExample
 	^FloatSound fromFile: 'snd/new/orchestra.f.snd'! !
 
 
-!classDefinition: #VirtualSound category: 'Music-Sound'!
+!classDefinition: #VirtualSound category: #'Music-Sound'!
 SampledSound subclass: #VirtualSound
 	instanceVariableNames: 'source'
 	classVariableNames: ''
@@ -175,7 +175,7 @@ isVirtual
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'VirtualSound class' category: 'Music-Sound'!
+!classDefinition: 'VirtualSound class' category: #'Music-Sound'!
 VirtualSound class
 	instanceVariableNames: ''!
 
@@ -201,7 +201,7 @@ exampleView
 				cue: #stream3)! !
 
 
-!classDefinition: #CompositeSound category: 'Music-Sound'!
+!classDefinition: #CompositeSound category: #'Music-Sound'!
 VirtualSound subclass: #CompositeSound
 	instanceVariableNames: 'components'
 	classVariableNames: ''
@@ -295,7 +295,7 @@ isComposite
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CompositeSound class' category: 'Music-Sound'!
+!classDefinition: 'CompositeSound class' category: #'Music-Sound'!
 CompositeSound class
 	instanceVariableNames: ''!
 
@@ -322,7 +322,7 @@ exampleView
 	SoundView openOn: (ramp paste: sine from: 200 to: 400 at: 1000)! !
 
 
-!classDefinition: #GapSound category: 'Music-Sound'!
+!classDefinition: #GapSound category: #'Music-Sound'!
 VirtualSound subclass: #GapSound
 	instanceVariableNames: 'cutList'
 	classVariableNames: ''
@@ -392,7 +392,7 @@ samples
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'GapSound class' category: 'Music-Sound'!
+!classDefinition: 'GapSound class' category: #'Music-Sound'!
 GapSound class
 	instanceVariableNames: ''!
 
@@ -419,7 +419,7 @@ exampleView
 			cutFrom: 1000 to: 10000)! !
 
 
-!classDefinition: #Sound category: 'Music-Sound'!
+!classDefinition: #Sound category: #'Music-Sound'!
 Function subclass: #Sound
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -506,7 +506,7 @@ cueRegionNamed: cName
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Sound class' category: 'Music-Sound'!
+!classDefinition: 'Sound class' category: #'Music-Sound'!
 Sound class
 	instanceVariableNames: ''!
 
@@ -524,17 +524,20 @@ named: aName put: aSound
 	^SirenSession sounds at: aName asSymbol put: aSound! !
 
 
-!Sound class methodsFor: 'utilities'!
-fromFile: nameString
+!Sound class methodsFor: 'utilities' stamp: 'stp 12/31/2022 11:07'!
+fromFile: nameString 
 	"Open the given file (AIFF, IRCAM, NeXT, or SPARC soundfile format)"
 	"Sound fromFile: 'kombination.snd'"
-
 	| snd |
-	[snd := (SoundFile readFileNamed: nameString).
-	snd ifNotNil: [snd := snd sound]]
-		on: Core.Error
-		do: [ :ex |  "ignore " "self error: 'Cannot read sound file named ', nameString"].
-	^snd! !
+	[snd := LoopedSampledSound fromAIFFFileNamed: nameString mergeIfStereo: false.
+	snd
+		ifNotNil: [snd := snd sound]]
+		on: Error.
+	Error
+		do: [:ex | "ignore"
+			"self error: 'Cannot read sound file named ', nameString"
+			].
+	^ snd! !
 
 !Sound class methodsFor: 'utilities'!
 playFile: theName
@@ -543,7 +546,7 @@ playFile: theName
 	SirenUtility playSoundFile: theName! !
 
 
-!classDefinition: #ComponentSound category: 'Music-Sound'!
+!classDefinition: #ComponentSound category: #'Music-Sound'!
 Sound subclass: #ComponentSound
 	instanceVariableNames: 'start stop sound'
 	classVariableNames: ''
@@ -634,7 +637,7 @@ includes: anIndex
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ComponentSound class' category: 'Music-Sound'!
+!classDefinition: 'ComponentSound class' category: #'Music-Sound'!
 ComponentSound class
 	instanceVariableNames: ''!
 

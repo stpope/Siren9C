@@ -1,0 +1,186 @@
+Smoke Event Lists
+
+In accordance to the "composite" OO design pattern, EventList objects hold onto collections of events that are tagged and sorted by their start times (represented as the duration between the start time of the container event list and that of the constituent event). The event list classes are subclasses of Event themselves. This means that event lists can behave like events and can therefore be arbitrarily deeply nested, i.e., one event list can contain another as one of its events. 
+
+The primary messages to which event lists respond (in addition to the behavior they inherit by being events), are
+	(anEventList add: anEvent at: aDuration) -- to add an event to the list
+	(anEventList play) -- to play the event list on its voice (or a default one)
+	(anEventList edit) -- to open a graphical editor in the event list
+	(anEventList open) -- either edit, play or inspect, depending on the <SHIFT> and <CTRL> keys
+and Smalltalk-80 collection iteration and enumeration messages such as 
+	(anEventList do: [1-arg-block]) -- to iterate over a list's events
+	(anEventList select: [Bool-Block]) -- to select the events that satisfy the given (Boolean) function block. 
+
+Event lists can map their own properties onto their events in several ways. Properties can be defined as lazy or eager, to signify whether they map themselves when created (eagerly) or when the event list is performed (lazily). This makes it easy to create several event lists that have copies of the same events and map their own properties onto the events at performance time under interactive control. Voices handle mapping of event list properties via event modifiers, as described below.
+
+In a typical hierarchical Smoke score, data structure composition is used to manage the large number of events, event generators and event modifiers necessary to describe a full performance. The score is a tree--possibly a forest (i.e., with multiple roots) or a lattice (i.e., with cross-branch links between the inner nodes)--of hierarchical event lists representing sections, parts, tracks, phrases, chords, or whatever abstractions the user desires to define. Smoke does not define any fixed event list subclasses for these types; they are all various compositions of parallel or sequential event lists.
+
+Note that events do not know their start times; this is always relative to some outer scope. This means that events can be shared among many event lists, the extreme case being an entire composition where one event is shared and mapped by many different event lists (as described in [Scaletti 1989]). The fact that the Smoke text-based event and event list description format consists of executable Smalltalk-80 message expressions (see examples below), means that it can be seen as either a declarative or a procedural description language. The goal is to provide "something of a cross between a music notation and a programming language" (Dannenberg 1989). 
+
+Event List Examples
+
+The verbose way of creating an event list is to create a named instance and add events explicitly as shown in the first example below, which creates a D-major chord.
+
+	[((EventList newNamed: #Chord1)
+		add: (1/2  beat, 'd3'  pitch,  'mf' ampl)  at: 0;
+		add: (1/2  beat, 'fs3'  pitch, 'mf' ampl)  at: 0;
+		add: (1/2  beat, 'a4'   pitch, 'mf' ampl)  at: 0) open]
+
+This same chord could be defined more tersely as a dictionary of (duration => event) pairs,
+
+	[((0 => (1/2 beat, 'd3' pitch, 'mf' ampl)), 
+	  (0 => (1/2 beat, 'fs3' pitch, 'mf' ampl)), 
+	  (0 => (1/2 beat, 'a4' pitch, 'mf' ampl))) open]
+
+Note the use of the "=>" message, which works just like Smalltalk's "->'" in that it creates an association between the key on the left and the value on the right; the difference is that it creates a special kind of association called an EventAssociation.
+
+This could be done even more compactly using a Chord object (see the discussion of event generators below) as,
+
+	[(Chord majorTriadOn: 'd3' inversion: 0) eventList open]
+
+Terse EventList creation using concatenation of events or (duration, event) asociations looks like,
+
+	[(440 Hz, (1/2 beat), 44.7 dB),		"note the comma between events"
+	 (1 => ((1.396 sec, 0.714 ampl) phoneme: #xu))]	"2nd event starts at 1 second"
+
+Bach Example--First measure of Fugue 2 from the Well-Tempered Klavier (ignoring the initial rest).
+
+		((0 beat) => (1/16 beat,  'c3' pitch)),
+		((1/16 beat) => (1/16 beat, 'b2'  pitch)),
+		((1/8 beat)  => (1/8 beat,  'c3' pitch)),
+		((1/4 beat) => (1/8 beat, 'g2'  pitch)),
+		((3/8 beat) => (1/8 beat, 'a-flat2'  pitch)),
+		((1/2 beat) => (1/16 beat,  'c3' pitch)),
+		((1/16 beat) => (1/16 beat, 'b2'  pitch)),
+		((1/8 beat)  => (1/8 beat,  'c3' pitch)),
+		((3/4 beat) => (1/8 beat, 'd3'  pitch)),
+		((7/8 beat) => (1/8 beat, 'g2'  pitch))
+
+There are more comfortable event list creation methods, such as the following examples.
+
+Play a chromatic scale giving the initial and final pitches (as MIDI key numbers) and total duration (in seconds)
+
+	[(EventList scaleFrom: 48 to: 60 in: 1.5) open] d
+
+Create 64 random events with parameters in the given ranges and play them over the default output voice.
+
+	[(EventList randomExample: 32 
+		from: ((#duration: -> (50 to: 200)),		"durations in msec"
+				(#pitch: -> (36 to: 60)),			"pitchs as MIDI key numbers"
+				(#ampl: -> (48 to: 120)),		"amplitudes as MIDI key velocities"
+				(#voice: -> (1 to: 1)))) open]	"voices as numbers"
+
+Note that the argument for the keyword "from:" is a dictionary in the form (property-name -> value-interval).
+
+Same with named instruments = play using named instruments
+
+	[(EventList randomExample: 64 
+		from: ((#duration: -> (0.15 to: 0.4)),			"dur in sec"
+				(#pitch: -> (36 to: 60)),					"MIDI pitch"
+				(#ampl: -> (48 to: 120)),				"MIDI velocity"
+				(#voice: -> #(organ1 flute2 clarinet bassoon1 marimba bass1)))) open]
+
+Event lists don't have to have pitches at all, as in the word,
+
+	[EventList named: 'phrase1'  
+		fromSelectors: #(duration: loudness: phoneme:)			"3 parameters"
+		values: (Array with: #(595 545 545 540 570 800 540) 	"3 value arrays"
+					with: #(0.8 0.4 0.5 0.3 0.2 0.7 0.1) 
+					with: #(#dun #kel #kam #mer #ge #sprae #che)).
+	(EventList named: 'phrase1') inspect]
+
+Note the format of the arguments to the message "fromSelectors: values:" used above, the first is an array of property selector symbols, and the second is an array of arrays for the property data
+
+There are a number of useful EventList instance creation methods based on the "fromSelectors: values:" method, for example, the following example shows the use of data lists in a serial style for score creation.
+
+	[(EventList serialExample: 64 
+		from: ((#duration: -> #(0.1 0.1 0.1 0.2)), (#pitch: -> #(48 50 52 53 52)),
+				(#ampl: -> #(48 64)), (#voice: -> #(1)))) open] 
+
+This example creates a scale where the event property types (duration, pitch, amplitude) are mixed.
+
+	[EventList scaleExample2] i
+
+Here's another example of creating a simple melody
+
+	[(EventList named: 'melody'  
+		fromSelectors: #(pitch: duration:)
+		values: (Array with: #(c d e f g) 
+					with: #(4 8 8 4 4) reciprocal)) open]
+
+Event lists can have mixed properties in the events; inspect this
+	[EventList scaleExample2]
+ 
+You can create event lists with snippets of code such as the following whole-tone scale.
+
+	[ | elist |
+	elist := EventList newAnonymous.
+	1 to: 12 do:
+		[ :index |
+		elist add: (1/4  beat, (index * 2 + 36) key,  #mf ampl)].
+	elist open ]
+
+Event lists can be nested into arbitrary structures, as in the following group of four sub-groups
+
+	[(EventList newNamed: 'Hierarchical/4Groups')
+		add: (EventList randomExample: 8 
+			from: ((#duration: -> (60 to: 120)), (#pitch: -> (36 to: 40)), (#ampl: -> #(110)))) at: 0;
+		add: (EventList randomExample: 8 
+			from: ((#duration: -> (60 to: 120)), (#pitch: -> (40 to: 44)), (#ampl: -> #(100)))) at: 1;
+		add: (EventList randomExample: 8 
+			from: ((#duration: -> (60 to: 120)), (#pitch: -> (44 to: 48)), (#ampl: -> #(80)))) at: 2;
+		add: (EventList randomExample: 8
+			from: ((#duration: -> (60 to: 120)), (#pitch: -> (48 to: 52)), (#ampl: -> #(70)))) at: 3;
+		open "inspect" ]
+
+Smalltalk methods can process event lists in many different ways, as in this code that uses the eventsDo: [] message to increase the durations of the last notes in each of the subgroups from the previous example.
+
+	[(EventList named: 'Hierarchical/4Groups') eventsDo: 
+		[ :sublist | | evnt |			"Remember: this is hierarchical, to the events are the sub-groups"
+		evnt := sublist events last event.		"get the first note of each group"
+		evnt duration: evnt duration * 4].		"multiply the duration by 4"
+	(EventList named: #groups) open ]
+
+In the following example, we iterate over a scale and make it slow down to changing the event start times
+
+	[ | elist |
+	elist := EventList scaleExampleFrom: 60 to: 36 in: 3. 
+	1 to: elist size do: 
+		[ :index | | assoc |
+		assoc := elist events at: index.
+		assoc key: (assoc key * (1 + (index / elist events size)))].
+	elist open ]
+
+There are many more event list processing examples in the various class example methods, and in the event generator example that follow in this workbook.
+
+Storage and Utilities
+
+Note the use of event list names in the above examples. All named event lists are stored in a hierarchical dictionary named EventLists that's held in class SirenSession. To look at all named event lists, execute the following
+	[SirenSession eventLists] i
+
+If you create an event list with a name that contains the character '/', then it is assumed to be in a subdictionary of the top-level event list dictionary, as in the example above that created an event list named 'Hierarchical/4Groups.' You can use this to manage your own sketches and pieces. If you create an event list named 'Opus1/Prelude/Exposition/Theme1' then the hierarchy of implicit in the name will be reflected by an automatically created hierarchical set of event list dictionaries.
+	"SirenSession eventList: 'piece1/mvmnt1/part1' put: EventList new"
+	"SirenSession eventList: 'piece1/mvmnt1/part1'"
+
+There's a pop-up menu in the transport view that allows you to select event lists from this hierarchy.
+
+You can erase the temporary lists (those in the dictionary named #Temp) from the EventList dictionary with,
+	[SirenSession flushTempEventLists]
+
+or to flush all,
+	[SirenSession flushAllEventLists]
+
+Inspect a dictionary of all known event lists.
+	[SirenSession eventLists inspect]
+
+To read in a stored file, simply,
+	[(Filename named: 'events.st') fileIn]
+
+Load all event lists (.ev, .midi, and .gio files), from the data directories.
+	[SirenSession loadDemoData]
+
+Extending The Event/EventList Framework
+
+There are a number of approaches one can take to extend the Smoke framework. The core event classes rarely need extension of subclassing. Simple methods in a workspace or class example methods can create and process event lists through many stages, and the built-in persistency and versioning in s7 files aids composers in the stages of content creation, refinement, sorting, and mixing. 
+
+It is often useful to add new EventList instance creation method for short-hand representations of chords, scales, etc. One can also write new processing methods (e.g., filters) in the EventList class. These can also be placed on EventGenerator or EventModifier classes (see the next workbook sections).

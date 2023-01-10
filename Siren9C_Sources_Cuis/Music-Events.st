@@ -1,4 +1,4 @@
-!classDefinition: #MAbstractEvent category: 'Music-Events'!
+!classDefinition: #MAbstractEvent category: #'Music-Events'!
 Object subclass: #MAbstractEvent
 	instanceVariableNames: 'properties'
 	classVariableNames: ''
@@ -291,7 +291,7 @@ isSound
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MAbstractEvent class' category: 'Music-Events'!
+!classDefinition: 'MAbstractEvent class' category: #'Music-Events'!
 MAbstractEvent class
 	instanceVariableNames: ''!
 
@@ -310,7 +310,7 @@ example
 	^(MAbstractEvent new) color: #green; shape: #round! !
 
 
-!classDefinition: #DurationEvent category: 'Music-Events'!
+!classDefinition: #DurationEvent category: #'Music-Events'!
 MAbstractEvent subclass: #DurationEvent
 	instanceVariableNames: 'duration index startedAt realTime'
 	classVariableNames: ''
@@ -493,7 +493,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DurationEvent class' category: 'Music-Events'!
+!classDefinition: 'DurationEvent class' category: #'Music-Events'!
 DurationEvent class
 	instanceVariableNames: ''!
 
@@ -512,6 +512,11 @@ example
 	^DurationEvent dur: 250 msec voice: #flute! !
 
 
+!DurationEvent class methodsFor: 'instance creation' stamp: 'stp 12/30/2022 12:52'!
+dur: aD
+	"Answer a DurationEvent instance initialized with the arguments."
+	^ self new duration: aD! !
+
 !DurationEvent class methodsFor: 'instance creation'!
 dur: aD voice: aVoice
 	"Answer a DurationEvent instance initialized with the arguments."
@@ -519,7 +524,7 @@ dur: aD voice: aVoice
 	^self new duration: aD; voice: aVoice! !
 
 
-!classDefinition: #ActionEvent category: 'Music-Events'!
+!classDefinition: #ActionEvent category: #'Music-Events'!
 DurationEvent subclass: #ActionEvent
 	instanceVariableNames: 'action'
 	classVariableNames: ''
@@ -560,54 +565,74 @@ action: anObject
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ActionEvent class' category: 'Music-Events'!
+!classDefinition: 'ActionEvent class' category: #'Music-Events'!
 ActionEvent class
 	instanceVariableNames: ''!
 
-!ActionEvent class methodsFor: 'examples'!
+!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:55'!
 eventExample
 	"Demonstrate the creation of an ActionEvent."
 	"ActionEvent eventExample play"
+	^ ActionEvent
+		dur: 250 msec
+		action: [| rect |
+			rect := SystemWindow topWindow bounds.
+			"Display reverse: rect fillColor: Color blue
+			form := SystemWindow topWindow imageFormForRectangle:
+			rect."
+			Display
+				fill: rect
+				rule: Form paint
+				fillColor: Color black.
+			Display
+				fill: ((rect origin translateBy: 20 @ 20)
+						extent: 160 @ 80)
+				rule: Form paint
+				fillColor: Color red.
+			(Delay forSeconds: 1) wait.
+			Display restore]! !
 
-	^ActionEvent dur: 250 msec action: 
-		[ | gc |
-		gc := Window currentWindow graphicsContext.
-	 	gc paint: ColorValue red.
-		gc displayRectangle: ((20@20) extent: (20@20)).
-		(Delay forSeconds: 1) wait.
-		Window currentWindow refresh]! !
-
-!ActionEvent class methodsFor: 'examples'!
+!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 12:12'!
 listExample
-	"Demonstrate the creation of an ActionEvent by making a list of events that draw rectangles on the top window."
+	"Demonstrate the creation of an ActionEvent by making a list of events
+	that draw rectangles on the top window."
 	"ActionEvent listExample"
 	"ActionEvent playExample"
 	"EventScheduler addClient: ActionEvent listExample; run"
 	"Window currentWindow refresh"
-
-	| list gc bounds rand |
+	| list bounds |
 	list := EventList newAnonymous.
-	rand := Random new.
-	gc := Window currentWindow graphicsContext.
-	bounds := gc clippingBounds.
-	100 timesRepeat:
-		[list add: (ActionEvent dur: 50 msec action: 
-			[gc paint: ColorValue random.
-			gc displayRectangle: (((rand next * bounds width) truncated
-							@ (rand next * bounds height) truncated)
-				extent: ((rand next * 60) truncated)
-							@ (rand next * 60) truncated)])].
-	^list! !
+	bounds := SystemWindow topWindow bounds.
+	Display
+		fill: bounds
+		rule: Form paint
+		fillColor: Color white.
+	50
+		timesRepeat: [list
+				add: (ActionEvent
+						dur: 100 msec
+						action: [| rect rand |
+							rand := Random new.
+							rect := SystemWindow topWindow bounds.
+							Display
+								fill: (((rand next * rect width) truncated @ (rand next * rect height) truncated translateBy: rect origin)
+										extent: (rand next * 60) truncated @ (rand next * 60) truncated)
+								rule: Form paint
+								fillColor: (Color random: rand)])].
+	list play.
+	(Delay forSeconds: 6) wait.
+"	list explore."
+	Display restore.
+! !
 
-!ActionEvent class methodsFor: 'examples'!
+!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 12:12'!
 playExample
 	"Demonstrate the performance of a list of ActionEvents."
 	"ActionEvent playExample"
-
-	EventScheduler instance addClient: self listExample in: (100 msec).
+	EventScheduler instance addClient: self listExample in: 100 msec.
 	EventScheduler instance run.
 	(Delay forSeconds: 6) wait.
-	Window currentWindow refresh! !
+	Display restore.! !
 
 
 !ActionEvent class methodsFor: 'instance creation'!
@@ -623,7 +648,7 @@ dur: aD block: actionBlock
 	^self new duration: aD; action: actionBlock! !
 
 
-!classDefinition: #MusicEvent category: 'Music-Events'!
+!classDefinition: #MusicEvent category: #'Music-Events'!
 DurationEvent subclass: #MusicEvent
 	instanceVariableNames: 'pitch loudness voice'
 	classVariableNames: ''
@@ -720,24 +745,28 @@ printOn: aStream
 "	^self printVerboseOn: aStream
 "	^self printTerseOn: aStream! !
 
-!MusicEvent methodsFor: 'printing' stamp: 'stp 12/28/2022 14:00:35'!
+!MusicEvent methodsFor: 'printing' stamp: 'stp 1/7/2023 21:55:46'!
 printTerseOn: aStream 
 	"Format and print the receiver on the argument as tersely as possible."
-
 	duration == nil
-		ifFalse: [duration printOn: aStream]. 
+		ifFalse: [duration printOn: aStream].
 	pitch == nil
-		ifFalse: [aStream nextPutAll: ' ', pitch printString].
+		ifFalse: [aStream nextPutAll: ' ' , pitch printString].
 	loudness == nil
-"		ifFalse: [aStream nextPutAll: ' (l: ', loudness value printString,')']."
-		ifFalse: [aStream nextPutAll: ' ', loudness printString].
+		ifFalse: [aStream nextPutAll: ' ' , loudness printString].
 	voice == nil
-		ifFalse: [aStream nextPutAll: ' (v: ', voice printString, ')'].
+		ifFalse: [aStream nextPutAll: ' (v: ' , voice printString , ')'].
 	properties == nil
-		ifFalse: [properties associationsDo:
-				[ :ass |
-				aStream nextPutAll: ' (', ass key, ': ', ass value printString, ')']].
-	aStream "nextPutAll: ')';" lf! !
+		ifFalse: [properties
+				associationsDo: [:ass | 
+					| val |
+					val := ass value.
+					aStream nextPutAll: ' (' , ass key , ': '.
+					val isFloat
+						ifTrue: [ass value printOn: aStream fractionDigits: 4]
+						ifFalse: [ass value printOn: aStream].
+					aStream nextPutAll: ')']].
+	aStream lf! !
 
 !MusicEvent methodsFor: 'printing'!
 printVerboseOn: aStream 
@@ -835,14 +864,14 @@ storeOn: aStream
 				[super = anObject]]]! !
 
 
-!MusicEvent methodsFor: 'scheduling'!
+!MusicEvent methodsFor: 'scheduling' stamp: 'stp 1/5/2023 10:22'!
 playOn: aVoice at: aTime
 	"Play the receiver on the voice then."
 
 	aVoice == nil
 		ifTrue: [^Voice default playEvent: self at: aTime].
 	aVoice isVoice
-		ifTrue: [aVoice playEvent: self at: aTime].
+		ifTrue: [^aVoice playEvent: self at: aTime].
 	(SirenSession voices includesKey: aVoice)
 			ifTrue: [^(SirenSession voices at: aVoice) playEvent: self at: aTime].
 	aVoice isInteger
@@ -850,7 +879,7 @@ playOn: aVoice at: aTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MusicEvent class' category: 'Music-Events'!
+!classDefinition: 'MusicEvent class' category: #'Music-Events'!
 MusicEvent class
 	instanceVariableNames: ''!
 
@@ -984,7 +1013,7 @@ example
 "	((880 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl) accent: #sfz) inspect"! !
 
 
-!classDefinition: #EventList category: 'Music-Events'!
+!classDefinition: #EventList category: #'Music-Events'!
 MusicEvent subclass: #EventList
 	instanceVariableNames: 'events'
 	classVariableNames: ''
@@ -1050,6 +1079,10 @@ defaultEventClass
 	"Answer the default note event class."
 
 	^MusicEvent! !
+
+!EventList methodsFor: 'accessing' stamp: 'stp 12/30/2022 14:25'!
+flushVoices
+	self eventsDo: [ :ev | ev voice: nil]! !
 
 !EventList methodsFor: 'accessing'!
 name
@@ -1120,6 +1153,45 @@ voices
 				ifFalse: [coll add: ev voice]]].
 	^coll! !
 
+
+!EventList methodsFor: 'code conversion' stamp: 'stp 12/29/2022 01:40'!
+asSoundScore
+	"Convert the receiver to a Squeak-format score"
+	"(EventList scaleFrom: 48 to: 60 in: 1.5) asSoundScore play"
+	"| sco voxs| 
+	sco := EventList scaleFrom: 48 to: 60 in: 1.5.
+	voxs := Array with: FMSound oboe1 with: FMSound brass1 with:
+	FMSound marimba with: PluckedSound default.
+	sco eventsDo: [ :ev |
+	ev voice: voxs atRandom].
+	sco asSoundScore play "
+	| sco cnt tim vox |
+	sco := SequentialSound new initialize.	"(pitch, duration, loudness)"
+	cnt := 1.
+	tim := 0 msec.
+	events
+		do: [:ass | 
+			| sta evt |
+			sta := ass key.
+			sta = tim
+				ifTrue: [evt := ass value.
+					vox := evt voice.
+					vox isString
+						ifTrue: [vox := (Smalltalk at: vox) new].
+					vox
+						ifNil: [vox := FMSound oboe1].
+					sco
+						add: (vox
+								soundForPitch: evt pitch asHz value
+								dur: evt duration asSec value
+								loudness: evt loudness asMIDI value / 1000.0).
+					tim := sta + evt duration.
+					cnt := cnt + 1]
+				ifFalse: ["add rest"
+					sco
+						add: (RestSound dur: ass value duration asMS value)]].
+	"self halt."
+	^ sco! !
 
 !EventList methodsFor: 'code conversion'!
 continueProperties
@@ -1240,7 +1312,7 @@ eventsDo: aBlock
 
 	^self events do: [:assoc | aBlock value: (assoc event) ]! !
 
-!EventList methodsFor: 'collecting'!
+!EventList methodsFor: 'collecting' stamp: 'stp 12/30/2022 14:33'!
 excerptFrom: start to: end
 	"Answer a hierarchical list delineated by the given times."
 
@@ -1248,7 +1320,7 @@ excerptFrom: start to: end
 	newList := EventList newAnonymous.
 	events do: 
 		[ :anAssoc |				"iterate over all my events"
-		(anAssoc key value between: start and: end) 
+		(anAssoc key asSec value between: start asSec value and: end asSec value) 
 			ifTrue: [newEvent := anAssoc value.
 				(newEvent isEventList)	"map and add normal events"
 					ifFalse: [newList add: anAssoc]
@@ -1423,7 +1495,7 @@ asExplorerString: ignored
 
 	^self name! !
 
-!EventList methodsFor: 'printing' stamp: 'stp 12/27/2022 17:36:29'!
+!EventList methodsFor: 'printing' stamp: 'stp 1/7/2023 10:20:12'!
 printOn: aStream
 	"Print out the receiver's events on the argument."
 
@@ -1435,7 +1507,7 @@ printOn: aStream
 		ifFalse: [aStream nextPutAll: ' pitch: ', self pitch printString].
 "	(self at: #tempo) == nil
 		ifFalse: [aStream nextPutAll: ' tempo: ', (self at: #tempo) printString].
-	aStream lf.
+	aStream cr.
 	Sensor shiftPressed
 			ifFalse: [count := self size min: 20]
 			ifTrue: [count := self size].
@@ -1446,8 +1518,8 @@ printOn: aStream
 		aStream nextPutAll: ' => '.
 		anEvent value printOn: aStream].
 	count = self size 
-			ifTrue: [aStream nextPut: $); lf]
-			ifFalse: [aStream nextPutAll: ' ... )'; lf]! !
+			ifTrue: [aStream nextPut: $); cr]
+			ifFalse: [aStream nextPutAll: ' ... )'; cr]! !
 
 !EventList methodsFor: 'printing'!
 readDataFrom: aDataStream size: size
@@ -1528,14 +1600,13 @@ add: ('.
 			ifFalse: [aStream nextPutAll: title2]].
 	aStream nextPutAll: ')!!'; cr! !
 
-!EventList methodsFor: 'printing'!
-storeOnFile: aName
+!EventList methodsFor: 'printing' stamp: 'stp 12/31/2022 07:18'!
+storeOnFile: aName 
 	"Store out the receiver's events on the file named by the argument."
-
 	| fs |
-	fs := (Filename named: aName) writeStream.
+	fs := FileStream named: aName.
 	self storeOn: fs.
-	fs close.! !
+	fs close! !
 
 !EventList methodsFor: 'printing'!
 templateFields
@@ -1739,7 +1810,7 @@ playOn: aVoice at: startTime
 
 	aVoice play: self at: startTime.! !
 
-!EventList methodsFor: 'scheduling'!
+!EventList methodsFor: 'scheduling' stamp: 'stp 1/7/2023 11:37:43'!
 scheduleAt: aTime 
 	"Expand an eventList for the appointment scheduler."
 
@@ -1811,7 +1882,7 @@ release
 
 	^self add: anEorA! !
 
-!EventList methodsFor: 'event accessing'!
+!EventList methodsFor: 'event accessing' stamp: 'stp 12/30/2022 14:08'!
 add: anEorA
 	"Add a new event or association to the receiver."
 
@@ -1819,8 +1890,8 @@ add: anEorA
 	anEorA isAssociation
 		ifTrue: [newAss := anEorA key copy => anEorA value.
 			val := anEorA value.
-			newAss key species == Duration
-				ifFalse: [newAss key: (Duration value: newAss key)].
+			newAss key species == MDuration
+				ifFalse: [newAss key: (MDuration value: newAss key)].
 			val isEvent
 				ifFalse: [val isMusicMagnitude
 					ifTrue: [val := (self defaultEventClass new)
@@ -1834,12 +1905,12 @@ add: anEorA
 			anEorA duration ifNotNil: [self duration: duration + anEorA duration]].
 	self changed: #added! !
 
-!EventList methodsFor: 'event accessing'!
+!EventList methodsFor: 'event accessing' stamp: 'stp 12/28/2022 21:11'!
 add: anEvent at: aTime
 	"Add a new event to the receiver at the given relative start time."
 
 	| t |
-	t := Duration value: aTime.
+	t := MDuration value: aTime.
 	self events add: (t => anEvent).
 	anEvent duration == nil
 		ifFalse: [duration := duration max: (t + anEvent duration)].
@@ -1857,6 +1928,19 @@ addAll: anEventList
 				ifFalse: [duration := duration 
 							max: (assoc key + assoc value duration)]].
 	self changed: #added! !
+
+!EventList methodsFor: 'event accessing' stamp: 'stp 12/30/2022 14:23'!
+computeDuration
+	"Recompute the total duration of the receiver."
+	| tDur t d |
+	tDur := 0 msec.
+	events
+		do: [:ass | 
+			t := ass key.
+			d := ass event duration.
+			tDur := tDur max: t + d].
+	duration := tDur.
+	self changed: #duration! !
 
 !EventList methodsFor: 'event accessing'!
 eventKeys
@@ -2007,7 +2091,7 @@ map: anAssociation at: startTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventList class' category: 'Music-Events'!
+!classDefinition: 'EventList class' category: #'Music-Events'!
 EventList class
 	instanceVariableNames: ''!
 
@@ -2024,7 +2108,7 @@ creationExamples
 	((440 Hz, 250 msec, (#voice -> #flute)), 
 		((1/4) => (471 Hz, (1/4) beat, (#voice -> #flute)))) inspect! !
 
-!EventList class methodsFor: 'examples' stamp: 'stp 12/2/2022 05:46:38'!
+!EventList class methodsFor: 'examples' stamp: 'stp 12/29/2022 03:24'!
 randomExample
 	"Create an event list with random data."
 	"EventList randomExample"
@@ -2044,7 +2128,7 @@ randomExample
 	1 to: size do: [ :i | arr1 at: i put: (rand nextIntFrom: 150 to: 300)].		"dur"
 	1 to: size do: [ :i | arr2 at: i put: (rand nextIntFrom: 40 to: 100)].		"amp"
 	1 to: size do: [ :i | arr3 at: i put: (rand nextIntFrom: 1 to: 1)].			"voice"
-	1 to: size do: [ :i | arr4 at: i put: (rand nextIntFrom: 36 to: 72)].		"pitch"
+	1 to: size do: [ :i | arr4 at: i put: (rand nextIntFrom: 48 to: 72)].		"pitch"
 	^EventList named: 'random1'  
 		fromSelectors: #(duration: loudness: voice: pitch:) 
 		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !
@@ -2070,7 +2154,7 @@ randomExample: length
 		fromSelectors: #(duration: loudness: voice: pitch:) 
 		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !
 
-!EventList class methodsFor: 'examples'!
+!EventList class methodsFor: 'examples' stamp: 'stp 1/8/2023 17:42:44'!
 randomExample: length from: data
 	"Create an event list with random data."
 	"(EventList randomExample: 64 
@@ -2091,7 +2175,7 @@ randomExample: length from: data
 					a at: c put: (rand nextIntFrom: int first to: int stop)]]
 				ifFalse: [1 to: length do: [ :c | 
 					a at: c put: (rand nextFrom: int first to: int stop)]]]
-			ifFalse: [(int hasItems)
+			ifFalse: [((int hasItems) and: [int isString not])
 				ifTrue: [1 to: length do: [ :c | 
 					a at: c put: (int atRandom: rand)]]
 				ifFalse: [1 to: length do: [ :c | 
@@ -2173,6 +2257,12 @@ randomSWSSExample2
 		fromSelectors: #(duration: loudness: pitch: envelope: position: duty:) 
 		values: data! !
 
+!EventList class methodsFor: 'examples' stamp: 'stp 1/4/2023 16:05'!
+scaleExample1
+	"Answer a scale for testing."
+	"EventList scaleExample1 playOn: (MIDIVoice defaultOut: 0)"
+	^EventList scaleFrom: 48 to: 72 in: 1.5! !
+
 !EventList class methodsFor: 'examples'!
 scaleExample2
 	"Answer a scale where the event property types are mixed."
@@ -2197,22 +2287,29 @@ scaleExample2
 		ev ampl: (ev ampl perform: (#(asDB asMIDI asSymbol asRatio) atRandom))].
 	^el! !
 
-!EventList class methodsFor: 'examples'!
-scaleFrom: start to: stop in: dur
+!EventList class methodsFor: 'examples' stamp: 'stp 12/29/2022 00:40'!
+scaleFrom: start to: stop in: dur 
 	"Answer an event list with a scale."
 	"(EventList scaleFrom: 48 to: 60 in: 1.5) open"
 	"(EventList scaleFrom: 36 to: 84 in: 2) play"
-
 	| size arr4 ndur |
 	size := (stop - start) abs.
-	ndur := (dur / size).
+	ndur := dur / size.
 	arr4 := Array new: size + 1.
 	start > stop
-		ifTrue: [0 to: size do: [ :i | arr4 at: i+1 put: (start - i)]]
-		ifFalse: [0 to: size do: [ :i | arr4 at: i+1 put: (start + i)]].
-	^EventList named: EventList nextName  
-		fromSelectors: #(duration: loudness: pitch:) 
-		values: (Array with: ndur with: 127 with: arr4)! !
+		ifTrue: [0
+				to: size
+				do: [:i | arr4 at: i + 1 put: start - i]]
+		ifFalse: [0
+				to: size
+				do: [:i | arr4 at: i + 1 put: start + i]].
+	^ EventList
+		named: EventList nextName
+		fromSelectors: #(#duration: #loudness: #pitch:)
+		values: (Array
+				with: ndur
+				with: 70
+				with: arr4)! !
 
 !EventList class methodsFor: 'examples'!
 sentenceExample
@@ -2264,17 +2361,15 @@ wordExample
 	(EventList named: 'phrase1') inspect! !
 
 
-!EventList class methodsFor: 'class initialization'!
+!EventList class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 08:01'!
 flush
 	"Erase the shared EventList dictionary and try to clean up all events."
 	"EventList flush."
-
 	SirenSession initializeEventLists.
-	EventList allInstancesDo: [ :el | el release].
-	ObjectMemory garbageCollect.
-	Transcript cr; show: EventList instanceCount printString, ' event lists  	',
-			MusicEvent instanceCount printString, ' events  	',
-			Duration instanceCount printString, ' durations'; cr.! !
+	EventList
+		allInstancesDo: [:el | el release].
+	Smalltalk garbageCollect.
+	Transcript cr; show: EventList instanceCount printString , ' event lists  	' , MusicEvent instanceCount printString , ' events  	' , Duration instanceCount printString , ' durations'; cr! !
 
 !EventList class methodsFor: 'class initialization'!
 initialize
@@ -2285,23 +2380,23 @@ initialize
 	(Smalltalk includesKey: #SirenSession)
 		ifTrue: [(Smalltalk at: #SirenSession) initializeEventLists]! !
 
-!EventList class methodsFor: 'class initialization'!
+!EventList class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 07:09'!
 storeAll
 	"Write out all event lists."
 	"EventList storeAll"
-
 	| fname fstream |
-	fname := Dialog request: 'File name for storing event lists'
-			initialAnswer: 'events.st'.
-	fname isEmpty ifTrue: [^self].
-	fstream := (Filename named: fname) writeStream.
-	fstream ifNil: [^self].
-	Cursor write showWhile:
-		[SirenSession eventLists do:
-			[ :list |
-			list storeOn: fstream.
-			fstream cr; cr]].
-	fstream close.! !
+	fname := FillInTheBlank request: 'File name for storing event lists' initialAnswer: 'events.st'.
+	fname isEmpty
+		ifTrue: [^ self].
+	fstream := (FileStream named: fname) writeStream.
+	fstream
+		ifNil: [^ self].
+	Cursor write
+		showWhile: [SirenSession eventLists
+				do: [:list | 
+					list storeOn: fstream.
+					fstream cr; cr]].
+	fstream close! !
 
 
 !EventList class methodsFor: 'named constants'!
@@ -2362,28 +2457,33 @@ basicNew: ignored
 
 	^self basicNew! !
 
-!EventList class methodsFor: 'instance creation'!
-fromFile: theName
-	"Create and answer a new default un-named (and therefore un-persistent) instance of me"
+!EventList class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 07:18'!
+fromFile: theName 
+	"Create and answer a new default un-named (and therefore
+	un-persistent) instance of me"
 	"EventList fromFile: (SirenUtility findFile: 'CALYPSO.MID')"
-
 	| tail fName |
 	tail := theName asFilename tail.
 	fName := SirenUtility findFile: theName.
-	[(('*.mid' match: tail) or: ['*.midi' match: tail])
-		ifTrue: [ | el mv |
+	[(('*.mid' match: tail)
+			or: ['*.midi' match: tail])
+		ifTrue: [| el mv |
 			el := EventList newAnonymous.
 			mv := MIDIFileVoice newOn: fName.
 			mv readOnto: el.
 			mv close.
-			^el].
-	(('*.ev' match: tail) or: ['*.sm' match: tail])
-		 ifTrue: [ | fn | 
-			fn := (Filename named: fName).
+			^ el].
+	(('*.ev' match: tail)
+			or: ['*.sm' match: tail])
+		ifTrue: [| fn |
+			fn := FileStream named: fName.
 			fn fileIn.
-			^EventList named: fn base]]
-	on: Error
-	do: [ :ex | Transcript show: 'Error reading score file ', theName; cr. ^nil]! !
+			^ EventList named: fn base]]
+		on: Error
+		do: [:ex | 
+			Transcript show: 'Error reading score file ' , theName;
+				 cr.
+			^ nil]! !
 
 !EventList class methodsFor: 'instance creation'!
 named: myName fromPitches: pitchCollection
@@ -2458,6 +2558,14 @@ newAnonymous
 	"Create and answer a new default un-named (and therefore un-persistent) instance of me"
 
 	^super new initializeAnonymous! !
+
+
+!classDefinition: #RestEvent category: #'Music-Events'!
+DurationEvent subclass: #RestEvent
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Events'!
 
 MusicEvent initialize!
 EventList initialize!

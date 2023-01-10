@@ -1,0 +1,50 @@
+Siren GUI Applications
+
+Quick tour: http://fastlabinc.com/Siren/Doc/Siren.GUI_2007.html
+
+Based on the display list view framework and the Navigator layout managers, Siren implements a variety of musical notations. Layout managers serve as the basis for Siren's music notation applications. The basic event-oriented layout manager uses the horizontal axis to denote time (flowing from left to right), as in the next example, which opens a time sequence view on a random event list.
+
+	[TimeSequenceView randomExample]
+
+In the time sequence view, the "note head" signifies the event's voice, not the duration.  Try zooming this view.
+
+A pitch/time view is an extension of this that uses the vertical dimension to display an event's pitch, as in piano-roll notation; for example, to display a pitch/time view on a 3-stream event list, try,
+
+	[PitchTimeView randomExample]
+	[PitchTimeView openOnEventList: (EventList scaleExampleFrom: 48 to: 84 in: 10)]
+
+In the above example, the note heads denote the events' voices, horizontal blue lines originating at the note heads show the events' lengths, and red vertical lines show the events' amplitudes. To see how this is done, look at class PitchTimeView's various implementation of the itemFor: method.
+
+Open a pitch/time view on a *very long* 3-stream event list.
+
+	[PitchTimeView randomExampleLong]
+
+A more complete example is Hauer-Steffens notation, which has a clef and staff lines as in common-practise notation.
+
+	[HauerSteffensView randomExample]
+	[HauerSteffensView randomSWSSExample]
+	[(EventList scaleExampleFrom: 48 to: 60 in: 3) edit]
+
+Test panning and zooming these examples.
+
+Sound View
+
+The sound view is a simple waveform display. One can scroll, zoom, and edit.
+Use the pop-up menu to create sound objects based on a number of standard synthesis methods.
+
+	[(SampledSound sweepDur: 3.0 rate: 44100 from: 10 to: 400 chans: 1) edit]
+	[SoundView openOn: (SampledSound fromFile: 'kombination.snd')]
+
+File Browser Extensions
+
+Select a sound or score file in the file browser and note the new tab in the file pane. this allows you to play, edit, or remove files easily.
+
+See also
+
+	FunctionViews
+	Loris GUI Examples
+	LPC GUI Examples
+
+Extending Siren's MVC Framework
+
+One can of course easily build new notations and new editors with the Siren MVC framework and GUI widget set. New layout managers generally consist of less than 1 page of code, and new controller/editor functions are quite simple to add. Most new tools consist of composite panes that use the simple Siren display widgets as components, and add fancier editor behaviors.

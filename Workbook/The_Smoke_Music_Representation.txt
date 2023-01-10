@@ -1,0 +1,36 @@
+The Smoke Music Representation
+
+The "kernel" of Siren is in the classes related to representing the basic musical magnitudes (pitch, loudness, duration, etc.), and for creating and manipulating event and event list objects. This package is known as the Smallmusic Object Kernel (Smoke--name suggested by Danny Oppenheim).
+
+Smoke is an implementation-language-independent music representation, description language, and interchange format that was developed by a group of researchers at CCRMA/Stanford and CNMAT/Berkeley during 1990/91. 
+
+The basic design requirements are that the representation support the following:
+	--abstract models of the basic musical quantities (scalar magnitudes such as pitch, loudness, and duration); 
+	--flexible grain-size of "events" in terms of "notes," "grains," "elements," or "textures";
+	--event, control, and sampled sound processing description levels;
+
+	--nested/hierarchical event-tree structures for flexible description of "parts," "tracks," or other parallel or sequential organizations;
+	--annotation and marking of event tree structures supporting the creation of heterarchies (lattices) and hypermedia networks;
+	--annotation including common-practise notation possible;
+
+	--instrument/note (voice/event, performer/music) abstractions;
+	--separation of "data" from "interpretation" ("what" vs. "how" in terms of providing for interpretation objects--voices);
+
+	--abstractions for the description of "middle-level" musical structures (e.g., chords, clusters, or trills);
+	--sound functions, granular description, or other (non-note-oriented) description abstractions;
+	--description of sampled sound synthesis and processing models such as sound file mixing or DSP;
+
+	--possibility of building convertors for many common formats, such as MIDI data, Adagio, note lists, DSP code, instrument definitions, or mixing scripts; and
+	--possibility of parsing live performance into some rendition in the representation, and of interpreting it (in some rendition) in real-time.
+
+The "executive summary" of Smoke from (from the 1992 ICMC paper) is as follows. Music (i.e., a musical surface or structure), can be represented as a series of "events" (which generally last from tens of msec to tens of sec). Events are simply property lists or dictionaries that are defined for some duration; they can have named properties whose values are arbitrary. These properties may be music-specific objects (such as pitches or spatial positions), and models of many common musical magnitudes are provided. 
+
+Events are grouped into "event lists" (AKA composite events or event collections) by their relative start times. Event lists are events themselves and can therefore be nested into trees (i.e., an event list can have another event list as one of its events); they can also map their properties onto their component events. This means that an event can be "shared" by being in more than one event list at different relative start times and with different properties mapped onto it.
+
+Events and event lists are "performed" by the action of a scheduler passing them to an interpretation object or voice. Voice objects and applications determine the interpretation of events' properties, and may assume the existence of "standard" property names such as pitch, loudness, voice, duration, or position. Voices map application-independent event properties onto the specific parameters of I/O devices or formatted files. A scheduler expands and/or maps event lists and sends their events to their voices in real time.
+
+Sampled sounds can also be described as objects, by means of synthesis "patches," or signal processing scripts involving a vocabulary of sound manipulation messages.
+
+Examples
+
+Move to the following sections for extensive examples of Smoke object creation and manipulation.

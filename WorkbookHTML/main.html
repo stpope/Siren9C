@@ -1896,13 +1896,14 @@ The verbosity flag in the SirenUtility class allows for logging of all OSC to th
 &emsp;&emsp;&emsp;with: event ampl asRatio value.</br>
 &emsp;TypedOSCMessage for: '/note-on' with: arr]</br>
 </br>
-For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://www.mat.ucsb.edu/~c.ramakr/illposed/occam.html). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example demonstrates using OSC with the Occam convertor, to test OSC output using a MIDI synthesizer.</br>
+For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://fastlabinc.com/CSL/Occam.zip). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example demonstrates using OSC with the Occam convertor, to test OSC output using a MIDI synthesizer.</br>
 </br>
 &emsp;[OSCVoice midiScaleExample]</br>
 </br>
-There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "OSC_test" target, which sets of a simple server with 4 voices of FM synthesis and 4 sound file playback instruments. Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.</br>
+There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "osc_synth_server" target, which sets of a simple server with 4 voices of FM synthesis and 4 sound file playback instruments. Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.</br>
 </br>
-#define CSL_OSC_FM_SndFile&emsp;&emsp;// 4 voices of FM, 4 of SndFiles, and 1 bell</br>
+#define CSL_OSC_SERVER4&emsp;&emsp;&emsp;&emsp;// 61 instruments: KS strings, several SHARC SOS versions, 2 FM variations, 4 SndFiles</br>
+//#define CSL_OSC_FM_SndFile&emsp;&emsp;// 4 voices of FM, 4 of SndFiles, and 1 bell</br>
 //#define CSL_OSC_SAMPLER&emsp;&emsp;&emsp;// 16 voices of file playback</br>
 //#define CSL_OSC_ADDER&emsp;&emsp;&emsp;// 16 voices of sum-of-sines synthesis</br>
 </br>
@@ -2002,6 +2003,9 @@ a shell window and use commands such as,</br>
 &emsp;oscsend localhost 54321 /i63/pn ffff  3.0 0.77 144.7 0.0</br>
 &emsp;oscsend localhost 54321 /i64/pn ffff  3.0 0.77 144.7 0.0</br>
 </p><hr><h3 id="AbstractandSampledSoundObjects">20 - Abstract and Sampled Sound Objects</h3>Sound Objects in Siren</br>
+</br>
+NOTE: THIS PAGE DESCRIBED THE OLD SIREN SAMPLES SOUND FRAMEWORK, WHICH HAS NOT YET BEEN MERGED WITH THE SQUEAK FRAMEWORK IN THE CATEGORY 'Sound-Synthesis'</br>
+</br>
 </br>
 Siren's hierarchy of events and functions includes objects that represent sampled sounds. These can be used for synthesis, recording, processing, and playback. The fact that a Siren sound is a function means that it has the semantics of a single-valued function of time. A concrete SampledSound has something in its data instance variable (inherited from Function) that might be a word (16-bit) or floating-point sample array, or a CPointer, meaning that the sound's actual data is held onto by CSL, PortAudio, LibSndFile, or Loris. Since sounds are also events, they can have properties such as sound metadata or control functions.</br>
 </br>
@@ -3261,31 +3265,40 @@ PortAudioPort playSweep</br>
 MIDIPort testANote</br>
 MIDIPort testBend</br>
 MIDIVoice scaleExample</br>
-</p><hr><h3 id="BuildingSireninCuis6">34 - Building Siren in Cuis 6</h3>Script to build Siren9C in Cuis</br>
+</p><hr><h3 id="BuildingSireninCuis6">34 - Building Siren in Cuis 6</h3>Script to build Siren in Cuis (Version 9C)</br>
 &emsp;Do not file this in - step through the blocks 1 by 1</br>
 </br>
 Set-up</br>
 </br>
 Load themes, choose light theme</br>
 Choose small GUI features</br>
+Load a couple extra fonts for fun</br>
+</br>
+[TrueTypeFontFamily readAllTrueTypeFontsIn: DirectoryEntry smalltalkImageDirectory / 'TrueTypeFonts/ComputerModern/ComputerModernSerif'.</br>
+TrueTypeFontFamily readAllTrueTypeFontsIn: DirectoryEntry smalltalkImageDirectory / 'TrueTypeFonts/Cream']</br>
+</br>
 Set font Computer Modern Serif</br>
+</br>
 </br>
 Load packages - optional for now</br>
 </br>
 [&emsp;Feature require: 'Network-Kernel'.</br>
-&emsp;Feature require: 'FFI.pck.st'.</br>
-&emsp;Feature require: 'Tests-FFI.pck.st'.</br>
-&emsp;Feature require: 'Sound.pck.st' ]</br>
+&emsp;Feature require: 'FFI'.</br>
+&emsp;Feature require: 'Tests-FFI'.</br>
+&emsp;Feature require: 'Sound'.</br>
+&emsp;Feature require: 'SqueakCompatibility' ]   "SqueakCompatibility broken at present; debugger because Utf8String gone"</br>
 </br>
 STP world file-ins (Edit the relative paths below to suit your installation)</br>
 </br>
 [ #(</br>
-&emsp;'GUI-changes.st'</br>
+&emsp;'Cuis-GUI-changes.st'</br>
+&emsp;'ZPoint.st'</br>
+&emsp;'SirenSystemChanges.st'</br>
 &emsp;'ST80-compatibility.st'</br>
 &emsp;'SixPanedBrowser.st'</br>
 &emsp;'SixPanedBrowserWindow.st'</br>
-&emsp;'WorkbookWindow.st'</br>
-&emsp;'ZPoint.st'</br>
+&emsp;'WorkbookWindowCuis.st'</br>
+&emsp;'STPTheme.st'</br>
 ) do: [ :file |</br>
 &emsp;Transcript show: 'Filing in ', file; cr.</br>
 &emsp;('./Siren9C/FileIns/', file) asFileEntry readStreamDo: </br>
@@ -3300,52 +3313,52 @@ Siren file-ins using packages (WIP) or source code files (works)</br>
 </br>
 OR src code file-in (Edit the relative paths below to suit your installation)</br>
 </br>
-[</br>
-&emsp;'./Siren9C/FileIns/SirenSystemChanges.st' asFileEntry readStream fileIn.</br>
-&emsp;</br>
-#(&emsp;'Music-Models-Representation.st'</br>
+[ #(&emsp;"'Music-Models-Representation.st'</br>
 &emsp;'Music-Models-Implementation.st'</br>
 &emsp;'Music-Events.st'</br>
 &emsp;'Music-EventGenerators.st'</br>
 &emsp;'Music-EventModifiers.st'</br>
 &emsp;'Music-Functions.st'</br>
-"&emsp;'Music-Sound.st'</br>
-"&emsp;'Music-PitchScales.st'</br>
+&emsp;'Music-Sound.st'</br>
+&emsp;'Music-PitchScales.st'</br>
 &emsp;'Music-PitchClasses.st'</br>
 &emsp;'Music-Support.st'</br>
 </br>
 &emsp;'MusicIO-Voices.st'</br>
 &emsp;'MusicIO-OSC.st'</br>
 &emsp;'MusicIO-MIDI.st'</br>
-</br>
+"</br>
 &emsp;'MusicUI-DisplayLists.st'</br>
 &emsp;'MusicUI-DisplayListViews.st'</br>
 &emsp;'MusicUI-Layout.st'</br>
 &emsp;'MusicUI-Editors.st'</br>
-&emsp;</br>
+</br>
 ) do: [ :file |</br>
 &emsp;Transcript show: 'Filing in ', file; cr.</br>
-&emsp;('./Siren9C/SirenSources/', file) asFileEntry readStreamDo: </br>
-&emsp;&emsp;[ :stream | stream ifNotNil: [stream fileIn]]].</br>
-&emsp;</br>
-&emsp;'./Siren9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn.</br>
-]</br>
+&emsp;('./Siren9C/Siren9C_Sources_Squeak/', file) asFileEntry readStreamDo:</br>
+&emsp;&emsp;[ :stream | stream ifNotNil: [stream fileIn]]]]</br>
+</br>
+Lastly: the music notation glyph set</br>
+</br>
+[ './Siren9C/FileIns/MusicConstants.st' asFileEntry readStream fileIn]</br>
 </br>
 Clean up</br>
 </br>
-[&emsp;Duration initialize.</br>
-&emsp;Pitch initialize.</br>
-&emsp;Amplitude initialize.</br>
+[&emsp;MDuration initialize.</br>
+&emsp;MusicModel initializeGenerality.</br>
+&emsp;PortModel initialize.</br>
+&emsp;SirenUtility initialize.</br>
+&emsp;SirenSession initialize.</br>
+&emsp;SirenSession new.</br>
 ]</br>
 </br>
 Rename categories for Themes and VectorEngineInSmalltalk etc. to be under Graphics or Morphic (for better 6-paned browsing)</br>
 </br>
-[ WorkbookWindow openFolder: './Siren9C/Workbook' named: 'Siren Workbook' ]</br>
-</br>
+[WorkbookWindow openFolder: './Siren9C/Workbook2' named: 'Siren Workbook' ]</br>
 Undeclared inspect</br>
 Smalltalk garbageCollect</br>
 </br>
-Screen background image</br>
+Screen background image (edit to taste)</br>
 </br>
 [self runningWorld backgroundImageData:</br>
 &emsp;(UniFileStream new open: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' forWrite: false) </br>
@@ -3357,6 +3370,8 @@ DisplayList editing</br>
 OSC I/O via sockets</br>
 MIDI I/O via plug-in</br>
 Function & Sound editors</br>
+</br>
+[SirenUtility fileoutCategories]</br>
 </p><hr><h3 id="BuildingSireninSqueak6">35 - Building Siren in Squeak 6</h3>Script to build Siren in Squeak6.0 (Version 9C)</br>
 &emsp;Do not file this in - step through the blocks 1 by 1</br>
 </br>
@@ -3421,6 +3436,8 @@ Screen background image</br>
 Undeclared inspect</br>
 Smalltalk garbageCollect</br>
 </br>
+[SirenSession openUtility]</br>
+</br>
 Load some new fonts</br>
 </br>
 [TTCFont installFromFileNames:  #('./Cuis-Smalltalk-Dev/TrueTypeFonts/ComputerModern/ComputerModernSerif/cmunrm.ttf').</br>
@@ -3430,11 +3447,11 @@ TTCFont installFromFileNames: #('./Cuis-Smalltalk-Dev/TrueTypeFonts/Cream/ParcPl
 Set system fonts</br>
 </br>
 [ | family |</br>
-&emsp;family := 'Palatino'.</br>
+&emsp;family := " 'BitstreamVeraSerif'."  'Palatino'.</br>
 #(</br>
-   (setButtonFontTo:      &emsp;&emsp;family&emsp;   14)</br>
+   (setButtonFontTo:      &emsp;&emsp;family&emsp;  &emsp; 14)</br>
    (setListFontTo:        &emsp;&emsp;&emsp;family         16)</br>
-   (setMenuFontTo:        &emsp;&emsp;family         14)</br>
+   (setMenuFontTo:        &emsp;&emsp;family         16)</br>
    (setWindowTitleFontTo: &emsp;family         18)</br>
    (setSystemFontTo:      &emsp;&emsp;family         16)</br>
 ) do:</br>
@@ -3832,23 +3849,23 @@ FullSystemBrowser: can't compile if no protocol selected, gives "Nothing more ex
 [Utilities openUsefulExpressions]</br>
 [DirectoryEntry currentDirectory]</br>
 [DependentsFields]</br>
-&emsp;[MIDIPort allNotesOff]</br>
-&emsp;[MIDIPort cleanUp]</br>
---------------------------</br>
+[MIDIPort allNotesOff]</br>
+[MIDIPort cleanUp]</br>
 </br>
+--------------------------</br>
 </br>
 Siren GUI demos</br>
 </br>
 [SirenSession openUtility]</br>
 </br>
-[DisplayListView exampleRectangles].</br>
-[DisplayListView exampleLines].</br>
-[DisplayListView examplePolylines].</br>
-[DisplayListView exampleVisuals].</br>
+[DisplayListView exampleRectangles]</br>
+[DisplayListView exampleLines]</br>
+[DisplayListView examplePolylines]</br>
+[DisplayListView exampleVisuals]</br>
 [(DisplayList stringsX: 6000 byY: 10000) display]</br>
-[DisplayListView exampleMixed].&emsp;&emsp;"huge display list - takes a while"</br>
+[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
 [DisplayList exampleHierarchical display]</br>
-[DisplayVisual displayMusicConstants].</br>
+[DisplayVisual displayMusicConstants]</br>
 </br>
 [TimeSequenceView randomExample]</br>
 [PitchTimeView randomExample]</br>
@@ -3871,7 +3888,7 @@ Smalltalk browseAllCallsOn: (Undeclared associationAt: #A)</br>
 Squeak testing</br>
 </br>
 "(EventList scaleFrom: 48 to: 60 in: 1.5) asSoundScore play"</br>
-" | sco voxs| </br>
+" | sco voxs | </br>
 &emsp;sco := EventList scaleFrom: 48 to: 60 in: 1.5.</br>
 &emsp;voxs := Array with: FMSound oboe1 with: FMSound brass1 </br>
 &emsp;&emsp;&emsp;with: FMSound marimba with: PluckedSound default.</br>
@@ -3888,37 +3905,31 @@ Roll tests</br>
 </br>
 ----</br>
 </br>
-MacOSShell new getenv: 'HOME'  '/Users/stp' </br>
-OSProcess fileExists: '/Users/stp/.profile' </br>
-OSProcess isUnixMac</br>
-</br>
-CStandardLibrary checkCStandardLibrary </br>
-CStandardLibrary new abs: -42 </br>
-</br>
 MIDI Tests</br>
 </br>
-</br>
-[PortMIDILibrary new pm_count_devices ]</br>
-[PortMIDILibrary new pm_default_input_device ] 0 </br>
-[PortMIDILibrary new pm_default_output_device ] 3 </br>
-PortMIDILibrary new pm_test: PortMIDILibrary new pm_default_output_device </br>
-[PortMIDILibrary listDeviceTable]</br>
+[PortMIDILibrary pm_count_devices ]</br>
+[PortMIDILibrary pm_default_input_device ] 0 </br>
+[PortMIDILibrary pm_default_output_device ] 3 </br>
+PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
+[PortMIDIPort listDeviceTable]</br>
 [PortMIDILibrary testAllNotes]</br>
 [ExternalLibrary clearAllCaches.]</br>
-[PortMIDILibrary new pm_terminate]</br>
+[PortMIDILibrary pm_terminate]</br>
 [MIDIVoice scaleExample]</br>
 [MIDIVoice randomExample]</br>
 </br>
-[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 0)]</br>
-[EventList scaleExample1 playOn: (MIDIVoice on: (MIDIDevice outOnDeviceNamed: 'Kontakt') channel: 1)]</br>
+Various verbose methods</br>
 </br>
-"Most verbose method"</br>
+[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 0)]</br>
+[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
+[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 0)]</br>
 [EventList scaleExample1 playOn: (MIDIVoice on: </br>
 &emsp;&emsp;(MIDIDevice </br>
 &emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
 &emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
-&emsp;&emsp;channel: 1)]</br>
-&emsp;&emsp;&emsp;&emsp;</br>
+&emsp;&emsp;channel: 3)]</br>
+[PortMIDIPort streams]</br>
+&emsp;&emsp;</br>
 OSC Tests</br>
 </br>
 Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
@@ -3944,8 +3955,6 @@ Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 </br>
 </br>
 [EventScheduler interrupt; flush]</br>
-[OSCVoice fmExample2]</br>
-[EventScheduler flush]</br>
 [OSCVoice fmExample1]</br>
 [OSCVoice fmExample2]</br>
 [OSCVoice pluckExample1]</br>
@@ -3955,6 +3964,12 @@ Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 [OSCVoice bellExample1]</br>
 [OSCVoice vSOSExample1]</br>
 </br>
+</br>
+SndSynth Tests</br>
+</br>
+[(FMSound lowMajorScaleOn: FMSound bassoon1) play]</br>
+&emsp;</br>
+&emsp;</br>
 ----</br>
 </br>
 </p></p><HR><p>

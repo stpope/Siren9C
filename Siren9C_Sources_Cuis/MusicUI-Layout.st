@@ -1,4 +1,4 @@
-!classDefinition: #LayoutManager category: 'MusicUI-Layout'!
+!classDefinition: #LayoutManager category: #'MusicUI-Layout'!
 Object subclass: #LayoutManager
 	instanceVariableNames: 'view orientation itemAccessor'
 	classVariableNames: ''
@@ -65,7 +65,7 @@ generateDisplayList
 	^list! !
 
 
-!classDefinition: #HierarchyLayoutManager category: 'MusicUI-Layout'!
+!classDefinition: #HierarchyLayoutManager category: #'MusicUI-Layout'!
 LayoutManager subclass: #HierarchyLayoutManager
 	instanceVariableNames: 'length xStep yStep treeAccessor'
 	classVariableNames: ''
@@ -100,28 +100,6 @@ yStep: aNumber
 
 	yStep := aNumber! !
 
-
-!HierarchyLayoutManager methodsFor: 'generating'!
-addItem1: aModelNode atNode: aPath in: aDisplayList
-	"Add the given item to the display list."
-
-	| wrapper displayPoint item path2 displayList2 |
-	displayPoint := self displayPositionFor: aPath.
-	length := length + 1.
-	item := treeAccessor itemFor: aModelNode.
-	wrapper := TranslatingWrapper on: item at: displayPoint.
-	(treeAccessor isTerminal: aModelNode)
-		ifFalse: [displayList2 := DisplayList new.
-			displayList2 model: aModelNode.
-			(treeAccessor childrenOf: aModelNode) do: [ :i | 
-				path2 := aPath copy.
-				path2 addLast: aModelNode.
-				self addItem: i
-					atNode: path2
-					in: displayList2].
-			displayList2 add: wrapper.
-			aDisplayList add: displayList2 atPath: aPath]
-		ifTrue: [aDisplayList add: item atPath: aPath]! !
 
 !HierarchyLayoutManager methodsFor: 'generating'!
 addItem: aModelNode atNode: aPath in: aDisplayList
@@ -164,7 +142,7 @@ generateDisplayList
 	^list! !
 
 
-!classDefinition: #IndentedListLayoutManager category: 'MusicUI-Layout'!
+!classDefinition: #IndentedListLayoutManager category: #'MusicUI-Layout'!
 HierarchyLayoutManager subclass: #IndentedListLayoutManager
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -197,7 +175,7 @@ displayPositionFor: aPath
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'IndentedListLayoutManager class' category: 'MusicUI-Layout'!
+!classDefinition: 'IndentedListLayoutManager class' category: #'MusicUI-Layout'!
 IndentedListLayoutManager class
 	instanceVariableNames: ''!
 
@@ -216,24 +194,25 @@ colorListExample
 	me := (self new) accessor: acc; xStep: 16; yStep: 16.
 	^me displayList display! !
 
-!IndentedListLayoutManager class methodsFor: 'examples'!
+!IndentedListLayoutManager class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:01'!
 listExample
 	"IndentedListLayoutManager listExample display"
 	"DisplayListView classListExample"
-
 	| acc me |
-	acc := STreeAccessor subject: Magnitude
-			terminalQuery: [ :c | c subclasses size = 0]
-			childAccessor: #sortedSubclasses
-			itemGenerator: [ :c | (DisplayString new)
-									model: c;
-									string: c name;
-									color: ColorValue darkGray].
-	me := (self new) accessor: acc; xStep: 16; yStep: 16.
-	^me displayList! !
+	acc := STreeAccessor
+				subject: Magnitude
+				terminalQuery: [:c | c subclasses size = 0]
+				childAccessor: #sortedSubclasses
+				itemGenerator: [:c | DisplayString new model: c;
+						 string: c name;
+						 color: Color darkGray].
+	me := self new accessor: acc;
+				 xStep: 16;
+				 yStep: 16.
+	^ me displayList! !
 
 
-!classDefinition: #IndentedTreeLayoutManager category: 'MusicUI-Layout'!
+!classDefinition: #IndentedTreeLayoutManager category: #'MusicUI-Layout'!
 IndentedListLayoutManager subclass: #IndentedTreeLayoutManager
 	instanceVariableNames: 'list'
 	classVariableNames: ''
@@ -243,39 +222,37 @@ IndentedListLayoutManager subclass: #IndentedTreeLayoutManager
 Instances of IndentedTreeLayoutManager are used to generate display lists which mirror the hierarchy of their models (accessed using a TreeAccessor) in the indentation of a list-like tree.!
 
 
-!IndentedTreeLayoutManager methodsFor: 'generating'!
-addItem: aModelNode atNode: aPath under: parentPoint in: aDisplayList
+!IndentedTreeLayoutManager methodsFor: 'generating' stamp: 'stp 12/31/2022 11:01'!
+addItem: aModelNode atNode: aPath under: parentPoint in: aDisplayList 
 	"Add the given item to the display list."
-
-	|  displayPoint item path2 displayList2 |
-	displayPoint := (self displayPositionFor: aPath) + (parentPoint x@0).
+	| displayPoint item path2 displayList2 |
+	displayPoint := (self displayPositionFor: aPath)
+				+ (parentPoint x @ 0).
 	length := length + 1.
 	item := treeAccessor itemFor: aModelNode.
 	item offset: displayPoint.
 	(treeAccessor isTerminal: aModelNode)
+		ifTrue: [aDisplayList add: item atPath: aPath.
+			aDisplayList add: (DisplayLine new offset: item bounds leftCenter + (-2 @ 4);
+					 corner: parentPoint + (2 @ 4);
+					 color: Color black) atPath: aPath]
 		ifFalse: [displayList2 := DisplayList new.
 			displayList2 model: aModelNode.
-			(treeAccessor childrenOf: aModelNode) do: [ :i | 
-				path2 := aPath copy.
-				path2 addLast: aModelNode.
-				self addItem: i
-					atNode: path2
-					under: item bounds rightCenter
-					in: displayList2].
+			(treeAccessor childrenOf: aModelNode)
+				do: [:i | 
+					path2 := aPath copy.
+					path2 addLast: aModelNode.
+					self
+						addItem: i
+						atNode: path2
+						under: item bounds rightCenter
+						in: displayList2].
 			displayList2 add: item.
 			aDisplayList add: displayList2 atPath: aPath.
-			parentPoint = (0@0)
-				ifFalse: [aDisplayList add:
-						((DisplayLine new)
-							offset: item bounds leftCenter + (-2@4);
-							corner: parentPoint + (2@4); color: ColorValue black)
-					atPath: aPath]]
-				ifTrue: [aDisplayList add: item atPath: aPath.
-					aDisplayList add:
-							((DisplayLine new)
-								offset: item bounds leftCenter + (-2@4);
-								corner: parentPoint + (2@4); color: ColorValue black)
-						atPath: aPath]! !
+			parentPoint = (0 @ 0)
+				ifFalse: [aDisplayList add: (DisplayLine new offset: item bounds leftCenter + (-2 @ 4);
+							 corner: parentPoint + (2 @ 4);
+							 color: Color black) atPath: aPath]]! !
 
 !IndentedTreeLayoutManager methodsFor: 'generating'!
 generateDisplayList
@@ -290,28 +267,30 @@ generateDisplayList
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'IndentedTreeLayoutManager class' category: 'MusicUI-Layout'!
+!classDefinition: 'IndentedTreeLayoutManager class' category: #'MusicUI-Layout'!
 IndentedTreeLayoutManager class
 	instanceVariableNames: ''!
 
-!IndentedTreeLayoutManager class methodsFor: 'examples'!
+!IndentedTreeLayoutManager class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:01'!
 listExample
 	"IndentedTreeLayoutManager listExample display"
 	"DisplayListView classTreeExample"
-
 	| acc me |
-	acc := STreeAccessor subject: "View" Magnitude
-			terminalQuery: [ :c | c subclasses size = 0]
-			childAccessor: #sortedSubclasses
-			itemGenerator: [ :c | (DisplayString new)
-							model: c; 
-							string: c name; 
-							color: ColorValue black].
-	me := (self new) accessor: acc; xStep: 4; yStep: 12.
-	^me displayList! !
+	acc := STreeAccessor
+				subject: Magnitude
+				terminalQuery: [:c | "View"
+					c subclasses size = 0]
+				childAccessor: #sortedSubclasses
+				itemGenerator: [:c | DisplayString new model: c;
+						 string: c name;
+						 color: Color black].
+	me := self new accessor: acc;
+				 xStep: 4;
+				 yStep: 12.
+	^ me displayList! !
 
 
-!classDefinition: #TimeSequenceLayoutManager category: 'MusicUI-Layout'!
+!classDefinition: #TimeSequenceLayoutManager category: #'MusicUI-Layout'!
 LayoutManager subclass: #TimeSequenceLayoutManager
 	instanceVariableNames: 'timeScale timeOffset'
 	classVariableNames: ''
@@ -372,7 +351,7 @@ timeScale: aNumber
 	timeScale := aNumber! !
 
 
-!classDefinition: #PitchTimeLayoutManager category: 'MusicUI-Layout'!
+!classDefinition: #PitchTimeLayoutManager category: #'MusicUI-Layout'!
 TimeSequenceLayoutManager subclass: #PitchTimeLayoutManager
 	instanceVariableNames: 'pitchScale pitchOffset'
 	classVariableNames: ''
@@ -414,7 +393,7 @@ displayPointFor: anAss
 			- ((pch asMIDI value - pitchOffset) * pitchScale))! !
 
 
-!classDefinition: #PositionTimeLayoutManager category: 'MusicUI-Layout'!
+!classDefinition: #PositionTimeLayoutManager category: #'MusicUI-Layout'!
 PitchTimeLayoutManager subclass: #PositionTimeLayoutManager
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -433,7 +412,7 @@ displayPointFor: anAss
 		@ ((anAss event position - pitchOffset) * pitchScale)! !
 
 
-!classDefinition: #StructureAccessor category: 'MusicUI-Layout'!
+!classDefinition: #StructureAccessor category: #'MusicUI-Layout'!
 Object subclass: #StructureAccessor
 	instanceVariableNames: 'subject itemGenerator'
 	classVariableNames: ''
@@ -489,7 +468,7 @@ itemFor: aModel
 	self error: 'Unknown item generator type.'! !
 
 
-!classDefinition: #STreeAccessor category: 'MusicUI-Layout'!
+!classDefinition: #STreeAccessor category: #'MusicUI-Layout'!
 StructureAccessor subclass: #STreeAccessor
 	instanceVariableNames: 'terminalQuery childAccessor'
 	classVariableNames: ''
@@ -570,7 +549,7 @@ leavesOf: aRoot
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'STreeAccessor class' category: 'MusicUI-Layout'!
+!classDefinition: 'STreeAccessor class' category: #'MusicUI-Layout'!
 STreeAccessor class
 	instanceVariableNames: ''!
 

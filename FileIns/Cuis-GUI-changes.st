@@ -1,5 +1,17 @@
 'From Cuis 6.0 [latest update: #5115] on 1 May 2022 at 11:35:52 am'!
 
+
+!PreferenceSet class methodsFor: 'sys fonts' stamp: 'stp 1/7/2023 07:53:25'!
+fontSizes
+	^ `{
+		#tinyFonts -> 7 .
+		#verySmallFonts -> 10 .
+		#smallFonts ->11 .
+		#standardFonts -> 14 .
+		#largeFonts -> 18 .
+		#veryLargeFonts -> 24 .
+		#hugeFonts -> 32} asDictionary`! !
+
 !Theme methodsFor: 'other options' stamp: 'STP 5/1/2022 11:34:57'!
 scrollbarShowButtons
 	^ false! !
@@ -146,3 +158,34 @@ focusIndicatorLeft
 	^Preferences scrollbarSide = #left
 		ifTrue: [ScrollBar scrollbarThickness + borderWidth]
 		ifFalse: [^ borderWidth]! !
+
+!Transcript class methodsFor: 'old Transcript compatibility' stamp: 'stp 1/7/2023 21:32:52'!
+show: anObject
+	"Old TranscriptStream protocol."
+	(anObject asString findTokens: Character newLineCharacter)
+		do: [ :line | self nextPutAll: line"; newLine "]! !
+
+!SoundPlayer class methodsFor: 'playing' stamp: 'stp 1/9/2023 07:38:00'!
+canStartPlayer
+	"Some platforms do no support simultaneous record and play. If this is one of those platforms, return false if there is a running SoundRecorder."
+
+"	Preferences canRecordWhilePlaying ifTrue: [^ true].
+"	SoundRecorder anyActive ifTrue:[^false].
+	^ true
+! !
+
+!PopUpMenu methodsFor: 'basic control sequence' stamp: 'stp 1/7/2023 10:46:55'!
+startUp
+	"Display and make a selection from the receiver as long as the button 
+	is pressed. Answer the current selection."
+	
+	^ self startUpWithCaption: nil! !
+
+!DebuggerWindow methodsFor: 'GUI building' stamp: 'stp 1/9/2023 15:03:51'!
+initialExtent
+	^ RealEstateAgent standardWindowExtent ! !
+
+!Debugger methodsFor: 'shout styling' stamp: 'stp 1/7/2023 12:12:30'!
+hasBindingOf: aString
+	self selectedContext ifNil: [^false].
+	^self selectedContext tempNames includes: aString! !

@@ -1,0 +1,139 @@
+Siren Functions
+
+There are several classes that represent functions of 1 variable (typ. time) such as envelopes or waveforms. These objects can be described using (e.g.,) linear or exponential interpolation between n-dimensional break-points, Fourier sine summation, cubic splines, or as raw sampled data. In addition to the instance creation methods, Functions understand array-like accessing method at: or atX: to get at their values.
+
+The FunctionView displays up to 4 functions and supports simple editing.
+
+Function Creation Examples
+
+The expressions below demonstrate the various creation techniques for Siren functions.
+
+If you like thicker function plots, do this,
+	[FunctionView lineWidth: 2]
+
+Basic ramp up/down (linear and exponential flavors)
+	[(LinearFunction from: #((0 0) (0.5 1) (1 0))) at: 0.25] p
+	[(ExponentialFunction from: #((0 0 5) (0.5 1 -5) (1 0))) at: 0.25 ] p
+
+ADSR-like envelopes
+	[(LinearFunction from: #((0 0) (0.1 1) (0.16 0.7) (0.8 0.4) (1 0))) edit]
+	[(ExponentialFunction from: #((0 0 5) (0.1 1 -3) (0.8 0.4 -2) (1 0))) edit]
+
+Open a view with a linear envelope, an exponential envelope, a spline curve, and a sum-of-sines function
+	[FunctionView multiFunctionExample]
+
+Sine Summation
+	[(FourierSummation from: #((1 1 0)  (3 0.3 0)  (5 0.2 0)  (7 0.15 0)  (9 0.11 0)  (11 0.09 0))) edit]
+
+Others
+	[(Function randomOfSize: 512 from: 0.2 to: 0.9) edit]
+	[FunctionView onFunction: 
+		(Function from: #( 0 1 0 0.5 1.0 0.5 0 1 0 0.3 0.6 0.9 1 0.5 0.25 0.125 0.0625 0 1 0))]
+
+Using Functions
+
+One can apply a function to any property of an event list, as in the example below, which makes a crescendo/decrescendo using an exponential triangle function.
+
+	[ | list fcn |
+	list := EventList newNamed: #test3.
+	(0 to: 4000 by: 100) do: 	"4 seconds, 10 notes per second"
+			[ :index |			"add the same note"
+			list add: (MusicEvent dur: 100 pitch: 36 ampl: 120) at: index].
+	fcn := ExponentialFunction from: #((0 0.05 2) (0.5 1 -2) (1 0.05)).
+	list applyFunction: fcn to: #loudness.
+	list inspect] d
+
+The next examples show how functions can be queried; the first expression displays a function that has large changes in its slope; the expressions after that illustrate that one can ask a function for an X value where it crosses a threshold of difference from some other X value, e.g., the 2nd expression below means "find the first value after X = 0.1 where the value is more than 0.01 different from the value at X = 0.1." This is quite useful in data reduction and in output scheduling (i.e., don't keep sending the same controller value)
+
+Create a function with a large change in slope.
+	[(LinearFunction from: #((0 0.2) (0.6 0.3) (0.62 1.0) (1.0 0.3))) edit] d
+Query the delta threshold in the low-slope section
+	[(LinearFunction from: #((0 0.2) (0.6 0.3) (0.62 1.0) (1.0 0.3))) 
+			nextXMoreThan: 0.01 from: 0.1] p
+Query the delta threshold in the high-slope section
+	[(LinearFunction from: #((0 0.2) (0.6 0.3) (0.62 1.0) (1.0 0.3))) 
+			nextXMoreThan: 0.1 from: 0.6] p
+
+Functions support standard arithmetic, so that one can scale them by numbers, or add/multiply functions as though they were numbers, as illustrated by the examples below.
+
+	[((FourierSummation from: #((5 0.1 0))) + 0.6) open]
+
+	[ | sin tri |
+	tri := LinearFunction from: #((0 0) (0.5 0.9) (1 0)).
+	sin := FourierSummation from: #((17 0.05 0)).
+	rnd := Function randomOfSize: 512 from: 0.0 to: 1.0.
+	FunctionView lineWidth: 2.			"set a bold line width"
+	FunctionView onFunctions: 
+		(Array 
+			with: (tri + sin) 					"triangle + sine"
+			with: (tri * sin + 0.2) 			"triangle * sine + offset"
+			with: (rnd * 0.1 + 0.5) 			"noise with scale/offset"
+			with: (tri * 0.25))				"triangle scaled by constant"
+		withColors: (Array with: ColorValue blue with: ColorValue red
+				with: ColorValue cyan with: ColorValue green)
+		normalize: #(false false false false)
+		x: 512 y: 256] d
+
+Function Views
+
+The following multi-linear-function view example creates 4 linear functions and displays them
+
+	[FunctionView lineWidth: 2.			"set a bold line width"
+	FunctionView onFunctions: (Array 
+			with: (LinearFunction from: #((0@0) (0.15@1.0) (0.25@0.75) (0.75@0.5) (1@0))) 
+			with: (LinearFunction from: #((0@0.1) (0.3@0.7) (0.7@0.45) (1@0))) 
+			with: (LinearFunction from: #((0@0) (0.05@1) (0.2@0.35) (1@0))) 
+			with: (LinearFunction from: #((0@0.2) (0.6@0.3) (1@0.3))))
+		withColors: (Array with: ColorValue blue with: ColorValue red
+				with: ColorValue cyan with: ColorValue green)
+		normalize: #(false false false false)
+		x: 512 y: 256] d
+
+The next example mixes the types of function as well as the normalization switches
+
+	[FunctionView 
+		onFunctions: (Array with: (LinearFunction from: #((0 0) (0.12 1) (0.17 0.74) 
+				(0.35 0.5) (0.9 0.4) (1 0) )) 
+			with: (FourierSummation from: #((1 0.5 0)  (3 0.15 0)  (5 0.1 0)  (7 0.075 0)  (9 0.055 0)  (11 0.05 0)))
+			with: (ExponentialFunction from: #((0 0 5) (0.05 1 -5) (0.2 0.25 -1) (1 0))) 
+			with: (SplineFunction from: #((0 0.5) (0.3 0.6) (0.7 0.5) (0.85 0.7) (1 0.6))))
+			withColors: FunctionView defaultColors
+		normalize: #(false true false false) 
+	x: 512 y: 256] d
+
+Playing functions as controllers
+
+Several of the voice classes (see below) can use Siren functions to send out sampled continuous control messages. The class FunctionEvent provides the methods needed to package functions in event lists, and allows you to specify a fixed update rate or a value change threshold for output scheduling. The following example sends out OSC frequency updates at the rate of 4 Hz to the address /osc/1/ampl with values taken from a linear envelope. Start an OSC dump utility before executing this.
+
+	[OSCVoice functionExample] d
+
+Similarly, one can use functions as MIDI controller messages, as in this example, which uses a linear function to create a swell on an organ note.
+	[MIDIPort functionExample] d
+
+Spectra and Signal Analysis
+
+A spectrum is simply another kind of function (with real or complex values), and Siren supports the fast Fourier transform for spectral analysis and resynthesis via the FFTW lbrary. There is also a simple spectral display, as illustrated by the examples below.
+
+Create a swept sine wave and take its fft.
+	[Spectrum sweepExample display]
+
+Read a file (T'ang dynasty speech) and show the spectrogram
+	[Spectrum fileExample display] db
+
+Loading SHARC (Sandell Harmonic ARChive) spectral sets
+
+Siren also has special classes that read spectral samples from Greg Sandell's SHARC timbre database (http://www.timbre.ws/sharc/files/README.txt); these sampled spectra can be used for sum-of-sines synthesis. The following example illustrates the loading of a SHARC sample for a tuba. It assumes that the SHARC database is somewhere in the user's data folder list.
+	[SHARCInstrument fromDir: 'tuba'] i
+	[(Function from: (((SHARCInstrument fromDir: 'tuba') samples at: #c3) asWavetable: 1024)) edit: 512] d
+	[((SHARCInstrument fromDir: 'tuba') samples at: #c3) asSumOfSines] i
+
+To load the entire SHARC database, use the following.
+	[SHARCInstrument loadOrchDir: 'sharc'] d
+	[SHARCInstrument orchestra] i
+
+There's an example of using a SHARC spectrum sample set to drive a CSL sum-of-sines synthesizer via OSC in this method
+	[OSCVoice sosExample1]	db
+
+Extending the Function Framework
+
+As with other areas of Siren, the Function framework is designed for ease of extension. One can construct a new type of function with a simple instance creation method and implementation of the at: method. There are also often cases where one needs an additional behavior in the base Function class. For extending the behavior of functions with respect to events and event lists, you can customize the eventList apply: function.

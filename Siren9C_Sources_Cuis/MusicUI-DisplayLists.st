@@ -1,4 +1,4 @@
-!classDefinition: #DisplayItem category: 'MusicUI-DisplayLists'!
+!classDefinition: #DisplayItem category: #'MusicUI-DisplayLists'!
 Object subclass: #DisplayItem
 	instanceVariableNames: 'model offset color container'
 	classVariableNames: ''
@@ -21,13 +21,6 @@ The entirety of this software is Copyright (c) 1990, Stephen Travis Pope, Nomad 
 All Rights Reserved.
 !
 
-
-!DisplayItem methodsFor: 'transforming'!
-asVisualComponent
-	"Answer an encapsulated version of the receiver which understands
-	VisualComponent protocol."
-
-	^TranslatingWrapper on: self! !
 
 !DisplayItem methodsFor: 'transforming'!
 scaleBy: aPoint
@@ -61,7 +54,7 @@ printCompleteOn: aStream depth: depth
 	aStream nextPut: $).
 	"! !
 
-!DisplayItem methodsFor: 'printing' stamp: 'stp 11/30/2022 17:21:08'!
+!DisplayItem methodsFor: 'printing' stamp: 'stp 1/9/2023 16:46:32'!
 printOn: aStream
 	"Print the receiver in the given Stream."
 
@@ -206,7 +199,7 @@ computePreferredBounds
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayItem class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayItem class' category: #'MusicUI-DisplayLists'!
 DisplayItem class
 	instanceVariableNames: ''!
 
@@ -223,7 +216,7 @@ offset: aPt
 	^self new offset: aPt! !
 
 
-!classDefinition: #DisplayLine category: 'MusicUI-DisplayLists'!
+!classDefinition: #DisplayLine category: #'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayLine
 	instanceVariableNames: 'width extent'
 	classVariableNames: ''
@@ -268,16 +261,23 @@ width: aVal
 	width := aVal! !
 
 
-!DisplayLine methodsFor: 'printing' stamp: 'stp 11/30/2022 17:24:47'!
+!DisplayLine methodsFor: 'printing' stamp: 'stp 1/10/2023 05:41:06'!
 printOn: aStream
 	"Print the receiver in the given Stream."
-
-	aStream nextPutAll: ' (a ', self class name. 
-"	model == nil ifFalse: [aStream nextPutAll: ' model: '. model printOn: aStream].
-"	offset == nil ifFalse: [aStream nextPutAll: ' offset: '. offset printOn: aStream].
-	extent == nil ifFalse: [aStream nextPutAll: ' extent: '. extent printOn: aStream].
-"	color == nil ifFalse: [aStream nextPutAll: ' color: '. color printOn: aStream]."
-	aStream nextPut: $); cr.! !
+	aStream nextPutAll: ' (a ' , self class name.
+	"model == nil ifFalse: [aStream nextPutAll: ' model: '. model printOn: aStream]."
+	offset == nil ifFalse: [
+		aStream nextPutAll: ' offset: '.
+		offset printOn: aStream ].
+	extent == nil ifFalse: [
+		aStream nextPutAll: ' extent: '.
+		extent printOn: aStream ].
+	color == nil ifFalse: [
+		aStream nextPutAll: ' color: '.
+		color printOn: aStream ].
+	aStream
+		nextPut: $);
+		lf.! !
 
 
 !DisplayLine methodsFor: 'displaying'!
@@ -320,7 +320,7 @@ bounds
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayLine class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayLine class' category: #'MusicUI-DisplayLists'!
 DisplayLine class
 	instanceVariableNames: ''!
 
@@ -337,7 +337,7 @@ offset: oPoint extent: ePoint
 	^((self new) offset: oPoint) extent: ePoint! !
 
 
-!classDefinition: #DisplayRectangle category: 'MusicUI-DisplayLists'!
+!classDefinition: #DisplayRectangle category: #'MusicUI-DisplayLists'!
 DisplayLine subclass: #DisplayRectangle
 	instanceVariableNames: 'fill stroke'
 	classVariableNames: ''
@@ -363,38 +363,22 @@ stroke: aNum
 	stroke := aNum! !
 
 
-!DisplayRectangle methodsFor: 'displaying'!
-displayOn: aGraphicsContext
-	"Display a line between startPoint and endPoint."
-
-"	Transcript show: start printString, '	', end printString; cr."
-	color == nil
-		ifFalse: [aGraphicsContext paint: color].
-	(fill == nil or: [fill not])
-		ifFalse: [aGraphicsContext displayRectangle: (offset extent: extent)]
-		ifTrue: [aGraphicsContext displayRectangularBorder: (offset extent: extent)]! !
-
-!DisplayRectangle methodsFor: 'displaying'!
-displayPostScriptOn: aPostscriptContext
-	"Display the receiver on the argument as a PostScript item."
-
-	aPostscriptContext translate: offset.
-	aPostscriptContext box: extent y width: extent x.
-	aPostscriptContext translate: offset negated.! !
-
-!DisplayRectangle methodsFor: 'displaying' stamp: 'stp 11/29/2022 13:29:24'!
-drawOn: aCanvas
+!DisplayRectangle methodsFor: 'displaying' stamp: 'stp 1/6/2023 11:08'!
+drawOn: aCanvas 
 	"Display a rect on the given canvas"
-
-	aCanvas fillRectangle: self bounds
-		color: color
-		borderWidth: 1
-		borderStyleSymbol: #simple
-		baseColorForBorder: Color darkGray! !
+	"aCanvas fillRectangle: self bounds
+	color: color
+	borderWidth: 1
+	borderStyleSymbol: #simple
+	baseColorForBorder: Color darkGray"
+	| col |
+	col := color.
+	col ifNil: [col := Color gray].
+	aCanvas fillRectangle: self bounds color: col! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayRectangle class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayRectangle class' category: #'MusicUI-DisplayLists'!
 DisplayRectangle class
 	instanceVariableNames: ''!
 
@@ -406,7 +390,7 @@ rectangleExample
 	(DisplayList rectanglesX: 600 byY: 600) display! !
 
 
-!classDefinition: #DisplayPolyline category: 'MusicUI-DisplayLists'!
+!classDefinition: #DisplayPolyline category: #'MusicUI-DisplayLists'!
 DisplayRectangle subclass: #DisplayPolyline
 	instanceVariableNames: 'vertices'
 	classVariableNames: ''
@@ -451,27 +435,6 @@ scaledBy: aPoint
 	^self class offset: offset vertices: newPts! !
 
 
-!DisplayPolyline methodsFor: 'displaying'!
-displayOn: aGraphicsContext
-	"Stroke the receiver's edges on the supplied GraphicsContext."
-
-	| cachedLW |
-	color == nil
-		ifTrue: [aGraphicsContext paint: ColorValue black]
-		ifFalse: [aGraphicsContext paint: ColorValue black].
-	stroke == nil
-		ifFalse: [cachedLW := aGraphicsContext lineWidth.
-			aGraphicsContext lineWidth: stroke].
-	offset == nil
-		ifFalse: [aGraphicsContext translateBy: offset].
-	(fill == true)
-		ifFalse: [aGraphicsContext displayPolyline: vertices at: Point zero]
-		ifTrue: [aGraphicsContext displayPolygon: vertices at: Point zero].
-	offset == nil
-		ifFalse: [aGraphicsContext translateBy: offset negated].
-	stroke == nil
-		ifFalse: [aGraphicsContext lineWidth: cachedLW].! !
-
 !DisplayPolyline methodsFor: 'displaying' stamp: 'stp 12/1/2022 10:34:18'!
 drawOn: aCanvas
 	"Display the polyline on the given canvas"
@@ -487,7 +450,7 @@ drawOn: aCanvas
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayPolyline class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayPolyline class' category: #'MusicUI-DisplayLists'!
 DisplayPolyline class
 	instanceVariableNames: ''!
 
@@ -512,7 +475,7 @@ polylineExample
 	(DisplayList polylinesX: 600 byY: 600) display! !
 
 
-!classDefinition: #DisplayList category: 'MusicUI-DisplayLists'!
+!classDefinition: #DisplayList category: #'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayList
 	instanceVariableNames: 'components'
 	classVariableNames: ''
@@ -525,9 +488,9 @@ Instance Variables:
 	offset		<Point> the object's offset distance relative to its container!
 
 
-!DisplayList methodsFor: 'accessing'!
+!DisplayList methodsFor: 'accessing' stamp: 'stp 12/31/2022 11:01'!
 color
-	^ColorValue black! !
+	^ Color black! !
 
 !DisplayList methodsFor: 'accessing'!
 flatten
@@ -552,7 +515,7 @@ initialize
 	components _ OrderedCollection new.
 	offset _ 0 @ 0! !
 
-!DisplayList methodsFor: 'accessing'!
+!DisplayList methodsFor: 'accessing' stamp: 'stp 1/5/2023 17:01'!
 itemWithin: dist of: point
 	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."
 
@@ -562,7 +525,7 @@ itemWithin: dist of: point
 			ifTrue: [ | item |
 				(item := comp itemWithin: dist of: (point - self offset)) == nil
 					ifFalse: [^item]]
-			ifFalse: [((comp bounds expandedBy: dist) containsPoint: point)
+			ifFalse: [((comp bounds expandBy: dist) containsPoint: point)
 					ifTrue: [^comp]]].
 	^nil! !
 
@@ -606,30 +569,31 @@ itemsIntersecting: rect
 			ifTrue: [dList components first]
 			ifFalse: [dList]]! !
 
-!DisplayList methodsFor: 'accessing'!
-itemsWithin: rect
-	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."
-
+!DisplayList methodsFor: 'accessing' stamp: 'stp 1/9/2023 15:38:41'!
+itemsWithin: rect 
+	"Answer the list of items whose boundingBoxes are entirely within
+	the given rectangle."
 	| dList movedRect |
-	movedRect := rect moveBy: self offset negated.
+	movedRect := rect translatedBy: self offset negated.
 	dList := DisplayList new.
-	components do: 
-		[ :comp |
-		comp hasItems
-			ifTrue: [ | items |
-				items := comp itemsWithin: movedRect.
-				items == nil ifFalse: [dList add: items]]
-			ifFalse: [(movedRect contains: comp bounds) 
-					ifTrue: [dList add: comp]]].
-	(dList components isEmpty)
-		ifTrue: [^nil]
-		ifFalse: [(dList components size = 1)
-			ifTrue: [ | first |
-				first := dList components first.
-				first hasItems
-					ifTrue: [first container: nil].
-				^first copy translateBy: self offset]
-			ifFalse: [^dList translateBy: self offset]]! !
+	components
+		do: [:comp | comp hasItems
+				ifTrue: [| items |
+					items := comp itemsWithin: movedRect.
+					items == nil
+						ifFalse: [dList add: items]]
+				ifFalse: [(movedRect containsRect: comp bounds)
+						ifTrue: [dList add: comp]]].
+"	dList components isEmpty
+		ifTrue: [^ dList]
+		ifFalse: [dList components size = 1
+				ifTrue: [| first |
+					first := dList components first.
+					first hasItems
+						ifTrue: [first container: nil].
+					^ first copy translateBy: self offset]
+				ifFalse: [^ dList translateBy: self offset]]
+"			^dList! !
 
 !DisplayList methodsFor: 'accessing'!
 itemsWithin: dist of: point
@@ -729,17 +693,17 @@ translateBy: aPoint
 	self offset: self offset + aPoint! !
 
 
-!DisplayList methodsFor: 'printing'!
+!DisplayList methodsFor: 'printing' stamp: 'stp 1/9/2023 16:47:57'!
 printCompleteOn: aStream depth: depth
 	"Descend the hierarchy printing on the stream."
 
-	aStream cr.
 	depth timesRepeat: [aStream tab].
 	aStream nextPutAll: '(a DisplayList '.
 	offset == nil
 		ifFalse: [aStream nextPutAll: ' offset: ', offset printString].
 "	model == nil
 		ifFalse: [aStream nextPutAll: ' model: ', model printString]."
+	aStream lf.
 	components == nil
 		ifFalse: [components do: 
 			[ :e | 
@@ -791,7 +755,26 @@ isEmpty
 	^components isEmpty! !
 
 
-!DisplayList methodsFor: 'bounds accessing' stamp: 'stp 11/29/2022 16:06:18'!
+!DisplayList methodsFor: 'bounds accessing' stamp: 'stp 1/7/2023 21:50:03'!
+bounds
+	"Compute the receiver's preferredBounds"
+
+	| preferredBounds |
+	components isEmpty
+		ifTrue: [preferredBounds := (0@0) extent: (0@0)]
+		ifFalse: [preferredBounds := components first bounds].
+	1 to: components size do:
+		[:i |
+		preferredBounds := preferredBounds merge: (components at: i) bounds].
+	preferredBounds origin < (0@0)
+		ifTrue: [preferredBounds := preferredBounds 
+				translateBy: preferredBounds origin negated].
+	offset == nil
+		ifTrue: [preferredBounds := preferredBounds expandBy: (64@64)]
+		ifFalse: [preferredBounds := (preferredBounds translateBy: offset) expandBy: (64@64)].
+	^preferredBounds! !
+
+!DisplayList methodsFor: 'bounds accessing' stamp: 'stp 1/7/2023 21:51:08'!
 computePreferredBounds
 	"Compute the receiver's preferredBounds"
 
@@ -804,7 +787,7 @@ computePreferredBounds
 		preferredBounds := preferredBounds merge: (components at: i) bounds].
 	preferredBounds origin < (0@0)
 		ifTrue: [preferredBounds := preferredBounds 
-				translatedBy: preferredBounds origin negated].
+				translateBy: preferredBounds origin negated].
 	offset == nil
 		ifTrue: [preferredBounds := preferredBounds expandBy: (64@64)]
 		ifFalse: [preferredBounds := (preferredBounds translatedBy: offset) expandBy: (64@64)].
@@ -816,6 +799,11 @@ extent
 
 	^self computePreferredBounds extent! !
 
+
+!DisplayList methodsFor: 'enumerating' stamp: 'stp 1/6/2023 15:16'!
+components
+	"Answer the receiver's components."
+	^components! !
 
 !DisplayList methodsFor: 'enumerating'!
 do: aBlock
@@ -838,39 +826,21 @@ displayNonCached
 
 	^DisplayListView openNonCached: self! !
 
-!DisplayList methodsFor: 'displaying'!
-displayOn: aGraphicsContext
-	"Display each of the receiver's components."
-
-	| clipBox |
-	clipBox := aGraphicsContext clippingBounds.
-	offset ifNotNil: [aGraphicsContext translateBy: offset].
-	components do:
-		[ :c | (c intersects: clipBox)
-			ifTrue: [c displayOn: aGraphicsContext]].
-	offset ifNotNil: [aGraphicsContext translateBy: offset negated].! !
-
-!DisplayList methodsFor: 'displaying'!
-displayPostScriptOn: aPostscriptContext
-	"Display each of the receiver's components."
-
-	offset == nil
-		ifFalse: [aPostscriptContext translate: offset].
-	1 to: components size do:
-		[ :i | (components at: i) displayPostScriptOn: aPostscriptContext].
-	offset == nil
-		ifFalse: [aPostscriptContext translateBy: offset negated].! !
-
-!DisplayList methodsFor: 'displaying' stamp: 'stp 12/2/2022 02:56:11'!
+!DisplayList methodsFor: 'displaying' stamp: 'stp 1/6/2023 11:56'!
 drawOn: aContext
 	"Display each of the receiver's components."
 
-	| xform |
-	xform := aContext currentTransformation.
-	offset ifNotNil: [aContext geometryTransformation: (xform translatedBy: offset)].
-	components do:
-		[ :comp | comp drawOn: aContext].
-	offset ifNotNil: [aContext geometryTransformation: (xform translatedBy: offset negated)].! !
+	aContext translateBy: offset during: [:canvas | components do:
+		[ :comp | comp drawOn: canvas]]
+! !
+
+!DisplayList methodsFor: 'displaying' stamp: 'stp 12/29/2022 00:31'!
+drawOn: aContext at: inset 
+	"Display each of the receiver's components."
+	aContext
+		translateBy: offset + inset
+		during: [:canvas | components
+				do: [:comp | comp drawOn: canvas]]! !
 
 
 !DisplayList methodsFor: 'adding-removing'!
@@ -919,7 +889,7 @@ addWrapper: aVisualWrapper
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayList class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayList class' category: #'MusicUI-DisplayLists'!
 DisplayList class
 	instanceVariableNames: ''!
 
@@ -930,7 +900,7 @@ new
 	^super new initialize! !
 
 
-!DisplayList class methodsFor: 'examples' stamp: 'stp 12/2/2022 02:58:44'!
+!DisplayList class methodsFor: 'examples' stamp: 'stp 12/28/2022 20:56'!
 exampleHierarchical
 	"Create and answer a large display list with a lines, strings, and visuals."
 	"DisplayList exampleHierarchical display"
@@ -948,24 +918,24 @@ exampleHierarchical
 		[ | pt |
 		pt := (rand next * size) rounded @ ((rand next * size) rounded).
 		dl1 add: ((DisplayString string: (pt printString) 
-				offset: pt) color: (Color random: rand))].
+				offset: pt) color: (Color random))].
 	10 timesRepeat:
 		[ | x y w h |
 		x := (rand next * size) rounded.		y := (rand next * size) rounded.
 		w := (rand next * size) rounded.		h :=  (rand next * size) rounded.
 		dl2 add: ((DisplayRectangle offset: (x@y) extent: (w@h))
-				color: (Color random: rand); fill: true)].
+				color: (Color random); fill: true)].
 	10 timesRepeat:
 		[ | x y w h |
 		x := (rand next * size) rounded.		y := (rand next * size) rounded.
 		w := (rand next * size) rounded.		h :=  (rand next * size) rounded.
 		dl3 add: ((DisplayRectangle offset: (x@y) extent: (w@h))
-				color: (Color random: rand); fill: true)].
+				color: (Color random); fill: true)].
 	10 timesRepeat:
 		[ | pt |
 		pt := (rand next * size) rounded @ ((rand next * size) rounded).
 		dl4 add: ((DisplayString string: (pt printString) 
-				offset: pt) color: (Color random: rand))].
+				offset: pt) color: (Color random))].
 	dl5 add: dl1; 
 		add: dl2 at: ((size * 2)@0); 
 		add: dl3 at: (0@(size * 2)); 
@@ -1039,20 +1009,20 @@ linesX: x byY: y
 				width: (rand next * 4) truncated)].
 	^dList! !
 
-!DisplayList class methodsFor: 'examples' stamp: 'stp 12/1/2022 21:38:23'!
+!DisplayList class methodsFor: 'examples' stamp: 'stp 12/28/2022 21:12'!
 mixedExample
-	"Open a display list view with randomly-placed random-color rects, lines, p-lines and strings over the given extent."
+	"Open a HUGE display list view with randomly-placed random-color rects,
+	lines, p-lines and strings over the given extent."
 	"DisplayList mixedExample"
 	"DisplayListView exampleMixed"
-	
 	| x y |
-	x _ 20000.
-	y _ 2000.
-	^((DisplayList rectanglesX: x byY: y) 
+	x := 20000.
+	y := 4000.
+	^ (DisplayList rectanglesX: x byY: y)
 		addAll: (DisplayList linesX: x byY: y);
 		addAll: (DisplayList polylinesX: x byY: y);
 		addAll: (DisplayList visualsX: x byY: y);
-		addAll: (DisplayList stringsX: x byY: y))! !
+		addAll: (DisplayList stringsX: x byY: y)! !
 
 !DisplayList class methodsFor: 'examples'!
 polylineExample
@@ -1203,60 +1173,63 @@ stringExample
 
 	(DisplayList stringsX: 4000 byY: 4000) display! !
 
-!DisplayList class methodsFor: 'examples' stamp: 'stp 11/19/2022 11:01:35'!
-stringsX: x byY: y
-	"Answer a display list with randomly-placed random-color strings over the given extent."
-	"(DisplayList stringsX: 600 byY: 600) display"
-
-	| dList rand inset |
+!DisplayList class methodsFor: 'examples' stamp: 'stp 1/7/2023 22:38:41'!
+stringsX: x byY: y 
+	"Answer a display list with randomly-placed random-color strings over
+	the given extent."
+	"(DisplayList stringsX: 800 byY: 1600) display"
+	| dList rand inset fonts |
 	inset := 16.
 	dList := DisplayList new.
 	rand := Random new.
-	((x/5) + (y/5)) timesRepeat:
-		[ | pos |
-		pos := (rand nextIntFrom: inset to: x - inset) @ (rand nextIntFrom: inset to: y - inset).
-		dList add: ((DisplayString
-				string: pos printString
-				offset: pos)
-				color: Color random)].
-	^dList! !
+	fonts := FontFamily availableFamilies.
+	x / 5 + (y / 5)
+		timesRepeat: [| pos |
+			pos := (rand nextIntFrom: inset to: x - inset)
+						@ (rand nextIntFrom: inset to: y - inset).
+			dList
+				add: ((DisplayString
+						string: pos printString
+						offset: pos
+						font: (FontFamily familyName: fonts keys atRandom pointSize: (8 to: 14) atRandom))
+						color: Color random)].
+	^ dList! !
 
-!DisplayList class methodsFor: 'examples' stamp: 'stp 12/1/2022 21:31:48'!
-visualsX: x byY: y
-	"Answer a display list with randomly-placed random-color visuals over the given extent."
+!DisplayList class methodsFor: 'examples' stamp: 'stp 1/7/2023 22:46:14'!
+visualsX: x byY: y 
+	"Answer a display list with randomly-placed random-color visuals over
+	the given extent."
 	"(DisplayList visualsX: 2000 byY: 2000) display"
 	"DisplayListView exampleVisuals"
-
 	| dList rand inset images |
 	inset := 16.
 	dList := DisplayList new.
 	rand := Random new.
-	images _ OrderedCollection new.
-"Collect forms"
-	(DisplayListView constants at: #forms) valuesDo:
-		[ :item | images addLast: item].
-
-"Collect notes"
-	(DisplayListView constants at: #NoteIcons) do:
-		[ :item | images addLast: item image].
-
-"Collect notes"
-	(DisplayListView constants at: #StdNoteIcons) valuesDo:
-		[ :item | images addLast: item image.
-			item image image offset: item offset].
-		
-"Create display list"
-	((x/10) + (y/10)) timesRepeat:
-		[ | vis |
-		vis _ 	images atRandom: rand.
-		dList add: ((DisplayVisual
-				visual: vis
-				offset: ((rand nextIntFrom: inset to: x - inset)
-						@(rand nextIntFrom: inset to: y - inset) "+ vis image offset")))].
-	^dList! !
+	images := OrderedCollection new.
+	"Collect forms"
+	(DisplayListView constants at: #forms)
+		valuesDo: [:item | images addLast: item copy].
+	"Collect notes"
+	(DisplayListView constants at: #NoteIcons)
+		do: [:item | images addLast: item image copy].
+	"Collect notes"
+	(DisplayListView constants at: #StdNoteIcons)
+		valuesDo: [:item | | im |
+			im := item image copy.
+			images addLast: im.
+			im image offset: item offset].
+	"Create display list"
+	x / 10 + (y / 10)
+		timesRepeat: [| vis |
+			vis := images atRandom: rand.
+			dList
+				add: (DisplayVisual visual: vis offset: (rand nextIntFrom: inset to: x - inset)
+							@ (rand nextIntFrom: inset to: y - inset))
+			"+ vis image offset"].
+	^ dList! !
 
 
-!classDefinition: #DisplayString category: 'MusicUI-DisplayLists'!
+!classDefinition: #DisplayString category: #'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayString
 	instanceVariableNames: 'string font'
 	classVariableNames: ''
@@ -1302,12 +1275,11 @@ string
 
 	^string! !
 
-!DisplayString methodsFor: 'accessing' stamp: 'stp 11/29/2022 16:41:49'!
-string: aString
+!DisplayString methodsFor: 'accessing' stamp: 'stp 12/28/2022 20:53'!
+string: aString 
 	"Set the receiver's string."
-
-	string _ aString.
-	font _ FontFamily defaultFamilyAndPointSize! !
+	"font := FontFamily defaultFamilyAndPointSize"
+	string := aString! !
 
 
 !DisplayString methodsFor: 'printing'!
@@ -1342,27 +1314,30 @@ displayPostScriptOn: aPostscriptContext
 	aPostscriptContext show: string.
 	aPostscriptContext translate: offset negated.! !
 
-!DisplayString methodsFor: 'displaying' stamp: 'stp 12/1/2022 23:37:37'!
-drawOn: aCanvas
+!DisplayString methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:52'!
+drawOn: aCanvas 
 	"Display a string on the given canvas"
-
-	aCanvas drawString: string from: 1 to: string size 
-		at: offset 
+	aCanvas
+		drawString: string
+		from: 1
+		to: string size
+		at: offset
 		font: font
-		color: (color ifNil: [Color black] ifNotNil: [color])
-! !
+		color: (color
+				ifNil: [Color random]
+				ifNotNil: [color])! !
 
 
-!DisplayString methodsFor: 'initialize-release' stamp: 'stp 11/20/2022 16:54:33'!
+!DisplayString methodsFor: 'initialize-release' stamp: 'stp 12/28/2022 20:50'!
 initialize
 	"Initialize the instance variables of the receiver."
 
 	super initialize.
-	font := FontFamily defaultFamilyAndPointSize! !
+	"font := FontFamily defaultFamilyAndPointSize"! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayString class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayString class' category: #'MusicUI-DisplayLists'!
 DisplayString class
 	instanceVariableNames: ''!
 
@@ -1392,8 +1367,16 @@ string: aString offset: oPoint
 
 	^self new string: aString; offset: oPoint! !
 
+!DisplayString class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 21:15'!
+string: aString offset: oPoint font: aFont
+	"Answer a new instance with the arguments as its string and offset
+	point. "
+	^ self new string: aString;
+		 offset: oPoint;
+		font: aFont! !
+
 
-!classDefinition: #DisplayVisual category: 'MusicUI-DisplayLists'!
+!classDefinition: #DisplayVisual category: #'MusicUI-DisplayLists'!
 DisplayItem subclass: #DisplayVisual
 	instanceVariableNames: 'image'
 	classVariableNames: ''
@@ -1446,7 +1429,7 @@ visual: aVisual
 "! !
 
 
-!DisplayVisual methodsFor: 'printing' stamp: 'stp 12/1/2022 11:03:37'!
+!DisplayVisual methodsFor: 'printing' stamp: 'stp 1/8/2023 06:18:26'!
 printOn: aStream
 	"Print the receiver in the given Stream."
 
@@ -1454,7 +1437,7 @@ printOn: aStream
 "	model == nil ifFalse: [aStream nextPutAll: ' model: '. model printOn: aStream].
 "	image == nil ifFalse: [aStream nextPutAll: ' image: '. image printOn: aStream].
 	offset == nil ifFalse: [aStream nextPutAll: ' offset: '. offset printOn: aStream].
-	aStream nextPut: $); cr.! !
+	aStream nextPut: $); lf.! !
 
 !DisplayVisual methodsFor: 'printing' stamp: 'stp 12/1/2022 11:03:51'!
 storeOn: aStream
@@ -1486,79 +1469,99 @@ displayPostScriptOn: aPostscriptContext
 			bits: image bits.
 	aPostscriptContext translate: offset negated! !
 
-!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/1/2022 23:19:10'!
-drawOn: aCanvas
+!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/29/2022 00:57'!
+drawOn: aCanvas 
 	"Display a rect on the given canvas"
+	aCanvas stencil: image image at: offset color: Color black! !
 
-	| form |
-	form _ image image.
-"	self halt.
-	aCanvas image: (ColorForm mappingWhiteToTransparentFrom: image mask) at: offset.
-"	aCanvas image: form at: offset "- form offset" "sourceRect: (form boundingBox expandBy: 16)"! !
+!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:46'!
+drawOn: aCanvas 
+	"Display a rect on the given canvas"
+	drawImage: image image at: offset 
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'DisplayVisual class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'DisplayVisual class' category: #'MusicUI-DisplayLists'!
 DisplayVisual class
 	instanceVariableNames: ''!
 
-!DisplayVisual class methodsFor: 'examples'!
+!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:08'!
 convertMusicConstants
 	"Convert all the forms to opaque forms"
-	"DisplayVisual convertMusicConstants. DisplayVisual displayMusicConstants"
-
+	"DisplayVisual convertMusicConstants. DisplayVisual
+	displayMusicConstants "
 	| all |
 	all := DisplayListView constants.
-	all keysAndValuesDo: [ :key :group |
-		Transcript show: key printString; cr.
-		(group isMemberOf: Dictionary)
-			ifTrue: [group keysAndValuesDo:
-				[ :str :item | | newI |
-				(item isKindOf: DisplayVisual)
-					ifTrue: [newI := item.
-						item visual: (OpaqueImage figure: item visual 
-							shape: (item visual convertToCoverageWithOpaquePixel: 1))]
-					ifFalse: [(item isMemberOf: Depth1Image)
-							ifTrue: [newI := OpaqueImage figure: item 
-												shape: (item convertToCoverageWithOpaquePixel: 1)]].
-				group at: str put: newI]].
-		((group isMemberOf: Array) or: [(group isMemberOf: OrderedCollection)])
-			ifTrue: [group do:
-					[ :item |
-					(item isMemberOf: OpaqueImage)
-						ifFalse: [item visual: (OpaqueImage figure: item visual 
-								shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !
+	all
+		keysAndValuesDo: [:key :group | 
+			Transcript show: key printString;
+				 cr.
+			(group isMemberOf: Dictionary)
+				ifTrue: [group
+						keysAndValuesDo: [:str :item | 
+							| newI |
+							(item isKindOf: DisplayVisual)
+								ifTrue: [newI := item.
+									item
+										visual: (OpaqueImage
+												figure: item visual
+												shape: (item visual convertToCoverageWithOpaquePixel: 1))]
+								ifFalse: [(item isKindOf: Form)
+										ifTrue: [newI := OpaqueImage
+														figure: item
+														shape: (item convertToCoverageWithOpaquePixel: 1)]].
+							group at: str put: newI]].
+			((group isMemberOf: Array)
+					or: [group isMemberOf: OrderedCollection])
+				ifTrue: [group
+						do: [:item | (item isMemberOf: OpaqueImage)
+								ifFalse: [item
+										visual: (OpaqueImage
+												figure: item visual
+												shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !
 
-!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/2/2022 10:24:17'!
+!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/28/2022 20:59'!
 displayMusicConstants
 	"Draw a nice table of the hierarchical image dictionary."
 	"DisplayVisual displayMusicConstants"
-
 	| xstep y i ystep dl dlv |
 	xstep := 80.
 	ystep := 64.
 	y := 0.
-	dl _ DisplayList new.
-	DisplayListView constants keysAndValuesDo: [ :title :dict |
-		i := 0.
-		dl add: (DisplayString string: title asString) at: (xstep@y).
-		y := y + (ystep/2).
-		dict keysAndValuesDo:
-			[ :str :item |
-			dl add: (DisplayString string: (str isNumber 
-					ifTrue: [str printString] ifFalse: [str asString clipTo: 9]))
-				 at: ((i*xstep+8)@y).
-			dl add: (DisplayString string: (item isDisplayItem
-					ifTrue: [item image image extent printString]
-					ifFalse: [item image extent printString]))
-				 at: ((i*xstep+8)@(y + 16)).
-			item isDisplayItem
-				ifTrue: [dl add: item at: ((i * xstep + 8) @ (y + 40))]
-				ifFalse: [dl add: (DisplayVisual image: item) at: ((i * xstep + 8) @ (y + 40))].
-			i := i + 1.
-			i = 14 ifTrue: [i := 0. y := y + (ystep * 1.5)]].
-		y := y + ystep + 24].
-	dlv _ DisplayListView newOn: dl.
+	dl := DisplayList new.
+	DisplayListView constants
+		keysAndValuesDo: [:title :dict | 
+			i := 0.
+			dl
+				add: (DisplayString string: title asString)
+				at: xstep @ y.
+			y := y + (ystep / 2).
+			dict
+				keysAndValuesDo: [:str :item | 
+					dl
+						add: (DisplayString
+								string: (str isNumber
+										ifTrue: [str printString]
+										ifFalse: [str asString contractTo: 11]))
+						at: i * xstep + 8 @ y.
+					dl
+						add: (DisplayString
+								string: (item isDisplayItem
+										ifTrue: [item image image extent printString]
+										ifFalse: [item image extent printString]))
+						at: i * xstep + 8 @ (y + 16).
+					item isDisplayItem
+						ifTrue: [dl add: item at: i * xstep + 8 @ (y + 40)]
+						ifFalse: [dl
+								add: (DisplayVisual image: item)
+								at: i * xstep + 8 @ (y + 40)].
+					i := i + 1.
+					i = 14
+						ifTrue: [i := 0.
+							y := y + (ystep * 1.5)]].
+			y := y + ystep + 24].
+	dlv := DisplayListView newOn: dl.
 	dlv backgroundColor: Color gray.
 	DisplayListWindow open: dlv label: 'Music Constants'! !
 
@@ -1642,7 +1645,7 @@ visual: aV origin: aPt
 	^(super new initialize) visual: aV; offset: aPt! !
 
 
-!classDefinition: #OpaqueImage category: 'MusicUI-DisplayLists'!
+!classDefinition: #OpaqueImage category: #'MusicUI-DisplayLists'!
 Object subclass: #OpaqueImage
 	instanceVariableNames: 'image mask'
 	classVariableNames: ''
@@ -1675,7 +1678,7 @@ mask: aForm
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OpaqueImage class' category: 'MusicUI-DisplayLists'!
+!classDefinition: 'OpaqueImage class' category: #'MusicUI-DisplayLists'!
 OpaqueImage class
 	instanceVariableNames: ''!
 

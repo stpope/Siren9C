@@ -1,0 +1,183 @@
+About Siren MIDI
+
+Siren includes a portable MIDI I/O framework that consists of an abstract I/O port class (MIDIPort), a plug-in that uses the DLLCC interface, and a C-language interface module that talks to the platform-independent PortMIDI library. The higher-level model is that a MIDI voice object holds onto a MIDI device and a channel. The MIDI device object is connected to a MIDI port. For example, the verbose way to create the default MIDI voice would be to say
+	MIDIVoice on: (MIDIDevice on: (MIDIPort default openOutput))
+
+The voice object gives us the standard voice behavior (like event mapping and scheduling). The MIDI device allows us to model the device-specific messages supported by some devices. (I used to use micro-tonal extended messages on a few different hardware synths.) The MIDIPort is used for the interface betweeen Siren and external MIDI drivers and devices. It implements both note-oriented (e.g., play: pitch at: aDelay dur: aDur amp: anAmp voice: voice), and data-oriented (e.g., put: data at: delay length: size) behaviors for MIDI I/O.
+
+There is typically only one instance of MIDIPort; the messages new, default, and instance all answer the sole instance. MIDIPorts use observers (dependency) to signal input data--objects wishing to receive input should register themselves as dependents of a port. In the default Siren implementation, the scheduler is all in Smalltalk, and only the simplest MIDI driver is assumed.
+
+MIDI Implementation: The class PortMIDIPort implements the low-level MIDI I/O messages by talking to the PortMidiInterface external class, which is a front-end to C-language glue code that talks to the PortMIDI library. If you set the verbosity to 2 and open a port, it will print your entire device table to the VM's standard output and to the Transcript; for my system, this looks like the following:
+
+2007 set-up
+
+Midi Device Table
+	0: IAC Driver IAC Bus 1 - in
+	1: IAC Driver IAC Bus 2 - in
+	2: IAC Driver IAC Bus 3 - in
+	3: PC-1600X - in
+	4: StudioLogic SL-161 - in
+	5: Tascam FW-1804 FW-1804 Control Port - in
+	6: IAC Driver IAC Bus 1 - out
+	7: IAC Driver IAC Bus 2 - out
+	8: IAC Driver IAC Bus 3 - out
+	9: Tascam FW-1804 FW-1804 Port 1 - out
+	10: EM-100 - out
+	11: Tascam FW-1804 FW-1804 Port 3 - out
+	12: Tascam FW-1804 FW-1804 Port 4 - out
+	13: Tascam FW-1804 FW-1804 Control Port - out
+
+More recent, smaller set-up
+
+MIDI devices (4):
+	0: CoreMIDI, Kurzweil   in -- default in
+	1: CoreMIDI, PV16X   in
+	2: CoreMIDI, Kurzweil   out -- default out
+	3: CoreMIDI, MIDIPLUS TBOX 2x2 Midi Out 2   out
+
+2022 set-up
+
+Driver reports
+
+	MIDI devices (8):
+		0: CoreMIDI, MIDIPLUS TBOX 2x2 Midi In 1, in -- default in
+		1: CoreMIDI, Faders, in
+		2: CoreMIDI, IAC Driver Bus 1, in
+		3: CoreMIDI, Nord Stage 3 MIDI Output, in
+		4: CoreMIDI, Nord Stage 3, out -- default out
+		5: CoreMIDI, MIDIPLUS TBOX 2x2 Midi Out 2, out
+		6: CoreMIDI, IAC Driver Bus 1, out
+		7: CoreMIDI, Nord Stage 3 MIDI Input, out
+
+ST Library reports
+
+MIDI Device Table
+	# 0 - MIDIPLUS TBOX 2x2 Midi In 1 - in
+	# 1 - Faders - in
+	# 2 - IAC Driver Bus 1 - in
+	# 3 - Nord Stage 3 MIDI Output - in
+	# 4 - Nord Stage 3 - out
+	# 5 - MIDIPLUS TBOX 2x2 Midi Out 2 - out
+	# 6 - IAC Driver Bus 1 - out
+	# 7 - Nord Stage 3 MIDI Input - out
+	# 8 - Kontakt 7 Virtual Input - out
+
+
+MIDI Tests and Examples
+
+Basic Tests
+
+Edit the methods MIDIPort initialize to suit your setup.
+
+Try to open and close the MIDI port (this also reports to the transcript and dumps a device list to the VM's stdout).
+	[MIDIPort testOpenClose]
+
+Open MIDI, play a 1-sec. note.
+	[MIDIPort testANote]
+
+Open MIDI, play a fast scale.
+	[MIDIPort testAScale]
+
+Open MIDI, play notes based on the mouse position (x --> voice; y --> pitch) until mouse down.
+	[MIDIPort testMouseMIDI]
+	[MIDIPort allNotesOff]
+
+EventScheduler interrupt; flush
+
+
+Close down and clean up.
+	[MIDIPort cleanUp]
+
+Using voices
+	[MIDIVoice randomExample]
+	[MIDIVoice scaleExample]
+	[MIDIVoice voiceInspect]
+
+General MIDI Maps and Program Changes
+
+"Demonstrate program change by setting up an organ instrument to play on.
+	[MIDIPort testProgramChange]
+
+Down-load a general MIDI patch for a 4-voice organ.
+	[MIDIPort setupOrgan. Cluster example1]
+
+Down-load a general MIDI patch for a 16-voice percussion ensemble.
+	[MIDIPort setupTunedPercussion. MIDIPort testAScale]
+
+Or try these
+	[MIDIPort setAllInstrumentsTo: 'Tenor Sax'. MIDIPort testAScale]
+	[MIDIPort setAllInstrumentsTo: 'Music Box'. MIDIPort testAScale]
+
+Reset the GM map (for the first 16 instruments)
+	[MIDIPort setupDefaultGeneralMIDI]
+
+MIDI Input
+
+Open MIDI, try to read something--dump it to the transcript.
+	[MIDIPort testInput]
+	[MIDIPort dumpExample]
+
+Execute this to end the input test
+	[MIDIPort testInputStop]
+
+Get the port's pending input.
+	[MIDIPort default eventsAvailable]
+	[MIDIPort default readAll]
+	[MIDIPort default input]
+	[MIDIPort default resetInput]
+
+Set up a MIDI dump object as a dependent of the input port. Dump for 5 seconds,
+then turn off. The default update: method just dumps the MIDI packet into the transcript.
+	[MIDIPort dumpExample]
+
+This example captures notes to an event list for 5 seconds and opens an editor on it.
+	[MIDIDump exampleList]
+
+Set up uncached controller reading and dump input to the transcript.
+	[MIDIPort testControllerInput]
+	[MIDIPort testInputStop]
+
+Set up uncached controller reading--read controllers from lo to hi as an array and print it; 
+stop on mouse press.
+	[MIDIPort testControllerCachingFrom: 48 to: 52]
+
+Real-time Performance Tests
+
+Play ''num'' random pitches spaced ''dur'' msec apart.
+This test creates the messages and does the scheduling right here.
+	[MIDIPort testRandomPlayLowLevel: 64 dur: 80]
+
+Play a roll of 'num' notes spaced 'dur' msec apart.
+This test creates the messages and does the scheduling right here.
+	[ObjectMemory compactingGC.
+		MIDIPort testRollLowLevel: 20 dur: 80]
+
+	[ObjectMemory compactingGC.
+		MIDIPort testRollLowLevel: 200 dur: 40]
+
+Continuous Control Tests
+
+Demonstrate control commands by playing a note and making a crescendo with the volume pedal.
+	[MIDIPort testControlContinuous]
+
+Demonstrate pitch-bend by playing two notes and bending them.
+	[MIDIPort testBend]
+
+Recording Continuous Controllers
+
+One can also record functions from input controlers, as in the following example, which reads MIDI controller 48 at a rate of 40 Hz for 5 seconds.
+
+	[MIDIPort testControllerRecording]
+
+Utilities
+
+ANO
+	[MIDIPort allNotesOff]
+
+Close down and clean up
+	[MIDIPort cleanUp]
+
+If things get wedged, do this
+	[PortMidiInterface unloadLibraries]
+
+For much more detail, see the class example messages in MIDIPort, or the tests in the PortMIDIPort and PortMidiInterface classes.

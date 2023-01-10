@@ -1,0 +1,51 @@
+MusES Pitch Classes, Intervals, Scales, and Chords
+
+Siren incorporates Francois Pachet et al's MusES pitch class package (see http://www-poleia.lip6.fr/~fdp/MusES.html). A pitch class is an abstraction of a single pitch or note name (e.g., C in any octave, or 'fa' in any key), and there are relationships for pitch class spelling (f#, la flat), pitch equivalence, enharmonic equivalence (do sharp = re flat), and interval algebra.
+
+Based on this, chords and scales can be defined according to pitch class rules.
+
+To make the code easy to use, MusES puts a shortcut in the Smalltalk global dictionary; the global variable N holds the PitchClass class, making the following code examples easier to read.
+
+Print these to see results, or look at the advanced EventGenerator examples.
+
+Pitch expressions (print these)
+	[N C sharp sharp]
+	[N C augmentedFourth]
+	[N C diminishedThirteenth]
+	[N C augmentedFourth pitchEqual: N C diminishedFifth]
+	[N D sharp closestEnharmonic]
+	[N E flat closestEnharmonic] 
+
+Intervals
+	[N do flat intervalBetween: N sol]
+	[MusicalInterval perfectFourth topIfBottomIs: N F sharp]
+	[MusicalInterval allIntervalsType: 4]
+
+Scales
+	[PitchClass B majorScale notes]
+	[PitchClass D flat melodicMinorScale notes]
+
+To use a scale as real pitches, you need to give it an octave, as in
+	[PitchClass C majorScale asPitchesInOctave: 5]
+	[(HungarianMinor root: N fa) asPitchesInOctave: 2] 
+
+Chords
+	(PitchClassChord new fromString: 'C') notes
+	(PitchClassChord new fromString: 'Re maj7') notes
+	(PitchClassChord new fromString: 'C 13 aug9') notes
+	(PitchClassChord new fromString: 'C aug9 dim5') notes
+
+Key signatures
+	[Signature choseSignature]
+	[(Signature new nbSharps: 4) tonality]
+	[Signature fromTonality: N E flat majorScale]
+
+EventList Examples using Scales
+
+	[((NeapolitanMinor root: N do) generateChordsPoly: 5 inOctave: 3) scrambled] p
+
+Extending the Models of Pitch Classes and Scales
+
+Obviously, this framework is designed for ease of extension, and new interval types, scale rules, families of key signatures are all straightforward to add.
+
+[(BohlenPierceScale root: N mi) inspect]

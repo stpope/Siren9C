@@ -1,4 +1,4 @@
-!classDefinition: #EventListPanel category: 'MusicUI-Editors'!
+!classDefinition: #EventListPanel category: #'MusicUI-Editors'!
 Model subclass: #EventListPanel
 	instanceVariableNames: 'editorView scoreView textView'
 	classVariableNames: ''
@@ -46,7 +46,7 @@ textView
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventListPanel class' category: 'MusicUI-Editors'!
+!classDefinition: 'EventListPanel class' category: #'MusicUI-Editors'!
 EventListPanel class
 	instanceVariableNames: ''!
 
@@ -57,7 +57,7 @@ windowSpec
 	! !
 
 
-!classDefinition: #EventListText category: 'MusicUI-Editors'!
+!classDefinition: #EventListText category: #'MusicUI-Editors'!
 Model subclass: #EventListText
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -65,7 +65,7 @@ Model subclass: #EventListText
 	category: 'MusicUI-Editors'!
 
 
-!classDefinition: #EventListTreeEditor category: 'MusicUI-Editors'!
+!classDefinition: #EventListTreeEditor category: #'MusicUI-Editors'!
 Model subclass: #EventListTreeEditor
 	instanceVariableNames: 'scoreView listTree'
 	classVariableNames: ''
@@ -99,7 +99,7 @@ initialize
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventListTreeEditor class' category: 'MusicUI-Editors'!
+!classDefinition: 'EventListTreeEditor class' category: #'MusicUI-Editors'!
 EventListTreeEditor class
 	instanceVariableNames: ''!
 
@@ -110,12 +110,12 @@ windowSpec
 	! !
 
 
-!EventListTreeEditor class methodsFor: 'resources'!
-treeMenu	
-	^Menu labelArray: #(copy cut paste again undo)! !
+!EventListTreeEditor class methodsFor: 'resources' stamp: 'stp 12/31/2022 11:39'!
+treeMenu
+	^ PopUpMenu labelArray: #(#copy #cut #paste #again #undo)! !
 
 
-!classDefinition: #EventListTreeItem category: 'MusicUI-Editors'!
+!classDefinition: #EventListTreeItem category: #'MusicUI-Editors'!
 Model subclass: #EventListTreeItem
 	instanceVariableNames: 'lists'
 	classVariableNames: ''
@@ -139,7 +139,7 @@ hasChildren
 	^lists notEmpty! !
 
 
-!classDefinition: #ScoreView category: 'MusicUI-Editors'!
+!classDefinition: #ScoreView category: #'MusicUI-Editors'!
 Model subclass: #ScoreView
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -147,7 +147,7 @@ Model subclass: #ScoreView
 	category: 'MusicUI-Editors'!
 
 
-!classDefinition: #TimeSequenceView category: 'MusicUI-Editors'!
+!classDefinition: #TimeSequenceView category: #'MusicUI-Editors'!
 DisplayListView subclass: #TimeSequenceView
 	instanceVariableNames: 'clefForm xScaleDefault xScale xColor yColor headColor clefColor itemAccessors'
 	classVariableNames: ''
@@ -224,6 +224,23 @@ self halt.
 				self reallyDisplayOn: pGC].
 			pixmap displayOn: aGC]
 		ifTrue: [self reallyDisplayOn: aGC]"! !
+
+!TimeSequenceView methodsFor: 'displaying' stamp: 'stp 12/29/2022 03:23'!
+drawOn: gc 
+	"Display the receiver on its cached form."
+	| ins |
+	ins := 0.
+	gc fillColor: Color lightYellow.
+	clefForm == nil
+		ifFalse: [gc drawImage: clefForm at: 0 @ 0.
+			ins := clefForm width].
+	background == nil
+		ifFalse: [gc drawImage: background at: ins @ 0].
+	dList drawOn: gc at: ins * 2 @ 0.
+	model selections == nil
+		ifFalse: [Sensor shiftPressed
+				ifTrue: [self halt].
+			gc displayRectangularBorder: model selections bounds]! !
 
 !TimeSequenceView methodsFor: 'displaying'!
 highlightFrom: pt1 to: pt2
@@ -370,24 +387,27 @@ timeFromX: aNumber
 	^(aNumber x - inset x - self bounds width * xScale + page x) max: 0! !
 
 
-!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 12/2/2022 03:53:31'!
-generateItemFor: anAss
-	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."
-
+!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 12/29/2022 00:42'!
+generateItemFor: anAss 
+	"Answer the correct visual item for the given assoc. (sent from
+	layoutManagers). "
 	| dItem vox arr |
 	arr := DisplayListView constants at: #NoteIcons.
 	vox := anAss value voice.
-	vox == nil 
-		ifTrue: [vox := 1] 
+	vox == nil
+		ifTrue: [vox := 1]
 		ifFalse: [vox isInteger
-			ifTrue: [vox := (vox max: 1) min: arr size]
-			ifFalse: [vox := vox first asInteger \\ arr size]].	"hack -- take the first letter as the key for note heads"
-	dItem := (arr at: (vox )) copy.
-	dItem color: (headColor == nil
+				ifTrue: [vox := (vox max: 1)
+								min: arr size]
+				ifFalse: [vox := vox first asInteger \\ arr size]].
+	"hack -- take the first letter as the key for note heads"
+	dItem := (arr at: vox) copy.
+	"dItem
+		color: (headColor == nil
 				ifTrue: [Color white]
-				ifFalse: [headColor]).
+				ifFalse: [headColor])."
 	dItem model: anAss.
-	^dItem! !
+	^ dItem! !
 
 !TimeSequenceView methodsFor: 'layout manager access'!
 itemFor: anAss
@@ -440,7 +460,7 @@ update: ignored
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TimeSequenceView class' category: 'MusicUI-Editors'!
+!classDefinition: 'TimeSequenceView class' category: #'MusicUI-Editors'!
 TimeSequenceView class
 	instanceVariableNames: ''!
 
@@ -467,19 +487,21 @@ openOnEventList: anEventList
 "	
 	DisplayListWindow open: me label: 'TimeSequenceView'! !
 
-!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 12/2/2022 05:54:44'!
-openOnEventList: anEventList label: lab
+!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 23:53'!
+openOnEventList: anEventList label: lab 
 	"Open the receiver on the given event list."
 	"TimeSequenceView openOnEventList: EventList randomExample"
-
 	| me |
-	me := self new initialize model: (EventListEditor new eventList: anEventList).
-	me list: (me layoutManager displayListFor: me).
-"	dls := DisplayListView new.
+	me := self new initialize
+				model: (EventListEditor new eventList: anEventList).
+	me
+		list: (me layoutManager displayListFor: me).
+	"dls := DisplayListView new.
 	dls setDisplayList: me displayList.
-	dls setComponent: me component.
+	dls
+	setComponent: me component.
 	DisplayListView openOn: dls
-"	
+"
 	DisplayListWindow open: me label: lab! !
 
 
@@ -496,7 +518,7 @@ inset
 	^16@16! !
 
 
-!classDefinition: #PhraseView category: 'MusicUI-Editors'!
+!classDefinition: #PhraseView category: #'MusicUI-Editors'!
 TimeSequenceView subclass: #PhraseView
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -560,7 +582,7 @@ itemFor: anAss
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PhraseView class' category: 'MusicUI-Editors'!
+!classDefinition: 'PhraseView class' category: #'MusicUI-Editors'!
 PhraseView class
 	instanceVariableNames: ''!
 
@@ -573,7 +595,7 @@ example
 		((EventListEditor new) eventList: (EventList named: #phrase1) copy)! !
 
 
-!classDefinition: #PitchTimeView category: 'MusicUI-Editors'!
+!classDefinition: #PitchTimeView category: #'MusicUI-Editors'!
 TimeSequenceView subclass: #PitchTimeView
 	instanceVariableNames: 'pitchOffset yScale yScaleDefault'
 	classVariableNames: ''
@@ -615,48 +637,67 @@ pitchFromY: aPoint
 	^(aPoint y - self class inset y / yScale + pitchOffset) max: 0! !
 
 
-!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 12/2/2022 04:03:37'!
-generateItemFor: anAss
-	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."
+!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 12/28/2022 23:41'!
+generateItemFor: anAss 
+	"Answer the correct visual item for the given assoc. (sent from
+	layoutManagers). "
 	"ColorValue constantNames"
 	"EventList randomSWSSExample2 edit"
-
-"	^super generateItemFor: anAss.
+	"^super generateItemFor: anAss.
 "
 	| yHeight x y list event |
 	event := anAss value.
 	yHeight := 24.
 	event duration == nil
-			ifTrue: [x := 250 / xScale]
-			ifFalse: [x := event duration asMS value / xScale].
-	((event ampl == nil) or: [event ampl value == nil])
-		ifFalse: [y := (event ampl asRatio value * yHeight) truncated]
-		ifTrue: [y := 0].
-	list := (DisplayList new) model: anAss.
-	list add: (super generateItemFor: anAss).
-	list add: ((DisplayLine new)
-				offset: 0@0;
-				extent: x@0;
-				color: (xColor == nil ifTrue: [Color cyan] ifFalse: [xColor])).
-	list add: ((DisplayLine new)
-				offset: 0@0;
-				extent: 0@y negated;
-				color: (yColor == nil ifTrue: [Color red] ifFalse: [yColor])).
-	(event at: #envelope) == nil
-		ifFalse: [ | fcn points | fcn := event at: #envelope.
-				points := fcn data collect: [ :pt | (pt x * x) @ (pt y * y negated)].
-				list add: ((DisplayPolyline offset: (1@0) vertices: points) color: Color black)].
-	(event at: #position) == nil
-		ifFalse: [list add: ((DisplayLine new)
-				offset: 2@0;
-				extent: 0@((event at: #position) - 0.5 * yHeight);
-				color: (yColor == nil ifTrue: [Color green] ifFalse: [yColor]))].
-	(event at: #duty) == nil
-		ifFalse: [list add: ((DisplayLine new)
-				offset: 0@2;
-				extent: ((event at: #duty) * x)@0;
-				color: (yColor == nil ifTrue: [Color yellow] ifFalse: [yColor]))].
-	^list! !
+		ifTrue: [x := 250 / xScale]
+		ifFalse: [x := event duration asMS value / xScale].
+	(event ampl == nil
+			or: [event ampl value == nil])
+		ifTrue: [y := 0]
+		ifFalse: [y := (event ampl asRatio value * yHeight) truncated].
+	list := DisplayList new model: anAss.
+	list
+		add: (super generateItemFor: anAss).
+	"list add: (DisplayLine new offset: 0 @ 0;
+			 extent: x @ 0;
+			
+			color: (xColor == nil
+					ifTrue: [Color cyan]
+					ifFalse: [xColor]))."
+	list add: (DisplayLine new offset: 0 @ 0;
+			 extent: 0 @ y negated;
+			
+			color: (yColor == nil
+					ifTrue: [Color red]
+					ifFalse: [yColor])).
+	(event at: #envelope)
+			== nil
+		ifFalse: [| fcn points |
+			fcn := event at: #envelope.
+			points := fcn data
+						collect: [:pt | pt x * x @ (pt y * y negated)].
+			list
+				add: ((DisplayPolyline offset: 1 @ 0 vertices: points)
+						color: Color black)].
+	(event at: #position)
+			== nil
+		ifFalse: [list add: (DisplayLine new offset: 2 @ 0;
+					 extent: 0 @ ((event at: #position)
+							- 0.5 * yHeight);
+					
+					color: (yColor == nil
+							ifTrue: [Color green]
+							ifFalse: [yColor]))].
+	(event at: #duty)
+			== nil
+		ifFalse: [list add: (DisplayLine new offset: 0 @ 2;
+					 extent: (event at: #duty)
+						* x @ 0;
+					
+					color: (yColor == nil
+							ifTrue: [Color yellow]
+							ifFalse: [yColor]))].
+	^ list! !
 
 !PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 12/2/2022 04:04:00'!
 itemFor: anAss
@@ -706,14 +747,13 @@ layoutManager
 			pitchOffset: pitchOffset! !
 
 
-!PitchTimeView methodsFor: 'initialize-release' stamp: 'stp 12/2/2022 12:11:27'!
+!PitchTimeView methodsFor: 'initialize-release' stamp: 'stp 12/30/2022 14:38'!
 initialize
 	"Initialize the instance variables of the receiver."
-
 	super initialize.
 	xScale := 12.
 	xScaleDefault := xScale.
-	yScale := 8.
+	yScale := 6.
 	yScaleDefault := yScale.
 	pitchOffset := 32! !
 
@@ -726,7 +766,7 @@ defaultControllerClass
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PitchTimeView class' category: 'MusicUI-Editors'!
+!classDefinition: 'PitchTimeView class' category: #'MusicUI-Editors'!
 PitchTimeView class
 	instanceVariableNames: ''!
 
@@ -804,20 +844,20 @@ addButtonsOn: me for: dled to: container in: rect
 		to: container.! !
 
 
-!classDefinition: #HauerSteffensView category: 'MusicUI-Editors'!
+!classDefinition: #HauerSteffensView category: #'MusicUI-Editors'!
 PitchTimeView subclass: #HauerSteffensView
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MusicUI-Editors'!
 
-!HauerSteffensView methodsFor: 'initialize-release'!
+!HauerSteffensView methodsFor: 'initialize-release' stamp: 'stp 12/30/2022 14:41'!
 initialize
 	"Initialize the instance variables of the receiver."
-
 	super initialize.
 	self initForm.
-	pitchOffset := 30! !
+	pitchOffset := 42.
+	self backgroundColor: Color lightYellow! !
 
 
 !HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 05:03:16'!
@@ -828,45 +868,59 @@ self halt.
 		[(Text string: ('c', anInteger printString) emphasis: 2) 
 				displayOn: cForm at: aPoint + (2 @ -3)]! !
 
-!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 12:14:31'!
+!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/30/2022 14:38'!
 drawStaff
 	"Display a Hauer-Stephens-type staff onto the given pixmap."
-
-	| box top1 bottom1 left1 right1  left2 right2 aGC cGC aNum count octave co wp |
-	box := background bounds.
-	co _ Color darkGray.
-	wp _ 2.
-"	background border: box width: 2 fillColor: co.
-	clefForm border: clefForm bounds width: 2 fillColor: co.
-"	aGC _ background getCanvas.
-	cGC _ clefForm getCanvas.
-
+	| box top1 bottom1 left1 right1 left2 right2 aGC cGC aNum count octave co wp |
+	box := background boundingBox.
+	co := Color darkGray.
+	wp := 1.
+	aGC := background getCanvas.
+	cGC := clefForm getCanvas.
 	top1 := box top.
 	bottom1 := box bottom.
 	left1 := box left.
 	right1 := box right.
-	left2 := clefForm bounds left.
-	right2 := clefForm bounds right.
-							"count number of octaves"
+	left2 := clefForm boundingBox left.
+	right2 := clefForm boundingBox right.
+	"count number of octaves"
 	octave := (bottom1 - top1 / (3 + (yScale * 8) + yScale)) asInteger.
 	aNum := top1.
 	count := 3.
-	[aNum < bottom1] whileTrue: 	"loop from top1 to bottom1 drawing lines"
-		[aGC line: left1@aNum to: right1@aNum width: wp color: co.
-		cGC line: left2@aNum to: right2@aNum width: wp color: co.
-		count := count + 1.
-		count \\ 5 = 1			"skip @ c"
-			ifTrue: [(aNum + 20) < bottom1
-					ifTrue: [ | str |
-						str _ 'c', octave printString.
-						cGC drawString: str at: (left1@aNum) + (4 @ 0) 
-							font: (FontFamily familyName: 'Amaranth' pointSize: 12)
-							color: co].
-				octave := octave - 1.
-				aNum := aNum + yScale].			
-		count \\ 5 = 4			"skip @ e"
-			ifTrue: [aNum := aNum + yScale].
-		aNum := aNum +  (yScale * 2)]! !
+	[aNum < bottom1]
+		whileTrue: ["loop from top1 to bottom1 drawing lines"
+			aGC
+				line: left1 @ aNum
+				to: right1 @ aNum
+				width: wp
+				color: co.
+			cGC
+				line: left2 @ aNum
+				to: right2 @ aNum
+				width: wp
+				color: co.
+			count := count + 1.
+			count \\ 5 = 1
+				ifTrue: ["skip @ c"
+					aNum + 20 < bottom1
+						ifTrue: [| str |
+							str := 'c' , octave printString.
+							cGC
+								drawString: str
+								at: left1 @ aNum + (4 @ 0)
+								font: (StrikeFont familyName: 'Amaranth' pointSize: 12)
+								color: co].
+					octave := octave - 1.
+					aNum := aNum + yScale].
+			count \\ 5 = 4
+				ifTrue: ["skip @ e"
+					aNum := aNum + yScale].
+			aNum := aNum + (yScale * 2)].
+	cGC
+		line: right2 - 2 @ 0
+		to: right2 - 2 @ bottom1
+		width: wp
+		color: co! !
 
 !HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 04:55:35'!
 initForm
@@ -883,9 +937,20 @@ initForm
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'HauerSteffensView class' category: 'MusicUI-Editors'!
+!classDefinition: 'HauerSteffensView class' category: #'MusicUI-Editors'!
 HauerSteffensView class
 	instanceVariableNames: ''!
+
+!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 12/29/2022 01:00'!
+cloudExample
+	"Open a HSView on two merged random event lists."
+	"HauerSteffensView cloudExample"
+	HauerSteffensView openOnEventList: (DynamicCloud
+			dur: 8000
+			pitch: #(#(60 #to: 84) #(71 #to: 72))
+			ampl: #(#(90 #to: 100) #(20 #to: 20))
+			voice: (1 to: 4)
+			density: 10) eventList label: 'Hauer-Steffens Music Notation'! !
 
 !HauerSteffensView class methodsFor: 'examples' stamp: 'stp 12/2/2022 05:55:25'!
 randomExample
@@ -916,6 +981,17 @@ randomSWSSExample
 			addAll: (EventList randomSWSSExample2);
 			addAll: (EventList randomSWSSExample2))! !
 
+!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 12/29/2022 00:37'!
+scaleExample
+	"Open a HSView on two merged random event lists."
+	"HauerSteffensView scaleExample"
+	HauerSteffensView
+		openOnEventList: (EventList
+				scaleFrom: 60
+				to: 72
+				in: 4.0)
+		label: 'Hauer-Steffens Music Notation'! !
+
 
 !HauerSteffensView class methodsFor: 'instance creation'!
 label
@@ -937,7 +1013,7 @@ inset
 	^16@16! !
 
 
-!classDefinition: #PositionTimeView category: 'MusicUI-Editors'!
+!classDefinition: #PositionTimeView category: #'MusicUI-Editors'!
 PitchTimeView subclass: #PositionTimeView
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -965,7 +1041,7 @@ initialize
 	pitchOffset := 40! !
 
 
-!classDefinition: #TimeSequenceController category: 'MusicUI-Editors'!
+!classDefinition: #TimeSequenceController category: #'MusicUI-Editors'!
 DisplayListController subclass: #TimeSequenceController
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1014,35 +1090,37 @@ play
 	model eventList play.
 	MIDIPort allNotesOffIn: (model eventList duration asSec value + 3)! !
 
-!TimeSequenceController methodsFor: 'menu messages'!
+!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 1/9/2023 13:51:38'!
 readList
 	"Copy the model list from the global dictionary."
-
+	
 	| name |
-	name := Dialog request: 'EventList name for storing model:'
-			initialAnswer: model list name.
-	name = '' ifTrue: [^self].
+	name := FillInTheBlankMorph request: 'EventList name for storing model:' 
+				initialAnswer: model list name.
+	name = ''
+		ifTrue: [^ self].
 	(SirenSession eventLists includesKey: name)
 		ifTrue: [model eventList: (SirenSession eventLists at: name) copy]
-		ifFalse: [Transcript cr; show: 'No such event list.'; cr.]! !
+		ifFalse: [Transcript cr; show: 'No such event list.'; cr]! !
 
-!TimeSequenceController methodsFor: 'menu messages'!
+!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 1/9/2023 13:51:15'!
 storeList
 	"Copy the model list into the global dictionary."
-
 	| name count |
-	name := Dialog request: 'EventList name for storing model:'
-			initialAnswer: model list name.
-	name = '' ifTrue: [^self].
+	name := FillInTheBlankMorph request: 'EventList name for storing model:' 
+					initialAnswer: model list name.
+	name = ''
+		ifTrue: [^ self].
 	(SirenSession eventLists includesKey: name)
-		ifTrue: [(Dialog confirm: 'Store over existing event list?')
-			ifTrue: [SirenSession eventLists at: name put: model list copy]
-			ifFalse: [count := 2.
-				[SirenSession eventLists includesKey: (name, '.', count printString)]
-					whileTrue: [count := count + 1].
-				SirenSession eventLists at: (name, '.', count printString) asSymbol
+		ifTrue: [(FillInTheBlankMorph confirm: 'Store over existing event list?')
+				ifTrue: [SirenSession eventLists at: name put: model list copy]
+				ifFalse: [count := 2.
+					[SirenSession eventLists includesKey: name , '.' , count printString]
+						whileTrue: [count := count + 1].
+					SirenSession eventLists
+						at: (name , '.' , count printString) asSymbol
 						put: (SirenSession eventLists at: name).
-				SirenSession eventLists at: name put: model list copy]]
+					SirenSession eventLists at: name put: model list copy]]
 		ifFalse: [SirenSession eventLists at: name put: model list copy]! !
 
 
@@ -1072,7 +1150,7 @@ initializeMenu
 			values: #(group doInspect play pan redraw storeList readList)))"! !
 
 
-!classDefinition: #PitchTimeController category: 'MusicUI-Editors'!
+!classDefinition: #PitchTimeController category: #'MusicUI-Editors'!
 TimeSequenceController subclass: #PitchTimeController
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1096,7 +1174,7 @@ selectFromPoint: aPoint toPoint: anotherPoint
 	view invalidate! !
 
 
-!classDefinition: #EventListEditor category: 'MusicUI-Editors'!
+!classDefinition: #EventListEditor category: #'MusicUI-Editors'!
 Object subclass: #EventListEditor
 	instanceVariableNames: 'eventList ostinato defaultEvent'
 	classVariableNames: ''
@@ -1121,13 +1199,12 @@ add: anAss
 	list add: anAss.
 	self changed: #added.! !
 
-!EventListEditor methodsFor: 'list access'!
+!EventListEditor methodsFor: 'list access' stamp: 'stp 12/31/2022 11:33'!
 doInspect
 	"Inspect the receiver's list."
-
-	InputState default shiftDown
+	Sensor shiftPressed
 		ifTrue: [self inspect]
-		ifFalse: [list inspect]! !
+		ifFalse: [eventList inspect]! !
 
 !EventListEditor methodsFor: 'list access'!
 eraseList
@@ -1193,6 +1270,11 @@ select: anAorEL
 		ifFalse: [selections == nil
 				ifTrue: [selections := EventList newNamed: EventList nextName ].
 			selections add: mo]! !
+
+!EventListEditor methodsFor: 'links and groups' stamp: 'stp 12/29/2022 00:17'!
+selections
+	"Answer the list of selected items."
+	^selections! !
 
 
 !EventListEditor methodsFor: 'accessing'!
@@ -1263,7 +1345,7 @@ release
 	list release! !
 
 
-!classDefinition: #EventListFileViewer category: 'MusicUI-Editors'!
+!classDefinition: #EventListFileViewer category: #'MusicUI-Editors'!
 Object subclass: #EventListFileViewer
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -1303,7 +1385,7 @@ playFile
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'EventListFileViewer class' category: 'MusicUI-Editors'!
+!classDefinition: 'EventListFileViewer class' category: #'MusicUI-Editors'!
 EventListFileViewer class
 	instanceVariableNames: ''!
 

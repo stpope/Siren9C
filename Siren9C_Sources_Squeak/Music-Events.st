@@ -1,10 +1,20 @@
-Object subclass: #MAbstractEvent	instanceVariableNames: 'properties'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Events'!!MAbstractEvent commentStamp: '<historical>' prior: 0!MAbstractEvent is the base class in the event/event-list hierarchy (although it can be instantiated). Instances of MAbstractEvent are objects that can be used as dictionaries or property lists. Their properties can be accessed either with at: and at:put: or by using the new property names themselves as selectors (e.g., (anAEventInstance at: #color put: #green) or (anAEventInstance color: #green)).
+Object subclass: #MAbstractEvent
+	instanceVariableNames: 'properties'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Events'!
+!MAbstractEvent commentStamp: '<historical>' prior: 0!
+MAbstractEvent is the base class in the event/event-list hierarchy (although it can be instantiated). Instances of MAbstractEvent are objects that can be used as dictionaries or property lists. Their properties can be accessed either with at: and at:put: or by using the new property names themselves as selectors (e.g., (anAEventInstance at: #color put: #green) or (anAEventInstance color: #green)).
 
 Instance variables:
 	properties	 <Dictionary or nil> property list dictionary
 
 The global dictionary called Events can be used for sharing event instances.
-!!MAbstractEvent methodsFor: 'accessing'!, anArgument
+!
+
+
+!MAbstractEvent methodsFor: 'accessing'!
+, anArgument
 	"Add the argument as a property of the receiver."
 	"440 Hz, 250 msec, (#voice -> #flute)"
 	"(440 Hz, 250 msec, (#voice -> #flute)), 
@@ -16,49 +26,80 @@ The global dictionary called Events can be used for sharing event instances.
 			ifTrue: [self perform: (anArgument key, ':') asSymbol with: anArgument value]
 			ifFalse: [(anArgument isMemberOf: EventAssociation)
 				ifTrue: [^EventList new add: self; add: anArgument]
-				ifFalse: [self error: 'Unknown property type.']]]! !!MAbstractEvent methodsFor: 'accessing'!date
+				ifFalse: [self error: 'Unknown property type.']]]! !
+
+!MAbstractEvent methodsFor: 'accessing'!
+date
 	"Answer the receiver's 'date'."
 
 	self propCheck.
-	^properties at: #date ifAbsent: [nil]! !!MAbstractEvent methodsFor: 'accessing'!date: obj
+	^properties at: #date ifAbsent: [nil]! !
+
+!MAbstractEvent methodsFor: 'accessing'!
+date: obj
 	"Set the receiver's 'date'."
 
 	self propCheck.
-	^properties at: #date put: obj! !!MAbstractEvent methodsFor: 'accessing'!inspect
+	^properties at: #date put: obj! !
+
+!MAbstractEvent methodsFor: 'accessing'!
+inspect
 	"Inspect the receiver--Use a special inspector for Event types"
 	"EventInspectorView open: (EventInspector inspect: MEvent someInstance)"
 
 "	EventInspectorView open: (EventInspector inspect: self)"
-	^super inspect! !!MAbstractEvent methodsFor: 'accessing'!name
+	^super inspect! !
+
+!MAbstractEvent methodsFor: 'accessing'!
+name
 	"Answer the receiver's 'name'."
 
 	self propCheck.
-	^properties at: #name ifAbsent: ['']! !!MAbstractEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:36:09'!open
+	^properties at: #name ifAbsent: ['']! !
+
+!MAbstractEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:36:09'!
+open
 	"Edit, play (if <shift>) or inspect (if <ctrl>) the receiver, depending on the keyboard state"
 
 	^Sensor shiftPressed
 		ifTrue: [self play]
 		ifFalse: [Sensor controlKeyPressed
 			ifTrue: [self inspect]
-			ifFalse: [self edit]]! !!MAbstractEvent methodsFor: 'accessing'!species
+			ifFalse: [self edit]]! !
+
+!MAbstractEvent methodsFor: 'accessing'!
+species
 	"Answer AEvent--all subclasses look like me"
 
-	^MAbstractEvent! !!MAbstractEvent methodsFor: 'accessing'!version
+	^MAbstractEvent! !
+
+!MAbstractEvent methodsFor: 'accessing'!
+version
 	"Answer the receiver's 'version'."
 
 	self propCheck.
-	^properties at: #version ifAbsent: [nil]! !!MAbstractEvent methodsFor: 'accessing'!version: obj
+	^properties at: #version ifAbsent: [nil]! !
+
+!MAbstractEvent methodsFor: 'accessing'!
+version: obj
 	"Set the receiver's 'version'."
 
 	self propCheck.
-	^properties at: #version put: obj! !!MAbstractEvent methodsFor: 'printing'!asExplorerString: showHide
+	^properties at: #version put: obj! !
+
+
+!MAbstractEvent methodsFor: 'printing'!
+asExplorerString: showHide
 
 	| stream |
 	stream := WriteStream on: (String new: 128).
 	properties ifNotNil:
 		[properties do: 
 			[ :pr | self display: showHide field: pr on: stream]].
-	^(super asExplorerString: showHide), stream contents! !!MAbstractEvent methodsFor: 'printing'!display: showHide field: filter on: stream
+	^(super asExplorerString: showHide), stream contents! !
+
+!MAbstractEvent methodsFor: 'printing'!
+display: showHide field: filter on: stream
 
 	| obj |
 	(showHide includes: filter)
@@ -67,13 +108,19 @@ The global dictionary called Events can be used for sharing event instances.
 			obj isEmpty
 				ifFalse: [stream isEmpty 
 						ifFalse: [stream nextPutAll: ': '].
-					stream nextPutAll: obj]]! !!MAbstractEvent methodsFor: 'printing'!displayField: filter on: stream
+					stream nextPutAll: obj]]! !
+
+!MAbstractEvent methodsFor: 'printing'!
+displayField: filter on: stream
 
 	| obj |
 	stream isEmpty ifFalse: [stream nextPutAll: ': '].
 	obj := self at: filter ifAbsent: [''].
 	obj isString ifFalse: [obj := obj printString].
-	stream nextPutAll: obj! !!MAbstractEvent methodsFor: 'printing'!printOn: aStream 
+	stream nextPutAll: obj! !
+
+!MAbstractEvent methodsFor: 'printing'!
+printOn: aStream 
 	"Format and print the receiver on the argument."
 
 	aStream nextPut: $(.
@@ -83,7 +130,10 @@ The global dictionary called Events can be used for sharing event instances.
 		ifFalse: [properties associationsDo:
 				[ :ass |
 				aStream nextPutAll: ' (', ass key, ': ', ass value printString, ')']].
-	aStream nextPut: $); cr! !!MAbstractEvent methodsFor: 'printing'!storeOn: aStream 
+	aStream nextPut: $); cr! !
+
+!MAbstractEvent methodsFor: 'printing'!
+storeOn: aStream 
 	"Format and store the source the receiver on the argument."
 
 	aStream nextPutAll: (properties == nil
@@ -97,7 +147,10 @@ The global dictionary called Events can be used for sharing event instances.
 					aStream nextPutAll: ' put: '.
 					ass value storeOn: aStream.
 					aStream nextPut: $;; cr.]].
-	aStream nextPutAll: ')'! !!MAbstractEvent methodsFor: 'printing'!templateFields
+	aStream nextPutAll: ')'! !
+
+!MAbstractEvent methodsFor: 'printing'!
+templateFields
 	"Answer the field names for the instances of the receiver class."
 
 	| coll |
@@ -105,14 +158,25 @@ The global dictionary called Events can be used for sharing event instances.
 	coll remove: #properties.
 	properties ifNotNil:
 		[coll addAll: properties keys].
-	^coll! !!MAbstractEvent methodsFor: 'scheduling'!scheduleOn: aChannel
+	^coll! !
+
+
+!MAbstractEvent methodsFor: 'scheduling'!
+scheduleOn: aChannel
 	"Perform or interpret the receiver on the argument; override in subclasses."
 
-	aChannel schedule: self at: 0! !!MAbstractEvent methodsFor: 'properties'!at: aProp
+	aChannel schedule: self at: 0! !
+
+
+!MAbstractEvent methodsFor: 'properties'!
+at: aProp
 	"Answer a value from the property list dictionary (or an instVar)."
 
 	self propCheck.
-	^properties at: aProp ifAbsent: [nil]! !!MAbstractEvent methodsFor: 'properties'!at: aProp ifAbsent: otherCase
+	^properties at: aProp ifAbsent: [nil]! !
+
+!MAbstractEvent methodsFor: 'properties'!
+at: aProp ifAbsent: otherCase
 	"Answer a value from the property list dictionary or the value of the given block."
 
 "	(self respondsTo: aProp)
@@ -126,11 +190,17 @@ The global dictionary called Events can be used for sharing event instances.
 	^properties at: aProp ifAbsent: 
 		["(self respondsTo: aProp)
 			ifTrue: [self perform: aProp]
-			ifFalse: ["otherCase value"]"]! !!MAbstractEvent methodsFor: 'properties'!at: aProp put: aVal
+			ifFalse: ["otherCase value"]"]! !
+
+!MAbstractEvent methodsFor: 'properties'!
+at: aProp put: aVal
 	"Set a value in the receiver's property list dictionary (or instVar)."
 
 	self propCheck.
-	properties at: aProp put: aVal! !!MAbstractEvent methodsFor: 'properties'!doesNotUnderstand: aMessage 
+	properties at: aProp put: aVal! !
+
+!MAbstractEvent methodsFor: 'properties'!
+doesNotUnderstand: aMessage 
 	"Handle doesNotUnderstand: to try to access the property dictionary.
 	If this is unsuccessful, announce that the receiver does not understand the argument."
 	"N.B.: One may want to turn this off for debugging."
@@ -143,14 +213,23 @@ The global dictionary called Events can be used for sharing event instances.
 		ifTrue: [((sel occurrencesOf: $:) = 1)		"set property"
 			ifTrue: [^self at: (sel copyUpTo: $:) asSymbol
 					put: (aMessage arguments at: 1)]].
-	^super doesNotUnderstand: aMessage					"otherwise"! !!MAbstractEvent methodsFor: 'properties'!hasProperty: aSymbol
+	^super doesNotUnderstand: aMessage					"otherwise"! !
+
+!MAbstractEvent methodsFor: 'properties'!
+hasProperty: aSymbol
 	"Answer whether or not the receiver's property list dictionary includes the symbol as a key."
 
 	properties ifNil: [^false].
-	^properties includesKey: aSymbol! !!MAbstractEvent methodsFor: 'properties'!properties
+	^properties includesKey: aSymbol! !
+
+!MAbstractEvent methodsFor: 'properties'!
+properties
 	"Answer the receiver's property list dictionary."
 
-	^properties! !!MAbstractEvent methodsFor: 'properties'!respondsTo: aSymbol
+	^properties! !
+
+!MAbstractEvent methodsFor: 'properties'!
+respondsTo: aSymbol
 	"Answer whether the method dictionary of the receiver's class contains 
 	aSymbol as a message selector OR if the selector is unary and is a key 
 	in the receiver's property dictionary."
@@ -159,10 +238,17 @@ The global dictionary called Events can be used for sharing event instances.
 "	((properties ~~ nil) and: [properties includesKey: aSymbol])
 		ifTrue: [^true].
 	(aSymbol occurrencesOf: $:) = 1 ifTrue: [^true].
-"	^false! !!MAbstractEvent methodsFor: 'initialize-release'!initialize
+"	^false! !
+
+
+!MAbstractEvent methodsFor: 'initialize-release'!
+initialize
 	"Set up the default state of the receiver--add props. dict."
 
-	properties := IdentityDictionary new.! !!MAbstractEvent methodsFor: 'initialize-release'!release
+	properties := IdentityDictionary new.! !
+
+!MAbstractEvent methodsFor: 'initialize-release'!
+release
 	"Flush the receiver."
 
 	properties == nil
@@ -170,70 +256,143 @@ The global dictionary called Events can be used for sharing event instances.
 			[ :a |
 			a key release.
 			a value release]].
-	properties  := nil! !!MAbstractEvent methodsFor: 'private'!propCheck
+	properties  := nil! !
+
+
+!MAbstractEvent methodsFor: 'private'!
+propCheck
 	"Make sure the receiver has a property list dictionary."
 
 	properties == nil
-		ifTrue: [properties := IdentityDictionary new].! !!MAbstractEvent methodsFor: 'testing'!isEvent
+		ifTrue: [properties := IdentityDictionary new].! !
+
+
+!MAbstractEvent methodsFor: 'testing'!
+isEvent
 	"Answer true."
 
-	^true! !!MAbstractEvent methodsFor: 'testing'!isSound
+	^true! !
+
+!MAbstractEvent methodsFor: 'testing'!
+isSound
 	"Answer false."
 
-	^false! !!MAbstractEvent methodsFor: 'comparing'!= anObject 
+	^false! !
+
+
+!MAbstractEvent methodsFor: 'comparing'!
+= anObject 
 	"Answer whether the receiver and the argument represent the same values."
 
 	^anObject isEvent
 		ifFalse: [false]
-		ifTrue: [self properties = anObject properties]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MAbstractEvent class	instanceVariableNames: ''!!MAbstractEvent class methodsFor: 'examples'!eventInspectExample
+		ifTrue: [self properties = anObject properties]! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+MAbstractEvent class
+	instanceVariableNames: ''!
+
+!MAbstractEvent class methodsFor: 'examples'!
+eventInspectExample
 	"Demonstrate the creation of an AEvent."
 	"MAbstractEvent example"
 
-	((MAbstractEvent new) color: #green; shape: #round) inspect! !!MAbstractEvent class methodsFor: 'examples'!example
+	((MAbstractEvent new) color: #green; shape: #round) inspect! !
+
+!MAbstractEvent class methodsFor: 'examples'!
+example
 	"Demonstrate the creation of an AEvent."
 	"MAbstractEvent example inspect"
 
-	^(MAbstractEvent new) color: #green; shape: #round! !MAbstractEvent subclass: #DurationEvent	instanceVariableNames: 'duration index startedAt realTime'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Events'!!DurationEvent commentStamp: '<historical>' prior: 0!Instances of DurationEvent are events that have special slots for their duration and voice properties.
+	^(MAbstractEvent new) color: #green; shape: #round! !
+
+
+MAbstractEvent subclass: #DurationEvent
+	instanceVariableNames: 'duration index startedAt realTime'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Events'!
+!DurationEvent commentStamp: '<historical>' prior: 0!
+Instances of DurationEvent are events that have special slots for their duration and voice properties.
 
 Instance variables:
 	duration <Duration species or nil> duration--a relative time
-!!DurationEvent methodsFor: 'accessing'!ampl
+!
+
+
+!DurationEvent methodsFor: 'accessing'!
+ampl
 	"Answer the receiver's ampl"
 
-	^nil! !!DurationEvent methodsFor: 'accessing'!dur
+	^nil! !
+
+!DurationEvent methodsFor: 'accessing'!
+dur
 	"Answer the receiver's duration."
 
-	^self duration! !!DurationEvent methodsFor: 'accessing'!dur: newValue
+	^self duration! !
+
+!DurationEvent methodsFor: 'accessing'!
+dur: newValue
 	"Set the receiver's duration."
 
-	^self duration: newValue! !!DurationEvent methodsFor: 'accessing'!duration
+	^self duration: newValue! !
+
+!DurationEvent methodsFor: 'accessing'!
+duration
 	"Answer the receiver's duration."
 
-	^duration! !!DurationEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:35:30'!duration: newValue
+	^duration! !
+
+!DurationEvent methodsFor: 'accessing' stamp: 'stp 12/28/2022 13:35:30'!
+duration: newValue
 	"Set the receiver's duration."
 
 	newValue species == MDuration
 		ifTrue: [duration := newValue]
-		ifFalse: [duration := MDuration value: newValue]! !!DurationEvent methodsFor: 'accessing'!index: aNumber
+		ifFalse: [duration := MDuration value: newValue]! !
+
+!DurationEvent methodsFor: 'accessing'!
+index: aNumber
 	"Set the receiver's event index."
 
-	index := aNumber! !!DurationEvent methodsFor: 'accessing'!order
+	index := aNumber! !
+
+!DurationEvent methodsFor: 'accessing'!
+order
 	"Answer the receiver's order."
 
-	^self at: #order ifAbsent: [0].! !!DurationEvent methodsFor: 'accessing'!order: anOrder
+	^self at: #order ifAbsent: [0].! !
+
+!DurationEvent methodsFor: 'accessing'!
+order: anOrder
 	"Set the receiver's order."
 
-	^self at: #order put: anOrder! !!DurationEvent methodsFor: 'accessing'!pitch
+	^self at: #order put: anOrder! !
+
+!DurationEvent methodsFor: 'accessing'!
+pitch
 	"Answer the receiver's pitch"
 
-	^nil! !!DurationEvent methodsFor: 'accessing'!voice
+	^nil! !
+
+!DurationEvent methodsFor: 'accessing'!
+voice
 	"Answer the receiver's voice or some reasonable default."
 
 	self propCheck.
-	^properties at: #voice ifAbsent: [nil]! !!DurationEvent methodsFor: 'accessing'!voice: aValue
+	^properties at: #voice ifAbsent: [nil]! !
+
+!DurationEvent methodsFor: 'accessing'!
+voice: aValue
 	"Set the receiver's voice to the argument."
 
-	properties at: #voice put: aValue! !!DurationEvent methodsFor: 'printing'!printOn: aStream 
+	properties at: #voice put: aValue! !
+
+
+!DurationEvent methodsFor: 'printing'!
+printOn: aStream 
 	"Format and print the receiver on the argument."
 
 	aStream nextPutAll: '(', self class name.
@@ -243,7 +402,10 @@ Instance variables:
 		ifFalse: [properties associationsDo:
 				[ :ass |
 				aStream nextPutAll: ' (', ass key, ': ', ass value printString, ')']].
-	aStream nextPutAll: ')'; cr! !!DurationEvent methodsFor: 'printing'!storeOn: aStream 
+	aStream nextPutAll: ')'; cr! !
+
+!DurationEvent methodsFor: 'printing'!
+storeOn: aStream 
 	"Format and store the source the receiver on the argument."
 
 	aStream nextPutAll: (properties == nil
@@ -259,124 +421,348 @@ Instance variables:
 					aStream nextPutAll: ' put: '.
 					ass value storeOn: aStream.
 					aStream nextPut: $;; cr.]].
-	aStream nextPutAll: ')'! !!DurationEvent methodsFor: 'scheduling'!isActive
+	aStream nextPutAll: ')'! !
+
+
+!DurationEvent methodsFor: 'scheduling'!
+isActive
 	"Answer whether the receiver is in a schedule"
 
-	^nil ~= index! !!DurationEvent methodsFor: 'scheduling'!nextTime: ignored
+	^nil ~= index! !
+
+!DurationEvent methodsFor: 'scheduling'!
+nextTime: ignored
 	"Answer whether to reschedule the receiver"
 
-	^nil! !!DurationEvent methodsFor: 'scheduling'!play
+	^nil! !
+
+!DurationEvent methodsFor: 'scheduling'!
+play
 	"Play the receiver by scheduling it."
 
-	^self playAt: nil! !!DurationEvent methodsFor: 'scheduling'!playAt: aTime
+	^self playAt: nil! !
+
+!DurationEvent methodsFor: 'scheduling'!
+playAt: aTime
 	"Play the receiver on its voice then."
 	
-	^self playOn: self voice at: aTime! !!DurationEvent methodsFor: 'scheduling'!playOn: aVoice at: aTime
+	^self playOn: self voice at: aTime! !
+
+!DurationEvent methodsFor: 'scheduling'!
+playOn: aVoice at: aTime
 	"This is a no-op in the abstract class"
 
-	^self! !!DurationEvent methodsFor: 'scheduling'!reset
+	^self! !
+
+!DurationEvent methodsFor: 'scheduling'!
+reset
 	"Reset the receiver's index."
 
 	index := nil.
-	startedAt := Time microsecondClock! !!DurationEvent methodsFor: 'scheduling'!scheduleAt: aTime
+	startedAt := Time microsecondClock! !
+
+!DurationEvent methodsFor: 'scheduling'!
+scheduleAt: aTime
 	"Play the receiver on its voice then."
 	
 	self playAt: aTime.
-	^self nextTime: aTime! !!DurationEvent methodsFor: 'comparing'!= anObject 
+	^self nextTime: aTime! !
+
+
+!DurationEvent methodsFor: 'comparing'!
+= anObject 
 	"Answer whether the receiver and the argument represent the same values."
 
 	^anObject isEvent
 		ifFalse: [false]
 		ifTrue: [((self duration = anObject duration) and:
-				[super = anObject])]! !!DurationEvent methodsFor: 'initialize-release'!initialize
+				[super = anObject])]! !
+
+
+!DurationEvent methodsFor: 'initialize-release'!
+initialize
 	"Set up the default state of the receiver--add props. dict."
 
 	super initialize.
 	index := nil.
 	startedAt := nil.
-	realTime := true! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DurationEvent class	instanceVariableNames: ''!!DurationEvent class methodsFor: 'examples'!eventInspectExample
+	realTime := true! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+DurationEvent class
+	instanceVariableNames: ''!
+
+!DurationEvent class methodsFor: 'examples'!
+eventInspectExample
 	"Demonstrate the creation of a DEvent."
 	"DurationEvent example inspect"
 
-	(DurationEvent dur: 250 msec voice: #flute) inspect! !!DurationEvent class methodsFor: 'examples'!example
+	(DurationEvent dur: 250 msec voice: #flute) inspect! !
+
+!DurationEvent class methodsFor: 'examples'!
+example
 	"Demonstrate the creation of a DEvent."
 	"DurationEvent example"
 
-	^DurationEvent dur: 250 msec voice: #flute! !!DurationEvent class methodsFor: 'instance creation' stamp: 'stp 12/30/2022 12:52'!dur: aD	"Answer a DurationEvent instance initialized with the arguments."	^ self new duration: aD! !!DurationEvent class methodsFor: 'instance creation'!dur: aD voice: aVoice
+	^DurationEvent dur: 250 msec voice: #flute! !
+
+
+!DurationEvent class methodsFor: 'instance creation' stamp: 'stp 12/30/2022 12:52'!
+dur: aD
+	"Answer a DurationEvent instance initialized with the arguments."
+	^ self new duration: aD! !
+
+!DurationEvent class methodsFor: 'instance creation'!
+dur: aD voice: aVoice
 	"Answer a DurationEvent instance initialized with the arguments."
 
-	^self new duration: aD; voice: aVoice! !DurationEvent subclass: #ActionEvent	instanceVariableNames: 'action'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Events'!!ActionEvent commentStamp: '<historical>' prior: 0!An instance of ActionEvent evaluates a Smalltalk block when scheduled.
+	^self new duration: aD; voice: aVoice! !
+
+
+DurationEvent subclass: #ActionEvent
+	instanceVariableNames: 'action'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Events'!
+!ActionEvent commentStamp: '<historical>' prior: 0!
+An instance of ActionEvent evaluates a Smalltalk block when scheduled.
 
 Instance variables:
 	action  <Block or Value> Something to do
-!!ActionEvent methodsFor: 'scheduling'!play
+!
+
+
+!ActionEvent methodsFor: 'scheduling'!
+play
 	"Play the receiver by executing its action block."
 	
-	^action value! !!ActionEvent methodsFor: 'scheduling'!playAt: aTime
+	^action value! !
+
+!ActionEvent methodsFor: 'scheduling'!
+playAt: aTime
 	"Play the receiver by executing its action block."
 	
-	^action value! !!ActionEvent methodsFor: 'accessing'!action
+	^action value! !
+
+
+!ActionEvent methodsFor: 'accessing'!
+action
 	"Answer the receiver's 'action'."
 
-	^action! !!ActionEvent methodsFor: 'accessing'!action: anObject
+	^action! !
+
+!ActionEvent methodsFor: 'accessing'!
+action: anObject
 	"Set the receiver's instance variable 'action' to be anObject."
 
-	action := anObject! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!ActionEvent class	instanceVariableNames: ''!!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:55'!eventExample	"Demonstrate the creation of an ActionEvent."	"ActionEvent eventExample play"	^ ActionEvent		dur: 250 msec		action: [| rect |			rect := SystemWindow topWindow bounds.			"Display reverse: rect fillColor: Color blue			form := SystemWindow topWindow imageFormForRectangle:			rect."			Display				fill: rect				rule: Form paint				fillColor: Color black.			Display				fill: ((rect origin translateBy: 20 @ 20)						extent: 160 @ 80)				rule: Form paint				fillColor: Color red.			(Delay forSeconds: 1) wait.			Display restore]! !!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 12:12'!listExample	"Demonstrate the creation of an ActionEvent by making a list of events	that draw rectangles on the top window."	"ActionEvent listExample"	"ActionEvent playExample"	"EventScheduler addClient: ActionEvent listExample; run"	"Window currentWindow refresh"	| list bounds |	list := EventList newAnonymous.	bounds := SystemWindow topWindow bounds.	Display		fill: bounds		rule: Form paint		fillColor: Color white.	50		timesRepeat: [list				add: (ActionEvent						dur: 100 msec						action: [| rect rand |							rand := Random new.							rect := SystemWindow topWindow bounds.							Display								fill: (((rand next * rect width) truncated @ (rand next * rect height) truncated translateBy: rect origin)										extent: (rand next * 60) truncated @ (rand next * 60) truncated)								rule: Form paint								fillColor: (Color random: rand)])].	list play.	(Delay forSeconds: 6) wait."	list explore."	Display restore.! !!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 12:12'!playExample	"Demonstrate the performance of a list of ActionEvents."	"ActionEvent playExample"	EventScheduler instance addClient: self listExample in: 100 msec.	EventScheduler instance run.	(Delay forSeconds: 6) wait.	Display restore.! !!ActionEvent class methodsFor: 'instance creation'!dur: aD action: actionBlock
+	action := anObject! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+ActionEvent class
+	instanceVariableNames: ''!
+
+!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:55'!
+eventExample
+	"Demonstrate the creation of an ActionEvent."
+	"ActionEvent eventExample play"
+	^ ActionEvent
+		dur: 250 msec
+		action: [| rect |
+			rect := SystemWindow topWindow bounds.
+			"Display reverse: rect fillColor: Color blue
+			form := SystemWindow topWindow imageFormForRectangle:
+			rect."
+			Display
+				fill: rect
+				rule: Form paint
+				fillColor: Color black.
+			Display
+				fill: ((rect origin translateBy: 20 @ 20)
+						extent: 160 @ 80)
+				rule: Form paint
+				fillColor: Color red.
+			(Delay forSeconds: 1) wait.
+			Display restore]! !
+
+!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 12:12'!
+listExample
+	"Demonstrate the creation of an ActionEvent by making a list of events
+	that draw rectangles on the top window."
+	"ActionEvent listExample"
+	"ActionEvent playExample"
+	"EventScheduler addClient: ActionEvent listExample; run"
+	"Window currentWindow refresh"
+	| list bounds |
+	list := EventList newAnonymous.
+	bounds := SystemWindow topWindow bounds.
+	Display
+		fill: bounds
+		rule: Form paint
+		fillColor: Color white.
+	50
+		timesRepeat: [list
+				add: (ActionEvent
+						dur: 100 msec
+						action: [| rect rand |
+							rand := Random new.
+							rect := SystemWindow topWindow bounds.
+							Display
+								fill: (((rand next * rect width) truncated @ (rand next * rect height) truncated translateBy: rect origin)
+										extent: (rand next * 60) truncated @ (rand next * 60) truncated)
+								rule: Form paint
+								fillColor: (Color random: rand)])].
+	list play.
+	(Delay forSeconds: 6) wait.
+"	list explore."
+	Display restore.
+! !
+
+!ActionEvent class methodsFor: 'examples' stamp: 'stp 12/31/2022 12:12'!
+playExample
+	"Demonstrate the performance of a list of ActionEvents."
+	"ActionEvent playExample"
+	EventScheduler instance addClient: self listExample in: 100 msec.
+	EventScheduler instance run.
+	(Delay forSeconds: 6) wait.
+	Display restore.! !
+
+
+!ActionEvent class methodsFor: 'instance creation'!
+dur: aD action: actionBlock
 	"Answer an ActionEvent instance initialized with the arguments."
 
-	^self new duration: aD; action: actionBlock! !!ActionEvent class methodsFor: 'instance creation'!dur: aD block: actionBlock
+	^self new duration: aD; action: actionBlock! !
+
+!ActionEvent class methodsFor: 'instance creation'!
+dur: aD block: actionBlock
 	"Answer an ActionEvent instance initialized with the arguments."
 
-	^self new duration: aD; action: actionBlock! !DurationEvent subclass: #MusicEvent	instanceVariableNames: 'pitch loudness voice'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Events'!!MusicEvent commentStamp: '<historical>' prior: 0!Instances of class MusicEvent are concrete musical note event objects used for eventLists and eventGenerators.
+	^self new duration: aD; action: actionBlock! !
+
+
+DurationEvent subclass: #MusicEvent
+	instanceVariableNames: 'pitch loudness voice'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Events'!
+!MusicEvent commentStamp: '<historical>' prior: 0!
+Instances of class MusicEvent are concrete musical note event objects used for eventLists and eventGenerators.
 
 Instance variables:
 	pitch <Pitch-species MusicMagnitude> the pitch/frequency
 	loudness <Loudness-species MusicMagnitude> the loudness/amplitude
 	voice <Voice, Symbol or Number> voice--a voice or key
-!!MusicEvent methodsFor: 'accessing'!ampl
+!
+
+
+!MusicEvent methodsFor: 'accessing'!
+ampl
 	"Answer the receiver's loudness"
 
-	^loudness! !!MusicEvent methodsFor: 'accessing'!ampl: aValue
+	^loudness! !
+
+!MusicEvent methodsFor: 'accessing'!
+ampl: aValue
 	"Set the receiver's loudness to the argument."
 
-	^self loudness: aValue! !!MusicEvent methodsFor: 'accessing'!amplitude
+	^self loudness: aValue! !
+
+!MusicEvent methodsFor: 'accessing'!
+amplitude
 	"Answer the receiver's loudness"
 
-	^loudness! !!MusicEvent methodsFor: 'accessing'!amplitude: aValue
+	^loudness! !
+
+!MusicEvent methodsFor: 'accessing'!
+amplitude: aValue
 	"Set the receiver's loudness to the argument."
 
 	(aValue species == Amplitude)
 		ifFalse: [loudness := Amplitude value: aValue]
-		ifTrue: [loudness := aValue]! !!MusicEvent methodsFor: 'accessing'!loudness
+		ifTrue: [loudness := aValue]! !
+
+!MusicEvent methodsFor: 'accessing'!
+loudness
 	"Answer the receiver's loudness"
 
-	^loudness! !!MusicEvent methodsFor: 'accessing'!loudness: aValue
+	^loudness! !
+
+!MusicEvent methodsFor: 'accessing'!
+loudness: aValue
 	"Set the receiver's loudness to the argument."
 
 	(aValue species == Amplitude)
 		ifFalse: [loudness := Amplitude value: aValue]
-		ifTrue: [loudness := aValue]! !!MusicEvent methodsFor: 'accessing'!pitch
+		ifTrue: [loudness := aValue]! !
+
+!MusicEvent methodsFor: 'accessing'!
+pitch
 	"Answer the receiver's pitch"
 
-	^pitch! !!MusicEvent methodsFor: 'accessing'!pitch: aValue
+	^pitch! !
+
+!MusicEvent methodsFor: 'accessing'!
+pitch: aValue
 	"Set the receiver's pitch to the argument."
 
 	(aValue species == Pitch)
 		ifFalse: [pitch := Pitch value: aValue]
-		ifTrue: [pitch := aValue]! !!MusicEvent methodsFor: 'accessing'!voice
+		ifTrue: [pitch := aValue]! !
+
+!MusicEvent methodsFor: 'accessing'!
+voice
 	"Answer the receiver's voice"
 
-	^voice! !!MusicEvent methodsFor: 'accessing'!voice: aValue
+	^voice! !
+
+!MusicEvent methodsFor: 'accessing'!
+voice: aValue
 	"Set the receiver's voice to the argument."
 
-	voice := aValue! !!MusicEvent methodsFor: 'processing'!transposeBy: aStep
+	voice := aValue! !
+
+
+!MusicEvent methodsFor: 'processing'!
+transposeBy: aStep
 	"Add the given step to the receiver's pitch."
 
-	self pitch: (self pitch + aStep)! !!MusicEvent methodsFor: 'printing'!printOn: aStream 
+	self pitch: (self pitch + aStep)! !
+
+
+!MusicEvent methodsFor: 'printing'!
+printOn: aStream 
 	"Format and print the receiver on the argument."
 
 "	^self printVerboseOn: aStream
-"	^self printTerseOn: aStream! !!MusicEvent methodsFor: 'printing' stamp: 'stp 12/30/2022 15:49'!printTerseOn: aStream 	"Format and print the receiver on the argument as tersely as possible."	duration == nil		ifFalse: [duration printOn: aStream].	pitch == nil		ifFalse: [aStream nextPutAll: ' ' , pitch printString].	loudness == nil		ifFalse: [aStream nextPutAll: ' ' , loudness printString].	voice == nil		ifFalse: [aStream nextPutAll: ' (v: ' , voice printString , ')'].	properties == nil		ifFalse: [properties				associationsDo: [:ass | 					| val |					val := ass value.					aStream nextPutAll: ' (' , ass key , ': '.					val isFloat						ifTrue: [ass value printOn: aStream maxDecimalPlaces: 4]						ifFalse: [ass value printOn: aStream].					aStream nextPutAll: ')']].	aStream lf! !!MusicEvent methodsFor: 'printing'!printVerboseOn: aStream 
+"	^self printTerseOn: aStream! !
+
+!MusicEvent methodsFor: 'printing' stamp: 'stp 12/30/2022 15:49'!
+printTerseOn: aStream 
+	"Format and print the receiver on the argument as tersely as possible."
+	duration == nil
+		ifFalse: [duration printOn: aStream].
+	pitch == nil
+		ifFalse: [aStream nextPutAll: ' ' , pitch printString].
+	loudness == nil
+		ifFalse: [aStream nextPutAll: ' ' , loudness printString].
+	voice == nil
+		ifFalse: [aStream nextPutAll: ' (v: ' , voice printString , ')'].
+	properties == nil
+		ifFalse: [properties
+				associationsDo: [:ass | 
+					| val |
+					val := ass value.
+					aStream nextPutAll: ' (' , ass key , ': '.
+					val isFloat
+						ifTrue: [ass value printOn: aStream maxDecimalPlaces: 4]
+						ifFalse: [ass value printOn: aStream].
+					aStream nextPutAll: ')']].
+	aStream lf! !
+
+!MusicEvent methodsFor: 'printing'!
+printVerboseOn: aStream 
 	"Format and print the receiver on the argument."
 
 	aStream nextPutAll: '(MEvent'; crtab.
@@ -392,7 +778,10 @@ Instance variables:
 		ifFalse: [properties associationsDo:
 				[ :ass |
 				aStream crtab; nextPutAll: ' ', ass key, ': ', ass value printString]].
-	aStream nextPutAll: ')'; cr! !!MusicEvent methodsFor: 'printing'!readDataFrom: aDataStream size: size
+	aStream nextPutAll: ')'; cr! !
+
+!MusicEvent methodsFor: 'printing'!
+readDataFrom: aDataStream size: size
 	"Read a new event from the given stream using the compact format."
 
 	| propSize |
@@ -403,7 +792,10 @@ Instance variables:
 	propSize := size - self class instSize.
 	propSize > 0 ifTrue: [self propCheck].
 	propSize timesRepeat:
-		[properties at: (aDataStream next) put: (aDataStream next)]! !!MusicEvent methodsFor: 'printing' stamp: 'stp 12/2/2022 03:50:23'!storeDataOn: aDataStream
+		[properties at: (aDataStream next) put: (aDataStream next)]! !
+
+!MusicEvent methodsFor: 'printing' stamp: 'stp 12/2/2022 03:50:23'!
+storeDataOn: aDataStream
 	"Store myself on a DataStream. Answer self."
 	"Format: 4 normal IVs, properts as key/value (or nil)"
 
@@ -426,7 +818,10 @@ Instance variables:
 		ifFalse: [properties associationsDo: 
 				[ :ass |
 				aDataStream nextPut: ass key.
-				aDataStream nextPut: ass value]]! !!MusicEvent methodsFor: 'printing'!storeOn: aStream 
+				aDataStream nextPut: ass value]]! !
+
+!MusicEvent methodsFor: 'printing'!
+storeOn: aStream 
 	"Format and store the source the receiver on the argument."
 
 	aStream nextPutAll: (properties == nil
@@ -448,14 +843,22 @@ Instance variables:
 					aStream nextPutAll: ' put: '.
 					ass value storeOn: aStream.
 					aStream nextPut: $;; cr.]].
-	aStream nextPutAll: ')'! !!MusicEvent methodsFor: 'comparing'!= anObject 
+	aStream nextPutAll: ')'! !
+
+
+!MusicEvent methodsFor: 'comparing'!
+= anObject 
 	"Answer whether the receiver and the argument represent the same values."
 
 	^anObject isEvent
 		ifFalse: [false]
 		ifTrue: [(self pitch = anObject pitch) and: 
 			[(self loudness = anObject loudness) and: 
-				[super = anObject]]]! !!MusicEvent methodsFor: 'scheduling' stamp: 'stp 1/5/2023 10:22'!playOn: aVoice at: aTime
+				[super = anObject]]]! !
+
+
+!MusicEvent methodsFor: 'scheduling' stamp: 'stp 1/5/2023 10:22'!
+playOn: aVoice at: aTime
 	"Play the receiver on the voice then."
 
 	aVoice == nil
@@ -465,29 +868,49 @@ Instance variables:
 	(SirenSession voices includesKey: aVoice)
 			ifTrue: [^(SirenSession voices at: aVoice) playEvent: self at: aTime].
 	aVoice isInteger
-			ifTrue: [Voice default playEvent: self at: aTime]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!MusicEvent class	instanceVariableNames: ''!!MusicEvent class methodsFor: 'instance creation'!ampl: anA voice: aVoice
+			ifTrue: [Voice default playEvent: self at: aTime]! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+MusicEvent class
+	instanceVariableNames: ''!
+
+!MusicEvent class methodsFor: 'instance creation'!
+ampl: anA voice: aVoice
 	"Answer a MusicEvent instance initialized with the arguments."
 
-	^self new loudness: anA; voice: aVoice! !!MusicEvent class methodsFor: 'instance creation'!dur: aD ampl: anA voice: aVoice
+	^self new loudness: anA; voice: aVoice! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+dur: aD ampl: anA voice: aVoice
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent dur: 1000 ampl: 127 voice: 2"
 	"MusicEvent dur: 1/4 ampl: #mf voice: #flute"
 
 	^self new duration: aD;
 			loudness: anA;
-			voice: aVoice! !!MusicEvent class methodsFor: 'instance creation'!dur: aD pitch: aP
+			voice: aVoice! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+dur: aD pitch: aP
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent dur: 1000 pitch: 30"
 	"MusicEvent dur: 1/4 pitch: #c3"
 
-	^self new duration: aD; pitch: aP! !!MusicEvent class methodsFor: 'instance creation'!dur: aD pitch: aP ampl: anA
+	^self new duration: aD; pitch: aP! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+dur: aD pitch: aP ampl: anA
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent dur: 1000 pitch: 30 ampl: 127 "
 	"MusicEvent dur: 1/4 pitch: #c3 ampl: #mf "
 
 	^self new duration: aD;
 			pitch: aP; 
-			loudness: anA! !!MusicEvent class methodsFor: 'instance creation'!dur: aD pitch: aP ampl: anA voice: aVoice
+			loudness: anA! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+dur: aD pitch: aP ampl: anA voice: aVoice
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent dur: 1000 pitch: 30 ampl: 127 voice: 2"
 	"MusicEvent dur: 1/4 pitch: #c3 ampl: #mf voice: #flute"
@@ -495,59 +918,100 @@ Instance variables:
 	^self new duration: aD;
 			pitch: aP; 
 			loudness: anA;
-			voice: aVoice! !!MusicEvent class methodsFor: 'instance creation'!dur: aD pitch: aP voice: aVoice
+			voice: aVoice! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+dur: aD pitch: aP voice: aVoice
 	"Answer a MusicEvent instance initialized with the arguments."
 
-	^self new duration: aD; pitch: aP; voice: aVoice! !!MusicEvent class methodsFor: 'instance creation'!dur: aD voice: aVoice ampl: anA
+	^self new duration: aD; pitch: aP; voice: aVoice! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+dur: aD voice: aVoice ampl: anA
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent dur: 1000 pitch: 30 ampl: 127 voice: 2"
 	"MusicEvent dur: 1/4 pitch: #c3 ampl: #mf voice: #flute"
 
 	^self new duration: aD;
 			loudness: anA;
-			voice: aVoice! !!MusicEvent class methodsFor: 'instance creation'!duration: aD pitch: aP
+			voice: aVoice! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+duration: aD pitch: aP
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent dur: 1000 pitch: 30"
 	"MusicEvent dur: 1/4 pitch: #c3"
 
-	^self new duration: aD; pitch: aP! !!MusicEvent class methodsFor: 'instance creation'!duration: aD pitch: aP ampl: anA
+	^self new duration: aD; pitch: aP! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+duration: aD pitch: aP ampl: anA
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent dur: 1000 pitch: 30 ampl: 127 "
 	"MusicEvent dur: 1/4 pitch: #c3 ampl: #mf "
 
 	^self new duration: aD;
 			pitch: aP; 
-			loudness: anA! !!MusicEvent class methodsFor: 'instance creation'!pitch: aP
+			loudness: anA! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+pitch: aP
 	"Answer a MusicEvent instance initialized with the argument."
 	"MusicEvent pitch: 440.0"
 	"MusicEvent pitch: #c3"
 
-	^self new pitch: aP! !!MusicEvent class methodsFor: 'instance creation'!pitch: aP ampl: anA voice: aVoice
+	^self new pitch: aP! !
+
+!MusicEvent class methodsFor: 'instance creation'!
+pitch: aP ampl: anA voice: aVoice
 	"Answer a MusicEvent instance initialized with the arguments."
 	"MusicEvent pitch: 30 ampl: 127 voice: 2"
 	"MusicEvent pitch: #c3 ampl: #mf voice: #flute"
 
 	^self new pitch: aP; 
 			loudness: anA;
-			voice: aVoice! !!MusicEvent class methodsFor: 'class initialization'!initialize
+			voice: aVoice! !
+
+
+!MusicEvent class methodsFor: 'class initialization'!
+initialize
 	"Initialize the global dictionary of Events (optional)."
 	"MEvent initializeEventDictionary"
 
-	Smalltalk at: #Events put: Dictionary new! !!MusicEvent class methodsFor: 'class initialization'!initializeEventDictionary
+	Smalltalk at: #Events put: Dictionary new! !
+
+!MusicEvent class methodsFor: 'class initialization'!
+initializeEventDictionary
 	"Initialize the global dictionary of Events (optional)."
 	"MEvent initializeEventDictionary"
 
-	Smalltalk at: #Events put: Dictionary new! !!MusicEvent class methodsFor: 'examples'!eventInspectExample
+	Smalltalk at: #Events put: Dictionary new! !
+
+
+!MusicEvent class methodsFor: 'examples'!
+eventInspectExample
 	"Demonstrate the terse format of event description."
 	"MusicEvent eventInspectExample"
 
 	(440 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl) inspect
-"	((880 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl) accent: #sfz) inspect"! !!MusicEvent class methodsFor: 'examples'!example
+"	((880 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl) accent: #sfz) inspect"! !
+
+!MusicEvent class methodsFor: 'examples'!
+example
 	"Demonstrate the terse format of event description."
 	"MusicEvent example inspect"
 
 	^(440 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl)
-"	((880 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl) accent: #sfz) inspect"! !MusicEvent subclass: #EventList	instanceVariableNames: 'events'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Events'!!EventList commentStamp: '<historical>' prior: 0!Instances of class EventList (subclass of DurationEvent), are used for holding onto multiple timed events. EventLists are events themselves and can have arbitrary properties as well as a collection of (relative start time -> event) associations.
+"	((880 Hz, 250 msec, (#voice -> #flute), 0.7071 ampl) accent: #sfz) inspect"! !
+
+
+MusicEvent subclass: #EventList
+	instanceVariableNames: 'events'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Events'!
+!EventList commentStamp: '<historical>' prior: 0!
+Instances of class EventList (subclass of DurationEvent), are used for holding onto multiple timed events. EventLists are events themselves and can have arbitrary properties as well as a collection of (relative start time -> event) associations.
 
 Class EventList implements much collection-style protocol for event processing, as well as having special block application methods. All EventList algorithms are recurrsive in order to handle arbitrarily-deep hierarchical EventLists (possible because EventList is a subclass of DurationEvent). The class also has numerous powerful and flexible instance creation methods.
 
@@ -560,21 +1024,34 @@ Instance Variables:
 Standard properties are #tempoScale for the tempo scaling factor (used by the CMN editors as the MS/whole note scale), and #code (#duration, #delta, or #startStop) to support different event coding schemes. The class also supports typed links to other event lists, e.g., "eList1 isTonicAnswerOf: eList2" or "eList1 hasPreviousVersion: eList2", which can be very useful properties in editors and browsers.
 
 The global dictionary EventLists holds onto instances that can be referenced with their name symbols; these can have gensym-like names such as #temp.23. Creating a named EventList automatically adds it to the global dictionary. There are tools for browsing and maintaining this dictionary.
-!!EventList methodsFor: 'accessing'!addModifier: aModifier
+!
+
+
+!EventList methodsFor: 'accessing'!
+addModifier: aModifier
 	"Add the given event modifier to the receiver's special modifier collection"
 
 	properties == nil
 		ifTrue: [properties := Dictionary new].
 	(properties includesKey: #modifiers)
 		ifFalse: [properties at: #modifiers put: OrderedCollection new].
-	(properties at: #modifiers) add: aModifier! !!EventList methodsFor: 'accessing'!code
+	(properties at: #modifiers) add: aModifier! !
+
+!EventList methodsFor: 'accessing'!
+code
 	"Answer a symbol about the receiver's events' coding, usually #durations or #noteOnOff"
 
-	^properties at: #code ifAbsent: [nil]! !!EventList methodsFor: 'accessing'!code: aSymbol
+	^properties at: #code ifAbsent: [nil]! !
+
+!EventList methodsFor: 'accessing'!
+code: aSymbol
 	"Set the code about the receiver's events, usually #durations or #noteOnOff"
 
 	self propCheck.
-	properties at: #code put: aSymbol! !!EventList methodsFor: 'accessing'!deepCopy
+	properties at: #code put: aSymbol! !
+
+!EventList methodsFor: 'accessing'!
+deepCopy
 	"Answer a careful deep copy."
 
 	| newEL |
@@ -586,26 +1063,48 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 			newEL at: anAssociation key copy put: anAssociation value copy]].
 	self events do: [ :anAssociation |
 		newEL add: ((anAssociation key copy) => (anAssociation value copy)) ].
-	^newEL! !!EventList methodsFor: 'accessing'!defaultEventClass
+	^newEL! !
+
+!EventList methodsFor: 'accessing'!
+defaultEventClass
 	"Answer the default note event class."
 
-	^MusicEvent! !!EventList methodsFor: 'accessing' stamp: 'stp 12/30/2022 14:25'!flushVoices	self eventsDo: [ :ev | ev voice: nil]! !!EventList methodsFor: 'accessing'!name
+	^MusicEvent! !
+
+!EventList methodsFor: 'accessing' stamp: 'stp 12/30/2022 14:25'!
+flushVoices
+	self eventsDo: [ :ev | ev voice: nil]! !
+
+!EventList methodsFor: 'accessing'!
+name
 	"Answer the receiver's name."
 
 	self propCheck.
-	^properties at: #name ifAbsent: ['']! !!EventList methodsFor: 'accessing'!name: aName
+	^properties at: #name ifAbsent: ['']! !
+
+!EventList methodsFor: 'accessing'!
+name: aName
 	"Set the receiver's name."
 
-	properties at: #name put: aName asSymbol! !!EventList methodsFor: 'accessing'!next
+	properties at: #name put: aName asSymbol! !
+
+!EventList methodsFor: 'accessing'!
+next
 	"Answer the next event in the list."
 
 	index ifNil: [index := 0].
-	^self events at: (index := index + 1)! !!EventList methodsFor: 'accessing'!removeModifier: aModifier
+	^self events at: (index := index + 1)! !
+
+!EventList methodsFor: 'accessing'!
+removeModifier: aModifier
 	"Remove the given event modifier from the receiver's collection."
 
 	^(properties == nil or: [(properties includesKey: #modifiers) not])
 		ifTrue: [nil]
-		ifFalse: [(properties at: #modifiers) remove: aModifier ifAbsent: [nil]]! !!EventList methodsFor: 'accessing'!shallowCopy
+		ifFalse: [(properties at: #modifiers) remove: aModifier ifAbsent: [nil]]! !
+
+!EventList methodsFor: 'accessing'!
+shallowCopy
 	"Answer a shallow copy of the receiver's events."
 
 	| newEL |
@@ -614,15 +1113,24 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 	self events do: 
 		[ :anAssociation |
 		newEL add: ((anAssociation key copy) => (anAssociation value copy))].
-	^newEL! !!EventList methodsFor: 'accessing'!size
+	^newEL! !
+
+!EventList methodsFor: 'accessing'!
+size
 	"Answer the number of events in the receiver."
 
 	events ifNil: [^0].
-	^events size! !!EventList methodsFor: 'accessing'!tempo: someValue
+	^events size! !
+
+!EventList methodsFor: 'accessing'!
+tempo: someValue
 	"Set the tempo to scale the events by."
 
 	self propCheck.
-	properties at: #tempoScale put: someValue! !!EventList methodsFor: 'accessing'!voices
+	properties at: #tempoScale put: someValue! !
+
+!EventList methodsFor: 'accessing'!
+voices
 	"Answer the collection of voices used by thereceiver  event list."
 	"EventList randomExample voices"
 
@@ -634,7 +1142,50 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 		ev voice ifNotNil:
 			[(coll includes: ev voice)
 				ifFalse: [coll add: ev voice]]].
-	^coll! !!EventList methodsFor: 'code conversion' stamp: 'stp 12/29/2022 01:40'!asSoundScore	"Convert the receiver to a Squeak-format score"	"(EventList scaleFrom: 48 to: 60 in: 1.5) asSoundScore play"	"| sco voxs| 	sco := EventList scaleFrom: 48 to: 60 in: 1.5.	voxs := Array with: FMSound oboe1 with: FMSound brass1 with:	FMSound marimba with: PluckedSound default.	sco eventsDo: [ :ev |	ev voice: voxs atRandom].	sco asSoundScore play "	| sco cnt tim vox |	sco := SequentialSound new initialize.	"(pitch, duration, loudness)"	cnt := 1.	tim := 0 msec.	events		do: [:ass | 			| sta evt |			sta := ass key.			sta = tim				ifTrue: [evt := ass value.					vox := evt voice.					vox isString						ifTrue: [vox := (Smalltalk at: vox) new].					vox						ifNil: [vox := FMSound oboe1].					sco						add: (vox								soundForPitch: evt pitch asHz value								dur: evt duration asSec value								loudness: evt loudness asMIDI value / 1000.0).					tim := sta + evt duration.					cnt := cnt + 1]				ifFalse: ["add rest"					sco						add: (RestSound dur: ass value duration asMS value)]].	"self halt."	^ sco! !!EventList methodsFor: 'code conversion'!continueProperties
+	^coll! !
+
+
+!EventList methodsFor: 'code conversion' stamp: 'stp 12/29/2022 01:40'!
+asSoundScore
+	"Convert the receiver to a Squeak-format score"
+	"(EventList scaleFrom: 48 to: 60 in: 1.5) asSoundScore play"
+	"| sco voxs| 
+	sco := EventList scaleFrom: 48 to: 60 in: 1.5.
+	voxs := Array with: FMSound oboe1 with: FMSound brass1 with:
+	FMSound marimba with: PluckedSound default.
+	sco eventsDo: [ :ev |
+	ev voice: voxs atRandom].
+	sco asSoundScore play "
+	| sco cnt tim vox |
+	sco := SequentialSound new initialize.	"(pitch, duration, loudness)"
+	cnt := 1.
+	tim := 0 msec.
+	events
+		do: [:ass | 
+			| sta evt |
+			sta := ass key.
+			sta = tim
+				ifTrue: [evt := ass value.
+					vox := evt voice.
+					vox isString
+						ifTrue: [vox := (Smalltalk at: vox) new].
+					vox
+						ifNil: [vox := FMSound oboe1].
+					sco
+						add: (vox
+								soundForPitch: evt pitch asHz value
+								dur: evt duration asSec value
+								loudness: evt loudness asMIDI value / 1000.0).
+					tim := sta + evt duration.
+					cnt := cnt + 1]
+				ifFalse: ["add rest"
+					sco
+						add: (RestSound dur: ass value duration asMS value)]].
+	"self halt."
+	^ sco! !
+
+!EventList methodsFor: 'code conversion'!
+continueProperties
 	"Fill in missing properties with values that are continued from previous ones."
 	"((440 Hz, (1/4 beat), (#voice -> #flute)), (1/4 => 460 Hz), (1/2 => 500 Hz), (3/4 => 320 Hz), (4/4 => 440 Hz)) continueProperties"
 
@@ -652,7 +1203,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 		evt loudness == nil ifTrue: [evt loudness: oloudness]
 					ifFalse: [oloudness := evt loudness].
 		evt voice == nil ifTrue: [evt voice: ovoice]
-					ifFalse: [ovoice := evt voice]]! !!EventList methodsFor: 'code conversion'!findNoteOff: anAssociation
+					ifFalse: [ovoice := evt voice]]! !
+
+!EventList methodsFor: 'code conversion'!
+findNoteOff: anAssociation
 	"Locate the noteOff event that corresponds to anAssociation; answer the sum of the delta times between (the duration)"
 
 	| instrument time assoc1 assoc2 event2 event1 |
@@ -672,7 +1226,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 				ifTrue: [event2 pitch = event1 pitch		"if same note"
 					ifTrue: [^assoc2 key - anAssociation key]]]. "^time"
 		event1 := event2.
-		assoc1 := assoc2].						"next event"! !!EventList methodsFor: 'code conversion'!setDurations
+		assoc1 := assoc2].						"next event"! !
+
+!EventList methodsFor: 'code conversion'!
+setDurations
 	"Take a delta-time encoded event list and determine the durations."
 
 	| time sTime event newEventList anAss ind |
@@ -706,7 +1263,11 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 		ifFalse: [self events: newEventList.
 			self start: newEventList first key].
 	self at: #events put: (events size).
-	self changed! !!EventList methodsFor: 'collecting'!collect: aBlock
+	self changed! !
+
+
+!EventList methodsFor: 'collecting'!
+collect: aBlock
 	"Iterate over the receiver's events with the given block"
 
 	| newList |
@@ -714,7 +1275,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 	self events do: 
 		[ :anE |
 		newList add: (aBlock value: anE)].
-	^newList! !!EventList methodsFor: 'collecting'!collectAll: aBlock
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+collectAll: aBlock
 	"Iterate over the receiver's events with the given block"
 
 	| newList |
@@ -725,13 +1289,22 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 			ifTrue: [(anE collectAll: aBlock) do:
 				[ :evt | newList add: (evt key + anE key) => evt value]]
 			ifFalse: [newList add: (aBlock value: anE)]].
-	^newList! !!EventList methodsFor: 'collecting'!do: aBlock
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+do: aBlock
 	"Iterate over the receiver's event associations with the given block"
 
-	self events do: aBlock! !!EventList methodsFor: 'collecting'!eventsDo: aBlock
+	self events do: aBlock! !
+
+!EventList methodsFor: 'collecting'!
+eventsDo: aBlock
 	"Iterate over the receiver's events with the given block"
 
-	^self events do: [:assoc | aBlock value: (assoc event) ]! !!EventList methodsFor: 'collecting' stamp: 'stp 12/30/2022 14:33'!excerptFrom: start to: end
+	^self events do: [:assoc | aBlock value: (assoc event) ]! !
+
+!EventList methodsFor: 'collecting' stamp: 'stp 12/30/2022 14:33'!
+excerptFrom: start to: end
 	"Answer a hierarchical list delineated by the given times."
 
 	| newList newEvent |
@@ -746,7 +1319,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 					ifTrue: [newList add:
 							(newEvent excerptFrom: 0 
 									to: (end - anAssoc key))]]].
-	^newList! !!EventList methodsFor: 'collecting'!expanded
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+expanded
 	"Expand all sub-event lists and answer one large flat list."
 
 	| newList newEvent |
@@ -761,7 +1337,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 								-> aSubEvent value))]]
 			ifFalse: 						"map and add normal events"
 				[newList add: ( anEvent key -> newEvent)]].
-	^newList! !!EventList methodsFor: 'collecting'!expandedFrom: start to: end
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+expandedFrom: start to: end
 	"Expand all sub-event lists and answer one flat list with events between the given times."
 
 	| newList newEvent |
@@ -784,7 +1363,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 							newList add: (newEvent map: 
 									((anEvent key + aSubEvent key) 
 										=> aSubEvent value))]]]].
-	^newList! !!EventList methodsFor: 'collecting'!group: selection
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+group: selection
 	"Group the argument's events as a sub-event list in the receiver's list."
 
 	| temp startTime |
@@ -801,13 +1383,22 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 				startTime = 0
 					ifFalse: [anAss key: (anAss key - startTime)]].
 			selection duration: (selection duration value - startTime).
-			self add: selection at: startTime]! !!EventList methodsFor: 'collecting'!includes: anAss
+			self add: selection at: startTime]! !
+
+!EventList methodsFor: 'collecting'!
+includes: anAss
 	"Answer whether the given association is in the receiver's event list."
 
-	^self events includes: anAss! !!EventList methodsFor: 'collecting'!keysAndValuesDo: aBlock
+	^self events includes: anAss! !
+
+!EventList methodsFor: 'collecting'!
+keysAndValuesDo: aBlock
 	^self events do:
 		[ :assoc |
-		aBlock value: assoc key value: assoc value].! !!EventList methodsFor: 'collecting'!remove: anA
+		aBlock value: assoc key value: assoc value].! !
+
+!EventList methodsFor: 'collecting'!
+remove: anA
 	"Remove the given event from the receiver's  collection"
 
 	| victims |
@@ -819,7 +1410,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 	self changed: #deleted.
 	^victims size = 1
 		ifTrue: [victims first]
-		ifFalse: [victims]! !!EventList methodsFor: 'collecting'!select: aBlock
+		ifFalse: [victims]! !
+
+!EventList methodsFor: 'collecting'!
+select: aBlock
 	"Iterate over the receiver's events with the given block"
 
 	| newList |
@@ -828,7 +1422,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 		[ :anE |
 		(aBlock value: anE)
 			ifTrue: [newList add: anE]].
-	^newList! !!EventList methodsFor: 'collecting'!selectAll: aBlock
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+selectAll: aBlock
 	"Iterate over the receiver's events with the given block"
 
 	| newList |
@@ -840,7 +1437,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 				[ :evt | newList add: (evt key + anE key) => evt value]]
 			ifFalse: [(aBlock value: anE)
 				ifTrue: [newList add: anE]]].
-	^newList! !!EventList methodsFor: 'collecting'!selectKey: aBlock
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+selectKey: aBlock
 	"Iterate over the receiver's events with the given block"
 
 	| newList |
@@ -852,7 +1452,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 				[ :evt | newList add: (evt key + anE key) => evt value]]
 			ifFalse: [(aBlock value: anE key)
 				ifTrue: [newList add: anE]]].
-	^newList! !!EventList methodsFor: 'collecting'!selectValue: aBlock
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+selectValue: aBlock
 	"Iterate over the receiver's events with the given block"
 
 	| newList |
@@ -864,14 +1467,27 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 				[ :evt | newList add: (evt key + anE key) => evt value]]
 			ifFalse: [(aBlock value: anE value)
 				ifTrue: [newList add: anE]]].
-	^newList! !!EventList methodsFor: 'collecting'!timesDo: aBlock
+	^newList! !
+
+!EventList methodsFor: 'collecting'!
+timesDo: aBlock
 	"Iterate over the receiver's events' relative start times with the given block"
 
-	^self events do: [ :assoc | aBlock value: (assoc key) ]! !!EventList methodsFor: 'printing'!asExplorerString
+	^self events do: [ :assoc | aBlock value: (assoc key) ]! !
 
-	^self name! !!EventList methodsFor: 'printing'!asExplorerString: ignored
 
-	^self name! !!EventList methodsFor: 'printing' stamp: 'stp 12/27/2022 17:36:29'!printOn: aStream
+!EventList methodsFor: 'printing'!
+asExplorerString
+
+	^self name! !
+
+!EventList methodsFor: 'printing'!
+asExplorerString: ignored
+
+	^self name! !
+
+!EventList methodsFor: 'printing' stamp: 'stp 12/27/2022 17:36:29'!
+printOn: aStream
 	"Print out the receiver's events on the argument."
 
 	| anEvent count |
@@ -894,7 +1510,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 		anEvent value printOn: aStream].
 	count = self size 
 			ifTrue: [aStream nextPut: $); lf]
-			ifFalse: [aStream nextPutAll: ' ... )'; lf]! !!EventList methodsFor: 'printing'!readDataFrom: aDataStream size: size
+			ifFalse: [aStream nextPutAll: ' ... )'; lf]! !
+
+!EventList methodsFor: 'printing'!
+readDataFrom: aDataStream size: size
 	"Read a new event list from the given stream using the compact format."
 
 	| cntEvents time evt |
@@ -907,7 +1526,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 				"check key for events"
 		time := MusicMagnitude readDataFrom: aDataStream.
 		evt := aDataStream next.
-		self add: evt at: time]! !!EventList methodsFor: 'printing'!storeDataOn: aDataStream
+		self add: evt at: time]! !
+
+!EventList methodsFor: 'printing'!
+storeDataOn: aDataStream
 	"Store myself on a DataStream. Answer self."
 	"Format is: inst header, 4 'normal' inst vars, properties as key/val (or nil)
 	# of events, events as key/val."
@@ -924,7 +1546,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 		"aDataStream byteStream nextPut: 192."		"key for events"
 		MusicMagnitude store: ass key on: aDataStream.
 		aDataStream byteStream nextPut: 9.
-		ass value storeDataOn: aDataStream]! !!EventList methodsFor: 'printing'!storeOn: aStream
+		ass value storeDataOn: aDataStream]! !
+
+!EventList methodsFor: 'printing'!
+storeOn: aStream
 	"Store source code for the receiver's events on the argument."
 	"(((EventList named: #Bach) expandedFrom: 0 to: 12000) 
 				name: #Bach3) storeOnFile: 'Bach3.el'"
@@ -964,20 +1589,38 @@ add: ('.
 		anAssoc value storeOn: aStream.
 		((ind \\ 10) = 9 or: [ind = count])
 			ifFalse: [aStream nextPutAll: title2]].
-	aStream nextPutAll: ')!!'; cr! !!EventList methodsFor: 'printing' stamp: 'stp 12/31/2022 07:18'!storeOnFile: aName 	"Store out the receiver's events on the file named by the argument."	| fs |	fs := FileStream named: aName.	self storeOn: fs.	fs close! !!EventList methodsFor: 'printing'!templateFields
+	aStream nextPutAll: ')!!'; cr! !
+
+!EventList methodsFor: 'printing' stamp: 'stp 12/31/2022 07:18'!
+storeOnFile: aName 
+	"Store out the receiver's events on the file named by the argument."
+	| fs |
+	fs := FileStream named: aName.
+	self storeOn: fs.
+	fs close! !
+
+!EventList methodsFor: 'printing'!
+templateFields
 	"Answer the field names for the instances of the receiver class."
 
 	| coll |
 	coll := super templateFields.
 	coll remove: #index.
 	coll remove: #startedAt.
-	^coll! !!EventList methodsFor: 'processing'!addValue: theValue toProp: theSelector
+	^coll! !
+
+
+!EventList methodsFor: 'processing'!
+addValue: theValue toProp: theSelector
 	"Add theValue to the aspect refered to by theSelector of all events."
 	"someEventList addValue: (MSecondDuration value: 10000) toProp: #duration"
 	"someEventList addValue: (MIDIPitch value: 100) toProp: #pitch"
 
 	self applyBlock: [ :v | (v class new value: (v value + theValue))] 
-			toProp: theSelector! !!EventList methodsFor: 'processing'!applyBlock: theBlock toProp: theSelector
+			toProp: theSelector! !
+
+!EventList methodsFor: 'processing'!
+applyBlock: theBlock toProp: theSelector
 	"Apply the given block to the aspect refered to by theSelector of all events."
 	"someEList applyBlock: [ :d | (MSecondDuration value: (d asMS value * 10))] 
 			toProp: #duration"
@@ -990,10 +1633,16 @@ add: ('.
 			ifTrue: [anEvent applyBlock: theBlock toProp: theSelector]
 			ifFalse: [val := anEvent perform: theSelector.
 				anEvent perform: ((theSelector, ':') asSymbol)
-						with: (theBlock value: val)]]! !!EventList methodsFor: 'processing'!applyFunction: aFunction to: aSelector
+						with: (theBlock value: val)]]! !
+
+!EventList methodsFor: 'processing'!
+applyFunction: aFunction to: aSelector
 	"Apply the given function to the range of the given selector"
 
-	^self applyFunction: aFunction to: aSelector startingAt: 0! !!EventList methodsFor: 'processing'!applyFunction: aFunction to: aSelector startingAt: sTime
+	^self applyFunction: aFunction to: aSelector startingAt: 0! !
+
+!EventList methodsFor: 'processing'!
+applyFunction: aFunction to: aSelector startingAt: sTime
 	"Apply the given function to the range of the given selector starting at sTime."
 
 	| aTime anEvent tDur timeC |
@@ -1010,7 +1659,10 @@ add: ('.
 				ifFalse: [ | oldVal |
 					oldVal := anEvent perform: aSelector.
 					anEvent perform: ((aSelector, ':') asSymbol) 
-							with: (oldVal class value: (oldVal value * (aFunction at: (aTime / tDur))))]]]! !!EventList methodsFor: 'processing'!chooseRange: theRange toProp: theSelector
+							with: (oldVal class value: (oldVal value * (aFunction at: (aTime / tDur))))]]]! !
+
+!EventList methodsFor: 'processing'!
+chooseRange: theRange toProp: theSelector
 	"Select a value from the given range for the aspect refered to by theSelector of all events."
 	"someEventList chooseRange: (500 to: 700) toProp: #duration"
 	"someEventList chooseRange: #(36 38 40 41 43 45) toProp: #pitch"
@@ -1019,7 +1671,10 @@ add: ('.
 	size := theRange size.
 	self applyBlock: [ :v | (v class new value: 
 					(theRange at: ((Random new next * size) truncated + 1)))] 
-			toProp: theSelector! !!EventList methodsFor: 'processing' stamp: 'stp 12/2/2022 11:55:14'!edit
+			toProp: theSelector! !
+
+!EventList methodsFor: 'processing' stamp: 'stp 12/2/2022 11:55:14'!
+edit
 	"Open your favorite graphical editor on the receiver (left-shift-sensitive)"
 
 	HauerSteffensView openOnEventList: self label: 'Hauer-Steffens Music Notation'
@@ -1030,53 +1685,91 @@ add: ('.
 			ifTrue: [SequenceView openOn: 
 						((EventListEditor new) list: self)]
 			ifFalse: [HauerSteffensView openOn: 
-					((EventListEditor new) list: self)]]"! !!EventList methodsFor: 'processing'!scale: theSelector by: theValue
+					((EventListEditor new) list: self)]]"! !
+
+!EventList methodsFor: 'processing'!
+scale: theSelector by: theValue
 	"Multiply the aspect refered to by theSelector of all events by theValue."
 	"someEventList scale: #duration by: 2"
 
 	self applyBlock: [ :v | (v class new value: (v value * theValue))] 
-			toProp: theSelector! !!EventList methodsFor: 'processing'!scaleStartTimesBy: theValue
+			toProp: theSelector! !
+
+!EventList methodsFor: 'processing'!
+scaleStartTimesBy: theValue
 	"Multiply the start times all events by theValue."
 
 	self events do: [ :assoc | assoc key: (assoc key * theValue) ].
-	self recomputeDuration! !!EventList methodsFor: 'processing'!scaleValue: theValue toProp: theSelector
+	self recomputeDuration! !
+
+!EventList methodsFor: 'processing'!
+scaleValue: theValue toProp: theSelector
 	"Multiply the aspect refered to by theSelector of all events by theValue."
 	"someEventList scaleValue: 3 toProp: #duration"
 
 	self applyBlock: [ :v | (v class new value: (v value * theValue))] 
-			toProp: theSelector! !!EventList methodsFor: 'processing'!setValue: theValue toProp: theSelector
+			toProp: theSelector! !
+
+!EventList methodsFor: 'processing'!
+setValue: theValue toProp: theSelector
 	"Set the aspect refered to by theSelector of all events to theValue."
 	"someEventList scaleValue: (MSecondDuration value: 10) toProp: #duration"
 
 	self applyBlock: [ :v | theValue] 
-			toProp: theSelector! !!EventList methodsFor: 'processing'!spreadValue: theRandomPercent toProp: theSelector
+			toProp: theSelector! !
+
+!EventList methodsFor: 'processing'!
+spreadValue: theRandomPercent toProp: theSelector
 	"Spread the given property of all events by the given random range (%+-)."
 
 	self applyBlock: [ :v | (v class new value: (v value 
 				* (1 + ((Random new next - 0.5) 
 					* theRandomPercent / 50) rounded)))] 
-			toProp: theSelector! !!EventList methodsFor: 'testing'!hasItems
+			toProp: theSelector! !
+
+
+!EventList methodsFor: 'testing'!
+hasItems
 	"Answer whether or not the receiver has items or components (true)."
 
-	^true! !!EventList methodsFor: 'testing'!isEmpty
+	^true! !
+
+!EventList methodsFor: 'testing'!
+isEmpty
 	"Answer whether the receiver is an event list (true)."
 
-	^events isEmpty! !!EventList methodsFor: 'testing'!isEventList
+	^events isEmpty! !
+
+!EventList methodsFor: 'testing'!
+isEventList
 	"Answer whether the receiver is an event list (true)."
 
-	^true! !!EventList methodsFor: 'testing'!species
+	^true! !
+
+!EventList methodsFor: 'testing'!
+species
 	"Answer EventList."
 
-	^EventList! !!EventList methodsFor: 'scheduling'!loop
+	^EventList! !
+
+
+!EventList methodsFor: 'scheduling'!
+loop
 	"Play the event list by passing it off to the event scheduler."
 
 	EventScheduler addClient: self in: 1 msec loop: true.
-	EventScheduler run! !!EventList methodsFor: 'scheduling'!nextTime: now
+	EventScheduler run! !
+
+!EventList methodsFor: 'scheduling'!
+nextTime: now
 	"Answer the time of the next appointment"
 
 "	startedAt ifNil: [startedAt := Time microsecondClock]."
 "	Transcript show: ((self events at: index) key asMsec value) printString; cr."
-	^(self events at: index) key asUsec value + startedAt! !!EventList methodsFor: 'scheduling'!nextTimeFor: ass
+	^(self events at: index) key asUsec value + startedAt! !
+
+!EventList methodsFor: 'scheduling'!
+nextTimeFor: ass
 	"Answer the time delay between the given event association and the one that follows it."
 
 	| ind next |
@@ -1084,20 +1777,32 @@ add: ('.
 	ind = 0 ifTrue: [^0 sec].
 	ind = events size ifTrue: [^0 sec].
 	next := events at: ind + 1.
-	^(next start - ass start)! !!EventList methodsFor: 'scheduling'!play
+	^(next start - ass start)! !
+
+!EventList methodsFor: 'scheduling'!
+play
 	"Play the event list by passing it off to the event scheduler."
 
 	EventScheduler addClient: self in: 1 msec.
-	EventScheduler run! !!EventList methodsFor: 'scheduling'!playOn: aVoice
+	EventScheduler run! !
+
+!EventList methodsFor: 'scheduling'!
+playOn: aVoice
 	"Play the event list on the voice by expanding its events"
 
 	voice := aVoice.
 	self play
 
-"	self playOn: aVoice at: Time microsecondClock"! !!EventList methodsFor: 'scheduling'!playOn: aVoice at: startTime
+"	self playOn: aVoice at: Time microsecondClock"! !
+
+!EventList methodsFor: 'scheduling'!
+playOn: aVoice at: startTime
 	"Play the event list on the voice by expanding its events"
 
-	aVoice play: self at: startTime.! !!EventList methodsFor: 'scheduling' stamp: 'stp 12/30/2022 15:57'!scheduleAt: aTime 
+	aVoice play: self at: startTime.! !
+
+!EventList methodsFor: 'scheduling' stamp: 'stp 12/30/2022 15:57'!
+scheduleAt: aTime 
 	"Expand an eventList for the appointment scheduler."
 
 	| theEvent |
@@ -1115,15 +1820,25 @@ add: ('.
 	index := index + 1.
 	index > self events size
 		ifTrue: [^aTime + theEvent duration asUsec value].
-	^self nextTime: aTime! !!EventList methodsFor: 'scheduling'!stop
+	^self nextTime: aTime! !
+
+!EventList methodsFor: 'scheduling'!
+stop
 	"Play the event list by passing it off to the event scheduler."
 
-	EventScheduler instance removeClientNamed: self name! !!EventList methodsFor: 'initialize-release'!empty
+	EventScheduler instance removeClientNamed: self name! !
+
+
+!EventList methodsFor: 'initialize-release'!
+empty
 	"Throw away the receiver's events."
 
 	self duration: 0.
 	self index: 1.
-	self events: SortedCollection new.! !!EventList methodsFor: 'initialize-release' stamp: 'stp 12/28/2022 13:34:44'!initializeAnonymous
+	self events: SortedCollection new.! !
+
+!EventList methodsFor: 'initialize-release' stamp: 'stp 12/28/2022 13:34:44'!
+initializeAnonymous
 	"Initialize an un-named instance with default state."
 
 	self initialize.
@@ -1131,22 +1846,35 @@ add: ('.
 	duration := MDuration value: 0.
 	self name: #anonymous.
 	self events: SortedCollection new.
-	index := nil.! !!EventList methodsFor: 'initialize-release' stamp: 'stp 11/20/2022 11:04:20'!initializeNamed: aName
+	index := nil.! !
+
+!EventList methodsFor: 'initialize-release' stamp: 'stp 11/20/2022 11:04:20'!
+initializeNamed: aName
 	"Initialize a named instance with default state."
 
 	self initializeAnonymous.
 	self name: aName asSymbol.
-"	SirenSession eventList: aName asSymbol put: self "! !!EventList methodsFor: 'initialize-release'!release
+"	SirenSession eventList: aName asSymbol put: self "! !
+
+!EventList methodsFor: 'initialize-release'!
+release
 	"Flush the receiver."
 
 	super release.
 	events == nil
 		ifFalse: [events do: [ :e | e release]].
 	events := nil.
-	index := nil! !!EventList methodsFor: 'event accessing'!, anEorA
+	index := nil! !
+
+
+!EventList methodsFor: 'event accessing'!
+, anEorA
 	"Add a new event or association to the receiver."
 
-	^self add: anEorA! !!EventList methodsFor: 'event accessing' stamp: 'stp 12/30/2022 14:08'!add: anEorA
+	^self add: anEorA! !
+
+!EventList methodsFor: 'event accessing' stamp: 'stp 12/30/2022 14:08'!
+add: anEorA
 	"Add a new event or association to the receiver."
 
 	| newAss val |
@@ -1166,7 +1894,10 @@ add: ('.
 				ifFalse: [self duration: (duration max: (newAss key + val duration))]]
 		ifFalse: [self events add: (duration => anEorA).
 			anEorA duration ifNotNil: [self duration: duration + anEorA duration]].
-	self changed: #added! !!EventList methodsFor: 'event accessing' stamp: 'stp 12/28/2022 21:11'!add: anEvent at: aTime
+	self changed: #added! !
+
+!EventList methodsFor: 'event accessing' stamp: 'stp 12/28/2022 21:11'!
+add: anEvent at: aTime
 	"Add a new event to the receiver at the given relative start time."
 
 	| t |
@@ -1174,7 +1905,10 @@ add: ('.
 	self events add: (t => anEvent).
 	anEvent duration == nil
 		ifFalse: [duration := duration max: (t + anEvent duration)].
-	self changed: #added! !!EventList methodsFor: 'event accessing'!addAll: anEventList
+	self changed: #added! !
+
+!EventList methodsFor: 'event accessing'!
+addAll: anEventList
 	"Add the given event list's events to the receiver."
 
 	anEventList events do:
@@ -1184,10 +1918,29 @@ add: ('.
 				ifTrue: [duration := duration max: assoc key]
 				ifFalse: [duration := duration 
 							max: (assoc key + assoc value duration)]].
-	self changed: #added! !!EventList methodsFor: 'event accessing' stamp: 'stp 12/30/2022 14:23'!computeDuration	"Recompute the total duration of the receiver."	| tDur t d |	tDur := 0 msec.	events		do: [:ass | 			t := ass key.			d := ass event duration.			tDur := tDur max: t + d].	duration := tDur.	self changed: #duration! !!EventList methodsFor: 'event accessing'!eventKeys
+	self changed: #added! !
+
+!EventList methodsFor: 'event accessing' stamp: 'stp 12/30/2022 14:23'!
+computeDuration
+	"Recompute the total duration of the receiver."
+	| tDur t d |
+	tDur := 0 msec.
+	events
+		do: [:ass | 
+			t := ass key.
+			d := ass event duration.
+			tDur := tDur max: t + d].
+	duration := tDur.
+	self changed: #duration! !
+
+!EventList methodsFor: 'event accessing'!
+eventKeys
 	"Answer the keys (durations) of the receiver's eventDictionary."
 
-	^events keys! !!EventList methodsFor: 'event accessing'!eventNear: aPoint
+	^events keys! !
+
+!EventList methodsFor: 'event accessing'!
+eventNear: aPoint
 	"Answer an event within a reasonable distance (100 msec.) of the given point's x."
 
 	| margin oldAss |
@@ -1208,7 +1961,10 @@ add: ('.
 						ifTrue: [^oldAss].
 					^nil]].
 		oldAss := anAss].
-	^nil! !!EventList methodsFor: 'event accessing'!eventNearTime: aTime
+	^nil! !
+
+!EventList methodsFor: 'event accessing'!
+eventNearTime: aTime
 	"Answer an event within a reasonable distance (32 msec.) of the given point."
 
 	| margin oldAss t |
@@ -1228,7 +1984,10 @@ add: ('.
 						ifTrue: [^oldAss].
 					^nil]].
 		oldAss := anAss].
-	^nil! !!EventList methodsFor: 'event accessing'!eventNearestTime: aTime
+	^nil! !
+
+!EventList methodsFor: 'event accessing'!
+eventNearestTime: aTime
 	"Answer an event within a reasonable distance (32 msec.) of the given point."
 
 	| margin ass d |
@@ -1240,17 +1999,29 @@ add: ('.
 		d < margin ifTrue: 
 			[margin := d.
 			ass := anAss]].
-	^ass! !!EventList methodsFor: 'event accessing'!eventValues
+	^ass! !
+
+!EventList methodsFor: 'event accessing'!
+eventValues
 	"Answer the values (events) of the receiver's eventDictionary."
 
-	^events values! !!EventList methodsFor: 'event accessing'!events
+	^events values! !
+
+!EventList methodsFor: 'event accessing'!
+events
 	"Answer the receiver's eventDictionary."
 
-	^events! !!EventList methodsFor: 'event accessing'!events: anEL
+	^events! !
+
+!EventList methodsFor: 'event accessing'!
+events: anEL
 	"Set the receiver's eventDictionary."
 
 	events := anEL.
-	self changed: #added! !!EventList methodsFor: 'event accessing'!recomputeDuration
+	self changed: #added! !
+
+!EventList methodsFor: 'event accessing'!
+recomputeDuration
 	"Recompute the total duration of the receiver."
 
 	| tDur t d |
@@ -1261,7 +2032,11 @@ add: ('.
 		d := ass event duration.
 		tDur := tDur max: (t +d)].
 	duration := tDur.
-	self changed: #duration! !!EventList methodsFor: 'private'!map: anAssociation
+	self changed: #duration! !
+
+
+!EventList methodsFor: 'private'!
+map: anAssociation
 	"Map the receiver's special properties and/or eventModifiers onto the given event."
 
 	| aTime anE |
@@ -1277,7 +2052,10 @@ add: ('.
 				ifTrue: [aTime := aTime * ass value.
 						anE duration: anE duration * ass value]
 				ifFalse: [anE at: ass key put: ass value]]].
-	^anAssociation! !!EventList methodsFor: 'private'!map: anAssociation at: startTime
+	^anAssociation! !
+
+!EventList methodsFor: 'private'!
+map: anAssociation at: startTime
 	"Map the receiver's special properties and/or eventModifiers onto the given event."
 
 	| aTime anE |
@@ -1290,13 +2068,25 @@ add: ('.
 	(self at: #tempo) == nil 			"or have a tempo map"
 		ifFalse: [aTime := aTime * ((self at: #tempo) at: aTime).
 			anE duration: anE duration * ((self at: #tempo) at: anE duration)].
-	^anE! !!EventList methodsFor: 'comparing'!= anObject 
+	^anE! !
+
+
+!EventList methodsFor: 'comparing'!
+= anObject 
 	"Answer whether the receiver and the argument represent the same events."
 
 	^anObject isEventList
 		ifFalse: [false]
 		ifTrue: [((self duration = anObject duration) and:
-				[self events = anObject events])]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!EventList class	instanceVariableNames: ''!!EventList class methodsFor: 'examples'!creationExamples
+				[self events = anObject events])]! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+EventList class
+	instanceVariableNames: ''!
+
+!EventList class methodsFor: 'examples'!
+creationExamples
 	"Select the expressions below one-at-a-time and inspect the results."
 
 "	EventList named: (EventList nextName) 
@@ -1306,7 +2096,10 @@ add: ('.
 		fromStartTimes: #(0 500 1000 1500 2000 2500 3000)) inspect.
 "
 	((440 Hz, 250 msec, (#voice -> #flute)), 
-		((1/4) => (471 Hz, (1/4) beat, (#voice -> #flute)))) inspect! !!EventList class methodsFor: 'examples' stamp: 'stp 12/29/2022 03:24'!randomExample
+		((1/4) => (471 Hz, (1/4) beat, (#voice -> #flute)))) inspect! !
+
+!EventList class methodsFor: 'examples' stamp: 'stp 12/29/2022 03:24'!
+randomExample
 	"Create an event list with random data."
 	"EventList randomExample"
 	"EventList randomExample edit"
@@ -1328,7 +2121,10 @@ add: ('.
 	1 to: size do: [ :i | arr4 at: i put: (rand nextIntFrom: 48 to: 72)].		"pitch"
 	^EventList named: 'random1'  
 		fromSelectors: #(duration: loudness: voice: pitch:) 
-		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !!EventList class methodsFor: 'examples'!randomExample: length
+		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !
+
+!EventList class methodsFor: 'examples'!
+randomExample: length
 	"Create an event list with random data."
 	"EventList randomExample: 200"
 	"PitchTimeView randomExample"
@@ -1346,7 +2142,10 @@ add: ('.
 	1 to: length do: [ :i | arr4 at: i put: (rand nextIntFrom: 48 to: 72)].
 	^EventList named: 'random1'  
 		fromSelectors: #(duration: loudness: voice: pitch:) 
-		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !!EventList class methodsFor: 'examples'!randomExample: length from: data
+		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !
+
+!EventList class methodsFor: 'examples'!
+randomExample: length from: data
 	"Create an event list with random data."
 	"(EventList randomExample: 64 
 		from: ((#duration: -> (0.1 to: 0.2)), (#pitch: -> (36 to: 60)),
@@ -1376,7 +2175,10 @@ add: ('.
 		i := i + 1].
 	^EventList named: EventList nextName
 		fromSelectors: sels 
-		values: arr! !!EventList class methodsFor: 'examples'!randomSWSSExample
+		values: arr! !
+
+!EventList class methodsFor: 'examples'!
+randomSWSSExample
 	"Create an event list with random data appropriate for software sound synthesis."
 	"EventList randomSWSSExample edit"
 	"(EventList newNamed: #sRand)
@@ -1411,7 +2213,10 @@ add: ('.
 	^EventList named: #SWSSExample
 		fromSelectors: #(duration: loudness: pitch: cmratio: index: 
 					attack: decay: iAttack: iDecay:) 
-		values: data! !!EventList class methodsFor: 'examples'!randomSWSSExample2
+		values: data! !
+
+!EventList class methodsFor: 'examples'!
+randomSWSSExample2
 	"Create an event list with random data appropriate for software sound synthesis."
 	"EventList randomSWSSExample2 edit"
 	"((EventList newNamed: #sRand)
@@ -1440,7 +2245,16 @@ add: ('.
 		[ :i | (data at: 6) at: i put: (rand nextFrom: 0.3 to: 1.0)].		"duty"
 	^EventList named: #SWSSExample
 		fromSelectors: #(duration: loudness: pitch: envelope: position: duty:) 
-		values: data! !!EventList class methodsFor: 'examples' stamp: 'stp 1/4/2023 16:05'!scaleExample1	"Answer a scale for testing."	"EventList scaleExample1 playOn: (MIDIVoice defaultOut: 0)"	^EventList scaleFrom: 48 to: 72 in: 1.5! !!EventList class methodsFor: 'examples'!scaleExample2
+		values: data! !
+
+!EventList class methodsFor: 'examples' stamp: 'stp 1/4/2023 16:05'!
+scaleExample1
+	"Answer a scale for testing."
+	"EventList scaleExample1 playOn: (MIDIVoice defaultOut: 0)"
+	^EventList scaleFrom: 48 to: 72 in: 1.5! !
+
+!EventList class methodsFor: 'examples'!
+scaleExample2
 	"Answer a scale where the event property types are mixed."
 	"EventList scaleExample2"
 
@@ -1461,7 +2275,34 @@ add: ('.
 		ev dur: (ev dur perform: (#(asMsec asBeat asSeconds) atRandom)).
 		ev pitch: (ev pitch perform: (#(asHz asMIDI asSymbol) atRandom)).
 		ev ampl: (ev ampl perform: (#(asDB asMIDI asSymbol asRatio) atRandom))].
-	^el! !!EventList class methodsFor: 'examples' stamp: 'stp 12/29/2022 00:40'!scaleFrom: start to: stop in: dur 	"Answer an event list with a scale."	"(EventList scaleFrom: 48 to: 60 in: 1.5) open"	"(EventList scaleFrom: 36 to: 84 in: 2) play"	| size arr4 ndur |	size := (stop - start) abs.	ndur := dur / size.	arr4 := Array new: size + 1.	start > stop		ifTrue: [0				to: size				do: [:i | arr4 at: i + 1 put: start - i]]		ifFalse: [0				to: size				do: [:i | arr4 at: i + 1 put: start + i]].	^ EventList		named: EventList nextName		fromSelectors: #(#duration: #loudness: #pitch:)		values: (Array				with: ndur				with: 70				with: arr4)! !!EventList class methodsFor: 'examples'!sentenceExample
+	^el! !
+
+!EventList class methodsFor: 'examples' stamp: 'stp 12/29/2022 00:40'!
+scaleFrom: start to: stop in: dur 
+	"Answer an event list with a scale."
+	"(EventList scaleFrom: 48 to: 60 in: 1.5) open"
+	"(EventList scaleFrom: 36 to: 84 in: 2) play"
+	| size arr4 ndur |
+	size := (stop - start) abs.
+	ndur := dur / size.
+	arr4 := Array new: size + 1.
+	start > stop
+		ifTrue: [0
+				to: size
+				do: [:i | arr4 at: i + 1 put: start - i]]
+		ifFalse: [0
+				to: size
+				do: [:i | arr4 at: i + 1 put: start + i]].
+	^ EventList
+		named: EventList nextName
+		fromSelectors: #(#duration: #loudness: #pitch:)
+		values: (Array
+				with: ndur
+				with: 70
+				with: arr4)! !
+
+!EventList class methodsFor: 'examples'!
+sentenceExample
 	"Create an event list for a beautiful sentence."
 	"EventList sentenceExample"
 	EventList named: 'phrase2'  
@@ -1472,7 +2313,10 @@ add: ('.
 					0.44 0.52 0.2   0.94 0.62 0.46 0.34 ) 
 				with: #(#und #die #fra #gen    #sind #die #sae #tze 
 					#die #ich #nicht    #aus #spre #chen #kann)).
-	^EventList named: 'phrase2'! !!EventList class methodsFor: 'examples'!serialExample: length from: data
+	^EventList named: 'phrase2'! !
+
+!EventList class methodsFor: 'examples'!
+serialExample: length from: data
 	"Create an event list with serial data."
 	"(EventList serialExample: 64 
 		from: ((#duration: -> #(0.1 0.1 0.1 0.2)), (#pitch: -> #(48 50 52 53 52)),
@@ -1492,7 +2336,10 @@ add: ('.
 		i := i + 1].
 	^EventList named: EventList nextName
 		fromSelectors: sels 
-		values: arr! !!EventList class methodsFor: 'examples'!wordExample
+		values: arr! !
+
+!EventList class methodsFor: 'examples'!
+wordExample
 	"Create an event list for a long word."
 	"EventList wordExample"
 
@@ -1501,13 +2348,49 @@ add: ('.
 		values: (Array with: #(595 545 545 540 570 800 540) 
 				with: #(0.8 0.4 0.5 0.3 0.2 0.7 0.1) 
 				with: #(#dun #kel #kam #mer #ge #sprae #che)).
-	(EventList named: 'phrase1') inspect! !!EventList class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 08:01'!flush	"Erase the shared EventList dictionary and try to clean up all events."	"EventList flush."	SirenSession initializeEventLists.	EventList		allInstancesDo: [:el | el release].	Smalltalk garbageCollect.	Transcript cr; show: EventList instanceCount printString , ' event lists  	' , MusicEvent instanceCount printString , ' events  	' , Duration instanceCount printString , ' durations'; cr! !!EventList class methodsFor: 'class initialization'!initialize
+	(EventList named: 'phrase1') inspect! !
+
+
+!EventList class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 08:01'!
+flush
+	"Erase the shared EventList dictionary and try to clean up all events."
+	"EventList flush."
+	SirenSession initializeEventLists.
+	EventList
+		allInstancesDo: [:el | el release].
+	Smalltalk garbageCollect.
+	Transcript cr; show: EventList instanceCount printString , ' event lists  	' , MusicEvent instanceCount printString , ' events  	' , Duration instanceCount printString , ' durations'; cr! !
+
+!EventList class methodsFor: 'class initialization'!
+initialize
 	"Initialize the shared EventList dictionary."
 	"EventList initialize."
 	"EventList someInstance"
 
 	(Smalltalk includesKey: #SirenSession)
-		ifTrue: [(Smalltalk at: #SirenSession) initializeEventLists]! !!EventList class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 07:09'!storeAll	"Write out all event lists."	"EventList storeAll"	| fname fstream |	fname := FillInTheBlank request: 'File name for storing event lists' initialAnswer: 'events.st'.	fname isEmpty		ifTrue: [^ self].	fstream := (FileStream named: fname) writeStream.	fstream		ifNil: [^ self].	Cursor write		showWhile: [SirenSession eventLists				do: [:list | 					list storeOn: fstream.					fstream cr; cr]].	fstream close! !!EventList class methodsFor: 'named constants'!named: aName
+		ifTrue: [(Smalltalk at: #SirenSession) initializeEventLists]! !
+
+!EventList class methodsFor: 'class initialization' stamp: 'stp 12/31/2022 07:09'!
+storeAll
+	"Write out all event lists."
+	"EventList storeAll"
+	| fname fstream |
+	fname := FillInTheBlank request: 'File name for storing event lists' initialAnswer: 'events.st'.
+	fname isEmpty
+		ifTrue: [^ self].
+	fstream := (FileStream named: fname) writeStream.
+	fstream
+		ifNil: [^ self].
+	Cursor write
+		showWhile: [SirenSession eventLists
+				do: [:list | 
+					list storeOn: fstream.
+					fstream cr; cr]].
+	fstream close! !
+
+
+!EventList class methodsFor: 'named constants'!
+named: aName
 	"Answer the named instance from the dictionary or a new EL."
 	"EventList named: #random1"
 
@@ -1515,35 +2398,85 @@ add: ('.
 	el := SirenSession eventListNamed: aName asSymbol.
 	^el isNil
 		ifTrue: [self newNamed: aName]
-		ifFalse: [el]! !!EventList class methodsFor: 'named constants'!named: aName ifAbsent: theBlock
+		ifFalse: [el]! !
+
+!EventList class methodsFor: 'named constants'!
+named: aName ifAbsent: theBlock
 	"Answer the named instance from the dictionary or the result of the block."
 
 	| el |
 	el := SirenSession eventListNamed: aName asSymbol.
 	^el isNil
 		ifTrue: [theBlock value]
-		ifFalse: [el]! !!EventList class methodsFor: 'named constants'!namedLists
+		ifFalse: [el]! !
+
+!EventList class methodsFor: 'named constants'!
+namedLists
 	"Answer the dictionary of named event lists."
 	"EventList namedLists"
 
-	^SirenSession eventLists! !!EventList class methodsFor: 'named constants'!newNamed
+	^SirenSession eventLists! !
+
+!EventList class methodsFor: 'named constants'!
+newNamed
 	"Answer the named instance with a temp name."
 	"EventList newNamed"
 
-	^self named: EventList nextName! !!EventList class methodsFor: 'named constants'!newNamed: aName
+	^self named: EventList nextName! !
+
+!EventList class methodsFor: 'named constants'!
+newNamed: aName
 	"Create and answer a new named (and stored) instance."
 
-	^super new initializeNamed: aName! !!EventList class methodsFor: 'named constants'!nextName
+	^super new initializeNamed: aName! !
+
+!EventList class methodsFor: 'named constants'!
+nextName
 	"Answer a gensym-type ('te6') event list name for which no EL exists in the dictionary."
 
 	| temp |
 	temp := 1.
 	[(SirenSession eventLists at: #Temp) includesKey: (('te', temp printString) asSymbol)]
 			whileTrue: [temp := temp + 1].
-	^'te', temp printString asSymbol! !!EventList class methodsFor: 'instance creation'!basicNew: ignored
+	^'te', temp printString asSymbol! !
+
+
+!EventList class methodsFor: 'instance creation'!
+basicNew: ignored
 	"Create and answer a new default-named instance of me"
 
-	^self basicNew! !!EventList class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 07:18'!fromFile: theName 	"Create and answer a new default un-named (and therefore	un-persistent) instance of me"	"EventList fromFile: (SirenUtility findFile: 'CALYPSO.MID')"	| tail fName |	tail := theName asFilename tail.	fName := SirenUtility findFile: theName.	[(('*.mid' match: tail)			or: ['*.midi' match: tail])		ifTrue: [| el mv |			el := EventList newAnonymous.			mv := MIDIFileVoice newOn: fName.			mv readOnto: el.			mv close.			^ el].	(('*.ev' match: tail)			or: ['*.sm' match: tail])		ifTrue: [| fn |			fn := FileStream named: fName.			fn fileIn.			^ EventList named: fn base]]		on: Error		do: [:ex | 			Transcript show: 'Error reading score file ' , theName;				 cr.			^ nil]! !!EventList class methodsFor: 'instance creation'!named: myName fromPitches: pitchCollection
+	^self basicNew! !
+
+!EventList class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 07:18'!
+fromFile: theName 
+	"Create and answer a new default un-named (and therefore
+	un-persistent) instance of me"
+	"EventList fromFile: (SirenUtility findFile: 'CALYPSO.MID')"
+	| tail fName |
+	tail := theName asFilename tail.
+	fName := SirenUtility findFile: theName.
+	[(('*.mid' match: tail)
+			or: ['*.midi' match: tail])
+		ifTrue: [| el mv |
+			el := EventList newAnonymous.
+			mv := MIDIFileVoice newOn: fName.
+			mv readOnto: el.
+			mv close.
+			^ el].
+	(('*.ev' match: tail)
+			or: ['*.sm' match: tail])
+		ifTrue: [| fn |
+			fn := FileStream named: fName.
+			fn fileIn.
+			^ EventList named: fn base]]
+		on: Error
+		do: [:ex | 
+			Transcript show: 'Error reading score file ' , theName;
+				 cr.
+			^ nil]! !
+
+!EventList class methodsFor: 'instance creation'!
+named: myName fromPitches: pitchCollection
 	"Answer an event list made with the given collection of pitches."
 	"EventList named: (EventList nextName) fromPitches: #(36 38 40 43 45)"
 
@@ -1553,7 +2486,10 @@ add: ('.
 		[ :item |
 		me add: (me defaultEventClass pitch: item)
 			at: 0].
-	^me! !!EventList class methodsFor: 'instance creation'!named: myName fromSelectors: selArray values: valueArrayArray
+	^me! !
+
+!EventList class methodsFor: 'instance creation'!
+named: myName fromSelectors: selArray values: valueArrayArray
 	"Answer an event list made with the given collection of values applied to the given array of selectors."
 	"EventList named: 'phrase1'  
 		fromSelectors: #(duration: loudness: phoneme:) 
@@ -1580,7 +2516,10 @@ add: ('.
 		start == nil
 			ifTrue: [me add: evt]
 			ifFalse: [me add: evt at: start]].
-	^me! !!EventList class methodsFor: 'instance creation'!named: myName fromStartTimes: timeCollection
+	^me! !
+
+!EventList class methodsFor: 'instance creation'!
+named: myName fromStartTimes: timeCollection
 	"Answer an event list with the given collection of relative start times."
 	"EventList named: (EventList nextName) fromStartTimes: #(0 500 1000 1500 2000 2500 3000)"
 
@@ -1590,13 +2529,32 @@ add: ('.
 		[ :item |
 		me add: (me defaultEventClass new)
 			at: item].
-	^me! !!EventList class methodsFor: 'instance creation'!new
+	^me! !
+
+!EventList class methodsFor: 'instance creation'!
+new
 	"Create and answer a new default-named instance of me"
 
-	^self newAnonymous! !!EventList class methodsFor: 'instance creation'!new: ignored
+	^self newAnonymous! !
+
+!EventList class methodsFor: 'instance creation'!
+new: ignored
 	"Create and answer a new default-named instance of me"
 
-	^self newAnonymous! !!EventList class methodsFor: 'instance creation'!newAnonymous
+	^self newAnonymous! !
+
+!EventList class methodsFor: 'instance creation'!
+newAnonymous
 	"Create and answer a new default un-named (and therefore un-persistent) instance of me"
 
-	^super new initializeAnonymous! !DurationEvent subclass: #RestEvent	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Events'!MusicEvent initialize!EventList initialize!
+	^super new initializeAnonymous! !
+
+
+DurationEvent subclass: #RestEvent
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Music-Events'!
+
+MusicEvent initialize!
+EventList initialize!

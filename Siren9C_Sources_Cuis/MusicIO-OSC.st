@@ -1,4 +1,4 @@
-!classDefinition: #OSCPort category: 'MusicIO-OSC'!
+!classDefinition: #OSCPort category: #'MusicIO-OSC'!
 PortModel subclass: #OSCPort
 	instanceVariableNames: 'socket address'
 	classVariableNames: ''
@@ -42,7 +42,7 @@ init: sock
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCPort class' category: 'MusicIO-OSC'!
+!classDefinition: 'OSCPort class' category: #'MusicIO-OSC'!
 OSCPort class
 	instanceVariableNames: ''!
 
@@ -63,27 +63,33 @@ default
 
 	^self cslHost! !
 
-!OSCPort class methodsFor: 'instance-creation'!
+!OSCPort class methodsFor: 'instance-creation' stamp: 'stp 12/31/2022 11:18'!
 localhost
 	"Answer an OSC port on the local host"
+	| addr sock |
+	addr := SocketAddress
+				hostAddress: (ByteArray
+						with: 127
+						with: 0
+						with: 0
+						with: 1).
+	sock := Socket new.
+	sock connectTo: addr port: self defaultPort.
+	^ sock! !
 
-	^self to: (IPSocketAddress hostAddress: (ByteArray
-				with: 127
-				with: 0
-				with: 0
-				with: 1)
-			port: self defaultPort)! !
-
-!OSCPort class methodsFor: 'instance-creation'!
+!OSCPort class methodsFor: 'instance-creation' stamp: 'stp 12/31/2022 11:19'!
 scHost
 	"Answer the default OSC server reference"
-
-	^self to: (IPSocketAddress hostAddress: (ByteArray
-				with: 192
-				with: 168
-				with: 61
-				with: 1)
-			port: self defaultSCOSCPort)! !
+	| addr sock |
+	addr := SocketAddress
+				hostAddress: (ByteArray
+						with: 192
+						with: 168
+						with: 61
+						with: 1).
+	sock := Socket new.
+	sock connectTo: addr port: self defaultSCOSCPort.
+	^ sock! !
 
 !OSCPort class methodsFor: 'instance-creation'!
 to: t1 
@@ -102,18 +108,26 @@ to: ip port: port
 	^self to: serv
 ! !
 
-!OSCPort class methodsFor: 'instance-creation'!
-toHostName: t1 
+!OSCPort class methodsFor: 'instance-creation' stamp: 'stp 12/31/2022 11:20'!
+toHostName: host 
 	"Answer an instance on the given host"
+	
+	| addr sock |
+	addr := NetNameResolver addressesForName: host.
+	sock := Socket new.
+	sock connectTo: addr port: self defaultPort.
+	^ sock
+! !
 
-	^self to: (IPSocketAddress hostName: t1 port: self defaultPort)! !
-
-!OSCPort class methodsFor: 'instance-creation'!
+!OSCPort class methodsFor: 'instance-creation' stamp: 'stp 12/31/2022 11:21'!
 toHostName: aHostName portNumber: aPort 
 	"^an OSCPort 
 	Convenience method"
-
-	^self to: (IPSocketAddress hostName: aHostName port: aPort)! !
+	| addr sock |
+	addr := NetNameResolver addressesForName: aHostName.
+	sock := Socket new.
+	sock connectTo: addr port: aPort.
+	^ sock! !
 
 !OSCPort class methodsFor: 'instance-creation'!
 toLocalhostPortNumber: aPort 
@@ -194,10 +208,10 @@ sendStop
 	^self! !
 
 
-!classDefinition: #OSCVoice category: 'MusicIO-OSC'!
+!classDefinition: #OSCVoice category: #'MusicIO-OSC'!
 NotelistVoice subclass: #OSCVoice
 	instanceVariableNames: 'port range'
-	classVariableNames: ''
+	classVariableNames: 'Verbose'
 	poolDictionaries: ''
 	category: 'MusicIO-OSC'!
 !OSCVoice commentStamp: '<historical>' prior: 0!
@@ -290,7 +304,7 @@ range: anInterval
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCVoice class' category: 'MusicIO-OSC'!
+!classDefinition: 'OSCVoice class' category: #'MusicIO-OSC'!
 OSCVoice class
 	instanceVariableNames: ''!
 
@@ -321,7 +335,7 @@ bellExample1
 	evList play.
 "	evList loop"														"loop until you stop the scheduler"! !
 
-!OSCVoice class methodsFor: 'examples' stamp: 'stp 12/20/2022 07:20'!
+!OSCVoice class methodsFor: 'examples' stamp: 'stp 1/8/2023 17:39:58'!
 fmExample1
 	"Play a few random notes on the CSL FM instrument"
 	"OSCVoice fmExample1"
@@ -346,7 +360,7 @@ fmExample1
 			(#idec: -> 0.005),
 			(#isus: -> (0.3 to: 0.9)),
 			(#irel: -> 0.1),
-			(#inst: -> '/i1/pn'))).
+			(#inst: -> '/i1/pn' asByteString))).
 	voice := self parameterMap: (self pMapForCSLFM: (11 to: 20)).	"plug in the parameter map"
 	events voice: voice.
 	events play.! !
@@ -883,35 +897,73 @@ scHost
 
 	^self onPort: OSCPort scHost! !
 
+!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 1/2/2023 12:43'!
+verbose
+	^ SirenUtility verbosity > 0! !
 
-!OSCVoice class methodsFor: 'parameter maps'!
+!OSCVoice class methodsFor: 'instance creation' stamp: 'stp 1/2/2023 10:10'!
+verbose: aBool 
+	aBool 	ifTrue: [SirenUtility verbosity: 1]
+		ifFalse: [SirenUtility verbosity: 0]! !
+
+
+!OSCVoice class methodsFor: 'class initialization' stamp: 'stp 12/30/2022 16:39'!
+initialize
+"Set up the class vars"
+"OSCVoice initialize"
+Verbose := false! !
+
+
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/30/2022 16:24'!
 defaultPMap
 	"Answer the default parameterMap for use with OSC."
+	^ self defaultPMap: 11 args: 4! !
 
-	^[ :e |  | arr |
-	arr := Array
-			with: e duration asSec value
-			with: e pitch asHz value
-			with: e ampl asRatio value.
-	TypedOSCMessage for: '/note' with: arr]! !
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/8/2023 17:25:23'!
+defaultPMap: instr args: nArgs 
+	"Answer the default parameterMap for use with OSC."
+	^ [:e | 
+	| arr msg |
+	nArgs = 3
+		ifTrue: [arr := Array
+						with: e duration asSec value
+						with: e ampl asRatio value
+						with: e pitch asHz value]
+		ifFalse: [nArgs = 4
+				ifTrue: [arr := Array
+								with: e duration asSec value
+								with: e ampl asRatio value
+								with: e pitch asHz value
+								with: 0.0]
+				ifFalse: [self error: 'No default OSC patameter map available']].
+	msg := TypedOSCMessage for: '/i' , instr printString , '/pn' with: arr.
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!
-pMapForCSLFM: range
-	"Answer the default parameterMap for use with the CSL FM example instrument."
-	"CSL FMInstrument has args: dur, ampl, c_fr, m_fr, ind, pos, att, dec, sus, rel, i_att, i_dec, i_sus, i_rel"
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString; cr].
+	msg]! !
 
-	^[ :e | | arr inst inst2 sta sto num msg|
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:12:29'!
+pMapForCSLFM: range 
+	"Answer the default parameterMap for use with the CSL FM example
+	instrument. "
+	"CSL FMInstrument has args: dur, ampl, c_fr, m_fr, ind, pos, att, dec,
+	sus, rel, i_att, i_dec, i_sus, i_rel"
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
-	arr := Array new: 14.						"set up the parameter map"
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
+	arr := Array new: 14.
+	"set up the parameter map"
 	arr at: 1 put: e duration asSec value.
 	arr at: 2 put: e ampl value.
 	arr at: 3 put: e pitch asHz value.
@@ -926,29 +978,33 @@ pMapForCSLFM: range
 	arr at: 12 put: e idec.
 	arr at: 13 put: e isus.
 	arr at: 14 put: e irel.
-	
 	msg := TypedOSCMessage for: inst2 with: arr.
-"	Transcript show: msg printString; cr."
-	msg]
-! !
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString;
+				 cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!
-pMapForCSLFMBell: range
-	"Answer the default parameterMap for use with the CSL FM bell instrument."
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:12:20'!
+pMapForCSLFMBell: range 
+	"Answer the default parameterMap for use with the CSL FM bell
+	instrument. "
 	"CSL FM bell has args: dur, ampl, pitch, gliss,rat, ind, pos"
-
-	^[ :e | | arr inst inst2 sta sto num msg|
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
-	arr := Array new: 7.						"set up the parameter map"
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
+	arr := Array new: 7.
+	"set up the parameter map"
 	arr at: 1 put: e duration asSec value.
 	arr at: 2 put: e ampl value.
 	arr at: 3 put: e pitch asHz value.
@@ -956,201 +1012,230 @@ pMapForCSLFMBell: range
 	arr at: 5 put: e ratio.
 	arr at: 6 put: e ind.
 	arr at: 7 put: e pos.
-	
 	msg := TypedOSCMessage for: inst2 with: arr.
-"	Transcript show: msg printString; cr."
-	msg]
-! !
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString;
+				 cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/26/2022 18:17:16'!
-pMapForCSLPluck: range
-	"Answer the default parameterMap for use with the CSL plucked string example instrument."
-
-	^[ :e | | arr inst inst2 sta sto num msg|
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:12:37'!
+pMapForCSLPluck: range 
+	"Answer the default parameterMap for use with the CSL plucked string
+	example instrument."
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
-	arr := Array new: 3.				"set up the parameter map"
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
+	arr := Array new: 3.
+	"set up the parameter map"
 	arr at: 1 put: e ampl value.
 	arr at: 2 put: e pitch asHz value.
 	arr at: 3 put: e pos.
-	
 	msg := TypedOSCMessage for: inst2 with: arr.
-	Transcript show: msg printString; cr.
-	msg]
-! !
+	OSCVoice verbose ifTrue: [Transcript show: msg printString; cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/26/2022 22:39:06'!
-pMapForCSLSHARC1: range
-	"Answer the default parameterMap for use with the CSL sum-of-sines SHARC instrument.
-		CSL SHARCInstrument (short version) args: dur, amp, pitch, pos"
-	"OSCVoice sosExample1"	
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:12:44'!
+pMapForCSLSHARC1: range 
+	"Answer the default parameterMap for use with the CSL sum-of-sines
+	SHARC instrument.
+		CSL SHARCInstrument (short version) args: dur,
+	amp, pitch, pos"
+	"OSCVoice sosExample1"
 	"EventScheduler flush"
-
-	^[ :e | | arr inst inst2 sta sto num msg|
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
 	arr := Array new: 4.
-	arr at: 1 put: e duration asSec value.		"required fields"
+	arr at: 1 put: e duration asSec value.
+	"required fields"
 	arr at: 2 put: e ampl asRatio value.
 	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pos.			
-
+	arr at: 4 put: e pos.
 	msg := TypedOSCMessage for: inst2 with: arr.
-	Transcript show: msg printString; cr.
-	msg]
-! !
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString;
+				 cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/19/2022 18:26'!
-pMapForCSLSHARC2: range
-	"Answer the default parameterMap for use with the CSL sum-of-sines SHARC instrument.
-		CSL SHARCInstrument args: dur, amp, pitch, pos, att, dec, sus, rel"
-	"OSCVoice sosExample2"	
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:12:50'!
+pMapForCSLSHARC2: range 
+	"Answer the default parameterMap for use with the CSL sum-of-sines
+	SHARC instrument.
+		CSL SHARCInstrument args: dur, amp, pitch, pos,
+	att, dec, sus, rel"
+	"OSCVoice sosExample2"
 	"EventScheduler flush"
-
-	^[ :e | | arr inst inst2 sta sto num msg|
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
 	arr := Array new: 8.
-	arr at: 1 put: e duration asSec value.		"required fields"
+	arr at: 1 put: e duration asSec value.
+	"required fields"
 	arr at: 2 put: e ampl value.
 	arr at: 3 put: e pitch asHz value.
-	arr at: 4 put: e pos.			
+	arr at: 4 put: e pos.
 	arr at: 5 put: e att.
 	arr at: 6 put: e dec.
 	arr at: 7 put: e sus.
 	arr at: 8 put: e rel.
-	
 	msg := TypedOSCMessage for: inst2 with: arr.
-"	Transcript show: msg printString; cr."
-	msg]
-! !
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString;
+				 cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/18/2022 07:14'!
-pMapForCSLSimpleFM: range
-	"Answer the default parameterMap for use with the CSL FM example instrument."
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:12:57'!
+pMapForCSLSimpleFM: range 
+	"Answer the default parameterMap for use with the CSL FM example
+	instrument. "
 	"CSL FMInstrument has args: dur, ampl, c_fr, m_fr, ind, pos"
-
-	^[ :e | | arr inst inst2 sta sto num msg|
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
-	arr := Array new: 6.				"set up the parameter map"
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
+	arr := Array new: 6.
+	"set up the parameter map"
 	arr at: 1 put: e duration asSec value.
 	arr at: 2 put: e ampl asRatio value.
 	arr at: 3 put: e pitch asHz value.
 	arr at: 4 put: e pitch asHz value * e ratio.
 	arr at: 5 put: e modIndex.
 	arr at: 6 put: e pos.
-
-
 	msg := TypedOSCMessage for: inst2 with: arr.
-"	Transcript show: msg printString; cr."
-	msg]
-! !
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString;
+				 cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/26/2022 22:58:52'!
-pMapForCSLSnd: range
-	"Answer the default parameterMap for use with the CSL FM example instrument."
-	"CSL SndFileInstrument has args: ampl, pos, start, stop"	
-
-	^[ :e | | arr inst inst2 sta sto num msg|
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:13:02'!
+pMapForCSLSnd: range 
+	"Answer the default parameterMap for use with the CSL FM example
+	instrument. "
+	"CSL SndFileInstrument has args: ampl, pos, start, stop"
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
-	arr := Array new: 2.						"set up the parameter map"
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
+	arr := Array new: 2.
+	"set up the parameter map"
 	arr at: 1 put: e ampl value.
 	arr at: 2 put: e pos.
-"	arr at: 3 put: e start.
+	"arr at: 3 put: e start.
 	arr at: 4 put: e stop.
 "
 	msg := TypedOSCMessage for: inst2 with: arr.
-	Transcript show: msg printString; cr.
-	msg]
-! !
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString;
+				 cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/26/2022 22:38:27'!
-pMapForCSLVectorSHARC: range
-	"Answer the default parameterMap for use with the CSL vector SHARC instrument -- dur, ampl, pitch, pos"
-	"OSCVoice vSOSExample1"	
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 1/7/2023 22:13:08'!
+pMapForCSLVectorSHARC: range 
+	"Answer the default parameterMap for use with the CSL vector SHARC
+	instrument -- dur, ampl, pitch, pos"
+	"OSCVoice vSOSExample1"
 	"EventScheduler flush"
-
-	^[ :e | | arr inst inst2 sta sto num msg|
+	^ [:e | 
+	| arr inst inst2 sta sto num msg |
 	inst := e inst.
-	inst ifEmpty: [inst := '/i1/pn'].
+	inst
+		ifEmpty: [inst := '/i1/pn'].
 	sta := inst findString: '/i'.
 	sto := inst findString: '/' startingAt: sta + 2.
-	num :=  (inst copyFrom: sta + 2 to: sto - 1) asInteger.
-	num := num + range start - 1.				"map inst num to range"
-	(num > range last)
+	num := (inst copyFrom: sta + 2 to: sto - 1) asInteger.
+	num := num + range first - 1.
+	"map inst num to range"
+	num > range last
 		ifTrue: [num := range last].
-	inst2 := '/i', num printString, (inst copyFrom: sto to: inst size  ). 
-
+	inst2 := '/i' , num printString
+				, (inst copyFrom: sto to: inst size).
 	arr := Array new: 4.
-	arr at: 1 put: e duration asSec value.		"required fields"
+	arr at: 1 put: e duration asSec value.
+	"required fields"
 	arr at: 2 put: e ampl value.
 	arr at: 3 put: e pitch asHz value.
 	arr at: 4 put: e pos.
-	
 	msg := TypedOSCMessage for: inst2 with: arr.
-	Transcript show: msg printString; cr.
-	msg]
-! !
+	OSCVoice verbose
+		ifTrue: [Transcript show: msg printString;
+				 cr].
+	msg]! !
 
-!OSCVoice class methodsFor: 'parameter maps'!
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/31/2022 10:18'!
 pMapForMIDI
 	"Answer the default parameterMap for use with OSC-to-MIDI. 
-	In this class, we create and return a OSCMessage with data taken from the given event."
-
-	^[ :e | 
+	In this
+	class, we create and return a OSCMessage with data taken from the
+	given event."
+	^ [:e | 
 	| arr timestamp |
 	arr := Array
-			with: (e voice isInteger ifTrue: [e voice] ifFalse: [1])
-			with: e pitch asMIDI value
-			with: e ampl asMIDI value.
-	timestamp := Timestamp now.
-	OSCBundle with: (Array 
-			with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
-			with: (OSCBundle 
-				with: (Array with: (TypedOSCMessage for: '/osc/midi/out/noteOff' with: arr))
-				at: (timestamp addMilliseconds: e duration asMsec value)))
+				with: (e voice isInteger
+						ifTrue: [e voice]
+						ifFalse: [1])
+				with: e pitch asMIDI value
+				with: e ampl asMIDI value.
+	timestamp := Time now.
+	OSCBundle
+		with: (Array
+				with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
+				with: (OSCBundle
+						with: (Array
+								with: (TypedOSCMessage for: '/osc/midi/out/noteOff' with: arr))
+						at: (timestamp addMilliseconds: e duration asMsec value)))
 		at: timestamp]! !
 
 !OSCVoice class methodsFor: 'parameter maps'!
@@ -1168,22 +1253,27 @@ pMapForMIDItoFM
 "	Transcript show: arr printString; cr."
 	TypedOSCMessage for: e inst with: arr]! !
 
-!OSCVoice class methodsFor: 'parameter maps'!
+!OSCVoice class methodsFor: 'parameter maps' stamp: 'stp 12/31/2022 10:18'!
 pMapWithBundle
-	"Answer the default parameterMap for use with OSC-to-MIDI. In this class, we create and return a TypedOSCMessage with data taken from the given event. This allows us to have other versions that create OSC bundles."
-
-	^[ :e | | arr |
-	arr := Array with: 1
-			with: e pitch asMIDI value
-			with: e ampl asMIDI value.
-	OSCBundle 
-		with: (Array with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
-				with: (OSCBundle 
+	"Answer the default parameterMap for use with OSC-to-MIDI. In this
+	class, we create and return a TypedOSCMessage with data taken from
+	the given event. This allows us to have other versions that create OSC
+	bundles. "
+	^ [:e | 
+	| arr |
+	arr := Array
+				with: 1
+				with: e pitch asMIDI value
+				with: e ampl asMIDI value.
+	OSCBundle
+		with: (Array
+				with: (TypedOSCMessage for: '/osc/midi/out/noteOn' with: arr)
+				with: (OSCBundle
 						with: (TypedOSCMessage for: '/osc/midi/out/noteOff' with: arr)
-						at: (Timestamp now addMilliseconds: e duration asMsec value)))]! !
+						at: (Time now addMilliseconds: e duration asMsec value)))]! !
 
 
-!classDefinition: #AbstractOSCPacket category: 'MusicIO-OSC'!
+!classDefinition: #AbstractOSCPacket category: #'MusicIO-OSC'!
 Object subclass: #AbstractOSCPacket
 	instanceVariableNames: 'oscBytes'
 	classVariableNames: ''
@@ -1228,7 +1318,7 @@ init
 	^self! !
 
 
-!classDefinition: #OSCBundle category: 'MusicIO-OSC'!
+!classDefinition: #OSCBundle category: #'MusicIO-OSC'!
 AbstractOSCPacket subclass: #OSCBundle
 	instanceVariableNames: 'messages time'
 	classVariableNames: 'MillisecScale MillisecToNTP SecsInAYear'
@@ -1272,9 +1362,9 @@ toOSCBytes: aConvertor
 			aConvertor nextPutAll: aMessage oscBytes]! !
 
 
-!OSCBundle methodsFor: 'initialize-release'!
+!OSCBundle methodsFor: 'initialize-release' stamp: 'stp 12/31/2022 10:18'!
 init: aCollection 
-	self init: aCollection time: Timestamp now! !
+	self init: aCollection time: Time now! !
 
 !OSCBundle methodsFor: 'initialize-release'!
 init: aCollection time: aTime 
@@ -1286,13 +1376,13 @@ init: aCollection time: aTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCBundle class' category: 'MusicIO-OSC'!
+!classDefinition: 'OSCBundle class' category: #'MusicIO-OSC'!
 OSCBundle class
 	instanceVariableNames: ''!
 
-!OSCBundle class methodsFor: 'instance creation'!
-with: aCollection
-	^self with: aCollection at: Timestamp now! !
+!OSCBundle class methodsFor: 'instance creation' stamp: 'stp 12/31/2022 10:18'!
+with: aCollection 
+	^ self with: aCollection at: Time now! !
 
 !OSCBundle class methodsFor: 'instance creation'!
 with: aCollection at: aTimestamp
@@ -1353,7 +1443,7 @@ example2
 	^self with: (Array with: self example1 with: OSCMessage scDecreaseVolume)! !
 
 
-!classDefinition: #OSCMessage category: 'MusicIO-OSC'!
+!classDefinition: #OSCMessage category: #'MusicIO-OSC'!
 AbstractOSCPacket subclass: #OSCMessage
 	instanceVariableNames: 'address arguments'
 	classVariableNames: ''
@@ -1368,10 +1458,10 @@ Instance Variables:
 !
 
 
-!OSCMessage methodsFor: 'osc'!
+!OSCMessage methodsFor: 'osc' stamp: 'stp 1/8/2023 17:23:12'!
 addressToOSCBytes: convertor 
 	"Convert the address to the OSC format"
-	address toOSCBytes: convertor.
+	address asByteString toOSCBytes: convertor.
 	^self! !
 
 !OSCMessage methodsFor: 'osc'!
@@ -1411,17 +1501,17 @@ printOn: aStream
 	aStream nextPutAll: 'OSC: ', address, '  ', arguments printString.! !
 
 
-!OSCMessage methodsFor: 'initialize-release'!
-initAddress: t1 arguments: t2 
+!OSCMessage methodsFor: 'initialize-release' stamp: 'stp 1/8/2023 17:09:25'!
+initAddress: addr arguments: args 
 
-	address := t1.
-	arguments := t2.
+	address := addr asByteString.
+	arguments := args.
 	self init.
 	^self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCMessage class' category: 'MusicIO-OSC'!
+!classDefinition: 'OSCMessage class' category: #'MusicIO-OSC'!
 OSCMessage class
 	instanceVariableNames: ''!
 
@@ -1456,9 +1546,9 @@ example3
 	^self for: '/example3' with: #(20 30 'blah')! !
 
 
-!classDefinition: #TypedOSCMessage category: 'MusicIO-OSC'!
+!classDefinition: #TypedOSCMessage category: #'MusicIO-OSC'!
 OSCMessage subclass: #TypedOSCMessage
-	instanceVariableNames: ''
+	instanceVariableNames: 'typeString'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MusicIO-OSC'!
@@ -1475,24 +1565,31 @@ argumentsToOSCBytes: convertor
 	super argumentsToOSCBytes: convertor.
 	^self! !
 
-!TypedOSCMessage methodsFor: 'osc'!
+!TypedOSCMessage methodsFor: 'osc' stamp: 'stp 1/8/2023 17:22:32'!
 typesToOSC: converter 
 	"Convert the arguments to an OSC type string."
 
-	| t2 t3 |
-	arguments isEmpty ifTrue: [^self].
-	arguments do: [:t4 | t4 toOSCTypeOn: converter].
-	t2 := 1.
-	t3 := 4 - (converter position \\ 4).
-	[t2 <= t3]
+	| ind1 ind2 |
+	arguments isEmpty ifTrue: [typeString _ ''. ^self].
+	typeString _ arguments collect: [ :arg | arg toOSCTypeOn: converter].
+	typeString _ typeString inject: '' asByteString into: [ :str :chr | str , chr asString].
+	ind1 := 1.
+	ind2 := 4 - (converter position \\ 4).
+	[ind1 <= ind2]
 		whileTrue: 
 			[converter nextPut: 0.
-			t2 := t2 + 1].
+			ind1 := ind1 + 1].
 	^self! !
+
+
+!TypedOSCMessage methodsFor: 'printing' stamp: 'stp 1/8/2023 17:24:33'!
+printOn: aStream
+
+	aStream nextPutAll: 'OSC: ', address, '  ', typeString printString, '  ', arguments printString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'TypedOSCMessage class' category: 'MusicIO-OSC'!
+!classDefinition: 'TypedOSCMessage class' category: #'MusicIO-OSC'!
 TypedOSCMessage class
 	instanceVariableNames: ''!
 
@@ -1533,7 +1630,7 @@ start
 	^self for: '/start'! !
 
 
-!classDefinition: #OSCByteConvertor category: 'MusicIO-OSC'!
+!classDefinition: #OSCByteConvertor category: #'MusicIO-OSC'!
 Object subclass: #OSCByteConvertor
 	instanceVariableNames: 'packetData'
 	classVariableNames: ''
@@ -1564,10 +1661,10 @@ nextPutAll: t1
 
 	^packetData nextPutAll: t1! !
 
-!OSCByteConvertor methodsFor: 'stream'!
+!OSCByteConvertor methodsFor: 'stream' stamp: 'stp 1/8/2023 17:15:17'!
 nextPutType: char
-"	Transcript show: (String with: char); space."
-	^self nextPut: char asInteger! !
+"	Transcript show: (String with: char); space." 
+	^self nextPut: char asCharacter asInteger! !
 
 !OSCByteConvertor methodsFor: 'stream'!
 position
@@ -1581,7 +1678,7 @@ init
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OSCByteConvertor class' category: 'MusicIO-OSC'!
+!classDefinition: 'OSCByteConvertor class' category: #'MusicIO-OSC'!
 OSCByteConvertor class
 	instanceVariableNames: ''!
 
@@ -1590,4 +1687,5 @@ new
 
 	^super new init! !
 
+OSCVoice initialize!
 OSCBundle initialize!

@@ -2009,9 +2009,14 @@ The verbosity flag in the SirenUtility class allows for logging of all OSC to th
 &emsp;&emsp;&emsp;with: event ampl asRatio value.</br>
 &emsp;TypedOSCMessage for: '/note-on' with: arr]</br>
 </br>
-For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://fastlabinc.com/CSL/Occam.zip). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example demonstrates using OSC with the Occam convertor, to test OSC output using a MIDI synthesizer.</br>
+For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://fastlabinc.com/CSL/Occam.zip). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example plays a scale on an ugly FM instrument.</br>
 </br>
 &emsp;[OSCVoice midiScaleExample]</br>
+</br>
+</br>
+Play a scale on the CSL plucked string voice.</br>
+&emsp;"OSCVoice scaleExample"</br>
+</br>
 </br>
 There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "osc_synth_server" target, which sets up a  server with a mix of FM synthesis, sound file playback, granulation and other instruments (see the list below). Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.</br>
 </br>
@@ -2048,24 +2053,44 @@ Then you can try the OSCVoice examples that follow.</br>
 &emsp;[OSCVoice fmExample1]</br>
 &emsp;[OSCVoice sndExample1]</br>
 </br>
-These examples loop endlessly, so you have to interrupt or flush the scheduler to stop them</br>
+Play notes on CSL FM bell instruments</br>
+&emsp;"OSCVoice bellExample1"</br>
 </br>
-&emsp;[OSCVoice fmExample2. &emsp;&emsp;5 wait.</br>
-&emsp;OSCVoice sndExample2.&emsp;&emsp;5 wait.</br>
-&emsp;OSCVoice fmExample4]</br>
-&emsp;[EventScheduler flush]</br>
 </br>
-Siren OSC also supports control output, as in this example, which sends values from a linear envelope out to the address "/osc/1/ampl" at the rate of 4 Hz (use dumpOSC to view the results).</br>
+Play an FM bell using CSL; fork a block that plays a note and waits a bit; stop the scheduler to stop the block.</br>
 </br>
-&emsp;[OSCVoice functionExample]</br>
+&emsp;"OSCVoice fmExample4"</br>
 </br>
-You could rewrite this to use the function's change threshold instead of a constant update rate.</br>
-</br>
-As an example that mixes both styles, the following expression plays a long low FM note and then uses Siren function objects to send continuous controls to make the note glissando down and pan from left to right.</br>
-</br>
-&emsp;[OSCVoice fmExample3]</br>
 </br>
 For more examples, set the default voice to OSC (using the Siren utility control panel) and run the built in examples on the other pages of this outline.</br>
+</br>
+Play short notes on the 16 SHARC instruments (version w vibrato)</br>
+&emsp;"OSCVoice sharcExample1"&emsp;&emsp;</br>
+</br>
+Play long low notes on the 16 SHARC instruments</br>
+&emsp;"OSCVoice sharcExample2"&emsp;&emsp;</br>
+&emsp;"OSCVoice sharcExample4"&emsp;&emsp;</br>
+</br>
+Play notes on CSL FM bell instruments</br>
+&emsp;"OSCVoice bellExample1"</br>
+</br>
+Play random notes on the CSL simple vector SHARC instruments</br>
+&emsp;"OSCVoice vSOSExample1"&emsp;</br>
+&emsp;&emsp;</br>
+Play long low notes on the fancy vector SOS instruments</br>
+&emsp;"OSCVoice vSOSExample2"&emsp;&emsp;</br>
+</br>
+Play on the CSL granulator1 instrument - short bursts of garbled speak'n'spell for 20 sec</br>
+&emsp;"OSCVoice granulatorExample1"</br>
+</br>
+Play on the CSL granulator2 instrument until interrupted - long low drones</br>
+&emsp;"OSCVoice granulatorExample2"&emsp;</br>
+</br>
+Play on the CSL granulator2 instrument - layers of long low drones</br>
+&emsp;"OSCVoice granulatorExample2: 1"</br>
+&emsp;"OSCVoice granulatorExample2: 2"</br>
+&emsp;"OSCVoice granulatorExample2: 3"</br>
+</br>
 </br>
 ----</br>
 </br>
@@ -3438,6 +3463,8 @@ STP world file-ins (Edit the relative paths below to suit your installation)</br
 </br>
 [ #(</br>
 &emsp;'Squeak-Siren-pre-build.cs'&emsp;&emsp;&emsp;&emsp;"minor fixes and extensions"</br>
+&emsp;'SirenChanges-230116.cs'</br>
+&emsp;'SirenChanges-230122.cs'</br>
 &emsp;'TheWorldMenu.stp.230116.cs'</br>
 &emsp;'NewWorldMenu2.230117.cs'</br>
 &emsp;'PackagePaneBrowser-packageListFix-stp-230117.st'</br>
@@ -3469,12 +3496,15 @@ System reorg from ./Siren9C/FileIns/SqueakSystemReorg.st (file it in)</br>
 </br>
 &emsp;'MusicUI-DisplayLists.st'</br>
 &emsp;'MusicUI-DisplayListViews.st'</br>
-&emsp;'MusicUI-Layout.st'</br>
 &emsp;'MusicUI-Editors.st'</br>
+&emsp;'MusicUI-Layout.st'</br>
+&emsp;'MusicUI-Functions.st'</br>
 ) do: [ :file |</br>
 &emsp;Transcript show: 'Filing in ', file; cr.</br>
 &emsp;(FileStream fileNamed: ('./Siren9C/Siren9C_Sources_Squeak/', file)) fileIn]].</br>
 ]</br>
+</br>
+Make a new change set</br>
 </br>
 Load some new fonts</br>
 </br>
@@ -3485,22 +3515,37 @@ Load some new fonts</br>
 Load music icons from the font</br>
 </br>
 [(FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn.</br>
-DisplayListView loadNoteGlyphsFromFontSized: 100.</br>
-DisplayListView remapNoteHeadGlyphs]</br>
-</br>
+&emsp;DisplayListView loadNoteGlyphsFromFontSized: 100.</br>
+&emsp;DisplayListView remapNoteHeadGlyphs.</br>
+&emsp;DisplayListView loadTransportGlyphs]</br>
 </br>
 Class initializations</br>
 </br>
-[&emsp;EventScheduler initialize.</br>
-&emsp;SEventQueue initialize.</br>
-&emsp;MusicModel initializeGenerality.</br>
-&emsp;MIDIVoice initialize.</br>
+[&emsp;MusicEvent initialize.</br>
+&emsp;EventList initialize.</br>
+&emsp;MIDIPitch initialize.</br>
+&emsp;MIDIVelocity initialize.</br>
+&emsp;SymbolicLoudness initialize.</br>
+&emsp;SymbolicPitch initialize.</br>
+&emsp;MusicModel initialize.</br>
+&emsp;Amplitude initialize.</br>
+&emsp;MDuration initialize.</br>
+&emsp;Pitch initialize.</br>
 &emsp;PitchClass initialize.</br>
-&emsp;MIDIDevice initialize.</br>
-&emsp;PortMIDILibrary initialize.</br>
+&emsp;Scale initialize.</br>
+&emsp;EventScheduler initialize.</br>
 &emsp;PortModel initialize.</br>
+&emsp;SEventQueue initialize.</br>
 &emsp;SirenUtility initialize.</br>
 &emsp;SirenSession initialize.</br>
+&emsp;Voice initialize.</br>
+&emsp;MIDIDevice initialize.</br>
+&emsp;MIDIPort initialize.</br>
+&emsp;MIDIVoice initialize.</br>
+&emsp;PortMIDILibrary initialize.</br>
+&emsp;OSCBundle initialize.</br>
+&emsp;OSCVoice initialize.</br>
+&emsp;FunctionView initialize.</br>
 &emsp;SirenSession new.&emsp;&emsp;"instantiate singleton"</br>
 ]</br>
 </br>
@@ -3515,7 +3560,7 @@ family := 'LibreBaskerville'.</br>
 "family := 'BitstreamVeraSerif'."</br>
 base := 10.5.</br>
 {</br>
-   { #setButtonFontTo:&emsp;.&emsp;&emsp;family&emsp;.&emsp;base }.</br>
+   { #setButtonFontTo:&emsp;&emsp;.&emsp;&emsp;family&emsp;.&emsp;base }.</br>
    { #setMenuFontTo:&emsp;&emsp;.&emsp;&emsp;family&emsp;.&emsp;base + 1.5 }.</br>
    { #setListFontTo:        &emsp;.&emsp;&emsp;family&emsp;.&emsp;base  }.</br>
    { #setCodeFontTo:      &emsp;.&emsp;&emsp;family&emsp;.&emsp;base + 1.5  }.</br>
@@ -3534,7 +3579,6 @@ Preferences setPreference: #reverseWindowStagger toValue: false]</br>
 </br>
 [WorkbookWindow openFolder: './Siren9C/Workbook/' named: 'Siren Workbook']</br>
 </br>
-</br>
 Screen background image</br>
 </br>
 [Form openAsBackground: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' ]</br>
@@ -3544,9 +3588,9 @@ Smalltalk garbageCollect</br>
 </br>
 Done - make a snapshot here and get to work...</br>
 </br>
-File-out</br>
+File-out - Remember to remove the class initializations after you save these</br>
 </br>
-[SirenUtility fileoutCategories]</br>
+[SirenUtility fileoutCategories] </br>
 </p><hr><h3 id="BuildingSireninCuis6">34 - Building Siren in Cuis 6</h3>Script to build Siren in Cuis (Version 9C)</br>
 &emsp;Do not file this in - step through the blocks 1 by 1</br>
 </br>
@@ -4149,7 +4193,6 @@ Music notation demos</br>
 [DynamicCloud focusExample]</br>
 [HauerSteffensView scaleExample]</br>
 [HauerSteffensView scaleExample2]</br>
-[HauerSteffensView randomExampleQ]</br>
 [ExtDynamicSelectionCloud chordExample]</br>
 [PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]</br>
 </br>

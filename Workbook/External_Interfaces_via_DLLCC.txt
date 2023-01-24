@@ -1,4 +1,4 @@
-Siren DLLCC External Interfaces
+Siren DLLCC External Interfaces (VisualWorks-only to-date)Note: The LibSndFile, PortAudio and FFTW back-ends are not needed in Squeak, and the PortMIDI driver has been ported using Squeak FFI (the similar to VisualWorks DLLCC).  See the page above for MIDI details.
 
 Siren includes several interfaces between Smalltalk and C to access sound and MIDI I/O in a cross-platform manner. These use the DLLCC package to generate Smalltalk classes whose methods are references to C functions in a dynamic library. 
 

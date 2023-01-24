@@ -1,4 +1,4 @@
-Data Load/Store and the Paleo Database
+Data Load/Store and the Paleo Database (VisualWorks-only)
 
 Siren supports several mechanisms for object persistency. First of all, the Smalltalk virtual image facility allows one to save Siren data in a convenient database format (the Smalltalk virtual image snapshot file). The SirenSession class shared dictionaries hold Sounds, EventLists, and Voices in the virtual image, so that they are saved across snapshots. There's a utility method to load the user's sound and score data into the image, and one to flush the shared storage.
 
@@ -6,18 +6,17 @@ Siren supports several mechanisms for object persistency. First of all, the Smal
 	[SirenSession openTransport]		"See the sound and score menus"
 	"EventScheduler interrupt; flush"
 	"EventScheduler release"
-	[SirenSession initialize]			"flush everything"
+	[SirenSession initialize]				"flush everything"
 
 Now use the pop-up menus in the transport view to browse and select sounds, scores, timers, etc.
-
+
 Siren Native Format and BOSS
 
 As described in the sections above, Siren can read and write a variety of standard multimedia file formats. Where we require features not present in other formats we also use several Siren-specific file formats, for example to store sets of envelope functions as breakpoint envelopes in a single file -- Siren's ".env" files supported by the Function class and used by the Loris package.
 
 Siren also defines a new package file format called ".s7" files. These are folders (named xxx.s7) that contain various kinds of files (sound, SDIF, envelope, LPC data, etc.) that are to be treated as a group. This supports, e.g., versioning of Loris analysis/resynthesis files. The code that implements this format is in the class SirenUtility.
-
-Paleo SMS (Squeak MinneStore)
-
+
+Paleo SMS (Squeak MinneStore)
 Note: The paleo test data is not included with this release, and the examples below are stale.
 
 MinneStore is a smalltalk native object-oriented database.

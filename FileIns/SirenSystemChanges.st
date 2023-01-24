@@ -70,7 +70,7 @@ extent: extentPoint depth: bitsPerPixel fromBytes: aByteArray
 
 	^self extent: extentPoint depth: bitsPerPixel bits: aByteArray swapWords swapBytes	! !
 
-!CharacterSequence methodsFor: 'converting' stamp: 'stp 12/1/2022 23:41:31'!
+!String methodsFor: 'converting' stamp: 'stp 12/1/2022 23:41:31'!
 clipTo: smallSize
 	"return myself or a copy shortened by clipping to smallSize"
 
@@ -83,7 +83,7 @@ clipTo: smallSize
 !Form methodsFor: 'display box access' stamp: 'stp 12/2/2022 04:20:24'!
 bounds
 	^ Rectangle
-		origin: `0 @ 0`
+		origin: (0 @ 0)
 		corner: width @ height! !
 
 'From Cuis 6.0 [latest update: #5569] on 1 December 2022 at 11:58:13 pm'!

@@ -1,22 +1,14 @@
 Siren Design Notes
 
 There are several elements to Siren:
-	the Smoke music representation language
-		(music magnitudes, events, event lists, generators, functions, and sounds);
-	voices, schedulers and I/O drivers
-		(real-time and file-based voices, sound and MIDI I/O);
-	user interface components for musical applications
-		(extended graphics framework, layout managers, UI tools and widgets); and
-	several built-in applications
-		(editors and browsers for Siren objects).
-
+	1. The Smoke music representation language		(object models for music magnitudes, events, event lists, generators, functions, and sounds);	2. Voices, schedulers and I/O drivers		(real-time and file-based "voice" objects for sound, score file, OSC, and MIDI I/O);	3. User interface components for musical applications		(a music/audio UI framework, tools, and widgets);	4. Several built-in applications 		(editors and browsers for Smoke objects); and	5. External library interfaces for streaming I/O and DSP math		(sound/MIDI/OSC I/O, fast FFT, CSL & Loris sound analysis/resynthesis packages )
 Siren Design Patterns
 
 To understand Siren's design, you should be familiar with the terminology of object-oriented design patterns, as laid out in the books "Design Patterns: Elements of Reusable Object-Oriented Software" (Gamma, Helm, Johnson, and Vlissides, Addison-Wesley 1995), and "The Design Patterns Smalltalk Companion" (Alpert, Brown, and Woolf, Addison-Wesley 1998).
 
 The following list introduces the design patterns found in Siren, and gives the parts of the system where they are used and a brief definition of each.
 
-Composite -- events/event lists, display items/display lists -- class structure for building hierarchies of objects
+Composite -- events/event lists, display items/display lists -- class structure for building tree-like hierarchies of objects
 
 Adaptor -- voices, ports, graphics -- interface objects translate between message protocol "languages"
 
@@ -37,10 +29,10 @@ Visitor -- Smoke, voices, graphics -- active objects traverse data structures op
 Double-dispatching -- Smoke -- polymorphic operators support mixed-mode operations among families of classes.
 
 Multi-threading -- scheduler
-
+
 The Siren Class Categories
 
-The list below is the class categories (akin to subpackages) in the Siren namespace. The same list is a class message (categoryList) in class SirenUtility.
+The list below is the class categories (akin to sub-packages) in  Siren; this is how the classes are organized.
 
 Music-Models-Representation -- abstract music magnitude models
 Music-Models-Implementation -- music magnitude implementation classes
@@ -48,30 +40,21 @@ Music-Events -- central event classes, EventLists
 Music-EventGenerators -- EventGenerators: chords, clouds, etc.
 Music-EventModifiers -- EventModifiers: rubato, swell
 Music-Functions -- functions of time
-Music-Sound -- abstract and concrete sound classes
-Music-Support -- Scheduler, Utility, Session classes, abstract device, port and editor models
-Music-PitchClasses -- Pitch classes (octave-independent pitch notation), chords and key signatures
-Music-PitchScales -- Scales and harmony
+Music-Sound -- abstract and concrete sound classesMusic-PitchClasses -- Pitch classes (octave-independent pitch notation), chords and key signaturesMusic-PitchScales -- Scales and harmonyMusic-Support -- Scheduler, Utility, Session classes, abstract device, port and editor models
 
-MusicIO-External -- External interfaces to PortAudio, PortMIDI, LibSndFile, etc.
-MusicIO-MIDI -- MIDI voices and devices
+MusicIO-Voices -- Voice hierarchyMusicIO-MIDI -- MIDI voices and devices
 MusicIO-OSC -- OSC streams
-MusicIO-Sound -- Sound ports
-MusicIO-Voices -- Voice hierarchy
 
 MusicUI-DisplayLists -- Core display items and list
 MusicUI-DisplayListViews -- Basic DL views
 MusicUI-Editors -- Music editors and support
 MusicUI-Functions -- Function editors
 MusicUI-Layout -- Layout managers for various notations
-MusicUI-Sound -- Sound and spectrum views
-
+VisualWorks only:
 MusicApps-CSL -- Support for the CREATE Signal Library (CSL)
 MusicApps-Loris -- Support for the Loris analysis/resynthesis package
-MusicApps-LPC -- Rudiomentary support for linear predictive coding
+MusicApps-LPC -- Rudimentary support for linear predictive coding
 MusicApps-SHARC -- Readers for the Sandell Harmonic Archive timbre database
-
-There are separate sub-namespaces for the SWIG-generated CSL and Loris classes.
 
 The primary class hierarchies of Siren are given below grouped into categories. The text indentation signifies sub/super-class relationships, and instances variable names are shown.
 

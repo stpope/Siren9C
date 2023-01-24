@@ -2,11 +2,11 @@ Using the Siren Utility Pane and Transports
 
 Support classes SirenUtility and SirenSession
 
-There are two classes with utility and session management methods: SirenUtility and SirenSession.
+There are two classes (in category Music-Support) with utility and session management methods: SirenUtility and SirenSession.
 
-SirenUtility is never instantiated, but has class methods for a number of usefiul utility functions related to system configuration (global verbosity flag and search directories). There are special functions for file search (see the section below on this page) and for handling s7 files (see below as well). The SirenUtility class initialization method sets the global logging verbosity level and creates a couple of lists of directories for searching for sound or score files. Users will typically customize this method so that Siren can find their data files.
+SirenUtility is never instantiated, but has class methods for a number of usefiul utility functions related to system configuration (global verbosity flag and search directories).  There are special functions for file search (see the section below on this page) and for handling s7 files (see below as well).  The SirenUtility class initialization method sets the global logging verbosity level and creates a couple of lists of directories for searching for sound or score files. Users will typically customize this method so that Siren can find their data files.
 
-SirenSession holds onto the user's persistent data (e.g., sounds and scores) in class-side dictionaries. This means that, by default, every sound or score that you give a name to becomes persistent and is stored in your Smalltalk virtual image. There are special functions for loading these caches from your hard disk, or for flushing them.
+SirenSession holds onto the user's persistent data (e.g., sounds, voices and scores) in class-side dictionaries. This means that, by default, every sound or score that you give a name to becomes persistent and is stored in your Smalltalk virtual image. There are special functions for loading these caches from your hard disk, or for flushing them.
 
 Links to the EventScheduler
 
@@ -18,12 +18,12 @@ There are two main GUIs for Siren configuration: the Utility and the Transport.
 
 The Siren utility panel has buttons for configuring and testing MIDI, sound, and OSC I/O, as well as for setting some global values such as the logging verbosity. There are also buttons in this panel for loading and flushing the session data.
 
-To open the Siren utility view, use the button in the Launcher, or execute
-	[SirenSession openUtility] d
+To open the Siren utility view, use the button in the Launcher, or execute,
+	[SirenSession openUtility] or use the new vertical version,
+	[SirenSession openUtilityVert] 
+The left-most (or top-most) buttons in the pane are for setting up and testing the MIDI and OSC I/O defaults. The next section is for sound I/O configuration.
 
-The left-most buttons in the pane asre for setting up and testing the MIDI and OSC I/O defaults. The 2nd row is for sound I/O cnofiguration.
-
-SirenTransport Panel
+SirenTransport Panel (VisualWorks-only to-date)
 
 The other SirenSession class GUI is the transport panel; to open this, hold down <SHIFT> while pressing the Siren utility button in the launcher, or execute,
 	[SirenSession openTransport] d
@@ -46,22 +46,22 @@ Find a file with the given name in any of the user's sound/score folders
 
 Find a directory
 
-	[SirenUtility findDir: 'Data' tryHard: false] p
-	[SirenUtility findDir: 'Frameworks' tryHard: true] p
+	[SirenUtility findDir: 'SHARC' tryHard: false] p
+	[SirenUtility findDir: 'NotThere' tryHard: true] p
 
 List all files with the given extension
 
 	[SirenUtility findFiles: 'au'] p
 	[SirenUtility findFiles: 'mid'] p
 
-Create a new s7 folder and ask for the next free of a specific type name in it
+Create a new s7 folder and ask for the next free of a specific type name in it ( (VisualWorks-only to-date))
 
 	[SirenUtility createS7: ((SirenUtility findDir: 'Data/'), 'testing')] d
 	[SirenUtility nextName: 'testing' type: 'aiff' ] p
 
 SirenSession Storage
-	SirenSession eventLists
-	SirenSession sounds
+	[SirenSession eventLists] I
+
 
 Recreate the instance
 	SirenSession refresh

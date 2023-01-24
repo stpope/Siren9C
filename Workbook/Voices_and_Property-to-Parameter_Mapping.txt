@@ -4,7 +4,7 @@ The "performance" of events takes place via voice objects. Event properties are 
 
 Voice objects can also read input streams (e.g., real-time controller data or output from a coprocess), and send messages to other voices, schedulers, event modifiers or event generators. This is how one uses the system for real-time control of complex structures.
 
-The actual property-to-parameter mapping is often controlled by a dictionary or a block (the parameter map) that takes the properties of an event and creates a statement or command for some output format. This allows the user to customize the voices at run-time (see the OSCVoice for good examples).
+The actual property-to-parameter mapping is often controlled by a dictionary or a block (the parameter map) that takes the properties of an event and creates a statement or command for some output format. This allows the user to customize the voices at run-time (see the OSCVoice class for good examples).
 
 Voices and Schedulers
 
@@ -14,11 +14,9 @@ Examples
 
 Create a random event list and write it out to notelist files in any of several formats. Edit the file.
 
-	[CmixVoice randomExampleToFileAndEdit]
-	[CmusicVoice randomExampleToFileAndEdit]
 	[CsoundVoice randomExampleToFileAndEdit]
 	[SuperColliderVoice randomExampleToFileAndEdit]
-
+	[CmixVoice randomExampleToFileAndEdit]	[CmusicVoice randomExampleToFileAndEdit]
 Create an event list of 20 notes with semi-random values and play it on a MIDI output voice.
 
 	[(EventList randomExample: 20) playOn: MIDIVoice default]
@@ -34,13 +32,13 @@ Use the same random list creation method, but add three lists in parallel.
 Complex Multimedia Example: Generate and play a mixed-voice event list; a cloud plays alternating notes on MIDI and built-in synthesis, and a list of action events flashes screen rectangles in parallel.
 
 	[ | el |
-	el := (Cloud dur: 6				"Create a 6-second stochastic cloud"
+	el := (Cloud dur: 6	 sec			"Create a 6-second stochastic cloud"
 		pitch: (48 to: 60)				"choose pitches in this range"
 		ampl: (40 to: 70) 				"choose amplitudes in this range"
-									"select from these 2 voices"
+										"select from these 2 voices"
 		voice: (Array with: (MIDIVoice default) with: (OSCVoice default))
 		density: 5) eventList.			"play 5 notes per sec. and get the events"
-									"add some animation events"
+										"add some animation events"
 	el addAll: ActionEvent listExample.
 	el play]							"and play the merged event list"
 
@@ -50,19 +48,20 @@ The Voice class has a default subclass. This can be changed with the SirenUtilit
 	[Voice default] i
 
 This can be changed with the Siren Utility view.
-As with EventLists, Voices can also be stored in a global dictionary and acccessed by name.
+As with EventLists, Voices can also be stored in a global dictionary and acccessed by name.
 
 	[SirenSession voice: #oscFM put: (OSCVoice map: #pMapForCSLSimpleFM)] d
 	[SirenSession voice: #defaultMIDI put: (MIDIVoice named: 'oboe' onDevice: (MIDIDevice on: 1) channel: 1)] d
 	[SirenSession voiceNamed: #oscFM] i
 
-MIDI Input Voices
+There's a tool called the VoiceDialog for creating voices, try it out.  The left-most section is for selecting the medium (MIDI, OSC, Sound and File) and voice name.  The other sections are dependent on the selected medium, and allow one to configure voices. The "Create voice" button then creates the voice in the global dictionary of voices.	[VoiceDialog open] d
+MIDI Input Voices (broken in Siren 9C)
 
 The MIDI file voice can read standard MIDI file format and generate a Siren event list, as in the example below.
 
-	(MIDIFileVoice newOn: 'K194.MID')
-		readOnto: (EventList newNamed: #K194).
-	(EventList named: #K194) open.
+	[(MIDIFileVoice newOn: 'jazzrock.mid')
+		readOnto: (EventList newNamed: #JR).
+	(EventList named: #JR) explore]
 
 Extending the Voice Framework
 

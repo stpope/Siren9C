@@ -6,12 +6,12 @@ Based on the display list view framework and the Navigator layout managers, Sire
 
 	[TimeSequenceView randomExample]
 
-In the time sequence view, the "note head" signifies the event's voice, not the duration.  Try zooming this view.
+In the time sequence view, the "note head" signifies the event's voice, not the duration.  Try zooming this view.  Note also that the control panel now has a 4th row with buttons for rewind, stop and play.
 
 A pitch/time view is an extension of this that uses the vertical dimension to display an event's pitch, as in piano-roll notation; for example, to display a pitch/time view on a 3-stream event list, try,
 
 	[PitchTimeView randomExample]
-	[PitchTimeView openOnEventList: (EventList scaleExampleFrom: 48 to: 84 in: 10)]
+	[PitchTimeView openOnEventList: (EventList scaleFrom: 48 to: 84 in: 8)]
 
 In the above example, the note heads denote the events' voices, horizontal blue lines originating at the note heads show the events' lengths, and red vertical lines show the events' amplitudes. To see how this is done, look at class PitchTimeView's various implementation of the itemFor: method.
 
@@ -23,11 +23,11 @@ A more complete example is Hauer-Steffens notation, which has a clef and staff l
 
 	[HauerSteffensView randomExample]
 	[HauerSteffensView randomSWSSExample]
-	[(EventList scaleExampleFrom: 48 to: 60 in: 3) edit]
+	[(EventList scaleFrom: 55 to: 67 in: 3) edit]
 
-Test panning and zooming these examples.
-
-Sound View
+Test panning and zooming these examples using the control panel.
+
+Sound View (VisualWorks-only to-date)
 
 The sound view is a simple waveform display. One can scroll, zoom, and edit.
 Use the pop-up menu to create sound objects based on a number of standard synthesis methods.

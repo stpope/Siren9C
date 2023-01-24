@@ -2,25 +2,24 @@ Siren 9.0 Release Notes
 
 Current Status
 
-This is the V9.0 release of Siren on VisualWorks. (For simplicity, Siren version numbers parallel the versions of Smalltalk on which they run.)
+This is the V9C release of Siren on VisualWorks, Squeak and Cuis
 
 Smoke: The Smoke representation is complete, see the event list and event generator examples.
 
 Voices and Schedulers: The scheduler delivers acceptable real-time performance on a modern CPU. The real-time output via OSC or MIDI is suitable for use in performance.
 
-Sound I/O: Sound file I/O is implemented for many kinds of sound files (AIFF, WAV, .snd, etc.) via the libSndFile interface. There is a PortAudio callback interface using DLLCC as well as an FFTW interface for the class Spectrum
+Sound I/O: Sound file I/O is implemented for many kinds of sound files (AIFF, WAV, .snd, etc.) via the libSndFile interface. There is a PortAudio callback interface using DLLCC as well as an FFTW interface for the class Spectrum (VisualWorks-only)
 
 MIDI/OSC: Ports and Voices exist for real-time control I/O.
 
-There are DLLCC interfaces to CSL and Loris based on SWIG interfaces.
+There are DLLCC interfaces to CSL and Loris based on SWIG interfaces. (VisualWorks-only)
 
 Graphics and GUI: The display list framework, Navigator MVC framework, and several MVC-based GUI tools are available; see the examples above.
 
 Version History
-
+Siren on Squeak and Cuis	9C--FASTLab, Ojai, CA, January, 2023	
 Siren on Visualworks
-	9.0--FASTLab, Santa Barbara, May, 2020
-	7.6--FASTLab, Santa Barbara, January, 2013
+	9.0--FASTLab, Santa Barbara, May, 2020	7.6--FASTLab, Santa Barbara, January, 2013
 	7.5--CREATE, Santa Barbara, April, 2007
 	7.4--CREATE, Santa Barbara, Winter, 2006
 	7.3--CREATE, Santa Barbara, throughout 2005
@@ -39,8 +38,8 @@ MODE
 	1.3--(Topaz) SICS/EMS, Stockholm, February - April, 1993
 	1.2--CCRMA/Stanford, July, 1991 - February, 1992
 	1.0--STEIM, Amsterdam, May/June 1990
-	0.8--CCRMA/Stanford, June, 1989
-	0.4--ParcPlace Systems, March, 1988
+	0.8--ParcPlace Systems, CCRMA/Stanford, June, 1989
+	0.4--Xerox PARC, March, 1988
 
 HyperScoreToolKit
 	1.0--Xerox PARC, October, 1986

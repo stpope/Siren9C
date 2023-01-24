@@ -8,11 +8,11 @@ Objects that have similar state and behaviors are grouped into classes (e.g., th
 
 Names and identifiers are separated by white space and are often composed of a concatenated noun phrase written with embedded upper-case letters, e.g., anEvent or MusicMagnitude. 
 
-In a Smalltalk-80 expression, the noun (i.e., the receiver object), comes first, followed by the message; e.g., to ask the size of an array, one sends it the message "size," as in [anArray size]. 
+In a Smalltalk-80 expression, the noun (i.e., the receiver object) comes first, followed by the message; e.g., to ask the size of an array, one sends it the message "size," as in [anArray size]. 
 
 If the message has any arguments, they are separated from the message keywords in that the keywords all end in ":", so to index the first element of the array, one writes [anArray at: 1]; to set it to zero, use [anArray at: 1 put: 0]. 
 
-Binary operators are allowed for mathematical (+, *, etc.) and logic (>, ~=, etc) operations.
+Binary operators are allowed for mathematical (+, *, etc.) and logic (>, =, etc) operations.
 
 Expressions can be nested using parentheses (i.e., evaluate what's inside the inner-most parentheses first), and fancy expression constructs and control structures are possible.
 
@@ -20,7 +20,7 @@ Expression examples
 
 	Unary messages - [receiver message]
 		anArray size
-		Date today				"message to a class"
+		Date today				"message to a class that answers an instance of that class"
 		x negated
 
 	Binary messages - [receiver operation operand]
@@ -35,7 +35,7 @@ Expression examples
 		aVisualItem displayOn: aMedium at: aPoint clip: aClipRect mask: aMask
 				(messages called  at:put:  or  displayOn:at:clip:mask:)
 
-Unary expressions can be concatenated, as in
+Unary expressions can be concatenated, as in,
 	Date today weekday size odd printString
 
 which answers "true" or "false," as though it were written,
@@ -48,32 +48,26 @@ this is read as
 
 Keywords bind the weakest, so that the expressions,
 
-
 	Transcript show: aNumber printString, ' is not equal to ', otherNumber printString.
 	anArray at: index + 1 put: 'hello ', ' world'.
 	
 are to be read as,
-
 
 	Transcript show: ((aNumber printString), ' is not equal to ', (otherNumber printString)).
 	anArray at: (index + 1) put: ('hello ', ' world').
 
 A single expression can contain at most one keyword message, i.e., the compiler always tries to build the longest composed keyword message it can find in an expression. For example, to copy an element from one position in an array to another, we would have to parenthesize the 2 keyword messages, as follows,
 
-
 	anArray at: 1 put: (anArray at: 2)
-
 
 because without the parentheses, the message would be interpreted as at:put:at: (which is probably not implemented).
 
 When several messages are to be sent to the same receiver, and the return values are ignored, one can create a message cascade" by separating the messages with semi-colons instead of periods, and not repeating the receiver, as in,
 
-
 	Transcript show: name printString.
 	Transcript cr.
 	
 which can be written as a cascade or 2 messages sent to Transcript,
-
 
 	Transcript show: name printString ; cr.
 
@@ -97,13 +91,13 @@ Immediate Object Formats
 	Real			3.1415926		2.8879044346233
 	Character		$a 				$.
 	String			'hi'				'longer string'
-	Symbol			#hi				#SymbolicValue
+	Symbol			#hi			#SymbolicValue
 
 	List (Collection)		#(a b c)
-	Association			( a -> b)			"key/value tuple"
+	Association			( a -> b)		"key/value tuple"
 	Dictionary (Map)	(a -> b), (c -> d)	"like a hash map"
 
-	Logical constants	true, false, nil
+Logical constants	true, false, nil
 
 Control Structures
 

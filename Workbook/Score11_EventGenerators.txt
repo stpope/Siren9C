@@ -1,19 +1,16 @@
-Score11 is a port of a Score11 instrument; see https://www.esm.rochester.edu/ears/docs/score11/index.html
-
-Instance Variables:
-	generators	<Dictionary of (prop-name -> data)>	the parameter blocks of the score11 instrument
-
-Examples:
-
+Score11-in-Siren is a port of the Score11 music description language; see https://www.esm.rochester.edu/ears/docs/score11/index.html
+Score11 is a derivative of Leland Smith SCORE language; ikt is equally well suited for transcribing music from traditional Western music notation as for describing algorithmic composition structures.  See the 2022 ICMC paper in the Doc folder for details.
+Examples of original Score11
+Format of an instrument block
 instrument 1 0 10;	< Instrument 1 starts at time 0 and plays for 10 beats.
 	parameter 3 1; 	< Each note lasts 1 beat
-end;          			< This finishes the I-block
-
-i1 0 5;
-	p3 rh 4/8*6/4;
-	p4 no c4/d/e/f/g/a/b/c5;
-	p5 1.0 1.0 5.0;    			< 100% of values between 1.0 and 5.0
-	p6 mo 5 1000 2000;		< move from 1000 to 2000 in 5 beats
+end;          				< This finishes the instrument block
+A simple melody
+i1 0 5;							< instrument 0 for 5 seconds
+	p3 rh 4/8*6/4;				< rhythmic values, 1/4 note, then 6 1/8 notes...
+	p4 no c4/d/e/f/g/a/b/c5;	< pitches as note names
+	p5 1.0 3.0 5.0;    			< select 100% of values between 3.0 and 5.0 for amplitude
+	p6 mo 5 1000 2000;		< move from 1000 to 2000 in 5 beats for parameter 6
 end;
 
 Standard parameter maps -- the SCORE-11 constant parameter meanings are:
@@ -24,86 +21,83 @@ Standard parameter maps -- the SCORE-11 constant parameter meanings are:
       p4 = Pitch (or frequency)
       p5 = Amplitude value (0 - 32000)
 
-Smalltalk examples
-
-	s11 := (Score11 instr: 1 from: 0 to: 10)
+Score11-in-Smalltalk examples
+A simple scale
+	[ | s11 |	s11 := (Score11 instr: 1 from: 0 to: 5)
 		add: #p3 -> (#rh -> '4/8*6/4');
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5');
-		add: #p5 -> #(1.0 1.0 5.0);
+		add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c');
+		add: #p5 -> #(1.0 0.2 2.0);
 		add: #p6 -> (#mo -> #(5 1000 2000)).
-	s11 events
-
-	"TimeSequenceView openOnEventList: ((Siren.Score11 instr: 1 from: 0 to: 10) 
+	s11 open]
+Show just the rhythm
+	[TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) 
 		add: #p3 -> (#rh -> '4//8////4//'); 
 		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
 		add: #p5 -> #(1.0 1.0 5.0); 
 		add: #p6 -> (#mo -> #(5 1000 2000))) 
-	eventList"
-
-	"TimeSequenceView openOnEventList: ((Siren.Score11 instr: 1 from: 0 to: 10) 
+	eventList]
+Rhythmic example using triplets (1/6 notes)
+	[TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) 
 		add: #p3 -> (#rh -> '4/8*4/6*3/4/'); 
 		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
 		add: #p5 -> (#mo -> #(10 10 100));
 		add: #p6 -> #(1.0 -1.0 1.0)) 
-	eventList"
-
+	eventList]
+Example with add'l parameters
 	[ | s11 |
-	s11 := ((Siren.Score11 instr: 1 from: 0 to: 10) 
+	s11 := ((Score11 instr: 1 from: 0 to: 10) 
 		add: #p3 -> (#rh -> '4/8*4/6*3/4/'); 
 		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
 		add: #p5 -> (#mo -> #(10 10 100));
 		add: #p6 -> #(1.0 -1.0 1.0);
 		add: #p7 -> #(0.5 1 2  0.5 100 200);
-		add: #p8 -> (#se -> '10 1 3 5 7 9'));
+		add: #p8 -> (#se -> '10 1 3 5 7 9');
 		add: #p9 -> (#mx -> #(10 1 100))).
 	s11 assign: #p6 to: #position:.
 	s11 assign: #p7 to: #attack:.
-	s11 eventList inspect ]
-
-	[ | s11 |			"test multi-segment moves"
-	s11 := ((Siren.Score11 instr: 1 from: 0 to: 10) 
+	s11 eventList explore ]
+Demonstrate multi-segment moves
+	[ | s11 |			
+	s11 := ((Score11 instr: 1 from: 0 to: 10) 
 		add: #p3 -> (#rh -> 16); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
-		add: #p5 -> (#mo -> #(7 5 100  3 100 5))).
+		add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c'); 		"play a scale"
+		add: #p5 -> (#mo -> '7 0.2 2.0 / 3 2.0 0.2')).		"crescendo/decrescendo"
 	s11 tempo: #(10 60 120).
-	s11 eventList inspect ]
-
-	[ | s11 |			"test dotted values"
-	s11 := ((Siren.Score11 instr: 1 from: 0 to: 10) 
+	s11 eventList removeLast editPTV ]
+Test dotted values
+	[ | s11 |			
+	s11 := ((Score11 instr: 1 from: 0 to: 10) 
 		add: #p3 -> (#rh -> '4/4./4../8'); 
 		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
 		add: #p5 -> (#mo -> #(7 5 100  3 100 5))).
 	s11 tempo: #(10 60 120).
 	s11 eventList inspect ]
-
-	[ | s11 |			"test rests"
-	s11 := ((Siren.Score11 instr: 1 from: 0 to: 10) 
+Test rests
+	[ | s11 |	
+	s11 := ((Score11 instr: 1 from: 0 to: 10) 
 		add: #p3 -> (#rh -> '4/-4/8/-8'); 
 		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
-		add: #p5 -> (#mo -> #(7 5 100  3 100 5))).
+		add: #p5 -> (#mo -> '7 5 100 / 3 100 5')).
 	s11 tempo: #(10 60 120).
 	s11 eventList inspect ]
-
-	[ | s11 |			"test complex movex"
-	s11 := ((Siren.Score11 instr: 1 from: 0 to: 15) 
-		add: #p3 -> (#rh -> '8/'); 
-		add: #p4 -> (#mx -> '5 100 120 , 2000 2400 /
-						4 2050 2060 /
-						6 2000 2100 , 700 1100' )).
-	s11 eventList inspect ]
-
-	[ | s11 |			"test complex movex 2"
-	s11 := ((Siren.Score11 instr: 1 from: 0 to: 8) 
+Test complex movex - 5 sec low-to-high pitch ranges, then 4 sec constant, then 6 sec move back to low pitch
+	[ | s11 |
+	s11 := ((Score11 instr: 1 from: 0 to: 15) 
+		add: #p3 -> (#rh -> '16/'); 
+		add: #p4 -> (#mx -> '5 100 120 , 2000 2400 /						4 2050 2060 /						6 2000 2100 , 700 1100' )).			
+	s11 eventList explore ]Test complex movex 2 - more pitch range testing
+	[ | s11 |
+	s11 := ((Score11 instr: 1 from: 0 to: 8) 
 		add: #p3 -> (#rh -> '32/'); 
 		add: #p4 -> (#mx -> '3 140 190 , 400 440 /
 						2 440 460 /
 						3 400 400 , 150 250' )).
-	s11 eventList open ]
+	s11 eventList editPTV ]
 
-----
+----Gesture from BatOutOfHell (STP 1983) Part 1
 
-	[ | s11 |			"BOOH part 1"
-	s11 := ((Siren.Score11 instr: 1 from: 0 to: 120) 
+	[ | s11 |
+	s11 := ((Score11 instr: 1 from: 0 to: 120) 
 		add: #p3 -> (#mx -> '15 .4 .5 , .05 .14 /
 						15 .1 .15 , .5 .4 /
 						20 .5 .3 , .1 .13 /
@@ -121,8 +115,8 @@ Smalltalk examples
 	s11 du: 303.
 	s11 assign: #p6 to: #gliss:.
 	s11 assign: #p7 to: #position:.
-	s11 eventList  ]
-
+	s11 eventList explore ]
+
 Keywords requiring a parameter number:
 	1. funcs (not implemented)
 	2. move - move "number of beats for change" "first value" "second value"
@@ -146,36 +140,3 @@ Keywords not using a parameter number:
 	9. rseed
 	10. tempo
 	11. tfactor
-
-
-Score11>>writeP3RH:into: (RestEvent is Undeclared) 
-Score11>>writeP3RH:into: (RestEvent is Undeclared) 
-Score11 class>>chorale1 (InputState is Undeclared) 
-Score11 class>>chorale2 (InputState is Undeclared) 
-Score11 class>>melody1 (InputState is Undeclared) 
-Score11 class>>melody1b (InputState is Undeclared) 
-Score11 class>>test14 (InputState is Undeclared) 
-Score11 class>>booh1 (InputState is Undeclared) 
-Score11 class>>booh2 (InputState is Undeclared) 
-Score11 class>>booh3 (InputState is Undeclared) 
-Score11 class>>sleepingSword1 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword1 (BohlenPierceScale is Undeclared) 
-Score11 class>>sleepingSword1 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword1 (InputState is Undeclared) 
-Score11 class>>sleepingSword2 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword2 (BohlenPierceScale is Undeclared) 
-Score11 class>>sleepingSword2 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword2 (InputState is Undeclared) 
-Score11 class>>sleepingSword3 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword3 (BohlenPierceScale is Undeclared) 
-Score11 class>>sleepingSword3 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword3 (InputState is Undeclared) 
-Score11 class>>sleepingSword3b (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword3b (BohlenPierceScale is Undeclared) 
-Score11 class>>sleepingSword3b (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword3b (InputState is Undeclared) 
-Score11 class>>sleepingSword4 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword4 (BohlenPierceScale is Undeclared) 
-Score11 class>>sleepingSword4 (PentatonicScale is Undeclared) 
-Score11 class>>sleepingSword4 (InputState is Undeclared) 
-Score11>>writeP3RH:into: (RestEvent is Undeclared) 

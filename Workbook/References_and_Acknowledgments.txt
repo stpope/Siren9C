@@ -49,4 +49,5 @@ Siren incorporates the work of many people who have contributed ideas and/or cod
 	John Tangney
 	Bill Walker
 
-I must also here acknowledge the generous support of my employers and the academic institutions where this software (and its predecessors) was developed, including CMRS@Mozarteum/Salzburg (1980-85), PCS/Cadmus GmbH in Munich (1983-6), Xerox PARC (1986-89), ParcPlace Systems, Inc. (1988-94), CCRMA@Stanford (1986-92), the STEIM Foundation in Amsterdam (1990-91), the Swedish Institute for Computer Science (1992-93), CMNAT@UC Berkeley (1993-95),  CREATE@UC Santa Barbara (1996-2006), and the Technical University of Berlin (2000).
+I must also here acknowledge the generous support of my employers and the academic institutions where this software (and its predecessors) was developed, including CMRS@Mozarteum/Salzburg (1980-85), PCS/Cadmus GmbH in Munich (1983-6), Xerox PARC (1986-89), ParcPlace Systems, Inc. (1988-94), CCRMA@Stanford (1986-92), the STEIM Foundation in Amsterdam (1990-91), the Swedish Institute for Computer Science (1992-93), CMNAT@UC Berkeley (1993-95),  CREATE@UC Santa Barbara (1995-2010), and the Technical University of Berlin (2000).
+Play icons created by Roundicons, Pixel perfect, Gregor Cresnar & Becris - Flaticon - https://www.flaticon.com/free-icons

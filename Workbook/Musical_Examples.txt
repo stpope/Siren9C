@@ -37,8 +37,8 @@ Works in Progress: CSL/Loris in event lists
 SleepingSword examples with CSL OSC and Kontakt MIDI servers - start a few of these running...
 
 Add these to the do-it menu in the launcher
-	Siren.ClusterEditor open
-	Siren.ClusterEditor openWithSpec: #buttonSpec
+	ClusterEditor open
+	ClusterEditor openWithSpec: #buttonSpec
 
 
 	OSCVoice stringExample: 1 to: 2 
@@ -52,4 +52,3 @@ Add these to the do-it menu in the launcher
 	"Ostinato trillExample"
 
 	ClusterEditor open
-

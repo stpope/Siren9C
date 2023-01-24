@@ -1,7 +1,6 @@
 Sound Objects in Siren
 
-NOTE: THIS PAGE DESCRIBED THE OLD SIREN SAMPLES SOUND FRAMEWORK, WHICH HAS NOT YET BEEN MERGED WITH THE SQUEAK FRAMEWORK IN THE CATEGORY 'Sound-Synthesis'
-
+NOTE: THIS PAGE DESCRIBED THE OLD SIREN SAMPLED SOUND FRAMEWORK, WHICH HAS NOT YET BEEN MERGED WITH THE SQUEAK FRAMEWORK IN THE CATEGORY 'Sound-Synthesis'
 
 Siren's hierarchy of events and functions includes objects that represent sampled sounds. These can be used for synthesis, recording, processing, and playback. The fact that a Siren sound is a function means that it has the semantics of a single-valued function of time. A concrete SampledSound has something in its data instance variable (inherited from Function) that might be a word (16-bit) or floating-point sample array, or a CPointer, meaning that the sound's actual data is held onto by CSL, PortAudio, LibSndFile, or Loris. Since sounds are also events, they can have properties such as sound metadata or control functions.
 

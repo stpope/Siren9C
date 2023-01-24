@@ -5,9 +5,9 @@ All musical structures in Smoke--from micro-sound components of a note, to entir
 The event classes are quite simple; events have little interesting behavior (most of that being taken over by event lists and voices), and there is not a rich hierarchy of kinds of events.
 
 The primary messages that events understand are property getter/setters,
-	(anEvent duration: someDurationObject)
+	(anEvent duration: someDurationObject)	
 to set the duration time of the event to some Duration-type music magnitude, and property accessing messages such as 
-	(anEvent color: #blue)
+	(anEvent color: #blue)	
 to set the "color" (an arbitrary property) to an arbitrary value (the symbol #blue). 
 
 The meaning of an event's properties is interpreted by voices and user interface objects; it is obvious that (e.g.,) a pitch could be mapped differently by a MIDI output voice and a graphical notation editor. It is common to have events with complex objects as properties (e.g., envelope functions, real-time controller maps, DSP scripts, structural annotation, version history, or compositional algorithms), or with more than one copy of some properties (e.g., one event with enharmonic pitch name, key number, and frequency, each of which may be interpreted differently by various voices or structure accessors). The distinction between a complex event object model and adaptors and visitors with dynamic state is intentionally blurred.

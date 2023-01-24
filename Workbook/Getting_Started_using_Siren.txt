@@ -5,10 +5,8 @@ Depending on what your background, you may take any one of several paths to get 
 RTFM: Please read the in-depth book chapter,
 	http://FASTLabInc.com/Siren/Doc/SirenBookChapter.pdf
 
-
 This workbook is also available on-line at,
 	http://fastlabinc.com/Siren/Workbook
-	
 
 If you're impatient to see what Siren can do, jump ahead to the demo script near the end of this outline (Chapter 32 or so).
 
@@ -35,3 +33,4 @@ To make text selection easier in this outline, I generally enclose text that's i
 Now try looking at the code of a Siren event list example; say "debug-it" to the expression below, which will bring up the code in a debugger; in this view, use the menu bar below the top-most stack list to "step-into" the block; now you'll be looking at the randomExample: method itself. You can use the "into"| and "over" buttons to single step through this method, inspecting the objects in use with the inspectors at the bottom of the debugger.
 
 	[ EventList randomExample: 20 ] db
+On most platforms, command-key (or ctrl-key or whatever) combinations are available, for example:	cmd+d	=	do-it (execute the selected code)	cmd+p	=	print-it (execute the selected code and print the result)	cmd+i	=	inspect-it (execute the selected code and open an inspector on the result)	cmd+I	=	explore-it (an alternative inspector)These last 2 are the most impoerant as ways to start learning the design of Siren:				cmd+D=	debug-it (open a debugger on the selected code)	cmd+b	=	browse-it (open a source code on the selected code)Note the operation of the "browse-it" command; it expects that you have selected an expression with 2 tokens, typically a class constructor message for one of the demos, as in	[EventList randomExample] b

@@ -1,14 +1,14 @@
 Smoke Music Magnitude Models
 
-Smoke uses objects called music magnitudes to represent the basic "units of measure" of musical sound: duration, pitch, amplitude, etc. MusicMagnitude objects are characterized by their identity, class, species, and value (e.g., the pitch object that represents 'c3' has its object identity, the class SymbolicPitch, the species Pitch, and the value 'c3' [a string]). MusicMagnitude behaviors distinguish between class membership and species in a multiple-inheritance-like scheme that allows the object representing "440.0 Hz" to have pitch-like and limited-precision-real-number-like behaviors. This means that its behavior can depend on what it represents (a pitch), or how its value is stored (a floating-point number). 
+Smoke uses objects called music magnitudes to represent the basic "units of measure" of musical sound: duration, pitch, amplitude, etc. MusicMagnitude objects are characterized by their identity, class, species, and value (e.g., the pitch object that represents 'c3' has its object identity, the class SymbolicPitch, the species Pitch, and the value 'c3' [a string]). MusicMagnitude behaviors distinguish between class membership and species in a multiple-inheritance-like scheme that allows the object representing "440.0 Hz" to share pitch-like and real-number-like behaviors. This means that its behavior can depend on what it represents (a pitch), or how its value is stored (a floating-point number). 
 
-The mixed-mode music magnitude arithmetic is defined using the technique of species-based coercion, i.e., class Pitch knows whether a note name or Hertz value is more general. This provides capabilities similar to those of systems that use the techniques of multiple inheritance and multiple polymorphism (such as C++ and the Common Lisp Object System), but in a much simpler and scalable manner. All meaningful coercion messages (e.g., (440.0 Hz asMIDIKeyNumber)), and mixed-mode operations (e.g., (1/4 beat + 80 msec)) are defined.
+The mixed-mode music magnitude arithmetic is defined using the technique of species-based coercion, i.e., class Pitch knows whether a string note name or Hertz value is more general. This provides capabilities similar to those of systems that use the techniques of multiple inheritance and multiple polymorphism (such as C++ and the Common Lisp Object System), but in a much simpler and scalable manner. All meaningful coercion messages (e.g., (440.0 Hz asMIDIKeyNumber)), and mixed-mode operations (e.g., (1/4 beat + 80 msec)) are defined.
 
 The basic model classes include Pitch, Loudness, and Duration; exemplary extensions include Length, Sharpness, Weight, and Breath for composition- or notation-specific magnitudes. The handling of time as a parameter is finessed via the abstraction of duration. All times are durations of events or delays, so that no "real" or "absolute" time object is needed. Duration objects can have simple numerical or symbolic values, or they can be conditions (e.g., the duration until some event X occurs), Boolean expressions of other durations, or arbitrary blocks of Smalltalk-80 code. 
 
-Functions of one or more variables are yet another type of signal-like music magnitude. The MODE Function class hierarchy includes (e.g.,) line segment, exponential segment, spline segment and Fourier summation functions. 
+Functions of one or more variables are yet another type of signal-like music magnitude. The Siren Function class hierarchy includes (e.g.,) line segment, exponential segment, spline segment and Fourier summation functions. 
 
-In the verbose SmOKe format music magnitudes, events and event lists are created by instance creation messages sent to the appropriate classes. The first three expressions in the examples below create various music magnitudes and coerce them into other representations. 
+In the verbose Smoke format music magnitudes, events and event lists are created by instance creation messages sent to the appropriate classes. The first three expressions in the examples below create various music magnitudes and coerce them into other representations. 
 
 The terse form for music magnitude creation uses post-operators (unary messages) such as 440 hz or 250 msec, as shown in the examples below.
 
@@ -36,7 +36,7 @@ Amplitude/Loudness Objects
 	MIDIVelocity -- 96 velocity
 
 Other Music Magnitudes
-	OrdinalMagnitudes -- have order but no explicit value
+	OrdinalMagnitudes -- have order but no explicit value (e.g., 'mf')
 	PField -- name/slot/value -- used for note lists
 	See also magnitude accessors in LayoutManagers
 
@@ -46,7 +46,7 @@ Verbose MusicMagnitude Creation and Coercion Messages
 
 	(Duration value: 1/16) asMsec			"Answers Duration 62 msec." 
 	(Pitch value: 60) asHertz 				"Answers Pitch 261.623 Hz." 
-	(Amplitude value: 'ff') asMIDI			"Answers MIDI key velocity 100." 
+	(Amplitude value: 'ff') asMIDI		"Answers MIDI key velocity 100." 
 
 Terse MusicMagnitude Creation using post-operators
 
@@ -54,10 +54,10 @@ Terse MusicMagnitude Creation using post-operators
 	'c#3' pitch					"a SymbolicPitch"
 	'cs3' pitch					"a SymbolicPitch"
 	60 pitch					"a MIDIPtch"
-	60 key					"a MIDIPtch"
+	60 key						"a MIDIPtch"
 	250 msec					"a MSecondDuration"
 	1/4 beat					"a RatioDuration"
-	-16 dB					"a DBLoudness"
+	-16 dB						"a DBLoudness"
 	'fff' ampl					"a SymbolicLoudness"
 	0.1 ampl					"a RatioLoudness"
 
@@ -66,7 +66,7 @@ MusicMagnitude Coercion Examples
 	440 Hz asSymbol			"--> 'a3' pitch"
 	(1/4 beat) asMsec			"--> 250 msec"
 	#mf ampl asMIDI			"--> 70 vel"
-	-16 dB asRatio value	 		"--> 0.158489"
+	-16 dB asRatio value	 	"--> 0.158489"
 	0.1 ampl asMIDI			"--> 12 vel"
 
 Duration Coercion Example--create a 1/8 beat duration and coerce it into a couple of other representations, printing the result to the Smalltalk transcript. To execute this, double-click just inside the open-bracket to select the entire expression and use the pop-up menu or command key (control-d) to "do it."
@@ -98,9 +98,9 @@ Amplitude Coercion Example--create a named dynamic value and print it as an ampl
 
 Mixed-mode Arithmetic--demonstrate adding beats and msec, or note names and Hertz values. Select and print these.
 
-	[(1/2 beat) + 100 msec]			" (0.6 beat")
+	[(1/2 beat) + 100 msec]				" (0.6 beat")
 	['a4' pitch + 25 Hz]					" (465.0 Hz)"
-	[('a4' pitch + 100 Hz) asMIDI]		" (73 key)"
+	[('a4' pitch + 100 Hz) asMIDI]			" (73 key)"
 	[('a4' pitch + 100 Hz) asFracMIDI]	" (72.5455 key)"
 	['mp' ampl + 3 dB]					" (-4.6 dB)"
 

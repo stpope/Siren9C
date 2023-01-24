@@ -1,10 +1,4 @@
-DurationEvent subclass: #Function
-	instanceVariableNames: 'data range domain scale offset'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
-!Function commentStamp: '<historical>' prior: 0!
-Instances of of Function and its subclasses represent abstractions of 1- or n-dimensional functions of 1 variable (e.g., time). 
+DurationEvent subclass: #Function	instanceVariableNames: 'data range domain scale offset'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!Function commentStamp: '<historical>' prior: 0!Instances of of Function and its subclasses represent abstractions of 1- or n-dimensional functions of 1 variable (e.g., time). 
 Class Function is concrete and represents functions that are described by a array of data points assumed to lie equally-spaced in the unit interval.
 Functions are normally created from an array of values over the unit interval; x varies from 0.0 to 1.0 and y is free over that range.
 One can address them within the unit interval with atX: or one can address them with integer indeces up to the data set's size with atIndex: (can be dangerous).
@@ -20,32 +14,18 @@ InstanceVariables:
 	domain <Interval> the x-range
 	range <Interval> the y-range
 
-!
-
-
-!Function methodsFor: 'ui'!
-edit
+!!Function methodsFor: 'ui'!edit
 	"Open a function view on the receiver."
 	"(LinearFunction default scaleBy: 256@1) edit"
 
-	FunctionView onFunction: self! !
-
-!Function methodsFor: 'ui'!
-edit: extent
+	FunctionView onFunction: self! !!Function methodsFor: 'ui'!edit: extent
 	"Open a function view on the receiver."
 	"(LinearFunction default scaleBy: 256@1) edit"
 
 	extent isPoint
 		ifTrue: [FunctionView onFunction: self x: extent x y: extent y]
-		ifFalse: [FunctionView onFunction: self x: extent y: 256]! !
-
-!Function methodsFor: 'ui'!
-updateSelector
-	^#ratio! !
-
-
-!Function methodsFor: 'processing'!
-averagedTo: size
+		ifFalse: [FunctionView onFunction: self x: extent y: 256]! !!Function methodsFor: 'ui'!updateSelector
+	^#ratio! !!Function methodsFor: 'processing'!averagedTo: size
 	"Answer an averaged version of the receiver of the given size."
 	"(Function readFloatsFrom: (MusicMagnitude modeRootName, 'data/y2.2.env')) averagedTo: 32"
  
@@ -63,16 +43,10 @@ averagedTo: size
 				index :=  (i + j * factor) truncated max: 1.
 				sum := sum + (data at: index)].
 			fcn add: (sum/size)].
-	^fcn! !
-
-!Function methodsFor: 'processing'!
-freeData
+	^fcn! !!Function methodsFor: 'processing'!freeData
 	"Release the receiver's 'data'."
 
-	data := nil! !
-
-!Function methodsFor: 'processing'!
-maxTo: size win: wsize
+	data := nil! !!Function methodsFor: 'processing'!maxTo: size win: wsize
 	"Answer a version of the receiver of the given size taking the maximum value of each window."
 	"(Function readFloatsFrom: 'snd/yy/ec/syl/y2.env') maxTo: 32 win: 8"
  
@@ -90,10 +64,7 @@ maxTo: size win: wsize
 				[ :j |
 				maxv := maxv max: (self at: (i*factor)+(j+step)) abs].
 			fcn add: maxv].
-	^fcn! !
-
-!Function methodsFor: 'processing'!
-sampledTo: size
+	^fcn! !!Function methodsFor: 'processing'!sampledTo: size
 	"Answer a down-sampled version of the receiver of the given size."
 	"((Function readFloatsFrom: (MusicMagnitude modeRootName, 'data/y2.2.env')) sampledTo: 64) edit"
  
@@ -106,10 +77,7 @@ sampledTo: size
 	1 to: size do:
 			[ :i |
 			fcn add: (self at: i*factor)].
-	^fcn! !
-
-!Function methodsFor: 'processing'!
-smoothed
+	^fcn! !!Function methodsFor: 'processing'!smoothed
 	"Answer a version of the receiver smoothed to about 32 points."
 	"| arr snd fcn|
 	arr := Array new: 512.
@@ -146,10 +114,7 @@ smoothed
 				diff sign = dif2 sign ifFalse: [bre add: ((in * sc) @ this)]].
 		prev := this].
 	bre add: (data size @ avgs last).
-	^LinearFunction from: bre! !
-
-!Function methodsFor: 'processing'!
-updateRange
+	^LinearFunction from: bre! !!Function methodsFor: 'processing'!updateRange
 
 	| min max |
 	data first isPoint
@@ -159,21 +124,14 @@ updateRange
 	data do: [ :d |
 		d < min ifTrue: [min := d].
 		d > max ifTrue: [max := d]].
-	self range: (min to: max)! !
-
-
-!Function methodsFor: 'accessing'!
-add: aValue
+	self range: (min to: max)! !!Function methodsFor: 'accessing'!add: aValue
 	"Add the argument to the receiver's point collection."
 
 	data add: aValue.
 	aValue < range first
 		ifTrue: [self range: (aValue to: range last)].
 	aValue > range stop
-		ifTrue: [self range: (range first to: aValue)].! !
-
-!Function methodsFor: 'accessing'!
-at: anIndex 
+		ifTrue: [self range: (range first to: aValue)].! !!Function methodsFor: 'accessing'!at: anIndex 
 	"Answer the value at the given index (between 0 and 1 -or- 1 and data size)."
 
 	| val |
@@ -182,65 +140,38 @@ at: anIndex
 	anIndex isInteger
 		ifTrue: [val := data at: ((anIndex max: 1) min: data size)]
 			ifFalse: [val := data at: ((anIndex max: 1) min: data size) truncated].
-	^(val * scale) + offset! !
-
-!Function methodsFor: 'accessing'!
-at: anIndex put: aValue 
+	^(val * scale) + offset! !!Function methodsFor: 'accessing'!at: anIndex put: aValue 
 	"Put the given value at the given index (between 0 and 1)."
 
 	anIndex isSymbol
 		ifTrue: [^ super at: anIndex put: aValue].
 	^ data at: ((self size * anIndex max: 1)
-			min: data size) truncated put: aValue! !
-
-!Function methodsFor: 'accessing'!
-atX: anIndex
+			min: data size) truncated put: aValue! !!Function methodsFor: 'accessing'!atX: anIndex
 	"Answer the value at the given index (between 0 and 1)."
 
-	^self at: anIndex! !
-
-!Function methodsFor: 'accessing'!
-data
+	^self at: anIndex! !!Function methodsFor: 'accessing'!data
 	"Answer the receiver's 'data'."
 
-	^data! !
-
-!Function methodsFor: 'accessing'!
-data: anObject
+	^data! !!Function methodsFor: 'accessing'!data: anObject
 	"Set the receiver's instance variable 'data' to be anObject."
 
-	data := anObject! !
-
-!Function methodsFor: 'accessing'!
-dataClass
+	data := anObject! !!Function methodsFor: 'accessing'!dataClass
 	"Answer the class of the elements in the receiver's data collection."
 
 	data ifNil: [^nil].
 	data ifEmpty: [^nil].
-	^data first class! !
-
-!Function methodsFor: 'accessing'!
-domain
+	^data first class! !!Function methodsFor: 'accessing'!domain
 	"Answer the receiver's 'domain'."
 
-	^domain! !
-
-!Function methodsFor: 'accessing'!
-domain: anObject
+	^domain! !!Function methodsFor: 'accessing'!domain: anObject
 	"Set the receiver's instance variable 'domain' to be anObject."
 
-	domain := anObject! !
-
-!Function methodsFor: 'accessing'!
-duration
+	domain := anObject! !!Function methodsFor: 'accessing'!duration
 	"Answer the domain of the receiver's collection of breakpoints."
 
 	^duration isNil
 		ifTrue: [domain last - domain first]
-		ifFalse: [duration]! !
-
-!Function methodsFor: 'accessing'!
-nextXMoreThan: delta from: thisIndex
+		ifFalse: [duration]! !!Function methodsFor: 'accessing'!nextXMoreThan: delta from: thisIndex
 	"Answer the next X value after index whose Y value is more than delta from the value at thisIndex"
 	"(LinearFunction from: #((0 0.2) (0.6 0.3) (0.62 1.0) (1.0 0.3))) edit"
 	"(LinearFunction from: #((0 0.2) (0.6 0.3) (0.62 1.0) (1.0 0.3))) nextXMoreThan: 0.01 from: 0.1"
@@ -251,10 +182,7 @@ nextXMoreThan: delta from: thisIndex
 	self duration <= 10
 		ifTrue: [step := 0.005]			"default 200 steps"
 		ifFalse: [step := 1].
-	^self nextXMoreThan: delta from: thisIndex step: step! !
-
-!Function methodsFor: 'accessing'!
-nextXMoreThan: delta from: thisIndex step: step
+	^self nextXMoreThan: delta from: thisIndex step: step! !!Function methodsFor: 'accessing'!nextXMoreThan: delta from: thisIndex step: step
 	"Answer the next X value after thisIndex whose Y value is more than delta from the value at thisIndex"
 	"(LinearFunction from: #((0@0.2) (0.6@0.3) (0.62@1.0) (1.0 0.3))) nextXMoreThan: 0.05 from: 0.1"
 	"(LinearFunction from: #((0@0.2) (0.6@0.3) (0.62@1.0) (1.0 0.3))) nextXMoreThan: 0.1 from: 0.6"
@@ -267,82 +195,46 @@ nextXMoreThan: delta from: thisIndex step: step
 	[((val2 - val1) abs > delta) or: [newIndex >= self duration]]
 		whileFalse: [newIndex := newIndex + step.
 				val2 := self at: newIndex].
-	^newIndex! !
-
-!Function methodsFor: 'accessing'!
-offset: offVal
+	^newIndex! !!Function methodsFor: 'accessing'!offset: offVal
 	"Set the receiver's 'offset'."
 
-	offset := offVal! !
-
-!Function methodsFor: 'accessing'!
-pointAt: index
+	offset := offVal! !!Function methodsFor: 'accessing'!pointAt: index
 	"Answer the given value in the receiver's breakpoint collection."
 
-	^data at: index! !
-
-!Function methodsFor: 'accessing'!
-pointAt: index put: value
+	^data at: index! !!Function methodsFor: 'accessing'!pointAt: index put: value
 	"Assign the given values in the receiver's breakpoint collection."
 
 	data at: index put: value.
 	value < range first
 		ifTrue: [self range: (value to: range last)].
 	value > range last
-		ifTrue: [self range: (range first to: value)].! !
-
-!Function methodsFor: 'accessing'!
-points
+		ifTrue: [self range: (range first to: value)].! !!Function methodsFor: 'accessing'!points
 	"Answer the receiver's 'data'."
 
 	| i |
 	data ifNil: [^nil].
 	data first isPoint ifTrue: [^data].
 	i := 0.
-	^data collect: [ :d | i := i + 1. (i@d) ].! !
-
-!Function methodsFor: 'accessing'!
-range
+	^data collect: [ :d | i := i + 1. (i@d) ].! !!Function methodsFor: 'accessing'!range
 	"Answer the receiver's 'range'."
 
-	^range! !
-
-!Function methodsFor: 'accessing'!
-range: anObject
+	^range! !!Function methodsFor: 'accessing'!range: anObject
 	"Set the receiver's instance variable 'range' to be anObject."
 
-	range := anObject! !
-
-!Function methodsFor: 'accessing'!
-realPointAt: index
+	range := anObject! !!Function methodsFor: 'accessing'!realPointAt: index
 	"Answer the given value in the receiver's breakpoint collection (this is not overridden in ExpSeg)."
 
-	^data at: index! !
-
-!Function methodsFor: 'accessing'!
-sampleAt: anIndex
+	^data at: index! !!Function methodsFor: 'accessing'!sampleAt: anIndex
 	"Answer the value at the given index (between 0 and 1)."
 
-	^self at: anIndex! !
-
-!Function methodsFor: 'accessing'!
-scale
+	^self at: anIndex! !!Function methodsFor: 'accessing'!scale
 	"Answer the receiver's 'scale'."
 
-	^range extent! !
-
-!Function methodsFor: 'accessing'!
-scale: scaleVal
+	^range extent! !!Function methodsFor: 'accessing'!scale: scaleVal
 	"Set the receiver's 'scale'."
 
-	scale := scaleVal! !
-
-!Function methodsFor: 'accessing'!
-selection
-	^nil! !
-
-!Function methodsFor: 'accessing'!
-size
+	scale := scaleVal! !!Function methodsFor: 'accessing'!selection
+	^nil! !!Function methodsFor: 'accessing'!size
 	"Answer the size of the receiver's collection of breakpoints."
 
 	^data size
@@ -352,16 +244,12 @@ size
 	^(si = 0)
 		ifTrue: [data size]
 		ifFalse: [si]
-"! !
-
-
-!Function methodsFor: 'printing'!
-printOn: aStream
+"! !!Function methodsFor: 'printing' stamp: 'stp 1/19/2023 06:12'!printOn: aStream
 	"Format and print the receiver on the argument."
 
 	| pt howMany |
-	data size > 4096
-		ifTrue: [howMany := 2048]
+	data size > 128
+		ifTrue: [howMany := 128]
 		ifFalse: [howMany := data size].
 	aStream nextPutAll: self class name, ' from: '.
 	aStream nextPutAll: '#('.
@@ -372,22 +260,19 @@ printOn: aStream
 			[ :i |
 			pt := data at: i.
 			aStream nextPut: $(.
-			pt x printOn: aStream.
+			pt x printOn: aStream maxDecimalPlaces: 4.
 			aStream space.
-			pt y printOn: aStream.
+			pt y printOn: aStream maxDecimalPlaces: 4.
 			aStream nextPut: $); space].
 			aStream nextPut: $)]
 		ifFalse: [1 to: howMany do: 
 			[ :i |
 			pt := data at: i.
-			pt printOn: aStream.
+			pt printOn: aStream maxDecimalPlaces: 4.
 			aStream space.].
 		howMany < data size
 			ifTrue: [aStream nextPutAll: ' ... '].
-			aStream nextPut: $)]! !
-
-!Function methodsFor: 'printing'!
-storeOn: aStream
+			aStream nextPut: $)]! !!Function methodsFor: 'printing'!storeOn: aStream
 	"Format and print the receiver on the argument."
 
 	| pt |
@@ -401,30 +286,16 @@ storeOn: aStream
 			aStream space.
 			pt y printOn: aStream.
 			aStream nextPut: $); space].
-	aStream nextPutAll: '))'; cr.! !
-
-
-!Function methodsFor: 'enumerating'!
-detect: aBlock ifNone: exceptionBlock 
+	aStream nextPutAll: '))'; cr.! !!Function methodsFor: 'enumerating'!detect: aBlock ifNone: exceptionBlock 
 	"Evaluate aBlock with each of the receiver's elements as the argument.
 	Answer the first element for which aBlock evaluates to true."
 
 	self do: [:each | (aBlock value: each) ifTrue: [^each]].
-	^exceptionBlock value! !
-
-!Function methodsFor: 'enumerating'!
-do: aBlock 
+	^exceptionBlock value! !!Function methodsFor: 'enumerating'!do: aBlock 
 	"Evaluate aBlock with each of the receiver's elements as the argument."
 
-	data do: aBlock! !
-
-!Function methodsFor: 'enumerating'!
-isEmpty
-	^data isEmpty! !
-
-
-!Function methodsFor: 'initialize-release'!
-initialize: size
+	data do: aBlock! !!Function methodsFor: 'enumerating'!isEmpty
+	^data isEmpty! !!Function methodsFor: 'initialize-release'!initialize: size
 	"Initialize the receiver for the given size."
 
 	data := OrderedCollection new: size.
@@ -432,17 +303,10 @@ initialize: size
 	range := 0.0 to: 0.0.
 	domain := 1 to: size.
 	scale := 1.0.
-	offset := 0.0! !
-
-
-!Function methodsFor: 'geometry'!
-hasPointNear: anXValue
+	offset := 0.0! !!Function methodsFor: 'geometry'!hasPointNear: anXValue
 	"Answer whether or not the receiver has a function breakpoint near the given x value."
 
-	^(self detect: [ :pt | (pt x - anXValue) abs < 0.01] ifNone: [nil]) ~= nil! !
-
-!Function methodsFor: 'geometry'!
-indexOfPointNearestX: anXValue
+	^(self detect: [ :pt | (pt x - anXValue) abs < 0.01] ifNone: [nil]) ~= nil! !!Function methodsFor: 'geometry'!indexOfPointNearestX: anXValue
 	"Answer the receiver`s point nearest the given x value."
 	"(LinSeg from: #((0@0) (0.3@1) (0.6@0.6) (1@0))) indexOfPointNearestX: 0.7"
 
@@ -454,95 +318,52 @@ indexOfPointNearestX: anXValue
 			((data at: i) x - anXValue) abs
 		ifFalse: [ind := i]
 		ifTrue: [^ind]].
-	^data size! !
-
-
-!Function methodsFor: 'arithmetic'!
-* aFcnOrNum
+	^data size! !!Function methodsFor: 'arithmetic'!* aFcnOrNum
 	"Answer a function graph with the argument multiplied by the receiver"
 
-	^FunctionGraph opL: self opR: aFcnOrNum operation: #*! !
-
-!Function methodsFor: 'arithmetic'!
-+ aFcnOrNum
+	^FunctionGraph opL: self opR: aFcnOrNum operation: #*! !!Function methodsFor: 'arithmetic'!+ aFcnOrNum
 	"Answer a function graph with the argument added to the receiver"
 
-	^FunctionGraph opL: self opR: aFcnOrNum operation: #+! !
-
-!Function methodsFor: 'arithmetic'!
-- aFcnOrNum
+	^FunctionGraph opL: self opR: aFcnOrNum operation: #+! !!Function methodsFor: 'arithmetic'!- aFcnOrNum
 	"Answer a function graph with the argument subtracted from the receiver"
 
-	^FunctionGraph opL: self opR: aFcnOrNum operation: #-! !
-
-!Function methodsFor: 'arithmetic'!
-/ aFcnOrNum
+	^FunctionGraph opL: self opR: aFcnOrNum operation: #-! !!Function methodsFor: 'arithmetic'!/ aFcnOrNum
 	"Answer a function graph with the receiver divided by the argument"
 
-	^FunctionGraph opL: self opR: aFcnOrNum operation: #/! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-Function class
-	instanceVariableNames: ''!
-
-!Function class methodsFor: 'standard functions'!
-exponentialADSR1
+	^FunctionGraph opL: self opR: aFcnOrNum operation: #/! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Function class	instanceVariableNames: ''!!Function class methodsFor: 'standard functions'!exponentialADSR1
 	"Answer a exponential attack/decay/sustain/release envelope."
 	"Function exponentialADSR1"
 	"FunctionView onFunction: Function exponentialADSR1"
 
-	^ExponentialFunction from: #((0 0 5) (0.2 1 -3) (0.8 0.5 -2) (1 0))! !
-
-!Function class methodsFor: 'standard functions'!
-exponentialADSR2
+	^ExponentialFunction from: #((0 0 5) (0.2 1 -3) (0.8 0.5 -2) (1 0))! !!Function class methodsFor: 'standard functions' stamp: 'stp 1/21/2023 06:43'!exponentialADSR2
 	"Answer a exponential attack/decay/sustain/release envelope."
 	"Function exponentialADSR2"
 	"FunctionView openOn: Function exponentialADSR2"
 
-	^ExponentialFunction from: #((0 0 5) (0.05 1 -3) (0.8 0.5 -2) (1 0))! !
-
-!Function class methodsFor: 'standard functions'!
-linearADSR1
+	^ExponentialFunction from: #((0 0 5) (0.02 1 -20) (0.9 0.3 -2) (1 0))! !!Function class methodsFor: 'standard functions'!linearADSR1
 	"Answer a linear attact/decat/sustain/release envelope."
 	"Function linearADSR1"
 	"FunctionView openOn: Function linearADSR1"
 
-	^LinearFunction from: #((0 0) (0.1 1) (0.2 0.6) (0.9 0.4) (1 0))! !
-
-!Function class methodsFor: 'standard functions'!
-linearADSR2
+	^LinearFunction from: #((0 0) (0.1 1) (0.2 0.6) (0.9 0.4) (1 0))! !!Function class methodsFor: 'standard functions' stamp: 'stp 1/10/2023 16:44'!linearADSR2
 	"Answer a linear attact/decat/sustain/release envelope."
 	"Function linearADSR2"
 	"FunctionView openOn: Function linearADSR2"
 
-	^LinearFunction from: #((0 0) (0.05 1) (0.1 0.5) (0.9 0.4) (1 0))! !
-
-!Function class methodsFor: 'standard functions'!
-spline
+	^LinearFunction from: #((0 0) (0.02 1) (0.1 0.4) (0.95 0.2) (1 0))! !!Function class methodsFor: 'standard functions'!spline
 	"Answer a generic spline curve."
 	"Function spline"
 	"FunctionView openOn: Function spline"
 
-	^SplineFunction from: #((0 0.5) (0.35 0.6) (0.65 0.2) (1 0.6))! !
-
-!Function class methodsFor: 'standard functions'!
-sumOfSines
+	^SplineFunction from: #((0 0.5) (0.35 0.6) (0.65 0.2) (1 0.6))! !!Function class methodsFor: 'standard functions'!sumOfSines
 	"Answer a simple Fourier summation."
 	"Function sumOfSines"
 	"FunctionView openOn: Function sumOfSines"
 
-	^FourierSummation from: #((1 0.5 0) (3 0.3 0) (5 0.2 0) (7 0.17 0) (9 0.15 0) (11 0.1 0))! !
-
-
-!Function class methodsFor: 'instance creation'!
-default
+	^FourierSummation from: #((1 0.5 0) (3 0.3 0) (5 0.2 0) (7 0.17 0) (9 0.15 0) (11 0.1 0))! !!Function class methodsFor: 'instance creation'!default
 	"Answer a default instance of the receiver class."
 
-	^Function fileExample! !
-
-!Function class methodsFor: 'instance creation'!
-from: anArray
+	^Function fileExample! !!Function class methodsFor: 'instance creation'!from: anArray
 	"Answer a function with the given array of collections, points, or data values."
 	"(Function from: #( 0 1 0 1 0 1 0 1 0 1 0)) at: 0.4"
 	"(LinearFunction from: #((0 0) (0.5 1) (1 0))) at: 0.2"
@@ -555,44 +376,24 @@ from: anArray
 		ifFalse: [anArray do: 
 				[ :aValue | me add: aValue]].
 	me updateRange.
-	^me! !
-
-!Function class methodsFor: 'instance creation'!
-fromFile: fName
+	^me! !!Function class methodsFor: 'instance creation' stamp: 'stp 1/21/2023 07:20'!fromFile: fName
 	"Load 1 or more functions from a text file."
-	"(Function fromFile: 'G1.2a1.env') first edit"
+	"FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')"
 
-	| strm envs fullName coll |
+	| cont envs fullName |
 	fullName := SirenUtility findFile: fName.
 	fullName ifNil: [self error: 'Cannot find function file ', fName].
-	strm := fullName asFilename readStream.
-	envs := strm fileIn.
-	strm close.
+	cont := (FileStream fileNamed: fullName) contentsOfEntireFile.
+	envs := Compiler evaluate: cont.
 	envs ifNil: [self error: 'Cannot load function file ', fName].
-	coll := OrderedCollection new.
-	envs do: [ :def |
-		coll add:  ((Smalltalk at: (def at: 1) asSymbol) 
-					perform: (def at: 2) asSymbol 
-					with: (def at: 3))].
-	^coll size = 1
-		ifTrue: [coll first]
-		ifFalse: [coll]! !
-
-!Function class methodsFor: 'instance creation'!
-new
+	^ envs! !!Function class methodsFor: 'instance creation'!new
 	"Answer an instance of the receiver class."
 
-	^(super new) initialize! !
-
-!Function class methodsFor: 'instance creation'!
-ofSize: size
+	^(super new) initialize! !!Function class methodsFor: 'instance creation'!ofSize: size
 	"Answer an instance of the receiver class of the requested size."
 	"Function ofSize: 8"
 
-	^(super new) initialize: size! !
-
-!Function class methodsFor: 'instance creation'!
-randomOfSize: size from: low to: high
+	^(super new) initialize: size! !!Function class methodsFor: 'instance creation'!randomOfSize: size from: low to: high
 	"Answer a function with the given number of data points in the given range."
 	"FunctionView onFunction: (Function randomOfSize: 256 from: 0.1 to: 0.9)"
 
@@ -601,10 +402,7 @@ randomOfSize: size from: low to: high
 	rand := Random new.
 	1 to: size do: [ :i | me add: (rand nextFrom: low to: high)].
 	me domain: (1 to: size).
-	^me! !
-
-!Function class methodsFor: 'instance creation'!
-randomWalkSize: size from: low to: high
+	^me! !!Function class methodsFor: 'instance creation'!randomWalkSize: size from: low to: high
 	"Answer a function with the given number of data points in the given range."
 	"FunctionView onFunction: (Function randomWalkSize: 128 from: 0.3 to: 0.7)"
 
@@ -619,49 +417,32 @@ randomWalkSize: size from: low to: high
 		((t  > high or: [t < low])) ifTrue: [v := v negated].
 		val := val + v.
 		me add: val].
-	^me! !
-
-!Function class methodsFor: 'instance creation'!
-readFloatsFrom: filename
+	^me! !!Function class methodsFor: 'instance creation' stamp: 'stp 1/21/2023 06:59'!readFloatsFrom: filename
 	"Answer a function with the given points."
 	"Function readFloatsFrom: 'snd/yy/ec/syl/y2.env'"
 
 	| file stream size me |
-	file := filename asFilename.
-	file exists ifFalse: [^self error: 'non-extant file ', filename].
-	size := file fileSize / 4.		"assume floating-point values"
+	(FileDirectory default fileExists: filename) ifFalse: 			[^self error: 'non-extant file ', filename].
+	file := (FileStream fileNamed: filename) binary.	size := (file size / 4) truncated + 1.		"assume floating-point values"
 	me := self ofSize: size.
-	stream := file readStream binary.
+	stream := ReadStream on: file contentsOfEntireFile.
 	1 to: size do: [ :i | me add: stream nextFloat].
-	^me! !
-
-
-!Function class methodsFor: 'examples'!
-averagedFunctionFileExample
+	^me! !!Function class methodsFor: 'examples'!averagedFunctionFileExample
 	"Function usage example; read a function from a binary file and view it."
 	"Function averagedFunctionFileExample"
 
 	FunctionView onFunction:
 			 ((Function readFloatsFrom: 
 				(SirenUtility findFile: 'y2.2.env')) 
-		averagedTo: 32)! !
+		averagedTo: 32)! !!Function class methodsFor: 'examples' stamp: 'stp 1/21/2023 07:08'!fileExample
+	"Function usage example; read 3 functions from a file and view them."
+	"Function fileExample"
 
-!Function class methodsFor: 'examples'!
-fileExample
-	"Function usage example; read a function from a binary file and view it."
-	"Function fileExample inspect"
-
-	^Function readFloatsFrom: (SirenUtility findFile: 'G1.2a1.env')! !
-
-!Function class methodsFor: 'examples'!
-functionFileExample
+	| file fcns |	file := (SirenUtility findFile: 'G1.2a1.env').	fcns := file! !!Function class methodsFor: 'examples'!functionFileExample
 	"Function usage example; read a function from a binary file and view it."
 	"Function functionFileExample"
 
-	FunctionView onFunction: Function default! !
-
-!Function class methodsFor: 'examples'!
-functionPlayExample
+	FunctionView onFunction: Function default! !!Function class methodsFor: 'examples'!functionPlayExample
 	"Function usage example; make a roll-type eventList and apply a crescendo/decrescendo to it"
 	"Function functionPlayExample"
 
@@ -673,51 +454,26 @@ functionPlayExample
 					at: index].
 	fcn := LinearFunction from: #((0 @ 0) (0.5 @ 1) (1 @ 0)).
 	temp applyFunction: fcn to: #loudness.
-	temp play! !
-
-!Function class methodsFor: 'examples'!
-functionViewExample
+	temp play! !!Function class methodsFor: 'examples' stamp: 'stp 1/21/2023 07:31'!functionViewExample
 	"Function usage example; make a z-z function and view it."
 	"Function functionViewExample"
 
-	FunctionView onFunction: (Function from: #( 0 1 0 0.5 1.0 0.5 0 1 0 0.3 0.6 0.9 1 0 1 0))! !
-
-!Function class methodsFor: 'examples'!
-maxedFunctionFileExample
+	FunctionView onFunction: (Function from: #( 0 0.4 0.2 0.5 0.4 0.5 0 0.7 0 0.3 0.6 0.9 0.5 1.0 0.5 0 0.1 0 0.3 0.6 0.9 0.2 0 0.1 0))! !!Function class methodsFor: 'examples'!maxedFunctionFileExample
 	"Function usage example; read a function from a binary file and view it."
 	"Function maxedFunctionFileExample"
 
-	FunctionView onFunction: ((Function readFloatsFrom: (SirenUtility findFile: 'y2.2.env')) maxTo: 128 win: 32)! !
-
-!Function class methodsFor: 'examples'!
-randomViewExample
+	FunctionView onFunction: ((Function readFloatsFrom: (SirenUtility findFile: 'y2.2.env')) maxTo: 128 win: 32)! !!Function class methodsFor: 'examples'!randomViewExample
 	"Function usage example; make a random walk fcn and view it."
 	"Function randomViewExample"
 
-	FunctionView onFunction: (Function randomOfSize: 64 from: 0.1 to: 0.9)! !
-
-!Function class methodsFor: 'examples'!
-randomViewExample2
+	FunctionView onFunction: (Function randomOfSize: 64 from: 0.1 to: 0.9)! !!Function class methodsFor: 'examples'!randomViewExample2
 	"Function usage example; make a random walk fcn and view it."
 	"Function randomViewExample2"
 
-	FunctionView onFunction: (Function randomWalkSize: 128 from: 0.3 to: 0.7)! !
-
-
-!Function class methodsFor: 'class constants'!
-defaultSize
+	FunctionView onFunction: (Function randomWalkSize: 128 from: 0.3 to: 0.7)! !!Function class methodsFor: 'class constants'!defaultSize
 	"Answer the default size for the instances' storage array."
 
-	^1024! !
-
-
-Function subclass: #FourierSummation
-	instanceVariableNames: 'myForm myArray lazy'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
-!FourierSummation commentStamp: '<historical>' prior: 0!
-Instances of FourierSummation are functions that interpret their points as 3-element arrays (harmonic, amplitude, phase), and sum sine waves into their data array based on the fourier summation of these components.
+	^1024! !Function subclass: #FourierSummation	instanceVariableNames: 'myForm myArray lazy'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!FourierSummation commentStamp: '<historical>' prior: 0!Instances of FourierSummation are functions that interpret their points as 3-element arrays (harmonic, amplitude, phase), and sum sine waves into their data array based on the fourier summation of these components.
 
 Instance variables:
 	myForm		<Form> my function plot--default size = 1024@180
@@ -729,21 +485,13 @@ Example:
 	fcn := FourierSummation from: #((1 1 0) (3 0.3 0) (5 0.2 0) 
 							(7 0.15 0) (9 0.11 0) (11 0.09 0)).
 	Transcript show: (fcn at: 0.14) printString; cr.
-!
-
-
-!FourierSummation methodsFor: 'initialize-release'!
-initialize: size
+!!FourierSummation methodsFor: 'initialize-release'!initialize: size
 	"Initialize the receiver for the given size."
 
 	super initialize: size.
 	domain := 0 to: 1.
 	range := -1 to: 1.
-	lazy := false		"i.e., pre-compute the curve"! !
-
-
-!FourierSummation methodsFor: 'computing'!
-computeCurve
+	lazy := false		"i.e., pre-compute the curve"! !!FourierSummation methodsFor: 'computing'!computeCurve
 	"Compute the block by sine summation--set the values in the cached array."
 
 	| width twoPi scale |
@@ -753,10 +501,7 @@ computeCurve
 	scale := twoPi / width.
 	1 to: width do:
 		[ :x |
-		myArray at: x put: (self computeValueAt: (x * scale))].! !
-
-!FourierSummation methodsFor: 'computing'!
-computeValueAt: anIndex
+		myArray at: x put: (self computeValueAt: (x * scale))].! !!FourierSummation methodsFor: 'computing'!computeValueAt: anIndex
 	"Compute the answer by sine summation."
 	"(Fourier from: #((1 1 0))) computeValueAt: (Float pi / 4)"
 
@@ -768,11 +513,7 @@ computeValueAt: anIndex
 		value := value + (((anIndex * aZPoint x) asFloat
 						+ (aZPoint z asFloat / 360.0 * twoPi)) sin
 					* aZPoint y asFloat)].
-	^value! !
-
-
-!FourierSummation methodsFor: 'accessing'!
-add: a3DPoint
+	^value! !!FourierSummation methodsFor: 'accessing'!add: a3DPoint
 	"Add the argument to the receiver's point collection."
 
 "	| y |"
@@ -781,10 +522,7 @@ add: a3DPoint
 	y < domain first
 		ifTrue: [self domain: (y to: domain last)].
 	y > domain last
-		ifTrue: [self domain: (domain first to: y)]."! !
-
-!FourierSummation methodsFor: 'accessing'!
-at: theIndex
+		ifTrue: [self domain: (domain first to: y)]."! !!FourierSummation methodsFor: 'accessing'!at: theIndex
 	"Answer the value from my array--assume an index in the range 0 to 1"
 
 	| val |
@@ -792,22 +530,11 @@ at: theIndex
 		ifTrue: [val := self computeValueAt: theIndex]
 		ifFalse: [myArray ifNil: [self computeCurve].
 				val := myArray at: ((theIndex * myArray size) truncated max: 1)].
-	^(val * scale) + offset! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-FourierSummation class
-	instanceVariableNames: ''!
-
-!FourierSummation class methodsFor: 'instance creation'!
-default
+	^(val * scale) + offset! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!FourierSummation class	instanceVariableNames: ''!!FourierSummation class methodsFor: 'instance creation'!default
 	"Answer a default instance of the receiver class."
 
 	^FourierSummation from: #((1 0.5 0) (3 0.3 0) (5 0.2 0) 
-							(7 0.17 0) (9 0.15 0) (11 0.1 0))! !
-
-!FourierSummation class methodsFor: 'instance creation'!
-from: anArrayOfZPoints
+							(7 0.17 0) (9 0.15 0) (11 0.1 0))! !!FourierSummation class methodsFor: 'instance creation'!from: anArrayOfZPoints
 	"Answer a sum-of-sines function with the given points."
 
 	| me |
@@ -815,11 +542,7 @@ from: anArrayOfZPoints
 	anArrayOfZPoints do: 
 			[ :anArray | 
 			me add: (anArray first @ (anArray at: 2) @ anArray last)].
-	^me! !
-
-
-!FourierSummation class methodsFor: 'examples'!
-fourierExample
+	^me! !!FourierSummation class methodsFor: 'examples'!fourierExample
 	"Make a Sine summation that approaches a square wave"
 	"FourierSummation fourierExample"
 
@@ -827,54 +550,23 @@ fourierExample
 	fcn := FourierSummation from: #((1 1 0) (3 0.3 0) (5 0.2 0) 
 							(7 0.15 0) (9 0.11 0) (11 0.09 0)).
 	Transcript show: (fcn at: 0.14) printString; cr.
-	fcn inspect! !
-
-!FourierSummation class methodsFor: 'examples'!
-fourierViewExample
+	fcn inspect! !!FourierSummation class methodsFor: 'examples'!fourierViewExample
 	"Make a Sine summation that approaches a square wave and open a view on it."
 	"FourierSummation fourierViewExample"
 
 	FunctionView onFunction: (FourierSummation from: #((1 0.5 0) (3 0.3 0) (5 0.2 0) 
-							(7 0.17 0) (9 0.15 0) (11 0.1 0)))! !
+							(7 0.17 0) (9 0.15 0) (11 0.1 0)))! !MusicEvent subclass: #FunctionEvent	instanceVariableNames: 'function interval delta'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!FunctionEvent methodsFor: 'accessing'!delta
 
-
-MusicEvent subclass: #FunctionEvent
-	instanceVariableNames: 'function interval delta'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
+	^delta! !!FunctionEvent methodsFor: 'accessing'!delta: aValue
 
-!FunctionEvent methodsFor: 'accessing'!
-delta
-
-	^delta! !
-
-!FunctionEvent methodsFor: 'accessing'!
-delta: aValue
-
-	delta := aValue! !
-
-!FunctionEvent methodsFor: 'accessing'!
-function
-	^function! !
-
-!FunctionEvent methodsFor: 'accessing'!
-function: aFcn
+	delta := aValue! !!FunctionEvent methodsFor: 'accessing'!function
+	^function! !!FunctionEvent methodsFor: 'accessing'!function: aFcn
 	function := aFcn.
-	self duration: aFcn duration.! !
+	self duration: aFcn duration.! !!FunctionEvent methodsFor: 'accessing'!interval
 
-!FunctionEvent methodsFor: 'accessing'!
-interval
+	^interval! !!FunctionEvent methodsFor: 'accessing'!interval: aValue
 
-	^interval! !
-
-!FunctionEvent methodsFor: 'accessing'!
-interval: aValue
-
-	interval := aValue! !
-
-!FunctionEvent methodsFor: 'accessing'!
-value
+	interval := aValue! !!FunctionEvent methodsFor: 'accessing'!value
 	"Answer the receiver's data value"
 
 	| realIndex |
@@ -884,11 +576,7 @@ value
 	realTime
 		ifTrue: [realIndex := (Time microsecondClock - startedAt) / 1000000]
 		ifFalse: [realIndex := index].
-	^function atX: realIndex! !
-
-
-!FunctionEvent methodsFor: 'events'!
-playOn: aVoice at: aTime
+	^function atX: realIndex! !!FunctionEvent methodsFor: 'events'!playOn: aVoice at: aTime
 	"Play the receiver on the voice then."
 
 	aVoice isVoice
@@ -896,27 +584,17 @@ playOn: aVoice at: aTime
 	(SirenSession voices includesKey: aVoice)
 			ifTrue: [^(SirenSession voices at: aVoice) playEvent: self at: aTime].
 	aVoice isInteger
-			ifTrue: [Voice default playEvent: self at: aTime]! !
-
-
-!FunctionEvent methodsFor: 'scheduling'!
-nextTime: now
+			ifTrue: [Voice default playEvent: self at: aTime]! !!FunctionEvent methodsFor: 'scheduling'!nextTime: now
 	"Answer the next time to reschedule me"
 
 	interval ifNotNil:
 		[^now + interval asUsec value].
 	delta ifNotNil:
-		[^now + (function nextXMoreThan: delta from: index)]! !
-
-!FunctionEvent methodsFor: 'scheduling'!
-play
+		[^now + (function nextXMoreThan: delta from: index)]! !!FunctionEvent methodsFor: 'scheduling'!play
 	"Play the event list by passing it off to the event scheduler."
 
 	EventScheduler instance addClient: self in: 1 msec.
-	EventScheduler instance run! !
-
-!FunctionEvent methodsFor: 'scheduling'!
-scheduleAt: aTime 
+	EventScheduler instance run! !!FunctionEvent methodsFor: 'scheduling'!scheduleAt: aTime 
 	"Expand an eventList for the appointment scheduler."
 
 	| aVoice next |
@@ -937,28 +615,10 @@ scheduleAt: aTime
 		ifFalse: [index := index + 1.
 			index > function size
 				ifTrue: [index := 0. ^nil]].
-	^next			   "answer the time of the next appointment"! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-FunctionEvent class
-	instanceVariableNames: ''!
-
-!FunctionEvent class methodsFor: 'instance creation'!
-new
+	^next			   "answer the time of the next appointment"! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!FunctionEvent class	instanceVariableNames: ''!!FunctionEvent class methodsFor: 'instance creation'!new
 	"Create and answer a new instance of me"
 
-	^super new initialize! !
-
-
-Function subclass: #FunctionGraph
-	instanceVariableNames: 'operandL operandR operation'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
-
-!FunctionGraph methodsFor: 'accessing'!
-at: anIndex 
+	^super new initialize! !Function subclass: #FunctionGraph	instanceVariableNames: 'operandL operandR operation'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!FunctionGraph methodsFor: 'accessing'!at: anIndex 
 	"Answer the value at the given index (between 0 and 1 -or- 1 and data size)."
 
 	| op1 op2 |
@@ -970,38 +630,18 @@ at: anIndex
 	operandR isEvent
 		ifFalse: [op2 := operandR]
 		ifTrue: [op2 := operandR at: anIndex].
-	^op1 perform: operation with: op2! !
-
-!FunctionGraph methodsFor: 'accessing'!
-operandL: aFcn
+	^op1 perform: operation with: op2! !!FunctionGraph methodsFor: 'accessing'!operandL: aFcn
 
 	operandL := aFcn.
 	range := aFcn range.
 	domain := aFcn domain.
-! !
+! !!FunctionGraph methodsFor: 'accessing'!operandR: aValue
 
-!FunctionGraph methodsFor: 'accessing'!
-operandR: aValue
+	operandR := aValue! !!FunctionGraph methodsFor: 'accessing'!operation
 
-	operandR := aValue! !
+	^operation! !!FunctionGraph methodsFor: 'accessing'!operation: aValue
 
-!FunctionGraph methodsFor: 'accessing'!
-operation
-
-	^operation! !
-
-!FunctionGraph methodsFor: 'accessing'!
-operation: aValue
-
-	operation := aValue! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-FunctionGraph class
-	instanceVariableNames: ''!
-
-!FunctionGraph class methodsFor: 'examples'!
-example
+	operation := aValue! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!FunctionGraph class	instanceVariableNames: ''!!FunctionGraph class methodsFor: 'examples'!example
 	"Open the sum of a triangle and a sine"
 	"FunctionGraph example"
 
@@ -1009,31 +649,14 @@ example
 	fcn1 := LinearFunction from: #((0 0) (0.5 0.9) (1 0)).
 	fcn2 := FourierSummation from: #((17 0.05 0)).
 "	(FunctionGraph opL: fcn1 opR: fcn2 operation: #+) open"
-	(fcn1 + fcn2) open.! !
-
-
-!FunctionGraph class methodsFor: 'instance creation'!
-opL: opL opR: opR operation: op
+	(fcn1 + fcn2) open.! !!FunctionGraph class methodsFor: 'instance creation'!opL: opL opR: opR operation: op
 	"Answer a new function graph"
 
-	^self new operandL: opL; operandR: opR; operation: op! !
-
-
-Function subclass: #LinearFunction
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
-!LinearFunction commentStamp: '<historical>' prior: 0!
-Instances of LinearFunction are line-segment functions of one free variable.
+	^self new operandL: opL; operandR: opR; operation: op! !Function subclass: #LinearFunction	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!LinearFunction commentStamp: '<historical>' prior: 0!Instances of LinearFunction are line-segment functions of one free variable.
 
 Example:
 	LinearFunction from: #((0 0) (0.1 1) (0.2 0.6) (0.9 0.4) (1 0))
-!
-
-
-!LinearFunction methodsFor: 'processing'!
-normalize
+!!LinearFunction methodsFor: 'processing'!normalize
 	"Normalize the receiver to the range and domain of 0-1, inclusive."
 
 	| xs ys |
@@ -1044,10 +667,7 @@ normalize
 		[data := data collect: [ :pt |
 			pt setX: (pt x / xs) setY: (pt y / ys)].
 		range := 0 to: 1.
-		domain := 0 to: 1]! !
-
-!LinearFunction methodsFor: 'processing'!
-scaleBy: scalePt
+		domain := 0 to: 1]! !!LinearFunction methodsFor: 'processing'!scaleBy: scalePt
 	"Scale the receiver's points by the given scale."
 	"LinearFunction default scaleBy: 5@1"
 
@@ -1056,10 +676,7 @@ scaleBy: scalePt
 	1 to: data size do:
 		[ :i | newD at: i put: (data at: i) * scalePt].
 	data := newD.
-	self updateRange! !
-
-!LinearFunction methodsFor: 'processing'!
-updateRange
+	self updateRange! !!LinearFunction methodsFor: 'processing'!updateRange
 
 	| minx maxx miny maxy |
 	domain := 1 to: data size.
@@ -1071,11 +688,7 @@ updateRange
 		d y < miny ifTrue: [miny := d y].
 		d y > maxy ifTrue: [maxy := d y]].
 	self range: (miny to: maxy).
-	self domain: (minx to: maxx)! !
-
-
-!LinearFunction methodsFor: 'accessing'!
-add: anItem
+	self domain: (minx to: maxx)! !!LinearFunction methodsFor: 'accessing'!add: anItem
 	"Add the argument to the receiver's point collection."
 
 	data add: anItem.
@@ -1088,10 +701,7 @@ add: anItem
 	anItem y < range first
 		ifTrue: [self range: (anItem y to: range last)].
 	anItem y > range stop
-		ifTrue: [self range: (range first to: anItem y)]! !
-
-!LinearFunction methodsFor: 'accessing'!
-at: anIndex
+		ifTrue: [self range: (range first to: anItem y)]! !!LinearFunction methodsFor: 'accessing'!at: anIndex
 	"Answer the value at the given index in my range--do linear interpolation."
 
 	| val xVal count x1 x2 y1 y2|
@@ -1109,25 +719,14 @@ at: anIndex
 			y1 := (data at: (count - 1)) y.
 			y2 := (data at: count) y.
 			val := y1 + ((anIndex - x1) / (x2 - x1) * (y2 - y1))].
-	^(val * scale) + offset! !
-
-!LinearFunction methodsFor: 'accessing'!
-size
+	^(val * scale) + offset! !!LinearFunction methodsFor: 'accessing'!size
 	"Answer the size of the receiver's collection of breakpoints."
 
 	| si |
 	si := domain stop - domain first.
 	^(si = 0)
 		ifTrue: [data size]
-		ifFalse: [si]! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-LinearFunction class
-	instanceVariableNames: ''!
-
-!LinearFunction class methodsFor: 'instance creation'!
-a: att d: dec s: sus r: rel
+		ifFalse: [si]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!LinearFunction class	instanceVariableNames: ''!!LinearFunction class methodsFor: 'instance creation'!a: att d: dec s: sus r: rel
 	"Answer an ADSR envelope."
 	"FunctionView onFunction: (LinearFunction a: 0.03 d: 0.03 s: 0.4 r: 0.3)"
 
@@ -1139,16 +738,10 @@ a: att d: dec s: sus r: rel
 	arr at: 3 put: ((att + dec) @ sus).
 	arr at: 4 put: (susT @ sus).
 	arr at: 5 put: (1 @ 0).
-	^self from: arr! !
-
-!LinearFunction class methodsFor: 'instance creation'!
-default
+	^self from: arr! !!LinearFunction class methodsFor: 'instance creation'!default
 	"Answer a default instance of the receiver class - an ADSR shape."
 
-	^LinearFunction from: #((0 0) (0.15 1.0) (0.25 0.75) (0.75 0.5) (1 0))! !
-
-!LinearFunction class methodsFor: 'instance creation'!
-fromLorisData: data size: siz duration: dur
+	^LinearFunction from: #((0 0) (0.15 1.0) (0.25 0.75) (0.75 0.5) (1 0))! !!LinearFunction class methodsFor: 'instance creation'!fromLorisData: data size: siz duration: dur
 	"Create a linear envelope from the given Loris linear envelope."
 
 	| inst step |
@@ -1157,32 +750,24 @@ fromLorisData: data size: siz duration: dur
 	0 to: siz do: [ :ind |
 		inst add: ((step * ind) asFloat @ (data valueAt: (step * ind)) asFloat)].
 	inst updateRange.
-	^inst! !
-
-
-!LinearFunction class methodsFor: 'examples'!
-exampleEnvelope
+	^inst! !!LinearFunction class methodsFor: 'examples' stamp: 'stp 1/19/2023 06:32'!exampleEnvelope
 	"Answer a LinSeg of a typical envelope function."
 	"LinearFunction exampleEnvelope"
 	"FunctionView onFunction: (LinearFunction exampleEnvelope)"
 
-	| rand pts size x y |
+	| rand pts size x y maxXStep ind |
 	rand := Random new.
-	size := rand nextIntFrom: 5 to: 15.
-	pts := Array new: size.
-	pts at: 1 put: 0@0.
-	pts at: size put: 1@0.
+	size := rand nextIntFrom: 3 to: 8.
+	pts := OrderedCollection new: size.
+	pts addFirst: 0@0.
 	x := 0.
-	y := 0.8.
-	2 to: size - 1 do:
-		[ :i |
-		x := x + (rand nextFrom: 0.05 to: 0.15).
+	y := 0.8.	maxXStep := 1.5 / size.	ind := 2.
+	[x < 0.95 and: [ind + 1 < size]] whileTrue:
+		[ | xStep |		xStep := rand nextFrom: 0.05 to: maxXStep.
+		x := x +xStep.
 		y := ((y + (rand nextFrom: -0.3 to: 0.3)) min: 1.0) max: 0.0.
-		pts at: i put: (x@y)].
-	^LinearFunction from: pts! !
-
-!LinearFunction class methodsFor: 'examples'!
-linearExample
+		pts addLast: (x@y).		ind := ind + 1].
+	pts addLast: 1@0.	^LinearFunction from: pts! !!LinearFunction class methodsFor: 'examples'!linearExample
 	"Make a LinSeg and answer a value."
 	"LinearFunction linearExample"
 
@@ -1190,33 +775,17 @@ linearExample
 	fcn := LinearFunction ofSize: 2.
 	fcn add: (0@0.5); add: (1@1).
 	Transcript show: (fcn at: 0.14) printString; cr.
-	fcn inspect! !
-
-!LinearFunction class methodsFor: 'examples'!
-linearViewExample
+	fcn inspect! !!LinearFunction class methodsFor: 'examples'!linearViewExample
 	"Make an ADSR-shaped LinSeg and open a view on its form."
 	"LinearFunction linearViewExample"
 
 	FunctionView onFunction: 
-		(LinearFunction from: #((0 0) (0.1 1) (0.2 0.6) (0.9 0.4) (1 0)))! !
-
-
-LinearFunction subclass: #ExponentialFunction
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
-!ExponentialFunction commentStamp: '<historical>' prior: 0!
-Instances of ExponentialFunction are exponential-segment functions of one free variable.
+		(LinearFunction from: #((0 0) (0.1 1) (0.2 0.6) (0.9 0.4) (1 0)))! !LinearFunction subclass: #ExponentialFunction	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!ExponentialFunction commentStamp: '<historical>' prior: 0!Instances of ExponentialFunction are exponential-segment functions of one free variable.
 They use ZPoints for x/y/exponent. The exponent determines the speed of the exponential/logarithmic transition between breakpoint values. A value of 0 leads to linear interpolation.
 
 Example:
 	ExponentialFunction from: #((0 0 -5) (0.2 1 -3) (0.8 0.5 -2) (1 0))
-!
-
-
-!ExponentialFunction methodsFor: 'accessing'!
-at: anIndex
+!!ExponentialFunction methodsFor: 'accessing'!at: anIndex
 	"Answer the value at the given index in my range--do exponential interpolation such
  	that if f(x, i) is the i-th function value in the transition from breakpoint v[J] to 
 	v[J+1], then:
@@ -1245,19 +814,12 @@ at: anIndex
 			weight == 0		"special case for linear interpolation"
 				ifTrue: [val := y1 + (interp * (y2 - y1))].
 			val := y1 + ((y2 - y1) * ((1 - (interp * weight) exp) / (1 - weight exp)))].
-	^(val * scale) + offset! !
-
-!ExponentialFunction methodsFor: 'accessing'!
-pointAt: index
+	^(val * scale) + offset! !!ExponentialFunction methodsFor: 'accessing'!pointAt: index
 	"Answer the given value in the receiver's breakpoint collection as a 2-D point."
 
 	| pt |
 	pt := data at: index.
-	^pt x @ pt y! !
-
-
-!ExponentialFunction methodsFor: 'printing'!
-printOn: aStream
+	^pt x @ pt y! !!ExponentialFunction methodsFor: 'printing'!printOn: aStream
 	"Format and print the receiver on the argument."
 
 	| pt |
@@ -1276,15 +838,7 @@ printOn: aStream
 			(pt respondsTo: #z)
 				ifTrue: [pt z printOn: aStream].
 			aStream nextPut: $); space].
-			aStream nextPut: $)! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-ExponentialFunction class
-	instanceVariableNames: ''!
-
-!ExponentialFunction class methodsFor: 'instance creation'!
-a: att d: dec s: sus r: rel
+			aStream nextPut: $)! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!ExponentialFunction class	instanceVariableNames: ''!!ExponentialFunction class methodsFor: 'instance creation'!a: att d: dec s: sus r: rel
 	"Answer an ADSR envelope."
 	"(ExponentialFunction a: 0.06 d: 0.06 s: 0.4 r: 0.4) edit"
 
@@ -1296,17 +850,11 @@ a: att d: dec s: sus r: rel
 	arr at: 3 put: ((att + dec) @ sus @ -2).
 	arr at: 4 put: (susT @ sus @ -2).
 	arr at: 5 put: (1 @ 0).
-	^self from: arr! !
-
-!ExponentialFunction class methodsFor: 'instance creation'!
-default
+	^self from: arr! !!ExponentialFunction class methodsFor: 'instance creation'!default
 	"Answer a default instance of the receiver class."
 	"ExponentialFunction default edit"
 
-	^self from: #((0 0 3 ) (0.08 1.0 -3) (0.2 0.5 -1) (1 0 0))! !
-
-!ExponentialFunction class methodsFor: 'instance creation'!
-from: anArrayOfPoints
+	^self from: #((0 0 3 ) (0.08 1.0 -3) (0.2 0.5 -1) (1 0 0))! !!ExponentialFunction class methodsFor: 'instance creation'!from: anArrayOfPoints
 	"Answer a function with the given points."
 	"ExponentialFunction from: #((0 0 5) (0.5 1 5) (1 0))"
 
@@ -1318,41 +866,22 @@ from: anArrayOfPoints
 		ifFalse: [anArrayOfPoints do: 
 			[ :anArray |  me add: (anArray first @ (anArray at: 2) @ anArray last)]].
 	me updateRange.
-	^me! !
-
-
-!ExponentialFunction class methodsFor: 'examples'!
-expADSRViewExample
+	^me! !!ExponentialFunction class methodsFor: 'examples'!expADSRViewExample
 	"Make an exp seg and open a view on its form."
 	"ExponentialFunction expsegViewExample"
 
 	FunctionView onFunction: 
-		(ExponentialFunction from: #((0 0 -5) (0.2 1 -3) (0.8 0.5 -2) (1 0)))! !
-
-!ExponentialFunction class methodsFor: 'examples'!
-expASRViewExample
+		(ExponentialFunction from: #((0 0 -5) (0.2 1 -3) (0.8 0.5 -2) (1 0)))! !!ExponentialFunction class methodsFor: 'examples'!expASRViewExample
 	"Make an exp seg and open a view on its form."
 	"ExponentialFunction expASRViewExample"
 
 	FunctionView onFunction: 
-		(ExponentialFunction from: #((0 0 -3) (0.3 0.9 0) (0.7 0.9 -3) (1 0)))! !
-
-!ExponentialFunction class methodsFor: 'examples'!
-expsegViewExample
+		(ExponentialFunction from: #((0 0 -3) (0.3 0.9 0) (0.7 0.9 -3) (1 0)))! !!ExponentialFunction class methodsFor: 'examples'!expsegViewExample
 	"Make an exp seg and open a view on its form."
 	"ExponentialFunction expsegViewExample"
 
 	FunctionView onFunction: 
-		(ExponentialFunction from: #((0 0 -3) (0.2 1 -5) (0.6 0.5 -1) (1 0)))! !
-
-
-Function subclass: #Spectrum
-	instanceVariableNames: 'sound window windowSize stepSize magReal'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
-!Spectrum commentStamp: '<historical>' prior: 0!
-Instances of Spectrum represent 3-D data functions derived from sound analysis.
+		(ExponentialFunction from: #((0 0 -3) (0.2 1 -5) (0.6 0.5 -1) (1 0)))! !Function subclass: #Spectrum	instanceVariableNames: 'sound window windowSize stepSize magReal'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!Spectrum commentStamp: '<historical>' prior: 0!Instances of Spectrum represent 3-D data functions derived from sound analysis.
 
 Instance Variables:
 	sound <StoredSound> the receiver's sound
@@ -1360,133 +889,39 @@ Instance Variables:
 	windowSize <Integer> the window size
 	stepSize <Integer> the step between windows
 	fft <FFT> the receiver's FFT analyzer
-	magReal <Symbol> The spectrum type: mag, real, polar, or complex!
-
-
-!Spectrum methodsFor: 'accessing'!
-D
+	magReal <Symbol> The spectrum type: mag, real, polar, or complex!!Spectrum methodsFor: 'accessing'!D
 	"Answer the receiver's decimation factor."
 
-	^windowSize / stepSize! !
-
-!Spectrum methodsFor: 'accessing'!
-D: factor
+	^windowSize / stepSize! !!Spectrum methodsFor: 'accessing'!D: factor
 	"Set the receiver's decimation factor."
 
-	^stepSize := windowSize / factor! !
-
-!Spectrum methodsFor: 'accessing'!
-N
+	^stepSize := windowSize / factor! !!Spectrum methodsFor: 'accessing'!N
 	"Answer the receiver's 'windowSize'."
 
-	^windowSize! !
-
-!Spectrum methodsFor: 'accessing'!
-N: aNum
+	^windowSize! !!Spectrum methodsFor: 'accessing'!N: aNum
 	"Set the receiver's instance variable 'windowSize' to be aNum."
 
 	windowSize := aNum.
-! !
-
-!Spectrum methodsFor: 'accessing'!
-sound
+! !!Spectrum methodsFor: 'accessing'!sound
 	"Answer the receiver's 'sound'."
 
-	^sound! !
-
-!Spectrum methodsFor: 'accessing'!
-sound: anObject
+	^sound! !!Spectrum methodsFor: 'accessing'!sound: anObject
 	"Set the receiver's instance variable 'sound' to be anObject."
 
-	sound := anObject! !
-
-!Spectrum methodsFor: 'accessing'!
-stepSize
+	sound := anObject! !!Spectrum methodsFor: 'accessing'!stepSize
 	"Answer the receiver's 'stepSize'."
 
-	^stepSize! !
-
-!Spectrum methodsFor: 'accessing'!
-stepSize: anObject
+	^stepSize! !!Spectrum methodsFor: 'accessing'!stepSize: anObject
 	"Set the receiver's instance variable 'stepSize' to be anObject."
 
-	stepSize := anObject! !
-
-!Spectrum methodsFor: 'accessing'!
-windowSize
+	stepSize := anObject! !!Spectrum methodsFor: 'accessing'!windowSize
 	"Answer the receiver's 'windowSize'."
 
-	^windowSize! !
-
-!Spectrum methodsFor: 'accessing'!
-windowSize: aNum
+	^windowSize! !!Spectrum methodsFor: 'accessing'!windowSize: aNum
 	"Set the receiver's instance variable 'windowSize' to be aNum."
 
 	windowSize := aNum.
-! !
-
-
-!Spectrum methodsFor: 'computing' stamp: 'stp 12/31/2022 07:12'!
-compute
-	"Do the FFT and store the results into the receiver's data."
-	"Spectrum sweepExample"
-	"Spectrum fileExample"
-	| fft dSize min max samples spectrum |
-	dSize := (sound size / stepSize) truncated.
-	"# of windows"
-	data := Array new: dSize.
-	"array of arrays"
-	min := 1.0e30.
-	max := -1.0e30.
-	samples := ByteArray new: windowSize * 4.
-	"FFT's private data"
-	samples gcCopyToHeap.
-	spectrum := ByteArray new: windowSize * 4 + 1.
-	spectrum gcCopyToHeap.
-	fft := FFT new.
-	"set up the FFT"
-	[fft
-		fftw_initialize: windowSize
-		with: samples
-		with: spectrum]
-		on: Error
-		do: [:ex | self error: 'FFT not installed'].
-	Cursor execute
-		showWhile: [1
-				to: dSize
-				do: [:winCount | 
-					| buffer slice |
-					buffer := self window: winCount.
-					"window the data buffer"
-					1
-						to: windowSize
-						do: [:count | "copy it to the FFT's input buffer"
-							samples
-								floatAt: count - 1 * 4 + 1
-								put: (buffer at: count)].
-					fft fftw_forward_transform.
-					"do the FFT"
-					slice := Array new: windowSize / 2.
-					magReal == #real
-						ifTrue: [1
-								to: windowSize / 2
-								do: [:ind | 
-									| re im mag |
-									"copy the magnitude spectrum out"
-									re := spectrum floatAt: ind * 2 - 2 * 4 + 1.
-									im := spectrum floatAt: ind * 2 - 1 * 4 + 1.
-									mag := (re * re + (im * im)) sqrt.
-									slice at: ind put: mag.
-									min := mag min: min.
-									max := mag max: max].
-							data at: winCount put: slice]
-						ifFalse: ["pack data--real or complex"
-							self error: 'Complex FFT not supported']]].
-	self
-		range: (min to: max)! !
-
-!Spectrum methodsFor: 'computing'!
-compute0
+! !!Spectrum methodsFor: 'computing' stamp: 'stp 12/31/2022 07:12'!compute	"Do the FFT and store the results into the receiver's data."	"Spectrum sweepExample"	"Spectrum fileExample"	| fft dSize min max samples spectrum |	dSize := (sound size / stepSize) truncated.	"# of windows"	data := Array new: dSize.	"array of arrays"	min := 1.0e30.	max := -1.0e30.	samples := ByteArray new: windowSize * 4.	"FFT's private data"	samples gcCopyToHeap.	spectrum := ByteArray new: windowSize * 4 + 1.	spectrum gcCopyToHeap.	fft := FFT new.	"set up the FFT"	[fft		fftw_initialize: windowSize		with: samples		with: spectrum]		on: Error		do: [:ex | self error: 'FFT not installed'].	Cursor execute		showWhile: [1				to: dSize				do: [:winCount | 					| buffer slice |					buffer := self window: winCount.					"window the data buffer"					1						to: windowSize						do: [:count | "copy it to the FFT's input buffer"							samples								floatAt: count - 1 * 4 + 1								put: (buffer at: count)].					fft fftw_forward_transform.					"do the FFT"					slice := Array new: windowSize / 2.					magReal == #real						ifTrue: [1								to: windowSize / 2								do: [:ind | 									| re im mag |									"copy the magnitude spectrum out"									re := spectrum floatAt: ind * 2 - 2 * 4 + 1.									im := spectrum floatAt: ind * 2 - 1 * 4 + 1.									mag := (re * re + (im * im)) sqrt.									slice at: ind put: mag.									min := mag min: min.									max := mag max: max].							data at: winCount put: slice]						ifFalse: ["pack data--real or complex"							self error: 'Complex FFT not supported']]].	self		range: (min to: max)! !!Spectrum methodsFor: 'computing'!compute0
 	"Do the FFT and store the results into the receiver's data."
 	"Display restoreAfter: [Spectrum sweepExample]"
 	"Display restoreAfter: [Spectrum fileExample]"
@@ -1509,17 +944,11 @@ compute0
 			(data at: ind) do:			"calc min/max"
 				[ :d | min := d min: min.
 					max := d max: max]]].
-	self range: (min to: max)! !
-
-!Spectrum methodsFor: 'computing'!
-setData
+	self range: (min to: max)! !!Spectrum methodsFor: 'computing'!setData
 	"Create the receiver's data array for the right number of frames."
 
 	data := Array new: (sound size / stepSize) truncated.
-	domain := 0 to: data size! !
-
-!Spectrum methodsFor: 'computing'!
-updateRange
+	domain := 0 to: data size! !!Spectrum methodsFor: 'computing'!updateRange
 	"Iterate over the receier's data getting the RMS data range"
 
 	| min max off |
@@ -1539,10 +968,7 @@ updateRange
 					min := val min: min.
 					max := val max: max]]].
 
-	self range: (min to: max)! !
-
-!Spectrum methodsFor: 'computing'!
-window: which
+	self range: (min to: max)! !!Spectrum methodsFor: 'computing'!window: which
 	"Answer the real data array for the given window of the receiver's sound."
 
 	| dArray base sHalf  ind|
@@ -1559,37 +985,20 @@ window: which
 				[ :i | 
 				ind := i + sHalf.
 				dArray at: ind put: ((sound floatSampleAt: (base + ind)) * (1 - (i asFloat / sHalf )))]].
-	^dArray! !
-
-
-!Spectrum methodsFor: 'modes'!
-complex
+	^dArray! !!Spectrum methodsFor: 'modes'!complex
 	"Set the receiver's instance variable 'magReal' to be #complex."
 
-	magReal := #complex! !
-
-!Spectrum methodsFor: 'modes'!
-real
+	magReal := #complex! !!Spectrum methodsFor: 'modes'!real
 	"Set the receiver's instance variable 'magReal' to be #real."
 
-	magReal := #real! !
-
-!Spectrum methodsFor: 'modes'!
-setWindow: aSymbol
+	magReal := #real! !!Spectrum methodsFor: 'modes'!setWindow: aSymbol
 	"Set the receiver's 'window'."
 	"#rectangular, #triangular"
 
-	window := aSymbol! !
-
-!Spectrum methodsFor: 'modes'!
-window
+	window := aSymbol! !!Spectrum methodsFor: 'modes'!window
 	"Answer the receiver's 'window'."
 
-	^window! !
-
-
-!Spectrum methodsFor: 'time warp'!
-interpolateFrame: ind
+	^window! !!Spectrum methodsFor: 'time warp'!interpolateFrame: ind
 	"Answer a new frame interpolated for the given (floating-point) index."
 
 	| bas fra pre nex int |
@@ -1605,10 +1014,7 @@ interpolateFrame: ind
 		v0 := pre at: x.
 		v1 := nex at: x.
 		int at: x put: (v0 + ((v1 - v0) * fra))].
-	^int! !
-
-!Spectrum methodsFor: 'time warp'!
-timewarpBy: fact
+	^int! !!Spectrum methodsFor: 'time warp'!timewarpBy: fact
 	"Interpolate/decimate the receiver by the given (float or function) time factor."
 
 	| siz newD |
@@ -1620,26 +1026,15 @@ timewarpBy: fact
 			newD at: in put: (self interpolateFrame: (in asFloat / fact))].
 		data := newD.
 		^self]
-				"else fact is a function"! !
-
-
-!Spectrum methodsFor: 'printing'!
-display
+				"else fact is a function"! !!Spectrum methodsFor: 'printing'!display
 	"Display the receiver"
 
-	SpectrumView openOn: self! !
-
-!Spectrum methodsFor: 'printing'!
-printOn: aStream
+	SpectrumView openOn: self! !!Spectrum methodsFor: 'printing'!printOn: aStream
 	"Format and print the receiver on the argument."
 
 	aStream nextPutAll: self class name, ' on: '.
 	sound printOn: aStream.
-	aStream nextPutAll: (' window: ', windowSize printString, ' step: ', stepSize printString)! !
-
-
-!Spectrum methodsFor: 'initialize-release'!
-initialize
+	aStream nextPutAll: (' window: ', windowSize printString, ' step: ', stepSize printString)! !!Spectrum methodsFor: 'initialize-release'!initialize
 	"Set up the receiver."
 
 	super initialize.
@@ -1647,32 +1042,19 @@ initialize
 	windowSize := 256.
 	stepSize := 1024.
 "	fft := FFT new nu: (windowSize log: 2) truncated.
-"	magReal := #real.			"mag, real, polar, or complex"! !
-
-
-!Spectrum methodsFor: 'frames'!
-at: anIndex
+"	magReal := #real.			"mag, real, polar, or complex"! !!Spectrum methodsFor: 'frames'!at: anIndex
 	"Answer the value at the given index (between 1 and self size)."
 
 	anIndex isSymbol
 		ifTrue: [^super at: anIndex].
-	^data at: anIndex! !
-
-!Spectrum methodsFor: 'frames'!
-at: anIndex put: aValue
+	^data at: anIndex! !!Spectrum methodsFor: 'frames'!at: anIndex put: aValue
 	"Answer the value at the given index (between 0 and 1)."
 
 	anIndex isSymbol ifTrue: [^super at: anIndex put: aValue].
-	data at: anIndex put: aValue! !
-
-!Spectrum methodsFor: 'frames'!
-frame: anIndex
+	data at: anIndex put: aValue! !!Spectrum methodsFor: 'frames'!frame: anIndex
 	"Answer the frame at the given index (between 1 and self size)."
 
-	^data at: anIndex! !
-
-!Spectrum methodsFor: 'frames'!
-frame: anIndex do: aBlock
+	^data at: anIndex! !!Spectrum methodsFor: 'frames'!frame: anIndex do: aBlock
 	"Iterate over a single frame with the given block."
 
 	magReal == #real
@@ -1680,49 +1062,26 @@ frame: anIndex do: aBlock
 
 		ifFalse: [ | base |
 			base := anIndex * windowSize.
-			base to: base + windowSize do: aBlock]! !
-
-!Spectrum methodsFor: 'frames'!
-frame: frm imagAt: frq
+			base to: base + windowSize do: aBlock]! !!Spectrum methodsFor: 'frames'!frame: frm imagAt: frq
 	"Answer the given imag value in the given frame."
 
 	magReal == #complex
-		ifTrue: [^(data at: frm) at: frq + windowSize]! !
-
-!Spectrum methodsFor: 'frames'!
-frame: frm imagAt: frq put: val
+		ifTrue: [^(data at: frm) at: frq + windowSize]! !!Spectrum methodsFor: 'frames'!frame: frm imagAt: frq put: val
 	"Set the given imag value in the given frame."
 
 	magReal == #complex
-		ifTrue: [(data at: frm) at: frq + windowSize put: val]! !
-
-!Spectrum methodsFor: 'frames'!
-frame: anIndex put: aValue
+		ifTrue: [(data at: frm) at: frq + windowSize put: val]! !!Spectrum methodsFor: 'frames'!frame: anIndex put: aValue
 	"Set the value at the given index (between 0 and 1)."
 
 	anIndex isSymbol ifTrue: [^super at: anIndex put: aValue].
-	data at: anIndex put: aValue! !
-
-!Spectrum methodsFor: 'frames'!
-frame: frm realAt: frq
+	data at: anIndex put: aValue! !!Spectrum methodsFor: 'frames'!frame: frm realAt: frq
 	"Answer the requested real value from the given frame."
 
-	^(data at: frm) at: frq! !
-
-!Spectrum methodsFor: 'frames'!
-frame: frm realAt: frq put: val
+	^(data at: frm) at: frq! !!Spectrum methodsFor: 'frames'!frame: frm realAt: frq put: val
 	"Set the given real value in the given frame."
 
 	magReal == #complex
-		ifTrue: [(data at: frm) at: frq put: val]! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-Spectrum class
-	instanceVariableNames: ''!
-
-!Spectrum class methodsFor: 'examples'!
-fileExample
+		ifTrue: [(data at: frm) at: frq put: val]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Spectrum class	instanceVariableNames: ''!!Spectrum class methodsFor: 'examples'!fileExample
 	"Read a sound from disk and take its fft."
 	"Spectrum fileExample display"
 
@@ -1733,10 +1092,7 @@ fileExample
 	me stepSize: 512.
 	me real.
 	me compute.
-	^me! !
-
-!Spectrum class methodsFor: 'examples'!
-sweepExample
+	^me! !!Spectrum class methodsFor: 'examples'!sweepExample
 	"Create a swept sine wave and take its fft."
 	"Spectrum sweepExample display"
 
@@ -1747,76 +1103,28 @@ sweepExample
 	me stepSize: 1024.
 	me real.
 	me compute.
-	^me! !
-
-
-LinearFunction subclass: #SplineFunction
-	instanceVariableNames: 'linSeg'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Music-Functions'!
-!SplineFunction commentStamp: '<historical>' prior: 0!
-Instances of SplineSeg are cubic splines betwen their points.
+	^me! !LinearFunction subclass: #SplineFunction	instanceVariableNames: 'linSeg'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Functions'!!SplineFunction commentStamp: '<historical>' prior: 0!Instances of SplineSeg are cubic splines betwen their points.
 
 Instance Variable:
-	linSeg		<LinearFunction> my linear twin!
-
-
-!SplineFunction methodsFor: 'computing' stamp: 'stp 12/30/2022 10:42'!
-computeCurve
+	linSeg		<LinearFunction> my linear twin!!SplineFunction methodsFor: 'computing' stamp: 'stp 1/21/2023 06:42'!computeCurve
 	"Compute the receiver by cubic interpolation; use the Geometric spline."
 
 	| points spline |
 	points := OrderedCollection new: data size.
 	data do: [ :pt |
 			points add: (pt * 100)].
-	spline := Spline new.
-	points do: [ :pt | spline add: pt].
+	spline := Spline new.	points do: [ :pt | spline add: pt].
 	points := spline computeCurve.
-	1 to: points size do: [ :i |
-			points at: i put: ((points at: i) / 100)].
-	linSeg := LinearFunction from: points! !
-
-
-!SplineFunction methodsFor: 'accessing'!
-at: anIndex
+	1 to: points size do: 		[ :i |
+		points at: i put: ((points at: i) / 100)].
+	linSeg := LinearFunction from: points! !!SplineFunction methodsFor: 'accessing'!at: anIndex
 	"Answer the value at the given index in my range--take it out of my computed form."
 
 	| val |
 	linSeg == nil
 		ifTrue: [self computeCurve].
 	val := linSeg at: anIndex.
-	^(val * scale) + offset! !
-
-!SplineFunction methodsFor: 'accessing' stamp: 'stp 12/30/2022 11:22'!
-scaleBy: aPt 
-	| points |
-	points := Array new: data size.
-	1
-		to: data size
-		do: [:ind | points at: ind put: (data at: ind)
-					* aPt].
-	^ SplineFunction from: points! !
-
-!SplineFunction methodsFor: 'accessing' stamp: 'stp 12/30/2022 11:24'!
-spline
-	| points spline |
-	points := OrderedCollection new: data size.
-	data
-		do: [:pt | points add: pt].
-	spline := Spline new.
-	points
-		do: [:pt | spline add: pt].
-	spline computeCurve.
-	^ spline! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-SplineFunction class
-	instanceVariableNames: ''!
-
-!SplineFunction class methodsFor: 'examples'!
-splineExample
+	^(val * scale) + offset! !!SplineFunction methodsFor: 'accessing' stamp: 'stp 12/30/2022 11:22'!scaleBy: aPt 	| points |	points := Array new: data size.	1		to: data size		do: [:ind | points at: ind put: (data at: ind)					* aPt].	^ SplineFunction from: points! !!SplineFunction methodsFor: 'accessing' stamp: 'stp 1/21/2023 07:24'!spline	| points spline |	points := OrderedCollection new: data size.	data		do: [:pt | points add: pt].	spline := Spline new.	points		do: [:pt | spline add: pt].	spline computeCurve.	^ spline! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SplineFunction class	instanceVariableNames: ''!!SplineFunction class methodsFor: 'examples'!splineExample
 	"Make a SplineSeg."
 	"SplineFunction splineExample"
 
@@ -1824,19 +1132,12 @@ splineExample
 	fcn := SplineFunction from: #((0 1) (0.35 1.3) (0.65 0.7) (1 1)).
 	fcn inspect.
 "	^fcn at: 0.14 
-"! !
-
-!SplineFunction class methodsFor: 'examples'!
-splineViewExample
+"! !!SplineFunction class methodsFor: 'examples'!splineViewExample
 	"Make a SplineSeg and open a view on its form."
 	"SplineFunction splineSegViewExample"
 
 	FunctionView onFunction: 
-		(SplineFunction from: #((0 0.5) (0.35 0.7) (0.65 0.2) (1 0.5)))! !
-
-
-!SplineFunction class methodsFor: 'instance creation'!
-default
+		(SplineFunction from: #((0 0.5) (0.35 0.7) (0.65 0.2) (1 0.5)))! !!SplineFunction class methodsFor: 'instance creation'!default
 	"Answer a default instance of the receiver class."
 
-	^SplineFunction from: #((0 0.5) (0.35 0.7) (0.65 0.35) (1 0.5))! !
+	^SplineFunction from: #((0 0.5) (0.35 0.7) (0.65 0.35) (1 0.5))! !

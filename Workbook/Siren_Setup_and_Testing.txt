@@ -2,15 +2,15 @@ Setting up Siren
 
 To test the Siren set-up and I/O, open the configuration/test panel,
 
-	[SirenSession openUtility] d 
+	[SirenSession openUtility] d 
+or the narrower vertical version	[SirenSession openUtilityVert] d 
+You can see the system configuration and test the MIDI, sound file, and sound IO here.  If you use MIDI, use the left (or top) row of buttons to set it up and test it. The 2nd row of buttons is used to test sound IO.  There's a section below in this workbook about the Siren utility and transport panes.
 
-You can see the system configuration and test the MIDI, sound file, and sound IO here. If you use MIDI, use the left row of buttons to set it up and test it. The 2nd row of buttons is used to test sound IO.  There's a section below in this workbook about the Siren utility and transport panes.
+The right-most (bottom) buttons are important utilities. The "clean up" button stops the scheduler and shuts down MIDI and sound IO (for use in an emergency).Normally, one wants to establish MIDI connectivity first; the top/left most button on the panel says "Configure MIDI" and has sub-menus to reset/initialize the MIDI driver, and to select the default I/O devices.  If you choose the "reset" option, it should print your MIDI device table in the Transcript; test this.  Below this, the test button allows you to test simple MIDI I/O.  Make sure this works before trying any of the more advanced MIDI Examples.
+
+Special initialization
 
-The right-most buttons are important utilities. The "clean up" button stops the scheduler and shuts down MIDI and sound IO (for use in an emergency).
-
-Special init
-
-See the method SirenUtility class initialize, with which you can customize Siren so that it finds your devices, servers, and data files. See especially the lines,
+See the method SirenUtility class initialize [SirenUtility initialize] b, with which you can customize Siren so that it finds your devices, servers, and data files. See especially the lines,
 
 	DefaultMIDIIn := 4.					"Tune these to your setup"
 	DefaultMIDIOut := 10.
@@ -23,14 +23,14 @@ See the method SirenUtility class initialize, with which you can customize Siren
 										"Set search paths"
 	self addDir: 'Databases' to: SoundDir.	"STP-specific"
 	self addDir: '3-Credo/*' to: SoundDir.	"You can add using wildcards"
-
+
 Setting up the External Interfaces
 
 Siren uses several external interfaces (based on the user primitives) for access to external data and I/O. The Smalltalk code for these interfaces is in the category MusicIO-External. The external libraries Siren uses are:
 
-	Streaming MIDI I/O -- PortMidi -- see http://www.cs.cmu.edu/~music/portmusic
+	Streaming MIDI I/O -- PortMidi -- see https://github.com/PortMidi/portmidi
 
-(In the past there were several more, but luckily sound I/O, FFT and several other facilities have been included in recent Smalltalks.)
+(In the past there were several more required libraries, but luckily sound I/O, FFT and several other facilities have been included in recent Smalltalks.)
 
 You need to have these libraries installed (normally in a directory such as /usr/local/lib), and compile and link the C-language interface libraries in the subdirectory DLLCC for sound or MIDI I/O to work with Siren. Binaries are available for Mac OSX. There are full sources and pre-compiled versions of the required libraries on the CSL web site; look at http://FASTLabInc.com/CSL.
 
@@ -39,30 +39,26 @@ To get CSL visit, 	http://FASTLabInc.com/CSL   or   https://github.com/stpope/CS
 
 Testing MIDI I/O
 
-
 This will open the MIDI driver and play a note; printing messages to the Transcript.
-	[MIDIPort testANote]
+	[MIDIPort testANote]
 Test this using a MIDI dump utility (such as MIDIMonitor), or a soft-synth, or outboard MIDI hardware. There are many other tests in class MIDIPort.
 
-Testing OpenSoundControl output
+Testing OpenSoundControl output
 The following example will send out a few OSC messages; test it with a dumpOSC utility, or with the CSL OSC server example. There are many other tests in class OSCVoice.
 	[OSCVoice vSOSExample3]
 
-Testing sound file I/O -- VisualWorks only -- 
-This will print diagnostics and a few rows of sample values to the Transcript. There are more examples ion class SoundFile.
-	[LibSndFileInterface example1: 'a.snd']
+Testing sound file I/O
+This should play a sound file (accellerated German)
+	[SirenSession testSoundFiles]
 
-Testing streaming sound I/O
-This will report to the Transcript; lsee also the examples in class SoundPort.
-	[PortAudioInterface example1]
 
-Testing the Siren scheduler
+Testing the Siren scheduler
 To test the built-in real-time scheduler, try the following block, which will display colored rectangles on the top window for 5 seconds, then refresh the screen.
 	[ActionEvent playExample]
-
+If nothing happens, or the screen goes white, or anything else unexpected occurs, you can always interrupt the system by typing cmd+. (CMD-DOT) and using the utility window button "stop exheculer" button to clear the event schedule.
 MIDI/Sound Configuration
 
-Siren's MIDI support depends on a platform-independent interface class that talks to VM-side primitives that talk to OS-level device drivers. There are clas ssettings in MIDIPort for the default I/O devices. The same applies to SoundPort.
+Siren's MIDI support depends on a platform-independent interface class that talks to VM-side primitives that talk to OS-level device drivers. There are class settings in MIDIPort for the default I/O devices.
 
 Smalltalk Options
 
@@ -83,7 +79,7 @@ There are several sound/MIDI utilities that Siren users generally need; these in
 Siren House-keeping
 
 To clear out temp. event lists, use,
-	[SirenSession flushTempEventLists]
+	[SirenSession flushTempEventLists]
 or to flush all,
 	[SirenSession instance freeLists]
 

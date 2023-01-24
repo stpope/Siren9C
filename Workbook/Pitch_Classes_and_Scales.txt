@@ -1,6 +1,6 @@
 MusES Pitch Classes, Intervals, Scales, and Chords
 
-Siren incorporates Francois Pachet et al's MusES pitch class package (see http://www-poleia.lip6.fr/~fdp/MusES.html). A pitch class is an abstraction of a single pitch or note name (e.g., C in any octave, or 'fa' in any key), and there are relationships for pitch class spelling (f#, la flat), pitch equivalence, enharmonic equivalence (do sharp = re flat), and interval algebra.
+Siren incorporates some of Francois Pachet et al's MusES pitch class package (see https://www.francoispachet.fr/wp-content/uploads/2021/01/pachet-96b.pdf). A pitch class is an abstraction of a single pitch or note name (e.g., C in any octave, or 'fa' in any key), and there are relationships for pitch class spelling (f#, la flat), pitch equivalence, enharmonic equivalence (do sharp = re flat), and interval algebra.
 
 Based on this, chords and scales can be defined according to pitch class rules.
 
@@ -48,4 +48,4 @@ Extending the Models of Pitch Classes and Scales
 
 Obviously, this framework is designed for ease of extension, and new interval types, scale rules, families of key signatures are all straightforward to add.
 
-[(BohlenPierceScale root: N mi) inspect]
+[(BohlenPierceScale root: N mi) notes]

@@ -1,4 +1,4 @@
-Loading the SWIG Packages in Siren
+Loading the SWIG Packages in Siren (VisualWorks-only to-date)
 
 [Obsolete since SWIG no longer Smalltalk - sad]
 

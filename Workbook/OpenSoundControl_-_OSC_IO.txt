@@ -1,11 +1,11 @@
 Siren and OpenSoundControl
 
-Siren includes an output voice that generates messages in the CNMAT OpenSoundControl (OSC) protocol  (http://www.cnmat.berkeley.edu/OpenSoundControl), which is sent out via UDP network packets to some synthesis server. We generally build these servers using CSL or SuperCollider, and then control them with set-up, event trigger, and control messages sent out from Siren.
+Siren includes an output voice that generates messages using the CNMAT OpenSoundControl (OSC) protocol  (http://www.cnmat.berkeley.edu/OpenSoundControl), which is sent out via UDP network packets to an external synthesis server. We generally build these servers using CSL or SuperCollider, and then control them with set-up, event trigger, and control messages sent out from Siren.
 
 The verbosity flag in the SirenUtility class allows for logging of all OSC to the transcript; open a Siren utility panel and use the pop-up menu to set the verbosity to 2. To test the OSC I/O, look at the classes OSCPort and OSCVoice with the default host/port settings and several useful parameter maps. A parameter map is a Smalltalk block that takes an event as its argument and returns an OSC message object (or a bundle), as in the following example (don't execute this):
 
-	[ :event |  | arr |			"This block takes an event as its argument and answers a"
-	arr := Array				"TypedOSCMessage for the address /note-on"
+	[ :event |  | arr |				"This block takes an event as its argument and answers a"
+	arr := Array					"TypedOSCMessage for the address /note-on with 3 parameters"
 			with: event duration asSec value
 			with: event pitch asHz value
 			with: event ampl asRatio value.
@@ -15,13 +15,9 @@ For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-
 
 	[OSCVoice midiScaleExample]
 
-There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "osc_synth_server" target, which sets of a simple server with 4 voices of FM synthesis and 4 sound file playback instruments. Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.
+There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "osc_synth_server" target, which sets up a  server with a mix of FM synthesis, sound file playback, granulation and other instruments (see the list below). Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.
 
-#define CSL_OSC_SERVER4				// 61 instruments: KS strings, several SHARC SOS versions, 2 FM variations, 4 SndFiles
-//#define CSL_OSC_FM_SndFile		// 4 voices of FM, 4 of SndFiles, and 1 bell
-//#define CSL_OSC_SAMPLER			// 16 voices of file playback
-//#define CSL_OSC_ADDER			// 16 voices of sum-of-sines synthesis
-
+Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)	1 - 10 ---- 10 plucked strings		 "fff" - amp, pitch, pos	11 - 20 ---- 10 FM instruments		"ffff" - dur amp pitch pos		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos	21 - 30 ---- 10 FM bells		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos	31 - 34 ---- 4 sound files (words)		"ff" - amp, pos	35 - 50 ---- 16 SHARC SOS voices (different instruments)		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	62 - 63 ---- 2 granular scramblers		"ff" - dur, ampl		"fff" - dur, ampl, rate	64 - 67 ---- 4 granular shifters		"ff" - dur, ampl		"fff" - dur, ampl, rate
 Then you can try the OSCVoice examples that follow.
 
 	[OSCVoice fmExample1]
@@ -45,30 +41,7 @@ As an example that mixes both styles, the following expression plays a long low 
 	[OSCVoice fmExample3]
 
 For more examples, set the default voice to OSC (using the Siren utility control panel) and run the built in examples on the other pages of this outline.
-
-----
-
-Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)
-
-	1 - 10 ---- 10 plucked strings
-		 "fff" - amp, pitch, pos
-	11 - 20 ---- 10 FM instruments
-		"ffff" - dur amp pitch pos
-		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos
-	21 - 30 ---- 10 FM bells
-		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos
-	31 - 34 ---- 4 sound files (words)
-		"ff" - amp, pos
-	35 - 50 ---- 16 SHARC SOS voices (different instruments)
-		dur, ampl, pitch, pos
-		dur, ampl, pitch, pos, att, dec, sus, rel
-	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato
-		dur, ampl, pitch, pos
-		dur, ampl, pitch, pos, att, dec, sus, rel
-	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato
-		dur, ampl, pitch, pos
-		dur, ampl, pitch, pos, att, dec, sus, rel
-
+Play short notes on the 16 SHARC instruments (version w vibrato)	"OSCVoice sharcExample1"		Play long low notes on the 16 SHARC instruments	"OSCVoice sharcExample2"			"OSCVoice sharcExample4"		Play notes on CSL FM bell instruments	"OSCVoice bellExample1"Play random notes on the CSL simple vector SHARC instruments	"OSCVoice vSOSExample1"			Play long low notes on the fancy vector SOS instruments	"OSCVoice vSOSExample2"		Play on the CSL granulator2 instrument	"OSCVoice granulatorExample2: 1"	"OSCVoice granulatorExample2: 2"	"OSCVoice granulatorExample2: 3"
 ----
 
 The liblo OSC library includes a useful test program called oscsend, which allows one to 

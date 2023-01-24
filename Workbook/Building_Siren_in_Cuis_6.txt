@@ -97,11 +97,4 @@ Screen background image (edit to taste)
 	(UniFileStream new open: '/Users/stp/Code/Smalltalk/Siren9C/display-lite.jpg' forWrite: false) 
 	binary contentsOfEntireFile]
 
-ToDo
-
-DisplayList editing
-OSC I/O via sockets
-MIDI I/O via plug-in
-Function & Sound editors
-
 [SirenUtility fileoutCategories]

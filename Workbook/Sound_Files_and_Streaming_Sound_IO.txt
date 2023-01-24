@@ -1,5 +1,5 @@
 Sound File I/O
-
+NOTE: THIS PAGE DESCRIBED THE OLD SIREN SAMPLED SOUND FRAMEWORK, WHICH HAS NOT YET BEEN MERGED WITH THE SQUEAK FRAMEWORK IN THE CATEGORY 'Sound-Synthesis'
 Siren sound objects can be read from and written to sound files using an external interface to Eric DeCastro's libSndFile library. This supports all popular (and many very obscure) sound file formats.
 
 Store a swept sine to a file

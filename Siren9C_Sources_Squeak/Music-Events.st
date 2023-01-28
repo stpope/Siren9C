@@ -1308,7 +1308,7 @@ add: ('.
 	^anObject isEventList
 		ifFalse: [false]
 		ifTrue: [((self duration = anObject duration) and:
-				[self events = anObject events])]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!EventList class	instanceVariableNames: ''!!EventList class methodsFor: 'examples'!creationExamples
+				[self events = anObject events])]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!EventList class	instanceVariableNames: ''!!EventList class methodsFor: 'examples' stamp: 'stp 1/25/2023 15:22'!accellExample	"Answer a scale for testing."	"EventList accellExample open"		| list durs |	list := EventList new.	durs := { 4 . 2 . 1 . 1/2 . 1/4 . 1/8 . 1/16 . 1/32 . 1/64 }.	1 to: durs size  do:		[ :start |		list add: ((durs at: start) beat, 60 key, 90 velocity) at: (start / 2.0) sec].	^ list! !!EventList class methodsFor: 'examples'!creationExamples
 	"Select the expressions below one-at-a-time and inspect the results."
 
 "	EventList named: (EventList nextName) 
@@ -1318,7 +1318,7 @@ add: ('.
 		fromStartTimes: #(0 500 1000 1500 2000 2500 3000)) inspect.
 "
 	((440 Hz, 250 msec, (#voice -> #flute)), 
-		((1/4) => (471 Hz, (1/4) beat, (#voice -> #flute)))) inspect! !!EventList class methodsFor: 'examples' stamp: 'stp 1/21/2023 15:30'!exampleHierarchical	"Create and edit a hierarchical event list with grolups in sub-event-lists."	"EventList exampleHierarchical"	((EventList newNamed: 'Test/Groups')		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (36 to: 40)), (#ampl: -> #(110)))) at: 0 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (40 to: 44)), (#ampl: -> #(100)))) at: 1.5 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (44 to: 48)), (#ampl: -> #(80)))) at: 3 sec;		add: (EventList randomExample: 8			from: ((#duration: -> (60 to: 120)), (#pitch: -> (48 to: 52)), (#ampl: -> #(70)))) at: 4.5 sec) editPTV! !!EventList class methodsFor: 'examples' stamp: 'stp 1/21/2023 11:08'!randomExample
+		((1/4) => (471 Hz, (1/4) beat, (#voice -> #flute)))) inspect! !!EventList class methodsFor: 'examples' stamp: 'stp 1/21/2023 15:30'!exampleHierarchical	"Create and edit a hierarchical event list with grolups in sub-event-lists."	"EventList exampleHierarchical"	((EventList newNamed: 'Test/Groups')		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (36 to: 40)), (#ampl: -> #(110)))) at: 0 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (40 to: 44)), (#ampl: -> #(100)))) at: 1.5 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (44 to: 48)), (#ampl: -> #(80)))) at: 3 sec;		add: (EventList randomExample: 8			from: ((#duration: -> (60 to: 120)), (#pitch: -> (48 to: 52)), (#ampl: -> #(70)))) at: 4.5 sec) editPTV! !!EventList class methodsFor: 'examples' stamp: 'stp 1/23/2023 17:37'!randomExample
 	"Create an event list with random data."
 	"EventList randomExample"
 	"EventList randomExample edit"
@@ -1337,17 +1337,17 @@ add: ('.
 	1 to: size do: [ :i | arr1 at: i put: (rand nextIntFrom: 150 to: 400)].		"dur"
 	1 to: size do: [ :i | arr2 at: i put: (rand nextIntFrom: 40 to: 100)].		"amp"
 	1 to: size do: [ :i | arr3 at: i put: (rand nextIntFrom: 1 to: 1)].			"voice"
-	1 to: size do: [ :i | arr4 at: i put: (rand nextIntFrom: 48 to: 72)].			"pitch"				
+	1 to: size do: [ :i | arr4 at: i put: (rand nextIntFrom: 48 to: 72)].		"pitch"				
 	^EventList named: 'random1'  
 		fromSelectors: #(duration: loudness: voice: pitch:) 
-		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !!EventList class methodsFor: 'examples' stamp: 'stp 1/15/2023 10:11'!randomExample2
+		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !!EventList class methodsFor: 'examples' stamp: 'stp 1/23/2023 17:55'!randomExample2
 	"Create an event list (longer notes) with random data."
-	"EventList randomExample2"
-	"EventList randomExample2 edit"
+	"EventList randomExample2 explore"
+	"EventList randomExample2 editPTV"
 	"PitchTimeView randomExample2"
 	"(EventList newNamed: #pRand)
 			addAll: (EventList randomExample);
-			addAll: (EventList randomExample)"
+			addAll: (EventList randomExample) edit"
 
 	| rand size arr1 arr2 arr3 arr4 |
 	rand := Random new.
@@ -1380,7 +1380,7 @@ add: ('.
 	1 to: length do: [ :i | arr4 at: i put: (rand nextIntFrom: 48 to: 72)].
 	^EventList named: 'random1'  
 		fromSelectors: #(duration: loudness: voice: pitch:) 
-		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !!EventList class methodsFor: 'examples' stamp: 'stp 1/21/2023 15:29'!randomExample: length from: data
+		values: (Array with: arr1 with: arr2 with: arr3 with: arr4)! !!EventList class methodsFor: 'examples' stamp: 'stp 1/23/2023 16:54'!randomExample: length from: data
 	"Create an event list of length items with random data."
 	"(EventList randomExample: 64 
 		from: ((#duration: -> (0.1 to: 0.2)), (#pitch: -> (36 to: 60)),
@@ -1396,15 +1396,11 @@ add: ('.
 		a := Array new: length.
 		(int isMemberOf: Interval)
 			ifTrue: [int first isInteger
-				ifTrue: [1 to: length do: [ :c | 
-					a at: c put: (rand nextIntFrom: int first to: int stop)]]
-				ifFalse: [1 to: length do: [ :c | 
-					a at: c put: (rand nextFrom: int first to: int stop)]]]
-			ifFalse: [(int hasItems)
-				ifTrue: [1 to: length do: [ :c | 
-					a at: c put: (int atRandom: rand)]]
-				ifFalse: [1 to: length do: [ :c | 
-					a at: c put: int]]].
+				ifTrue: [1 to: length do: 					[ :c | a at: c put: (rand nextIntFrom: int first to: int stop)]]
+				ifFalse: [1 to: length do: 					[ :c | a at: c put: (rand nextFrom: int first to: int stop)]]]
+			ifFalse: [int isString				ifTrue: [1 to: length do: 						[ :c | a at: c put: int]]				ifFalse: [int hasItems
+					ifTrue: [1 to: length do: 						[ :c | a at: c put: (int atRandom: rand)]]
+					ifFalse: [1 to: length do: 						[ :c | a at: c put: int]]]].
 		arr at: i put: a.
 		sels at: i put: item key.
 		i := i + 1].

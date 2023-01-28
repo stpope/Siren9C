@@ -210,7 +210,7 @@ InstanceVariableNames:
 Instance Variables:
 	timeScale		<Integer> the msec./pixel scale
 	timeOffset		<Integer> the start of the layout in msec.
-!!TimeSequenceLayoutManager methodsFor: 'generating' stamp: 'stp 1/19/2023 14:32'!addItem: anAss atNode: aPath in: aDisplayList 
+!!TimeSequenceLayoutManager methodsFor: 'generating' stamp: 'stp 1/25/2023 14:19'!addItem: anAss atNode: aPath in: aDisplayList 
 	"Add the given item to the display list."
 
 	| path2 anE displayPoint item |
@@ -220,19 +220,19 @@ Instance Variables:
 			[ :i | 
 			path2 := aPath copy.
 			path2 addLast: anE.
-			self addItem: anAss key + i key => i value
+			^ self addItem: anAss key + i key => i value
 					atNode: path2
 					in: aDisplayList]].
 	displayPoint := self displayPointFor: anAss.
 	item := view itemFor: anAss.
 	item offset: displayPoint.
-	aDisplayList add: item atPath: aPath! !!TimeSequenceLayoutManager methodsFor: 'generating' stamp: 'stp 1/11/2023 13:17'!displayPointFor: anAss 
+	aDisplayList add: item atPath: aPath! !!TimeSequenceLayoutManager methodsFor: 'generating' stamp: 'stp 1/25/2023 07:15'!displayPointFor: anAss 
 	"Answer the display point for the argument."
 
 	| x y dPoint |
-	y := 16.
+	y := 16.								"default Y offset"
 	x := ((anAss key asMS value - timeOffset / timeScale) + inset x) asInteger.
-	(orientation == nil or: [orientation == #left])
+	(orientation isNil or: [orientation == #left])
 		ifTrue: [dPoint := x @ y]
 		ifFalse: [orientation == #top
 			ifTrue: [dPoint := y @ x]].
@@ -254,16 +254,14 @@ Instance Variables:
 	pitchOffset := aNumber! !!PitchTimeLayoutManager methodsFor: 'accessing'!pitchScale: aNumber
 	"Set the receiver's pitch scale."
 
-	pitchScale := aNumber! !!PitchTimeLayoutManager methodsFor: 'generating' stamp: 'stp 1/11/2023 15:50'!displayPointFor: anAss
+	pitchScale := aNumber! !!PitchTimeLayoutManager methodsFor: 'generating' stamp: 'stp 1/25/2023 15:50'!displayPointFor: anAss
 	"Answer the display point for the argument."
 
-	| pch |	inset x = 0 ifFalse: [self halt].
-	pch := anAss event pitch.
-	pch ifNil: [^(((anAss key asMS value - timeOffset / timeScale) + inset x) asInteger)
+	| pch |	pch := anAss event pitch.
+	pch ifNil: [ ^ (((anAss key asMS value - timeOffset / timeScale) + inset x) asInteger)
 		@ (60 * pitchScale)].
-	^(((anAss key asMS value - timeOffset / timeScale) + inset x) asInteger)
-		@ ((60 * pitchScale) 
-			- ((pch asMIDI value - pitchOffset) * pitchScale))! !PitchTimeLayoutManager subclass: #PositionTimeLayoutManager	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!PositionTimeLayoutManager commentStamp: '<historical>' prior: 0!Instances of PositionTimeLayoutManager are used to generate display lists with "x = time" and "y = position" from event lists.
+	^ (((anAss key asMS value - timeOffset / timeScale) + inset x) asInteger)
+			@ ((60 * pitchScale) - ((pch asMIDI value - pitchOffset) * pitchScale))! !PitchTimeLayoutManager subclass: #PositionTimeLayoutManager	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!PositionTimeLayoutManager commentStamp: '<historical>' prior: 0!Instances of PositionTimeLayoutManager are used to generate display lists with "x = time" and "y = position" from event lists.
 !!PositionTimeLayoutManager methodsFor: 'generating'!displayPointFor: anAss
 	"Answer the display point for the argument."
 

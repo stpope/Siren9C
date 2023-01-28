@@ -395,4 +395,4 @@ In the later case, the value instance variable would hold a 1- or 2-dimensional 
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
 In the later case, the value instance variable could hold a number or point.!Positus subclass: #Spatialization	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Models-Representation'!!Spatialization commentStamp: '<historical>' prior: 0!Instances of the Spatialization species model the characteristics and configuration of room simulations in scores.
 This class can be used as a concrete one (adding a few methods to fill it out), or like the other representational classes (making concrete classes of this species).
-In the later case, the value instance variable would hold a record with the geometry or the room, the positions of default sources, and the listener's position and features.!
+In the later case, the value instance variable would hold a record with the geometry or the room, the positions of default sources, and the listener's position and features.!

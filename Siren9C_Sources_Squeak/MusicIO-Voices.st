@@ -677,4 +677,4 @@ Structure:
 	window setLabel: 'Siren Voice Editor'.
 	window		addMorph: topLevel		frame: (0 @ 0 corner: 1 @ 1).
 	window openInWorldExtent: w@h
-! !
+! !

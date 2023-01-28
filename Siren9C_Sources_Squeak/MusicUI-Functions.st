@@ -314,4 +314,4 @@ Instance variables:
 	"FunctionView example"
 
 	^self onFunctions: (Array with: function with: nil with: nil with: nil)
-			x: 384 y: 192! !
+			x: 384 y: 192! !

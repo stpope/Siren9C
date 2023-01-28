@@ -11,10 +11,10 @@ The verbosity flag in the SirenUtility class allows for logging of all OSC to th
 			with: event ampl asRatio value.
 	TypedOSCMessage for: '/note-on' with: arr]
 
-For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://fastlabinc.com/CSL/Occam.zip). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example demonstrates using OSC with the Occam convertor, to test OSC output using a MIDI synthesizer.
+For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://fastlabinc.com/CSL/Occam.zip). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example plays a scale on an ugly FM instrument.
 
-	[OSCVoice midiScaleExample]
-
+	[OSCVoice midiScaleExample]
+Play a scale on the CSL plucked string voice.	"OSCVoice scaleExample"
 There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "osc_synth_server" target, which sets up a  server with a mix of FM synthesis, sound file playback, granulation and other instruments (see the list below). Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.
 
 Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)	1 - 10 ---- 10 plucked strings		 "fff" - amp, pitch, pos	11 - 20 ---- 10 FM instruments		"ffff" - dur amp pitch pos		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos	21 - 30 ---- 10 FM bells		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos	31 - 34 ---- 4 sound files (words)		"ff" - amp, pos	35 - 50 ---- 16 SHARC SOS voices (different instruments)		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	62 - 63 ---- 2 granular scramblers		"ff" - dur, ampl		"fff" - dur, ampl, rate	64 - 67 ---- 4 granular shifters		"ff" - dur, ampl		"fff" - dur, ampl, rate
@@ -22,26 +22,11 @@ Then you can try the OSCVoice examples that follow.
 
 	[OSCVoice fmExample1]
 	[OSCVoice sndExample1]
-
-These examples loop endlessly, so you have to interrupt or flush the scheduler to stop them
-
-	[OSCVoice fmExample2. 		5 wait.
-	OSCVoice sndExample2.		5 wait.
-	OSCVoice fmExample4]
-	[EventScheduler flush]
-
-Siren OSC also supports control output, as in this example, which sends values from a linear envelope out to the address "/osc/1/ampl" at the rate of 4 Hz (use dumpOSC to view the results).
-
-	[OSCVoice functionExample]
-
-You could rewrite this to use the function's change threshold instead of a constant update rate.
-
-As an example that mixes both styles, the following expression plays a long low FM note and then uses Siren function objects to send continuous controls to make the note glissando down and pan from left to right.
-
-	[OSCVoice fmExample3]
+Play notes on CSL FM bell instruments	"OSCVoice bellExample1"
+Play an FM bell using CSL; fork a block that plays a note and waits a bit; stop the scheduler to stop the block.	"OSCVoice fmExample4"
 
 For more examples, set the default voice to OSC (using the Siren utility control panel) and run the built in examples on the other pages of this outline.
-Play short notes on the 16 SHARC instruments (version w vibrato)	"OSCVoice sharcExample1"		Play long low notes on the 16 SHARC instruments	"OSCVoice sharcExample2"			"OSCVoice sharcExample4"		Play notes on CSL FM bell instruments	"OSCVoice bellExample1"Play random notes on the CSL simple vector SHARC instruments	"OSCVoice vSOSExample1"			Play long low notes on the fancy vector SOS instruments	"OSCVoice vSOSExample2"		Play on the CSL granulator2 instrument	"OSCVoice granulatorExample2: 1"	"OSCVoice granulatorExample2: 2"	"OSCVoice granulatorExample2: 3"
+Play short notes on the 16 SHARC instruments (version w vibrato)	"OSCVoice sharcExample1"		Play long low notes on the 16 SHARC instruments	"OSCVoice sharcExample2"			"OSCVoice sharcExample4"		Play notes on CSL FM bell instruments	"OSCVoice bellExample1"Play random notes on the CSL simple vector SHARC instruments	"OSCVoice vSOSExample1"			Play long low notes on the fancy vector SOS instruments	"OSCVoice vSOSExample2"		Play on the CSL granulator1 instrument - short bursts of garbled speak'n'spell for 20 sec	"OSCVoice granulatorExample1"Play on the CSL granulator2 instrument until interrupted - long low drones	"OSCVoice granulatorExample2"	Play on the CSL granulator2 instrument - layers of long low drones	"OSCVoice granulatorExample2: 1"	"OSCVoice granulatorExample2: 2"	"OSCVoice granulatorExample2: 3"
 ----
 
 The liblo OSC library includes a useful test program called oscsend, which allows one to 

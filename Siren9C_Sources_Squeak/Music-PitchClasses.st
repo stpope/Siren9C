@@ -2176,4 +2176,4 @@ but I am not sure how!!Signature methodsFor: 'printing'!printOn: s
 	^self new sharps: s flats: f! !PitchClassChord subclass: #Triad	instanceVariableNames: 'type'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchClasses'!!Triad methodsFor: 'type'!type
 	^type! !!Triad methodsFor: 'type'!type: t 
 	type := t! !!Triad methodsFor: 'notes'!notes: x 
-	notes := x! !
+	notes := x! !

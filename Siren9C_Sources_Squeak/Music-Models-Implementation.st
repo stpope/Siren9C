@@ -970,4 +970,4 @@ This is the default time representation (most general duration) and is usually u
 	^SecondDuration new value: (value / 1000000) asFloat! !!USecondDuration methodsFor: 'converting'!asUseconds
 	"Answer a float of micro seconds."
 
-	^self! !
+	^self! !MIDIPitch initialize!MIDIVelocity initialize!SymbolicLoudness initialize!SymbolicPitch initialize!

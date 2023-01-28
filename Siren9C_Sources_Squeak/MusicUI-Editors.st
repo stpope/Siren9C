@@ -6,7 +6,46 @@ Instance variables:
 	ostinato 	<Ostinato> my loop process (if i'm looping)
 	selection 	<EventList> The "selected" notes
 	ampl 		<Number or Amplitude> My default amplitude
-!!EventListEditor methodsFor: 'list access'!add: anAss
+!!EventListEditor methodsFor: 'initialize-release'!release
+	"Release the receiver's list."
+
+	eventList removeDependent: self.
+	list removeDependent: self.
+	list release! !!EventListEditor methodsFor: 'accessing'!ampl
+	"Answer the amplitude of the default event."
+
+	^defaultEvent == nil
+		ifTrue: [0]
+		ifFalse: [defaultEvent  loudness value]! !!EventListEditor methodsFor: 'accessing'!ampl: newValue
+	"Set the amplitude of the default event."
+
+	defaultEvent == nil
+		ifTrue: [^self].
+	defaultEvent loudness: newValue asInteger.
+	self changed: #ampl! !!EventListEditor methodsFor: 'accessing'!defaultEvent
+	"Answer the receiver's default event."
+
+	^defaultEvent == nil
+		ifTrue: [list defaultEventClass new]
+		ifFalse: [defaultEvent]! !!EventListEditor methodsFor: 'accessing'!defaultEvent: anEvent
+	"Set the receiver's default event."
+
+	defaultEvent := anEvent! !!EventListEditor methodsFor: 'accessing'!displayList
+	"Answer nil."
+
+	^nil! !!EventListEditor methodsFor: 'accessing'!eventList
+	"Answer the receiver's subject eventList."
+
+	^eventList! !!EventListEditor methodsFor: 'accessing'!eventList: anEL
+	"Set the given EventList as the receiver's model."
+
+	eventList := anEL.
+	defaultEvent := eventList defaultEventClass new.
+	anEL addDependent: self.
+	self changed: #list! !!EventListEditor methodsFor: 'accessing'!items
+	"Answer the subject eventList's events."
+
+	^eventList events! !!EventListEditor methodsFor: 'list access'!add: anAss
 	"Add the given EventAssociation to the model list."
 
 	list add: anAss.
@@ -53,46 +92,7 @@ Instance variables:
 		ifTrue: [selections := mo]
 		ifFalse: [selections == nil
 				ifTrue: [selections := EventList newNamed: EventList nextName ].
-			selections add: mo]! !!EventListEditor methodsFor: 'links and groups' stamp: 'stp 12/29/2022 00:17'!selections	"Answer the list of selected items."	^selections! !!EventListEditor methodsFor: 'accessing'!ampl
-	"Answer the amplitude of the default event."
-
-	^defaultEvent == nil
-		ifTrue: [0]
-		ifFalse: [defaultEvent  loudness value]! !!EventListEditor methodsFor: 'accessing'!ampl: newValue
-	"Set the amplitude of the default event."
-
-	defaultEvent == nil
-		ifTrue: [^self].
-	defaultEvent loudness: newValue asInteger.
-	self changed: #ampl! !!EventListEditor methodsFor: 'accessing'!defaultEvent
-	"Answer the receiver's default event."
-
-	^defaultEvent == nil
-		ifTrue: [list defaultEventClass new]
-		ifFalse: [defaultEvent]! !!EventListEditor methodsFor: 'accessing'!defaultEvent: anEvent
-	"Set the receiver's default event."
-
-	defaultEvent := anEvent! !!EventListEditor methodsFor: 'accessing'!displayList
-	"Answer nil."
-
-	^nil! !!EventListEditor methodsFor: 'accessing'!eventList
-	"Answer the receiver's subject eventList."
-
-	^eventList! !!EventListEditor methodsFor: 'accessing'!eventList: anEL
-	"Set the given EventList as the receiver's model."
-
-	eventList := anEL.
-	defaultEvent := eventList defaultEventClass new.
-	anEL addDependent: self.
-	self changed: #list! !!EventListEditor methodsFor: 'accessing'!items
-	"Answer the subject eventList's events."
-
-	^eventList events! !!EventListEditor methodsFor: 'initialize-release'!release
-	"Release the receiver's list."
-
-	eventList removeDependent: self.
-	list removeDependent: self.
-	list release! !DisplayListController subclass: #TimeSequenceController	instanceVariableNames: 'eventList'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 1/14/2023 07:59'!doInspect
+			selections add: mo]! !!EventListEditor methodsFor: 'links and groups' stamp: 'stp 12/29/2022 00:17'!selections	"Answer the list of selected items."	^selections! !DisplayListController subclass: #TimeSequenceController	instanceVariableNames: 'eventList'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 1/14/2023 07:59'!doInspect
 	"Inspect the editor (if leftShiftDown) or the list."
 
 	Sensor shiftDown
@@ -126,26 +126,13 @@ Instance variables:
 	"Play the list."
 
 	model play.
-"	MIDIPort allNotesOffIn: (model eventList duration asSec value + 3)"! !!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 12/31/2022 07:10'!readList	"Copy the model list from the global dictionary."	| name model |	name := FillInTheBlank request: 'EventList name for storing model:' initialAnswer: model list name.	name = ''		ifTrue: [^ self].	(SirenSession eventLists includesKey: name)		ifTrue: [model eventList: (SirenSession eventLists at: name) copy]		ifFalse: [Transcript cr; show: 'No such event list.'; cr]! !!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 12/31/2022 07:11'!storeList	"Copy the model list into the global dictionary."	| name count model |	name := FillInTheBlank request: 'EventList name for storing model:' initialAnswer: model list name.	name = ''		ifTrue: [^ self].	(SirenSession eventLists includesKey: name)		ifTrue: [(FillInTheBlank confirm: 'Store over existing event list?')				ifTrue: [SirenSession eventLists at: name put: model list copy]				ifFalse: [count := 2.					[SirenSession eventLists includesKey: name , '.' , count printString]						whileTrue: [count := count + 1].					SirenSession eventLists						at: (name , '.' , count printString) asSymbol						put: (SirenSession eventLists at: name).					SirenSession eventLists at: name put: model list copy]]		ifFalse: [SirenSession eventLists at: name put: model list copy]! !!TimeSequenceController methodsFor: 'events' stamp: 'stp 1/14/2023 07:47'!processMenu: event	"Create and run the hierarchical DLV menu."		| menu |	menu := MenuMorph new defaultTarget: self.	menu addItem: [ :item | item contents: 'Play all'; target: self; selector: #playAll].	menu addItem: [ :item | item contents: 'Play selection'; target: self; selector: #playSelection].	menu addItem: [ :item |		item contents: 'Group'; subMenuUpdater: self selector: #groupMenuOn: ].	menu addItem: [ :item |		item contents: 'Inspect'; subMenuUpdater: self selector: #inspectMenuOn: ].	menu addItem: [ :item |		item contents: 'Edit'; subMenuUpdater: self selector: #editMenuOn: ].	menu addItem: [ :item |		item contents: 'Display'; subMenuUpdater: self selector: #displayMenuOn: ].	menu invokeModal! !!TimeSequenceController methodsFor: 'selecting' stamp: 'stp 1/25/2023 11:14'!select: item 	item ifNil: 		[selection :=  OrderedCollection new.		^ model changed]."	Transcript show: 'Select ' , item printString."	(selection includes: item)		ifTrue: [selection remove: item]		ifFalse: [selection addLast: item].	self changed.	model changed.! !!TimeSequenceController methodsFor: 'initialize-release'!initializeMenu
+"	MIDIPort allNotesOffIn: (model eventList duration asSec value + 3)"! !!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 12/31/2022 07:10'!readList	"Copy the model list from the global dictionary."	| name model |	name := FillInTheBlank request: 'EventList name for storing model:' initialAnswer: model list name.	name = ''		ifTrue: [^ self].	(SirenSession eventLists includesKey: name)		ifTrue: [model eventList: (SirenSession eventLists at: name) copy]		ifFalse: [Transcript cr; show: 'No such event list.'; cr]! !!TimeSequenceController methodsFor: 'menu messages' stamp: 'stp 12/31/2022 07:11'!storeList	"Copy the model list into the global dictionary."	| name count model |	name := FillInTheBlank request: 'EventList name for storing model:' initialAnswer: model list name.	name = ''		ifTrue: [^ self].	(SirenSession eventLists includesKey: name)		ifTrue: [(FillInTheBlank confirm: 'Store over existing event list?')				ifTrue: [SirenSession eventLists at: name put: model list copy]				ifFalse: [count := 2.					[SirenSession eventLists includesKey: name , '.' , count printString]						whileTrue: [count := count + 1].					SirenSession eventLists						at: (name , '.' , count printString) asSymbol						put: (SirenSession eventLists at: name).					SirenSession eventLists at: name put: model list copy]]		ifFalse: [SirenSession eventLists at: name put: model list copy]! !!TimeSequenceController methodsFor: 'events' stamp: 'stp 1/14/2023 07:47'!processMenu: event	"Create and run the hierarchical DLV menu."		| menu |	menu := MenuMorph new defaultTarget: self.	menu addItem: [ :item | item contents: 'Play all'; target: self; selector: #playAll].	menu addItem: [ :item | item contents: 'Play selection'; target: self; selector: #playSelection].	menu addItem: [ :item |		item contents: 'Group'; subMenuUpdater: self selector: #groupMenuOn: ].	menu addItem: [ :item |		item contents: 'Inspect'; subMenuUpdater: self selector: #inspectMenuOn: ].	menu addItem: [ :item |		item contents: 'Edit'; subMenuUpdater: self selector: #editMenuOn: ].	menu addItem: [ :item |		item contents: 'Display'; subMenuUpdater: self selector: #displayMenuOn: ].	menu invokeModal! !!TimeSequenceController methodsFor: 'selecting' stamp: 'stp 1/27/2023 07:51'!select: item 	"Add/remove an item to the selection list"	super select: item."	Transcript show: 'TSC select'; cr."	view displayList changed.			"why don't any of these work???"	view model changed.	view update: #select! !!TimeSequenceController methodsFor: 'initialize-release'!initializeMenu
 	"Set up the receiver's YellowButtonMenu"
 
 	super initializeMenu
 "	self menuHolder: (ValueHolder with: (PopUpMenu
 			labelList: #(('group' 'inspect') ('play' 'pan') ('redraw') ('store' 'read'))
-			values: #(group doInspect play pan redraw storeList readList)))"! !!TimeSequenceController methodsFor: 'initialize-release' stamp: 'stp 1/14/2023 08:09'!view: aView 	super view: aView.	model := aView model.	model ifNotNil: [self halt]! !TimeSequenceController subclass: #PitchTimeController	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!PitchTimeController methodsFor: 'selecting'!selectFromPoint: aPoint toPoint: anotherPoint
-	"Hit-detect the model for the given range."
-
-	| collection eList |
-	collection := view list itemsWithin: (aPoint corner: anotherPoint).
-	collection == nil ifTrue: [^self].
-	eList := EventList newAnonymous.
-	collection do:
-		[ :i | 
-		i model == nil
-			ifFalse: [eList add: i model]].
-	model select: eList.
-	self select: collection.
-	view invalidate! !DisplayListView subclass: #TimeSequenceView	instanceVariableNames: 'clefForm xScaleDefault xScale xColor yColor headColor clefColor itemAccessors pianoRoll'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!TimeSequenceView commentStamp: 'stp 1/22/2023 12:26' prior: 0!Instances of TimeSequenceView (and its subclasses) are time-line oriented DisplayListViews.
+			values: #(group doInspect play pan redraw storeList readList)))"! !!TimeSequenceController methodsFor: 'initialize-release' stamp: 'stp 1/14/2023 08:09'!view: aView 	super view: aView.	model := aView model.	model ifNotNil: [self halt]! !TimeSequenceController subclass: #PitchTimeController	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!PitchTimeController methodsFor: 'selecting' stamp: 'stp 1/26/2023 20:25'!select: item 	self halt.	item ifNil: 		[selection :=  OrderedCollection new.		self changed.		^ model changed].	(item isEmpty) ifTrue: [ ^ self].	Transcript show: 'Select ' , item printString; cr.	(selection includes: item)		ifTrue: [selection remove: item]		ifFalse: [selection addLast: item].	self changed.	model changed.! !!PitchTimeController methodsFor: 'selecting' stamp: 'stp 1/26/2023 00:34'!selectionBounds	"Answer the bounds of the selection"	| rect |	selection ifEmpty: [^ 0@0 extent: 0@0].	rect := selection first bounds.	selection do:		[ :sel |		(sel notNil and: [sel bounds notNil]) ifTrue:			[self halt. rect := rect merge: sel bounds]].	^rect! !DisplayListView subclass: #TimeSequenceView	instanceVariableNames: 'clefForm xScaleDefault xScale xColor yColor headColor clefColor itemAccessors pianoRoll'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!TimeSequenceView commentStamp: 'stp 1/22/2023 12:26' prior: 0!Instances of TimeSequenceView (and its subclasses) are time-line oriented DisplayListViews.
 Time may run horizontally (default) or vertically, depending on the layout manager.
 
 Instance Variables:
@@ -166,49 +153,22 @@ All Rights Reserved.!!TimeSequenceView methodsFor: 'initialize-release' stamp
 	super initialize.
 	xScaleDefault := 15.
 	xScale := 15.
-	page := 0@0.	pianoRoll := false! !!TimeSequenceView methodsFor: 'initialize-release' stamp: 'stp 1/14/2023 07:41'!initializeController	"Set up the receiver's controller."		controller := TimeSequenceController new.	controller view: self.	controller addDependent: self.! !!TimeSequenceView methodsFor: 'accessing'!clefColor
-	"Answer the receiver's 'clefColor'."
-
-	^clefColor! !!TimeSequenceView methodsFor: 'accessing'!clefColor: anObject
-	"Set the receiver's 'clefColor' to be anObject."
-
-	clefColor := anObject! !!TimeSequenceView methodsFor: 'accessing'!clefForm
+	page := 0@0.	pianoRoll := false! !!TimeSequenceView methodsFor: 'initialize-release' stamp: 'stp 1/14/2023 07:41'!initializeController	"Set up the receiver's controller."		controller := TimeSequenceController new.	controller view: self.	controller addDependent: self.! !!TimeSequenceView methodsFor: 'accessing'!clefForm
 	"Answer the receiver's clef form."
 
 	^clefForm! !!TimeSequenceView methodsFor: 'accessing'!clefWidth
 	"Answer the receiver's clef form width."
 
-	^clefForm width! !!TimeSequenceView methodsFor: 'accessing'!headColor
-	"Answer the receiver's 'headColor'."
-
-	^headColor! !!TimeSequenceView methodsFor: 'accessing'!headColor: anObject
-	"Set the receiver's 'headColor' to be anObject."
-
-	headColor := anObject! !!TimeSequenceView methodsFor: 'accessing' stamp: 'stp 1/22/2023 12:39'!itemsWithin: aRect	"Answer the items within the given rectangle."	^ dList itemsWithin: aRect! !!TimeSequenceView methodsFor: 'accessing' stamp: 'stp 1/22/2023 13:12'!pianoRoll: bool	"Set the flag to use piano-roll notation instead of note heads."	pianoRoll := bool! !!TimeSequenceView methodsFor: 'accessing'!xColor
-	"Answer the receiver's 'xColor'."
-
-	^xColor! !!TimeSequenceView methodsFor: 'accessing'!xColor: anObject
-	"Set the receiver's 'xColor' to be anObject."
-
-	xColor := anObject! !!TimeSequenceView methodsFor: 'accessing'!xScale
+	^clefForm width! !!TimeSequenceView methodsFor: 'accessing' stamp: 'stp 1/22/2023 12:39'!itemsWithin: aRect	"Answer the items within the given rectangle."	^ dList itemsWithin: aRect! !!TimeSequenceView methodsFor: 'accessing' stamp: 'stp 1/22/2023 13:12'!pianoRoll: bool	"Set the flag to use piano-roll notation instead of note heads."	pianoRoll := bool! !!TimeSequenceView methodsFor: 'accessing'!xScale
 	"Answer the receiver's 'xScale'."
 
 	^xScale! !!TimeSequenceView methodsFor: 'accessing'!xScale: anObject
 	"Set the receiver's 'xScale' to be anObject."
 
-	xScale := anObject! !!TimeSequenceView methodsFor: 'accessing'!yColor
-	"Answer the receiver's 'yColor'."
+	xScale := anObject! !!TimeSequenceView methodsFor: 'controller access'!defaultControllerClass
+	"Answer the class of the default controller for the receiver."
 
-	^yColor! !!TimeSequenceView methodsFor: 'accessing'!yColor: anObject
-	"Set the receiver's 'yColor' to be anObject."
-
-	yColor := anObject! !!TimeSequenceView methodsFor: 'transforming'!formXFromTime: aTime
-	"take a note's time and return a display point x coordinate relative to the form."
-
-	^((aTime - (page x) / xScale) asInteger)! !!TimeSequenceView methodsFor: 'transforming'!timeFromX: aNumber
-	"Answer an event list time from the argument."
-
-	^(aNumber x - inset x - self bounds width * xScale + page x) max: 0! !!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 1/19/2023 06:39'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "		| dItem vox arr |"	arr := DisplayListView constants at: #NoteIcons."	arr := DisplayListView glyphs at: #NewNoteHeads.	vox := anAss value voice.	vox == nil		ifTrue: [vox := 1]		ifFalse: [vox isInteger				ifTrue: [vox := (vox max: 1) min: arr size]													"hack -- take the first letter as the key for note heads"				ifFalse: [vox := vox first asInteger \\ arr size]].	dItem := (arr at: vox) copy.			"get the right notehead"	dItem model: anAss.	^ dItem! !!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 1/25/2023 07:19'!itemFor: anAss
+	^TimeSequenceController! !!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 1/19/2023 06:39'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "		| dItem vox arr |"	arr := DisplayListView constants at: #NoteIcons."	arr := DisplayListView glyphs at: #NewNoteHeads.	vox := anAss value voice.	vox == nil		ifTrue: [vox := 1]		ifFalse: [vox isInteger				ifTrue: [vox := (vox max: 1) min: arr size]													"hack -- take the first letter as the key for note heads"				ifFalse: [vox := vox first asInteger \\ arr size]].	dItem := (arr at: vox) copy.			"get the right notehead"	dItem model: anAss.	^ dItem! !!TimeSequenceView methodsFor: 'layout manager access' stamp: 'stp 1/25/2023 07:19'!itemFor: anAss
 	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."
 
 	itemAccessors == nil
@@ -224,7 +184,10 @@ All Rights Reserved.!!TimeSequenceView methodsFor: 'initialize-release' stamp
 
 	^(TimeSequenceLayoutManager new)
 			timeScale: xScale;
-			timeOffset:  0! !!TimeSequenceView methodsFor: 'displaying' stamp: 'stp 1/25/2023 11:15'!drawOn: aCanvas 	"Display the receiver on the given canvas."		| ins |	ins := inset.	aCanvas fillColor: self class backgroundColor.	clefForm ifNotNil: 			[aCanvas drawImage: clefForm at: 0 @ 0.			ins := clefForm width].	background ifNotNil: 			[aCanvas drawImage: background at: ins @ 0]."	gc  frameRectangle: ((20 @ 20) extent: (20 @ 20)) width: 2 color: Color gray."	dList drawOn: aCanvas at: ins.	controller selection ifNotEmpty:		[ | rect | self halt.		rect := controller selection first bounds.		controller selection do: 			[ :item |			rect := rect merge: item bounds].		aCanvas frameRectangle: self bounds color: Color red]! !!TimeSequenceView methodsFor: 'displaying'!highlightFrom: pt1 to: pt2
+			timeOffset:  0! !!TimeSequenceView methodsFor: 'transforming'!formXFromTime: aTime
+	"take a note's time and return a display point x coordinate relative to the form."
+
+	^((aTime - (page x) / xScale) asInteger)! !!TimeSequenceView methodsFor: 'displaying' stamp: 'stp 1/27/2023 07:51'!drawOn: aCanvas 	"Display the receiver on the given canvas."		| ins |	ins := inset. 	aCanvas fillColor: self class backgroundColor.	clefForm ifNotNil: 			[aCanvas drawImage: clefForm at: 0 @ 0.			ins := clefForm width].	background ifNotNil: 			[aCanvas drawImage: background at: ins @ 0]."	gc  frameRectangle: ((20 @ 20) extent: (20 @ 20)) width: 2 color: Color gray.""	Transcript show: 'TSV draw'; cr."	dList drawOn: aCanvas at: ins.	controller selection ifNotEmpty:		[ | rect |		rect := controller selectionBounds translateBy: inset."		Transcript tab; show: rect printString; cr."		aCanvas fillRectangle: rect fillStyle:( Color lightRed alpha: 0.5).		aCanvas frameRectangle: rect color: Color red]! !!TimeSequenceView methodsFor: 'displaying'!highlightFrom: pt1 to: pt2
 	"Show selection of the range pt1--pt2."
 
 	| gc |
@@ -242,32 +205,7 @@ All Rights Reserved.!!TimeSequenceView methodsFor: 'initialize-release' stamp
 	Display fill: ((x @ insetDisplayBox top)
 			extent: (2 @insetDisplayBox height))
 		rule: Form reverse
-		mask: Form black."! !!TimeSequenceView methodsFor: 'displaying'!reallyDisplayOn: gc
-	"Display the receiver on its cached form."
-
-	gc paint: self backgroundColor.
-	gc displayRectangle: gc clippingBounds.
-	gc paint: self foregroundColor.
-	gc translateBy: inset.
-	clefForm == nil 
-		ifFalse: [clefForm displayOn: gc.
-				gc translateBy: clefForm width@0].
-	background == nil ifFalse: [background displayOn: gc].
-	displayList displayOn: gc.
-	model selection == nil
-		ifFalse: 
-			[controller sensor shiftDown ifTrue: [self halt].
-			gc displayRectangularBorder: controller selection bounds].
-	gc translateBy: inset negated! !!TimeSequenceView methodsFor: 'displaying'!zoom: aPoint
-	"Set the receiver's 'zoom' to be aPoint."
-
-	xScale := xScaleDefault * aPoint x.
-	Cursor wait showWhile:
-		[self displayList: (self layoutManager displayListFor: self).
-		super zoom: aPoint]! !!TimeSequenceView methodsFor: 'controller access'!defaultControllerClass
-	"Answer the class of the default controller for the receiver."
-
-	^TimeSequenceController! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:48'!pauseButton	"Respond to a button press from the control widget"		self inform: 'Cannot play time sequences.'! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:46'!playButton	"Respond to a button press from the control widget"	self inform: 'Cannot play time sequences.'! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:48'!rewindButton	"Respond to a button press from the control widget"	self inform: 'Cannot play time sequences.'! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:47'!stopButton	"Respond to a button press from the control widget"	self inform: 'Cannot play time sequences.'! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!TimeSequenceView class	instanceVariableNames: ''!!TimeSequenceView class methodsFor: 'examples'!randomExample
+		mask: Form black."! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:48'!pauseButton	"Respond to a button press from the control widget"		self inform: 'Cannot play time sequences.'! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:46'!playButton	"Respond to a button press from the control widget"	self inform: 'Cannot play time sequences.'! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:48'!rewindButton	"Respond to a button press from the control widget"	self inform: 'Cannot play time sequences.'! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/22/2023 12:47'!stopButton	"Respond to a button press from the control widget"	self inform: 'Cannot play time sequences.'! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/25/2023 23:41'!zeroButton	"Respond to a button press from the control widget"	xScale := xScaleDefault.	self list: (self layoutManager displayListFor: self).	bounds := (dList bounds) expandBy: 128 @ 128.	owner changed.	self layoutChanged! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/25/2023 23:41'!zoomIn	"Respond to a button press from the control widget"	xScale := xScale / 1.25.	self list: (self layoutManager displayListFor: self).	bounds := (dList bounds) expandBy: 128 @ 128.	owner changed.	self layoutChanged! !!TimeSequenceView methodsFor: 'controls' stamp: 'stp 1/25/2023 23:41'!zoomOut	"Respond to a button press from the control widget"	xScale := xScale * 1.25.	self list: (self layoutManager displayListFor: self).	bounds := (dList bounds) expandBy: 128 @ 128.	owner changed.	self layoutChanged! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!TimeSequenceView class	instanceVariableNames: ''!!TimeSequenceView class methodsFor: 'examples'!randomExample
 	"Open a sequence view on a random event list."
 	"TimeSequenceView randomExample"
 
@@ -275,10 +213,7 @@ All Rights Reserved.!!TimeSequenceView methodsFor: 'initialize-release' stamp
 	"Open the receiver on the given event list."
 	"TimeSequenceView openOnEventList: EventList randomExample"
 
-	^self openOnEventList: anEventList label: self class name! !!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 1/22/2023 13:23'!openOnEventList: anEventList label: lab 	"Open the receiver on the given event list."	"TimeSequenceView openOnEventList: EventList randomExample"		 ^ self openOnEventList: anEventList label: lab pianoRoll: false! !!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 1/25/2023 15:50'!openOnEventList: anEventList label: lab pianoRoll: roll	"Open the receiver on the given event list."	"PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true"	| me lay |	me := self new initialize model: (EventListEditor new eventList: anEventList).	me pianoRoll: roll.	lay := me layoutManager.	lay inset: 0@0.	me list: (lay displayListFor: me).	DisplayListWindow open: me label: lab! !!TimeSequenceView class methodsFor: 'constant access'!defaultCacheExtent
-	"Answer the default extent of the receiver's instances' cache."
-
-	^600@200! !!TimeSequenceView class methodsFor: 'constant access'!inset
+	^self openOnEventList: anEventList label: self class name! !!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 1/22/2023 13:23'!openOnEventList: anEventList label: lab 	"Open the receiver on the given event list."	"TimeSequenceView openOnEventList: EventList randomExample"		 ^ self openOnEventList: anEventList label: lab pianoRoll: false! !!TimeSequenceView class methodsFor: 'instance creation' stamp: 'stp 1/25/2023 15:50'!openOnEventList: anEventList label: lab pianoRoll: roll	"Open the receiver on the given event list."	"PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true"	| me lay |	me := self new initialize model: (EventListEditor new eventList: anEventList).	me pianoRoll: roll.	lay := me layoutManager.	lay inset: 0@0.	me list: (lay displayListFor: me).	DisplayListWindow open: me label: lab! !!TimeSequenceView class methodsFor: 'constant access'!inset
 	"Answer the default display inset."
 
 	^16@16! !TimeSequenceView subclass: #PhraseView	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!PhraseView commentStamp: 'stp 1/22/2023 12:25' prior: 0!A PhraseView is not done.!!PhraseView methodsFor: 'layout manager access' stamp: 'stp 1/19/2023 06:03'!generateItemFor: anAss
@@ -339,17 +274,17 @@ Instance Variables:
 	pitchOffset	<Number> the view's lowest pitch (normally a key number)!!PitchTimeView methodsFor: 'initialize-release' stamp: 'stp 1/22/2023 13:10'!initialize	"Initialize the instance variables of the receiver."		super initialize.	xScale := 12.	xScaleDefault := xScale.	yScale := 6.	yScaleDefault := yScale.	pitchOffset := 32! !!PitchTimeView methodsFor: 'initialize-release' stamp: 'stp 1/14/2023 07:41'!initializeController	"Set up the receiver's controller."		controller := PitchTimeController new.	controller view: self.	controller addDependent: self.! !!PitchTimeView methodsFor: 'controller access'!defaultControllerClass
 	"Answer the class of the default controller for the receiver."
 
-	^PitchTimeController! !!PitchTimeView methodsFor: 'transforming' stamp: 'stp 1/22/2023 12:51'!itemsWithin: aRect	"Answer the items within the given rectangle."	^ dList itemsWithin: aRect! !!PitchTimeView methodsFor: 'transforming'!pitchFromY: aPoint
+	^PitchTimeController! !!PitchTimeView methodsFor: 'transforming' stamp: 'stp 1/26/2023 20:36'!itemsWithin: aRect	"Answer the items within the given rectangle."	^ dList itemsWithin: aRect! !!PitchTimeView methodsFor: 'transforming'!pitchFromY: aPoint
 	"Answer the transformed pitch represented by the y-coordinate of the argument."
 
-	^(aPoint y - self class inset y / yScale + pitchOffset) max: 0! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/22/2023 13:19'!generateBarItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"ColorValue constantNames"	"PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true"			| yHeight x list event |	event := anAss value.	yHeight := 24.	event duration == nil		ifTrue: [x := 250 / xScale]		ifFalse: [x := event duration asMS value / xScale]."	(event ampl == nil or: [event ampl value == nil])		ifTrue: [y := 0]		ifFalse: [y := (event ampl asRatio value * yHeight) truncated]."	list := DisplayList new model: anAss. 					"create a display list"	list add: (DisplayRectangle new offset: 0 @ 0;			"add the duration line"			extent: x @ (yHeight / 3);			color: (xColor == nil					ifTrue: [Color black]					ifFalse: [xColor])).	^ list! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/22/2023 12:56'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"EventList randomSWSSExample2 editPTV"		pianoRoll		ifTrue: [ ^ self generateBarItemFor: anAss ]		ifFalse: [ ^ self generateNoteItemFor: anAss ]! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/22/2023 12:54'!generateNoteItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"ColorValue constantNames"	"EventList randomSWSSExample2 editPTV"			| yHeight x y list event |"	^super generateItemFor: anAss."		"If you want just the note head and not the lines"	event := anAss value.	yHeight := 24.	event duration == nil		ifTrue: [x := 250 / xScale]		ifFalse: [x := event duration asMS value / xScale].	(event ampl == nil			or: [event ampl value == nil])		ifTrue: [y := 0]		ifFalse: [y := (event ampl asRatio value * yHeight) truncated].	list := DisplayList new model: anAss. 			"create a display list"	list add: (DisplayLine new offset: 0 @ 0;			"add the duration line"			 extent: x @ 0;			color: (xColor == nil					ifTrue: [Color black]					ifFalse: [xColor])).	list add: (DisplayLine new offset: 0 @ 0; 		"add the red volume line"			extent: 0 @ y negated;			color: (yColor == nil					ifTrue: [Color red]					ifFalse: [yColor])).	(event at: #envelope) == nil 						"draw the envelope"		ifFalse: [ | fcn points |			fcn := event at: #envelope.			points := fcn data collect: [ :pt | pt x * x @ (pt y * y negated)].			list add: ((DisplayPolyline offset: 1 @ 0 vertices: points)						color: Color blue darker)].	(event at: #position) == nil 						"show the position"		ifFalse: [list add: (DisplayLine new offset: -2 @ 0;					 extent: 0 @ ((event at: #position)							- 0.5 * yHeight);					color: (yColor == nil							ifTrue: [Color blue darker]							ifFalse: [yColor]))].	(event at: #duty) == nil 							"show the duty cycle"		ifFalse: [list add: (DisplayLine new offset: 0 @ 2;					 extent: (event at: #duty) * x @ 0;					color: (yColor == nil							ifTrue: [Color brown]							ifFalse: [yColor]))].	list add: (super generateItemFor: anAss).		"add the note head"	^ list! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/11/2023 13:15'!layoutManager
+	^(aPoint y - self class inset y / yScale + pitchOffset) max: 0! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/27/2023 07:08'!generateBarItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"ColorValue constantNames"	"PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true"			| yHeight x list event |	event := anAss value.	yHeight := 24.	event duration == nil		ifTrue: [x := 250 / xScale]		ifFalse: [x := event duration asMS value / xScale]."	(event ampl == nil or: [event ampl value == nil])		ifTrue: [y := 0]		ifFalse: [y := (event ampl asRatio value * yHeight) truncated]."	list := DisplayList new model: anAss. 					"create a display list"	list add: (DisplayRectangle new offset: 0 @ 0;			"add the duration line"			extent: x @ (yHeight / 3);			color: (xColor == nil					ifTrue: [Color darkGray]					ifFalse: [xColor])).	^ list! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/22/2023 12:56'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"EventList randomSWSSExample2 editPTV"		pianoRoll		ifTrue: [ ^ self generateBarItemFor: anAss ]		ifFalse: [ ^ self generateNoteItemFor: anAss ]! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/26/2023 00:29'!generateNoteItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"ColorValue constantNames"	"EventList randomSWSSExample2 editPTV"			| yHeight x y list event |"	^super generateItemFor: anAss."					"If you want just the note head and not the lines"	event := anAss value.	yHeight := 24.	event duration == nil								"calc duration"		ifTrue: [x := 250 / xScale]		ifFalse: [x := event duration asMS value / xScale].	(event ampl == nil									"calc amplitude"			or: [event ampl value == nil])		ifTrue: [y := 0]		ifFalse: [y := (event ampl asRatio value * yHeight) truncated].	list := DisplayList new model: anAss. 			"create a display list"	list add: (DisplayLine new offset: 0 @ 0;			"add the duration line"			 extent: x @ 0;			color: (xColor == nil					ifTrue: [Color black]					ifFalse: [xColor])).	list add: (DisplayLine new offset: 0 @ 0; 		"add the red volume line"			extent: 0 @ y negated;			color: (yColor == nil					ifTrue: [Color red]					ifFalse: [yColor])).	(event at: #envelope) == nil 						"draw the envelope"		ifFalse: [ | fcn points |			fcn := event at: #envelope.			points := fcn data collect: [ :pt | pt x * x @ (pt y * y negated)].			list add: ((DisplayPolyline offset: 1 @ 0 vertices: points)						color: Color blue darker)].	(event at: #position) == nil 						"show the position"		ifFalse: [list add: (DisplayLine new offset: -2 @ 0;					 extent: 0 @ ((event at: #position)							- 0.5 * yHeight);					color: (yColor == nil							ifTrue: [Color blue darker]							ifFalse: [yColor]))].	(event at: #duty) == nil 							"show the duty cycle"		ifFalse: [list add: (DisplayLine new offset: 0 @ 2;					 extent: (event at: #duty) * x @ 0;					color: (yColor == nil							ifTrue: [Color brown]							ifFalse: [yColor]))].	list add: (super generateItemFor: anAss).		"add the note head last"	^ list! !!PitchTimeView methodsFor: 'layout manager access' stamp: 'stp 1/11/2023 13:15'!layoutManager
 	"Answer a default layout manager for the receiver."
 
 	^(PitchTimeLayoutManager new)
 			timeScale: xScale;
 			timeOffset: page x;
 			pitchScale: yScale;
-			pitchOffset: pitchOffset! !!PitchTimeView methodsFor: 'controls' stamp: 'stp 1/22/2023 17:56'!playButton	"Respond to a button press from the control widget"	model eventList play! !!PitchTimeView methodsFor: 'controls' stamp: 'stp 1/22/2023 17:58'!rewindButton	"Respond to a button press from the control widget"	model eventList index: 1! !!PitchTimeView methodsFor: 'controls' stamp: 'stp 1/22/2023 17:58'!stopButton	"Respond to a button press from the control widget"	model eventList stop! !!PitchTimeView methodsFor: 'displaying'!highlightFrom: pt1 to: pt2
+			pitchOffset: pitchOffset! !!PitchTimeView methodsFor: 'controls' stamp: 'stp 1/27/2023 16:55'!exploreIt	"Respond to a button press from the control widget"	model ifNil: [dList explore ]			ifNotNil: [model eventList explore]! !!PitchTimeView methodsFor: 'controls' stamp: 'stp 1/22/2023 17:56'!playButton	"Respond to a button press from the control widget"	model eventList play! !!PitchTimeView methodsFor: 'controls' stamp: 'stp 1/22/2023 17:58'!rewindButton	"Respond to a button press from the control widget"	model eventList index: 1! !!PitchTimeView methodsFor: 'controls' stamp: 'stp 1/22/2023 17:58'!stopButton	"Respond to a button press from the control widget"	model eventList stop! !!PitchTimeView methodsFor: 'displaying' stamp: 'stp 1/27/2023 17:00'!drawOn: aCanvas 	"Display the receiver on the given canvas."		| ins origin |	ins := inset.	aCanvas fillRectangle: owner bounds color: self backgroundColor.	origin := owner offset."	Transcript show: 'PTV:drawOn - ', origin printString; cr. "	background ifNotNil: 			[aCanvas drawImage: background at: origin].	dList drawOn: aCanvas at: ins.	controller selection ifNotEmpty:		[ | rect |		rect := controller selectionBounds translateBy: inset.		Transcript show: rect printString; cr.		aCanvas fillRectangle: rect fillStyle:( Color lightRed alpha: 0.5).		aCanvas frameRectangle: rect color: Color red].		clefForm ifNotNil: 		[aCanvas drawImage: clefForm at: origin x @0.		ins := clefForm width].! !!PitchTimeView methodsFor: 'displaying'!highlightFrom: pt1 to: pt2
 	"Show selection of the range pt1--pt2"
 
 "	pt1 x = pt2 x
@@ -429,7 +364,7 @@ Instance Variables:
 		doing: [:model :value | dled doPropEdit] 
 		in: (LayoutFrame new leftFraction: 0.87;	topFraction: y0; 
 							rightFraction: 1.0;	bottomFraction: y1) 
-		to: container.! !PitchTimeView subclass: #HauerSteffensView	instanceVariableNames: 'formY tempoScale'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!HauerSteffensView commentStamp: 'stp 1/11/2023 14:13' prior: 0!A HauerSteffensView is a notation editor based on the linear-pitch music notation from Hauer and Steffens.!!HauerSteffensView methodsFor: 'initialize-release' stamp: 'stp 1/25/2023 15:43'!initialize	"Initialize the instance variables of the receiver."		super initialize.	inset := 64@0.	formY := 500.	xScale := 8.	xScaleDefault := xScale.	self initForm.	pitchOffset := 27.	tempoScale := 50.	self backgroundColor: self class backgroundColor! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 05:03:16'!clef: anInteger at: aPoint bottom: aBottom form: cForm
+		to: container.! !PitchTimeView subclass: #HauerSteffensView	instanceVariableNames: 'formY tempoScale'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Editors'!!HauerSteffensView commentStamp: 'stp 1/11/2023 14:13' prior: 0!A HauerSteffensView is a notation editor based on the linear-pitch music notation from Hauer and Steffens.!!HauerSteffensView methodsFor: 'initialize-release' stamp: 'stp 1/27/2023 17:07'!initialize	"Initialize the instance variables of the receiver."		super initialize.	inset := 64@0.	formY := 500.	xScale := 8.	xScaleDefault := xScale.	self initForm.	pitchOffset := 32.	tempoScale := 50.	self backgroundColor: self class backgroundColor! !!HauerSteffensView methodsFor: 'private' stamp: 'stp 12/2/2022 05:03:16'!clef: anInteger at: aPoint bottom: aBottom form: cForm
 	"Display a C clef for the given octave at the given point."
 self halt.
 	(aPoint y + 20) < aBottom ifTrue: 
@@ -444,7 +379,7 @@ self halt.
 	clefForm := Form extent: 32@formY depth: depth.
 	clefForm fillColor: self backgroundColor.
 	yScale == nil
-		ifFalse: [self drawStaff]! !!HauerSteffensView methodsFor: 'layout manager access' stamp: 'stp 1/25/2023 15:53'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"HauerSteffensView scaleExample"	"EventList accellExample edit"		| dItem dur base keys arr dict which dVis |	arr := DisplayListView glyphs at: #StdNoteIcons.	dur := anAss value duration asMsec value.	base := tempoScale.						"select the note-head based on the note duration - does not create dotted notes"	dict := ((base / 2 -> '1/64' asSymbol), 			(base -> '1/32' asSymbol), 			(base * 2 -> '1/16' asSymbol), 			(base * 4 -> '1/8' asSymbol), 			(base * 8 -> '1/4' asSymbol), 			(base * 16 -> '1/2' asSymbol), 			(base * 32 -> '1' asSymbol), 			(base * 64 -> '2' asSymbol), 			(base * 128 -> '4' asSymbol)).	keys := dict keys asSortedCollection.	which := 1. 	[(keys at: which) < dur and: [which < keys size]] whileTrue: [which := which + 1].	dVis := (arr at: (dict at: (keys at: which)))."	dItem := DisplayVisual image: (dVis image scaledBy: scale) offset: (dVis offset * scale)."	dItem := DisplayVisual image: dVis image offset: dVis offset.	dItem model: anAss.	^ dItem! !!HauerSteffensView methodsFor: 'layout manager access' stamp: 'stp 1/25/2023 15:50'!itemFor: anAss	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."	"ColorValue constantNames "	"PitchTimeView openOnEventList: (EventList scaleFrom: 48 to: 84 in: 8)"	| list event |	event := anAss value.	list := (DisplayList new) model: anAss.	list add: (self generateItemFor: anAss).	^list! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!HauerSteffensView class	instanceVariableNames: ''!!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/22/2023 18:06'!cloudsExample
+		ifFalse: [self drawStaff]! !!HauerSteffensView methodsFor: 'layout manager access' stamp: 'stp 1/25/2023 15:53'!generateItemFor: anAss 	"Answer the correct visual item for the given assoc. (sent from layoutManagers). "	"HauerSteffensView scaleExample"	"EventList accellExample edit"		| dItem dur base keys arr dict which dVis |	arr := DisplayListView glyphs at: #StdNoteIcons.	dur := anAss value duration asMsec value.	base := tempoScale.						"select the note-head based on the note duration - does not create dotted notes"	dict := ((base / 2 -> '1/64' asSymbol), 			(base -> '1/32' asSymbol), 			(base * 2 -> '1/16' asSymbol), 			(base * 4 -> '1/8' asSymbol), 			(base * 8 -> '1/4' asSymbol), 			(base * 16 -> '1/2' asSymbol), 			(base * 32 -> '1' asSymbol), 			(base * 64 -> '2' asSymbol), 			(base * 128 -> '4' asSymbol)).	keys := dict keys asSortedCollection.	which := 1. 	[(keys at: which) < dur and: [which < keys size]] whileTrue: [which := which + 1].	dVis := (arr at: (dict at: (keys at: which)))."	dItem := DisplayVisual image: (dVis image scaledBy: scale) offset: (dVis offset * scale)."	dItem := DisplayVisual image: dVis image offset: dVis offset.	dItem model: anAss.	^ dItem! !!HauerSteffensView methodsFor: 'layout manager access' stamp: 'stp 1/27/2023 16:49'!itemFor: anAss	"Answer the correct visual item for the given assoc. (sent from layoutManagers)."	"ColorValue constantNames "	"PitchTimeView openOnEventList: (EventList scaleFrom: 48 to: 84 in: 8)""	| list event |	event := anAss value.	list := (DisplayList new) model: anAss.	list add: (self generateItemFor: anAss).	^list"	^self generateItemFor: anAss! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!HauerSteffensView class	instanceVariableNames: ''!!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/22/2023 18:06'!cloudsExample
 	"Open a HSView on two merged random event lists - quantized to 50 msec timing"
 	"HauerSteffensView cloudsExample"
 		
@@ -460,11 +395,11 @@ self halt.
 	"Open a HSView on an event generator's event list."
 	"HauerSteffensView randomExample2"
 	
-	HauerSteffensView openOnEventList: DynamicCloud focusExample label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/12/2023 04:48'!randomExampleQ
-	"Open a HSView on two merged random event lists - quantized to 50 msec timing and a pentatonic scale."
+	HauerSteffensView openOnEventList: DynamicCloud focusExample label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/27/2023 16:48'!randomExampleQ
+	"Open a HSView on two merged random event lists - quantized to 50 msec timing."
 	"HauerSteffensView randomExampleQ"
 		
-	| list1 list2 mix |	list1 := EventList randomExample: 64 				"create 2 event lists in different pitch ranges"			properties: #(duration: loudness: voice: pitch:)			ranges: { (300 to: 800) . (40 to: 100) . (1 to: 1) . (44 to: 56) }.	list2 := EventList randomExample: 64 			properties: #(duration: loudness: voice: pitch:)			ranges: { (150 to: 450) . (40 to: 100) . (1 to: 1) . (66 to: 80) }.															"justify the start times and durations to a grid"	list1 roundStartTimesTo: 200 msec.	list1 roundDurationsTo: 100 msec.	list1 patchTimes.										"make the notes non-overlapping and remove rests"	list2 roundStartTimesTo: 200 msec.	list2 roundDurationsTo: 100 msec.	list2 patchTimes.	mix := EventList new addAll: list1; addAll: list2.		"sum mthe lists into 1"															"open a notation editor on the event list"	HauerSteffensView openOnEventList: mix label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'examples'!randomSWSSExample
+	| list1 list2 mix |	list1 := EventList randomExample: 128 				"create 2 event lists in different pitch ranges"			properties: #(duration: loudness: voice: pitch:)			ranges: { (300 to: 800) . (40 to: 100) . (1 to: 1) . (44 to: 56) }.	list2 := EventList randomExample: 256 			properties: #(duration: loudness: voice: pitch:)			ranges: { (150 to: 450) . (40 to: 100) . (1 to: 1) . (66 to: 80) }.															"justify the start times and durations to a grid"	list1 roundStartTimesTo: 200 msec.	list1 roundDurationsTo: 100 msec.	list1 patchTimes.										"make the notes non-overlapping and remove rests"	list2 roundStartTimesTo: 200 msec.	list2 roundDurationsTo: 100 msec.	list2 patchTimes.	mix := EventList new addAll: list1; addAll: list2.		"sum the lists into 1"															"open a notation editor on the event list"	HauerSteffensView openOnEventList: mix label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'examples'!randomSWSSExample
 	"Open a HSView on two merged random event lists."
 	"HauerSteffensView randomSWSSExample"
 
@@ -472,7 +407,7 @@ self halt.
 		((EventList newNamed: #sRand)
 			addAll: (EventList randomSWSSExample2);
 			addAll: (EventList randomSWSSExample2);
-			addAll: (EventList randomSWSSExample2))! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/12/2023 04:34'!scaleExample	"Open a HSView on a simple chromatic scale event list."	"HauerSteffensView scaleExample"		HauerSteffensView		openOnEventList: (EventList				scaleFrom: 60				to: 72				in: 4.0)		label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/25/2023 15:42'!scaleExample2	"Open a HSView on a simple E-major scale event lists."	"HauerSteffensView scaleExample2"		| scale |	scale := (N mi majorScale octave: 3) collect: [ :no | no semiToneCount].	scale addAllLast: ((N mi majorScale octave: 4) collect: [ :no | no semiToneCount]).	scale addLast: 88.					"add the final E by hand."		HauerSteffensView		openOnEventList: (EventList fromPitches: scale duration: 280 msec)		label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'instance creation'!label
+			addAll: (EventList randomSWSSExample2))! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/27/2023 17:08'!scaleExample	"Open a HSView on a simple C-chromatic scale event list."	"HauerSteffensView scaleExample"		HauerSteffensView		openOnEventList: (EventList scaleFrom: 60 to: 72 in: 4.0)		label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'examples' stamp: 'stp 1/25/2023 15:42'!scaleExample2	"Open a HSView on a simple E-major scale event lists."	"HauerSteffensView scaleExample2"		| scale |	scale := (N mi majorScale octave: 3) collect: [ :no | no semiToneCount].	scale addAllLast: ((N mi majorScale octave: 4) collect: [ :no | no semiToneCount]).	scale addLast: 88.					"add the final E by hand."		HauerSteffensView		openOnEventList: (EventList fromPitches: scale duration: 280 msec)		label: 'Hauer-Steffens Music Notation'! !!HauerSteffensView class methodsFor: 'instance creation'!label
 	"Answer the view label for the receiver's instances."
 
 	^'Hauer-Steffens Event List View'! !!HauerSteffensView class methodsFor: 'instance creation' stamp: 'stp 1/11/2023 15:44'!new	^super new initialize! !!HauerSteffensView class methodsFor: 'constant access' stamp: 'stp 1/11/2023 13:22'!defaultCacheExtent

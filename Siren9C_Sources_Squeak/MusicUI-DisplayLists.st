@@ -12,7 +12,7 @@ This implementation is MODE 1.1, STEIM, Amsterdam, May/June 1990; updated at the
 
 The entirety of this software is Copyright (c) 1990, Stephen Travis Pope, Nomad Object Design/Nomad Computer Music Research. 
 All Rights Reserved.
-!]style[(461 88 543),c206054130n,!!DisplayItem methodsFor: 'transforming'!scaleBy: aPoint
+!]style[(461 88 543),c204054130n,!!DisplayItem methodsFor: 'transforming'!scaleBy: aPoint
 	"Translate the receiver's offset by the argument."
 
 	self extent: self extent * aPoint! !!DisplayItem methodsFor: 'transforming'!scaledBy: aPoint
@@ -69,7 +69,10 @@ All Rights Reserved.
 	offset := aPoint! !!DisplayItem methodsFor: 'testing'!isDisplayItem
 	"Answer whether the receiver is a kind of DisplayItem"
 
-	^true! !!DisplayItem methodsFor: 'initialize-release' stamp: 'stp 1/21/2023 10:35'!initialize
+	^true! !!DisplayItem methodsFor: 'testing' stamp: 'stp 1/27/2023 07:59'!isEmpty
+	"Answer whether the receiver is a empty"
+
+	^false! !!DisplayItem methodsFor: 'initialize-release' stamp: 'stp 1/21/2023 10:35'!initialize
 	"Initialize the instance variables of the receiver."
 
 	offset := 0 @ 0.	angle := 0.0! !!DisplayItem methodsFor: 'displaying'!displayOn: aGraphicsContext
@@ -178,7 +181,7 @@ Instance Variables:
 	^((self new) offset: oPoint) extent: ePoint! !DisplayItem subclass: #DisplayList	instanceVariableNames: 'components'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-DisplayLists'!!DisplayList commentStamp: '<historical>' prior: 0!Instances of DisplayList are used for representing composed structured graphics. They can be nested (see the class examples) and can display themselves and their components.
 
 Instance Variables:
-	offset		<Point> the object's offset distance relative to its container!!DisplayList methodsFor: 'accessing' stamp: 'stp 12/31/2022 11:01'!color	^ Color black! !!DisplayList methodsFor: 'accessing'!flatten
+	offset		<Point> the object's offset distance relative to its container!!DisplayList methodsFor: 'accessing' stamp: 'stp 1/27/2023 07:58'!bounds	"Answer the bounds of the selection"	| rect |	components ifEmpty: [ ^ nil].	components first isEmpty ifTrue: [ ^ nil].	rect := components first bounds.	components do:		[ :comp |		comp ifNotNil:			[rect := rect merge: comp bounds]].	^rect translateBy: offset! !!DisplayList methodsFor: 'accessing' stamp: 'stp 12/31/2022 11:01'!color	^ Color black! !!DisplayList methodsFor: 'accessing'!flatten
 	"Answer a copy of the receiver with its hierarchy flattened."
 
 	| new |
@@ -195,17 +198,17 @@ Instance Variables:
 	"Set up the receiver"
 
 	components := OrderedCollection new.
-	offset := 0 @ 0! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/5/2023 17:01'!itemWithin: dist of: point
+	offset := 0 @ 0! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/27/2023 12:55'!itemWithin: dist of: point
 	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."
-
+	| pt |	pt := point - self offset."	Transcript show: 'DL itemW: ', pt printString; cr."
 	components do: 
 		[ :comp |
 		comp hasItems
 			ifTrue: [ | item |
-				(item := comp itemWithin: dist of: (point - self offset)) == nil
-					ifFalse: [^item]]
-			ifFalse: [((comp bounds expandBy: dist) containsPoint: point)
-					ifTrue: [^comp]]].
+"				Transcript tab; show: pt printString; cr."				(item := comp itemWithin: dist of: pt) == nil
+					ifFalse: [ ^ item]]
+			ifFalse: [((comp bounds expandBy: dist) containsPoint: pt)
+					ifTrue: [^ comp]]].
 	^nil! !!DisplayList methodsFor: 'accessing'!itemsFromX: x1 toX: x2
 	"Answer the list of items whose offsets are within the given X range."
 
@@ -240,7 +243,7 @@ Instance Variables:
 		ifTrue: [nil]
 		ifFalse: [(dList components size = 1)
 			ifTrue: [dList components first]
-			ifFalse: [dList]]! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/25/2023 07:43'!itemsWithin: rect 	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."		| dList movedRect |	movedRect := rect translateBy: self offset negated.	dList := DisplayList new.	components		do: [:comp | 			comp hasItems				ifTrue: [ | items |					items := comp itemsWithin: movedRect.					items == nil						ifFalse: [dList add: items]]				ifFalse: [(movedRect intersects: comp bounds)						ifTrue: [dList add: comp]]]."	dList components isEmpty		ifTrue: [^ dList]		ifFalse: [dList components size = 1				ifTrue: [| first |					first := dList components first.					first hasItems						ifTrue: [first container: nil].					^ first copy translateBy: self offset]				ifFalse: [^ dList translateBy: self offset]]"	^dList! !!DisplayList methodsFor: 'accessing'!itemsWithin: dist of: point
+			ifFalse: [dList]]! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/27/2023 12:11'!itemsWithin: rect 	"Answer the list of items whose boundingBoxes overlap with the given rectangle."		| dList movedRect |	movedRect := rect translateBy: self offset negated.	dList := DisplayList new offset: self offset.	components do: 			[ :comp | 			comp hasItems				ifTrue: [ | items |					items := comp itemsWithin: (movedRect translateBy: comp offset).					items == nil						ifFalse: [dList add: items]]				ifFalse: [(movedRect intersects: comp bounds)						ifTrue: [dList add: comp at: self offset]]]."	dList components isEmpty		ifTrue: [^ dList]		ifFalse: [dList components size = 1				ifTrue: [| first |					first := dList components first.					first hasItems						ifTrue: [first container: nil].					^ first copy translateBy: self offset]				ifFalse: [^ dList translateBy: self offset]]"	^dList! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/27/2023 12:15'!itemsWithin: rect into: dList	"Answer the list of items whose boundingBoxes overlap with the given rectangle."		| movedRect |	movedRect := rect translateBy: self offset negated.	components do: 			[ :comp | 			comp hasItems				ifTrue: [ | items |					items := comp itemsWithin: (movedRect translateBy: comp offset).					items == nil						ifFalse: [dList add: items]]				ifFalse: [(movedRect intersects: comp bounds)						ifTrue: [dList add: comp]]]."	dList components isEmpty		ifTrue: [^ dList]		ifFalse: [dList components size = 1				ifTrue: [| first |					first := dList components first.					first hasItems						ifTrue: [first container: nil].					^ first copy translateBy: self offset]				ifFalse: [^ dList translateBy: self offset]]"	^dList! !!DisplayList methodsFor: 'accessing'!itemsWithin: dist of: point
 	"Answer the list of items whose boundingBoxes are entirely within the given rectangle."
 
 	| dList |
@@ -256,7 +259,7 @@ Instance Variables:
 		ifTrue: [nil]
 		ifFalse: [(dList components size = 1)
 			ifTrue: [dList components first]
-			ifFalse: [dList]]! !!DisplayList methodsFor: 'accessing'!modelsFromX: x1 toX: x2
+			ifFalse: [dList]]! !!DisplayList methodsFor: 'accessing' stamp: 'stp 1/26/2023 20:36'!listsWithin: rect	"Answer the list of items whose boundingBoxes overlap with the given rectangle."		| dList movedRect |	movedRect := rect translateBy: self offset negated.	dList := DisplayList new.	components do: 		[ :comp | 		comp hasItems			ifTrue: [ | items |				items := comp listsWithin: (movedRect translateBy: comp offset).				(items isNil or: [items isEmpty])					ifFalse: [dList add: items]]].	^dList! !!DisplayList methodsFor: 'accessing'!modelsFromX: x1 toX: x2
 	"Answer the list of model-space-items whose offsets are within the given X range."
 
 	| dList |
@@ -309,32 +312,18 @@ Instance Variables:
 	^newMe! !!DisplayList methodsFor: 'transforming'!translateBy: aPoint
 	"Translate the receiver's offset by the argument."
 
-	self offset: self offset + aPoint! !!DisplayList methodsFor: 'printing' stamp: 'stp 1/11/2023 16:38'!printCompleteOn: aStream depth: depth
+	self offset: self offset + aPoint! !!DisplayList methodsFor: 'printing' stamp: 'stp 1/27/2023 12:08'!printCompleteOn: aStream depth: depth
 	"Descend the hierarchy printing on the stream."
 
-	aStream cr.
+"	aStream cr."
 	depth timesRepeat: [aStream tab].
 	aStream nextPutAll: '(a DisplayList '.
 	offset == nil
-		ifFalse: [aStream nextPutAll: ' offset: ', offset printString, ' - '].
+		ifFalse: [aStream nextPutAll: 'offset: ', offset printString, ' - '].
 "	model == nil
 		ifFalse: [aStream nextPutAll: ' model: ', model printString]."
-	components == nil
-		ifFalse: [components do: 
-			[ :e | 
-			e printCompleteOn: aStream depth: depth + 1]].
-	aStream nextPut: $)! !!DisplayList methodsFor: 'printing'!printCompletePostScriptOn: aStream depth: depth
-	"Descend the hierarchy printing on the stream."
-
-	aStream cr.
-	depth timesRepeat: [aStream tab].
-	aStream nextPutAll: '(a DisplayList '.
-	offset == nil
-		ifFalse: [aStream nextPutAll: ' offset: ', offset printString].
-"	model == nil
-		ifFalse: [aStream nextPutAll: ' model: ', model printString]."
-	components == nil
-		ifFalse: [components do: 
+	(components isNil or: [components isEmpty])
+		ifTrue: [aStream nextPutAll: 'empty ']		ifFalse: [components do: 
 			[ :e | 
 			e printCompleteOn: aStream depth: depth + 1]].
 	aStream nextPut: $)! !!DisplayList methodsFor: 'printing' stamp: 'stp 11/20/2022 11:08:48'!printOn: aStream
@@ -342,10 +331,7 @@ Instance Variables:
 
 	^Sensor shiftPressed
 		ifTrue: [super printOn: aStream]
-		ifFalse: [self printCompleteOn: aStream depth: 0]! !!DisplayList methodsFor: 'printing'!printPostScriptOn: aStream
-	"Print the receiver on the argument using the recursive method."
-
-	^self printCompletePostScriptOn: aStream depth: 0! !!DisplayList methodsFor: 'testing'!hasItems
+		ifFalse: [self printCompleteOn: aStream depth: 0]! !!DisplayList methodsFor: 'testing'!hasItems
 	"Answer whether or not the receiver has items or components."
 
 	^true! !!DisplayList methodsFor: 'testing'!isEmpty
@@ -373,11 +359,11 @@ Instance Variables:
 	^self computePreferredBounds extent! !!DisplayList methodsFor: 'enumerating' stamp: 'stp 1/6/2023 15:16'!components	"Answer the receiver's components."	^components! !!DisplayList methodsFor: 'enumerating'!do: aBlock
 	"Iterate the argument block over the receiver's components."
 
-	components do: aBlock! !!DisplayList methodsFor: 'displaying' stamp: 'stp 12/2/2022 02:28:49'!display
+	components do: aBlock! !!DisplayList methodsFor: 'displaying' stamp: 'stp 1/27/2023 12:53'!display
 	"Open a DisplayListView on the receiver."
 
 	| view |
-	view := DisplayListView newOn: self.
+	view := DisplayListView newOn: self flatten.
 	DisplayListWindow open: view label: 'DisplayListView'! !!DisplayList methodsFor: 'displaying' stamp: 'stp 1/22/2023 12:49'!drawOn: aContext
 	"Display each of the receiver's components."
 	aContext translateBy: offset during: [ :canvas | components do:
@@ -418,8 +404,8 @@ Instance Variables:
 	components remove: aVisualComponent.	self changed! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayList class	instanceVariableNames: ''!!DisplayList class methodsFor: 'instance creation' stamp: 'stp 11/20/2022 10:34:06'!new
 	"Initialize instances of the receiver."
 
-	^super new initialize! !!DisplayList class methodsFor: 'examples' stamp: 'stp 1/21/2023 06:33'!exampleHierarchical
-	"Create and answer a large display list with a lines, strings, and visuals."
+	^super new initialize! !!DisplayList class methodsFor: 'examples' stamp: 'stp 1/27/2023 12:52'!exampleHierarchical
+	"Create and answer a 3-layer deep display list with groups of strings and rectangles."
 	"DisplayList exampleHierarchical display"
 
 	| dl1 dl2 dl3 dl4 dl5 dl6 rand size |
@@ -807,7 +793,21 @@ Instance Variables:
 	aStream nextPutAll: '('; store: self class. 
 	image == nil ifFalse: [aStream nextPutAll: ' image: '. image storeOn: aStream].
 	offset == nil ifFalse: [aStream nextPutAll: ' offset: '. offset printOn: aStream].
-	aStream nextPut: $)! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 1/25/2023 11:13'!drawOn: aCanvas 	"Display a visual image on the given canvas"	image isForm			ifTrue: [aCanvas stencil: image at: offset color: Color black]			ifFalse: [aCanvas stencil: image image at: offset color: Color black]."	aCanvas frameRectangle: self bounds color: Color red"! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayVisual class	instanceVariableNames: ''!!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:08'!convertMusicConstants	"Convert all the forms to opaque forms"	"DisplayVisual convertMusicConstants. DisplayVisual	displayMusicConstants "	| all |	all := DisplayListView constants.	all		keysAndValuesDo: [:key :group | 			Transcript show: key printString;				 cr.			(group isMemberOf: Dictionary)				ifTrue: [group						keysAndValuesDo: [:str :item | 							| newI |							(item isKindOf: DisplayVisual)								ifTrue: [newI := item.									item										visual: (OpaqueImage												figure: item visual												shape: (item visual convertToCoverageWithOpaquePixel: 1))]								ifFalse: [(item isKindOf: Form)										ifTrue: [newI := OpaqueImage														figure: item														shape: (item convertToCoverageWithOpaquePixel: 1)]].							group at: str put: newI]].			((group isMemberOf: Array)					or: [group isMemberOf: OrderedCollection])				ifTrue: [group						do: [:item | (item isMemberOf: OpaqueImage)								ifFalse: [item										visual: (OpaqueImage												figure: item visual												shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 1/13/2023 10:18'!displayMusicConstants	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicGlyphs"	| xstep y i ystep dl dlv |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	DisplayListView constants		keysAndValuesDo: [:title :dict | 			i := 0.			dl				add: (DisplayString string: title asString)				at: xstep @ y.			y := y + (ystep / 2).			dict				keysAndValuesDo: [:str :item | 					dl						add: (DisplayString								string: (str isNumber										ifTrue: [str printString]										ifFalse: [str asString contractTo: 11]))						at: i * xstep + 8 @ y.					dl						add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item image extent printString]))						at: i * xstep + 8 @ (y + 16).					item isDisplayItem						ifTrue: [dl add: item deepCopy at: i * xstep + 8 @ (y + 40)]						ifFalse: [dl								add: (DisplayVisual image: item deepCopy)								at: i * xstep + 8 @ (y + 40)].					i := i + 1.					i = 14						ifTrue: [i := 0.							y := y + (ystep * 1.5)]].			y := y + ystep + 24].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Constants'! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 1/25/2023 12:59'!displayMusicGlyphs	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicGlyphs"		| xstep y i ystep dl dlv |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	DisplayListView glyphs		keysAndValuesDo: [ :title :dict | 			i := 0.			dl add: (DisplayString string: title asString)				at: xstep @ y.			y := y + (ystep / 2).			(dict keys "collect: [ :k | k asString]") asSortedCollection do: [ :key | | str item | 					str := key "printString asSymbol".					item := dict at: str ifAbsent: [dict at: str asString asNumber].					dl add: (DisplayString								string: (str asString contractTo: 11))						at: i * xstep + 8 @ y.					dl add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item isForm											ifTrue: [item extent printString]											ifFalse: [item image extent printString]]))						at: i * xstep + 8 @ (y + 16).					dl add: (DisplayString								string: (item offset printString))						at: i * xstep + 8 @ (y + 32).					item isDisplayItem						ifTrue: [dl add: item deepCopy 										at: (((i * xstep + 8) @ (y + 60)) - item offset)]						ifFalse: [dl add: (DisplayVisual image: item deepCopy)										at: ((i * xstep + 8 @ (y + 70)) - item offset)].					i := i + 1.					i = 14 ifTrue: 			"line wrap"							[i := 0.							y := y + (ystep * 1.5)]].			y := y + ystep + 24].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Glyphs'! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 1/25/2023 15:12'!displayMusicGlyphs: which	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicGlyphs: #StdNoteIcons"		| xstep y i ystep dl dlv dict |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	i := 0.	dict := (DisplayListView glyphs at: which).	dict keys asSortedCollection do:			[ :key | | str item | 					str := key "printString asSymbol".					item := dict at: str ifAbsent: [dict at: str asString asNumber].					dl add: (DisplayString								string: (str asString contractTo: 11))						at: i * xstep + 8 @ y.					dl add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item isForm											ifTrue: [item extent printString]											ifFalse: [item image extent printString]]))						at: i * xstep + 8 @ (y + 16).					dl add: (DisplayString								string: (item offset printString))						at: i * xstep + 8 @ (y + 32).					item isDisplayItem						ifTrue: [dl add: item deepCopy 										at: (((i * xstep + 8) @ (y + 60)) - item offset)]						ifFalse: [dl add: (DisplayVisual image: item deepCopy)										at: ((i * xstep + 8 @ (y + 70)) - item offset)].					i := i + 1.					i = 10 ifTrue: 			"line wrap"							[i := 0.							y := y + (ystep * 1.5)]].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Glyphs'! !!DisplayVisual class methodsFor: 'examples'!storeMusicConstants
+	aStream nextPut: $)! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/1/2022 11:03:04'!displayOn: aGraphicsContext
+	"Display the receiver's visual on the given graphics context."
+
+	color == nil
+		ifFalse: [aGraphicsContext paint: color].
+	aGraphicsContext translateBy: offset.
+	image displayOn: aGraphicsContext.
+	aGraphicsContext translateBy: offset negated.! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/1/2022 11:04:11'!displayPostScriptOn: aPostscriptContext
+	"Display the receiver on the argument as a PostScript item."
+
+	aPostscriptContext translate: offset.
+	aPostscriptContext imageWidth: image width 
+			height: image height 
+			bits: image bits.
+	aPostscriptContext translate: offset negated! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 1/25/2023 11:13'!drawOn: aCanvas 	"Display a visual image on the given canvas"	image isForm			ifTrue: [aCanvas stencil: image at: offset color: Color black]			ifFalse: [aCanvas stencil: image image at: offset color: Color black]."	aCanvas frameRectangle: self bounds color: Color red"! !!DisplayVisual methodsFor: 'displaying' stamp: 'stp 12/28/2022 20:46'!drawOn: aCanvas 	"Display a rect on the given canvas"	drawImage: image image at: offset 	! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!DisplayVisual class	instanceVariableNames: ''!!DisplayVisual class methodsFor: 'examples' stamp: 'stp 12/31/2022 11:08'!convertMusicConstants	"Convert all the forms to opaque forms"	"DisplayVisual convertMusicConstants. DisplayVisual	displayMusicConstants "	| all |	all := DisplayListView constants.	all		keysAndValuesDo: [:key :group | 			Transcript show: key printString;				 cr.			(group isMemberOf: Dictionary)				ifTrue: [group						keysAndValuesDo: [:str :item | 							| newI |							(item isKindOf: DisplayVisual)								ifTrue: [newI := item.									item										visual: (OpaqueImage												figure: item visual												shape: (item visual convertToCoverageWithOpaquePixel: 1))]								ifFalse: [(item isKindOf: Form)										ifTrue: [newI := OpaqueImage														figure: item														shape: (item convertToCoverageWithOpaquePixel: 1)]].							group at: str put: newI]].			((group isMemberOf: Array)					or: [group isMemberOf: OrderedCollection])				ifTrue: [group						do: [:item | (item isMemberOf: OpaqueImage)								ifFalse: [item										visual: (OpaqueImage												figure: item visual												shape: (item visual convertToCoverageWithOpaquePixel: 1))]]]]! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 1/13/2023 10:18'!displayMusicConstants	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicGlyphs"	| xstep y i ystep dl dlv |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	DisplayListView constants		keysAndValuesDo: [:title :dict | 			i := 0.			dl				add: (DisplayString string: title asString)				at: xstep @ y.			y := y + (ystep / 2).			dict				keysAndValuesDo: [:str :item | 					dl						add: (DisplayString								string: (str isNumber										ifTrue: [str printString]										ifFalse: [str asString contractTo: 11]))						at: i * xstep + 8 @ y.					dl						add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item image extent printString]))						at: i * xstep + 8 @ (y + 16).					item isDisplayItem						ifTrue: [dl add: item deepCopy at: i * xstep + 8 @ (y + 40)]						ifFalse: [dl								add: (DisplayVisual image: item deepCopy)								at: i * xstep + 8 @ (y + 40)].					i := i + 1.					i = 14						ifTrue: [i := 0.							y := y + (ystep * 1.5)]].			y := y + ystep + 24].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Constants'! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 1/25/2023 12:59'!displayMusicGlyphs	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicGlyphs"		| xstep y i ystep dl dlv |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	DisplayListView glyphs		keysAndValuesDo: [ :title :dict | 			i := 0.			dl add: (DisplayString string: title asString)				at: xstep @ y.			y := y + (ystep / 2).			(dict keys "collect: [ :k | k asString]") asSortedCollection do: [ :key | | str item | 					str := key "printString asSymbol".					item := dict at: str ifAbsent: [dict at: str asString asNumber].					dl add: (DisplayString								string: (str asString contractTo: 11))						at: i * xstep + 8 @ y.					dl add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item isForm											ifTrue: [item extent printString]											ifFalse: [item image extent printString]]))						at: i * xstep + 8 @ (y + 16).					dl add: (DisplayString								string: (item offset printString))						at: i * xstep + 8 @ (y + 32).					item isDisplayItem						ifTrue: [dl add: item deepCopy 										at: (((i * xstep + 8) @ (y + 60)) - item offset)]						ifFalse: [dl add: (DisplayVisual image: item deepCopy)										at: ((i * xstep + 8 @ (y + 70)) - item offset)].					i := i + 1.					i = 14 ifTrue: 			"line wrap"							[i := 0.							y := y + (ystep * 1.5)]].			y := y + ystep + 24].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Glyphs'! !!DisplayVisual class methodsFor: 'examples' stamp: 'stp 1/25/2023 17:28'!displayMusicGlyphs: which	"Draw a nice table of the hierarchical image dictionary."	"DisplayVisual displayMusicGlyphs: #StdNoteIcons"		| xstep y i ystep dl dlv dict |	xstep := 80.	ystep := 64.	y := 0.	dl := DisplayList new.	i := 0.	dict := (DisplayListView glyphs at: which).	dict keys asSortedCollection do:			[ :key | | str item | 					str := key "printString asSymbol".					item := dict at: str ifAbsent: [dict at: str asString asNumber].					dl add: (DisplayString								string: (str asString contractTo: 11))						at: i * xstep + 8 @ y.					dl add: (DisplayString								string: (item isDisplayItem										ifTrue: [item image image extent printString]										ifFalse: [item isForm											ifTrue: [item extent printString]											ifFalse: [item image extent printString]]))						at: i * xstep + 8 @ (y + 16).					dl add: (DisplayString								string: (item offset printString))						at: i * xstep + 8 @ (y + 32).					item isDisplayItem						ifTrue: [dl add: item deepCopy 										at: (((i * xstep + 8) @ (y + 60)) "+ item offset")]						ifFalse: [dl add: (DisplayVisual image: item deepCopy)										at: ((i * xstep + 8 @ (y + 70)) "+ item offset")].					i := i + 1.					i = 10 ifTrue: 			"line wrap"							[i := 0.							y := y + (ystep * 1.5)]].	dlv := DisplayListView newOn: dl.	dlv backgroundColor: Color gray.	DisplayListWindow open: dlv label: 'Music Glyphs'! !!DisplayVisual class methodsFor: 'examples'!storeMusicConstants
 	"Write out all the forms to opaque forms"
 	"DisplayVisual storeMusicConstants"
 

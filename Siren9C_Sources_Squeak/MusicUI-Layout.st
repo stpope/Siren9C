@@ -210,13 +210,13 @@ InstanceVariableNames:
 Instance Variables:
 	timeScale		<Integer> the msec./pixel scale
 	timeOffset		<Integer> the start of the layout in msec.
-!!TimeSequenceLayoutManager methodsFor: 'generating' stamp: 'stp 1/25/2023 14:19'!addItem: anAss atNode: aPath in: aDisplayList 
+!!TimeSequenceLayoutManager methodsFor: 'generating' stamp: 'stp 1/27/2023 17:05'!addItem: anAss atNode: aPath in: aDisplayList 
 	"Add the given item to the display list."
 
 	| path2 anE displayPoint item |
 	anE := anAss value.
 	anE hasItems
-		ifTrue: [^ anE do:  
+		ifTrue: [ ^ anE do:  
 			[ :i | 
 			path2 := aPath copy.
 			path2 addLast: anE.
@@ -225,7 +225,7 @@ Instance Variables:
 					in: aDisplayList]].
 	displayPoint := self displayPointFor: anAss.
 	item := view itemFor: anAss.
-	item offset: displayPoint.
+	item offset: displayPoint + item offset.
 	aDisplayList add: item atPath: aPath! !!TimeSequenceLayoutManager methodsFor: 'generating' stamp: 'stp 1/25/2023 07:15'!displayPointFor: anAss 
 	"Answer the display point for the argument."
 
@@ -254,14 +254,14 @@ Instance Variables:
 	pitchOffset := aNumber! !!PitchTimeLayoutManager methodsFor: 'accessing'!pitchScale: aNumber
 	"Set the receiver's pitch scale."
 
-	pitchScale := aNumber! !!PitchTimeLayoutManager methodsFor: 'generating' stamp: 'stp 1/25/2023 15:50'!displayPointFor: anAss
+	pitchScale := aNumber! !!PitchTimeLayoutManager methodsFor: 'generating' stamp: 'stp 1/27/2023 17:10'!displayPointFor: anAss
 	"Answer the display point for the argument."
 
 	| pch |	pch := anAss event pitch.
 	pch ifNil: [ ^ (((anAss key asMS value - timeOffset / timeScale) + inset x) asInteger)
-		@ (60 * pitchScale)].
+						@ (60 * pitchScale)].
 	^ (((anAss key asMS value - timeOffset / timeScale) + inset x) asInteger)
-			@ ((60 * pitchScale) - ((pch asMIDI value - pitchOffset) * pitchScale))! !PitchTimeLayoutManager subclass: #PositionTimeLayoutManager	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!PositionTimeLayoutManager commentStamp: '<historical>' prior: 0!Instances of PositionTimeLayoutManager are used to generate display lists with "x = time" and "y = position" from event lists.
+			@			 (((60 * pitchScale) - ((pch asMIDI value - pitchOffset) * pitchScale)) + 2)! !PitchTimeLayoutManager subclass: #PositionTimeLayoutManager	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!PositionTimeLayoutManager commentStamp: '<historical>' prior: 0!Instances of PositionTimeLayoutManager are used to generate display lists with "x = time" and "y = position" from event lists.
 !!PositionTimeLayoutManager methodsFor: 'generating'!displayPointFor: anAss
 	"Answer the display point for the argument."
 

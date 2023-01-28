@@ -400,4 +400,4 @@ ListeDAnalyses ({I de Re HungarianMinor} {VII de Mib HungarianMinor} )
 	^#(#unison #minorSecond #minorThird #perfectFourth #diminishedFifth #majorSixth #majorSeventh )! !Scale subclass: #PentatonicScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!PentatonicScale class	instanceVariableNames: ''!!PentatonicScale class methodsFor: 'interval list' stamp: 'stp 12/18/2022 11:35'!intervalList
 
 	^#(#unison #majorSecond #perfectFourth #perfectFifth #majorSixth)! !Scale subclass: #PseudoMinorScale	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-PitchScales'!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!PseudoMinorScale class	instanceVariableNames: ''!!PseudoMinorScale class methodsFor: 'interval list'!intervalList
-	^#(#unison #second #minorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !
+	^#(#unison #second #minorThird #perfectFourth #perfectFifth #majorSixth #majorSeventh )! !Scale initialize!

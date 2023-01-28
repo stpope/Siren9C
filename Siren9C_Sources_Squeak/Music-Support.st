@@ -1403,4 +1403,4 @@ Class Variables:
 	running := false.
 	lastUpdate := Time microsecondClock.
 	EventScheduler instance removerTimer: self
-	self changed! !
+	self changed! !EventScheduler initialize!PortModel initialize!SEventQueue initialize!SirenSession initialize!SirenUtility initialize!

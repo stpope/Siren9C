@@ -2966,6 +2966,12 @@ Create an event list of 20 notes with semi-random values and play it on an OSC o
 </br>
 &emsp;[(EventList randomExample: 20) playOn: OSCVoice default] d</br>
 </br>
+If you prefer pinao-roll notation:</br>
+</br>
+&emsp;[PitchTimeView openOnEventList: EventList randomExample </br>
+&emsp;&emsp;&emsp;label: 'P T V' pianoRoll: true]</br>
+</br>
+</br>
 Event lists don't have to have pitches at all, as in the following word,</br>
 </br>
 &emsp;[EventList named: 'phrase1'  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"name it and it becomes persistent"</br>
@@ -3516,7 +3522,6 @@ Load music icons from the font</br>
 </br>
 [(FileStream fileNamed: './Siren9C/FileIns/MusicConstants.st') fileIn.</br>
 &emsp;DisplayListView loadNoteGlyphsFromFontSized: 100.</br>
-&emsp;DisplayListView remapNoteHeadGlyphs.</br>
 &emsp;DisplayListView loadTransportGlyphs]</br>
 </br>
 Class initializations</br>
@@ -4124,23 +4129,23 @@ There's alot of stale code in the Squeak port that's vestige of the VisualWorks 
 </br>
 Bugs - see the test workspace below fort the list of what I'm working on.</br>
 </br>
-</p><hr><h3 id="TestWorkspace">41 - Test Workspace</h3>Test Workspace - stp - 230121</br>
+</p><hr><h3 id="TestWorkspace">41 - Test Workspace</h3>Test Workspace - stp - 230127</br>
 </br>
 ToDo - known bugs</br>
-&emsp;TSV zooming & selection</br>
-&emsp;HSView clef redisplay</br>
-&emsp;HSView background paging</br>
+&emsp;TSV selection update</br>
+&emsp;HSV selection</br>
 &emsp;ControlMorph play actions</br>
-&emsp;DLV selection handles scale with zoom; they shouldn't</br>
+&emsp;DLV selection handles scale with zoom</br>
 </br>
 &emsp;Function & Sound editors</br>
 &emsp;CSL vocoder resynth stage</br>
-&emsp;MIDIFileVoice</br>
 &emsp;New transport panel</br>
 &emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
 &emsp;Ostinato doesn't wait right.</br>
 </br>
 Post-build testing</br>
+</br>
+Test plug-ins</br>
 </br>
 CStandardLibrary new abs: -42 </br>
 FFITestLibrary ffiPrintString: 'Hello' </br>
@@ -4291,7 +4296,7 @@ SndSynth Tests</br>
 </br>
 ScorePlayerMorph new openMIDIFile - fix this</br>
 </br>
-----</br>
+----------------------------------------------------------------------------</br>
 </br>
 Music Font debugging</br>
 </br>
@@ -4347,6 +4352,21 @@ gly at: #'rewind' put: down.</br>
 ]</br>
 </br>
 [(DisplayListView glyphs at: #Transport) explore]</br>
+</br>
+[DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7</br>
+&emsp;&emsp;keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )</br>
+&emsp;&emsp;into: #StdNoteIcons.</br>
+DisplayListView shrinkGlyphs.</br>
+DisplayListView tweakGlyphs]</br>
+</br>
+[DisplayVisual displayMusicGlyphs: #StdNoteIcons]</br>
+[HauerSteffensView scaleExample]</br>
+[HauerSteffensView scaleExample2]</br>
+[EventList accellExample edit]</br>
+</br>
+</br>
+</br>
+</br>
 </p><hr><h3 id="Sketches">42 - Sketches</h3>Sketches for Sleeping Sword</br>
 </br>
 Score11 examples</br>

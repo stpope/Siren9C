@@ -885,4 +885,4 @@ Instance Variables:
 	^self for: '/sc/stop'! !!TypedOSCMessage class methodsFor: 'examples'!start
 	"TypedOSCMessage start"
 
-	^self for: '/start'! !
+	^self for: '/start'! !OSCBundle initialize!OSCVoice initialize!

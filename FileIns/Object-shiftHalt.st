@@ -1,0 +1,1 @@
+﻿'From Squeak6.1alpha of 24 January 2023 [latest update: #22397] on 27 January 2023 at 4:44:14 pm'!!Object methodsFor: 'error handling' stamp: 'stp 1/27/2023 13:00'!shiftHalt	"Halt only if the SHIFT key is pressed."	Sensor shiftPressed ifTrue: [Halt signal]! !

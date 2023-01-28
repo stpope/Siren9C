@@ -80,7 +80,7 @@ Create 64 random events with parameters in the given ranges, play it on the defa
 Create an event list of 20 notes with semi-random values and play it on an OSC output voice.
 
 	[(EventList randomExample: 20) playOn: OSCVoice default] d
-
+If you prefer pinao-roll notation:	[PitchTimeView openOnEventList: EventList randomExample 			label: 'P T V' pianoRoll: true]
 Event lists don't have to have pitches at all, as in the following word,
 
 	[EventList named: 'phrase1'  									"name it and it becomes persistent"

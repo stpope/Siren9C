@@ -236,10 +236,16 @@ Instance Variables:
 		ifTrue: [dPoint := x @ y]
 		ifFalse: [orientation == #top
 			ifTrue: [dPoint := y @ x]].
-	^dPoint! !!TimeSequenceLayoutManager methodsFor: 'accessing'!timeOffset: aNumber
+	^dPoint! !!TimeSequenceLayoutManager methodsFor: 'accessing' stamp: 'stp 2/13/2023 00:10'!timeOffset
+	"Answer the receiver's time offset."
+
+	^ timeOffset! !!TimeSequenceLayoutManager methodsFor: 'accessing'!timeOffset: aNumber
 	"Set the receiver's time offset."
 
-	timeOffset := aNumber! !!TimeSequenceLayoutManager methodsFor: 'accessing'!timeScale: aNumber
+	timeOffset := aNumber! !!TimeSequenceLayoutManager methodsFor: 'accessing' stamp: 'stp 2/13/2023 00:10'!timeScale
+	"Answer the receiver's time scale."
+
+	^ timeScale! !!TimeSequenceLayoutManager methodsFor: 'accessing'!timeScale: aNumber
 	"Set the receiver's time scale."
 
 	timeScale := aNumber! !TimeSequenceLayoutManager subclass: #PitchTimeLayoutManager	instanceVariableNames: 'pitchScale pitchOffset'	classVariableNames: ''	poolDictionaries: ''	category: 'MusicUI-Layout'!!PitchTimeLayoutManager commentStamp: '<historical>' prior: 0!Instances of the PitchTimeLayoutManager classes are used to generate display lists with "x = time" and "y = pitch" from event lists.

@@ -405,7 +405,7 @@ Instance variables:
 	"set the delay between the onset of my notes"
 
 	delay := aValue.
-	self setDelays.! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Arpeggio class	instanceVariableNames: ''!!Arpeggio class methodsFor: 'examples' stamp: 'stp 1/19/2023 06:57'!example1	"Play a simple arp."	"Arpeggio example1"	| list arp vox |							"make a 2-octave chromatic arpeggio"	list := (((ChromaticScale root: N do) octave: 3) ,			((ChromaticScale root: N do) octave: 4) ,			((ChromaticScale root: N do) octave: 5))		collect: [ :p | p semiToneCount].	list removeRandom: 0.25.			"drop 25% of the notes"	list := EventList fromPitches: list.	arp := Arpeggio on: list delay: 50.	arp setValue: 80 toProp: #loudness .	vox :=  MIDIVoice defaultOut: 1."	arp inspect."	arp eventList playOn: vox! !!Arpeggio class methodsFor: 'instance creation' stamp: 'stp 1/18/2023 16:12'!on: aChordOrList delay: aDelay
+	self setDelays.! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Arpeggio class	instanceVariableNames: ''!!Arpeggio class methodsFor: 'examples' stamp: 'stp 1/28/2023 12:21'!example1	"Play a simple arp."	"Arpeggio example1"	| list arp vox |							"make a 2-octave chromatic arpeggio"	list := (((ChromaticScale root: N do) octave: 3) ,			((ChromaticScale root: N do) octave: 4) ,			((ChromaticScale root: N do) octave: 5))		collect: [ :p | p semiToneCount].	list removeRandom: 0.25.			"drop 25% of the notes"	list := EventList fromPitches: list.	arp := Arpeggio on: list delay: 50.	arp setValue: 80 toProp: #loudness .	vox :=  MIDIVoice defaultOut: 1."	arp inspect."	arp eventList playOn: vox! !!Arpeggio class methodsFor: 'instance creation' stamp: 'stp 1/18/2023 16:12'!on: aChordOrList delay: aDelay
 	"Create an Arpeggio on the given chord or event list"
 
 	| me |
@@ -595,58 +595,39 @@ Instance variables:
 	"Ostinato newNamed: #scaleO onList: (EventList named: #scale1)"
 	"(Ostinato named: #scaleO) play"
 	"(Ostinato named: #scaleO) playOn: 1 at: 0"
-	"(Ostinato named: #scaleO) stop"! !Array variableSubclass: #Peal	instanceVariableNames: 'base directions position finished'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!Peal commentStamp: '<historical>' prior: 0!Peals are repetitive note-generating sequences.  
+	"(Ostinato named: #scaleO) stop"! !Array variableSubclass: #Peal	instanceVariableNames: 'base duration directions position finished'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!Peal commentStamp: 'stp 1/29/2023 07:50' prior: 0!Peals are repetitive note-generating sequences.  
 This implementation was written by Mark Lentczner in 1986.
 
 Instance variables:
-	base <Collection of Numbers> the pitches i use
-	directions <Array of +-1> the direction of the current sub-sequence
-	position <Number> the current index
-	finished <Boolean> an i done?!!Peal methodsFor: 'playing'!eventList
+	base 		<Array of Numbers> 		the pitches I use
+	directions 	<Array of +-1> 				the direction of the current sub-sequence
+	position 	<Number> 				the current index
+	finished 	<Boolean> 					am I done?!!Peal methodsFor: 'playing' stamp: 'stp 1/28/2023 15:22'!eventList
 
-	| list |
-	list := EventList new.
-	self playOn: list durations: 125 meter: 125 at: 0.
+	| list dur |
+	dur := duration.	dur ifNil: [dur := 125 msec].	list := EventList new.
+	self playOn: list durations: dur meter: dur at: 0.
 	^list! !!Peal methodsFor: 'playing'!play
-	self eventList play! !!Peal methodsFor: 'playing'!playOn0: out durations: dur meter: mtr at: start
+	self eventList play! !!Peal methodsFor: 'playing'!playOn: vox
+	self eventList playOn: vox! !!Peal methodsFor: 'playing' stamp: 'stp 1/28/2023 15:23'!playOn: out durations: dur meter: mtr at: start
 	"Play the receiver"
 
-	| time siz |
+	| time siz vel |
 	time := start.
-	siz := self size.
+	siz := self size.	vel := 80 velocity.
 	[finished] whileFalse:
 		[1 to: siz do: 
-			[ :i | out play: (self at: i) at: time dur: dur amp: 100. 
-				time := time + mtr ].
-		self change.
-		1 to: siz - 1 do: 
-			[ :i | out play: (self at: i) at: time dur: dur amp: 100. 
-				time := time + mtr ].
-		out play: (self at: siz ) at: time dur: dur + mtr amp: 100.  
-				time := time + mtr + mtr.
-		self change].
-	1 to: siz do: 
-			[ :i | out play: (self at: i) at: time dur: dur amp: 100. 
-				time := time + mtr ].! !!Peal methodsFor: 'playing'!playOn: vox
-	self eventList playOn: vox! !!Peal methodsFor: 'playing'!playOn: out durations: dur meter: mtr at: start
-	"Play the receiver"
-
-	| time siz |
-	time := start.
-	siz := self size.
-	[finished] whileFalse:
-		[1 to: siz do: 
-			[ :i | out add: time => ((self at: i) note, dur msec, 100 velocity). 
+			[ :i | out add: time => ((self at: i) note, dur, vel). 
 				time := time + mtr].
 		self change.
 		1 to: siz - 1 do: 
-			[ :i | out add: time => ((self at: i) note, dur msec, 100 velocity). 
+			[ :i | out add: time => ((self at: i) note, dur, vel). 
 				time := time + mtr].
-		out add: time => ((self at: siz) note, (dur + mtr) msec, 100 velocity).  
+		out add: time => ((self at: siz) note, (dur + mtr), vel).  
 				time := time + mtr + mtr.
 		self change].
 	1 to: siz do: 
-			[ :i | out add: time => ((self at: i) note, dur msec, 100 velocity). 
+			[ :i | out add: time => ((self at: i) note, dur, vel). 
 				time := time + mtr].! !!Peal methodsFor: 'accessing'!at: index
 	"Answer the element in the base collection currently mapped into the index position."
 
@@ -655,7 +636,10 @@ Instance variables:
 	^ self error: 'Can''t modify a peal by at:put:'! !!Peal methodsFor: 'accessing'!currentChange
 	"Answer the base as mapped by the current change."
 
-	^(1 to: self size) collect: [ :i  | self at: i ]! !!Peal methodsFor: 'accessing'!finished
+	^(1 to: self size) collect: [ :i  | self at: i ]! !!Peal methodsFor: 'accessing' stamp: 'stp 1/28/2023 15:17'!duration: aVal
+	"Assign the receiver's note dutaion"
+
+	duration := aVal! !!Peal methodsFor: 'accessing'!finished
 	"Answer is the peal has completed it's last change"
 
 	^ finished! !!Peal methodsFor: 'accessing'!setBase: baseSet
@@ -691,8 +675,8 @@ Instance variables:
 
 	1 to: self size do:
 		[:i | (self basicAt: i) = n ifTrue: [^ i]].
-	^ self error: 'An element does not exist in this peal'! !!Peal methodsFor: 'private'!swap: index1 with: index2
-	"We need to redefine this, since we redefined at: & at:put: to map trhrough the base collection"
+	^ self error: 'An element does not exist in this peal'! !!Peal methodsFor: 'private' stamp: 'stp 1/29/2023 07:47'!swap: index1 with: index2
+	"We need to redefine this, since we redefined at: & at:put: to map through the base collection"
 
 	| temp |
 	temp := self basicAt: index1.
@@ -700,22 +684,28 @@ Instance variables:
 	self basicAt: index2 put: temp! !!Peal methodsFor: 'changing'!change
 	"Produce the next change in the peal"
 
-	self changeOrder: 1 bounds: (1 to: self size)! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Peal class	instanceVariableNames: ''!!Peal class methodsFor: 'examples' stamp: 'stp 1/18/2023 18:17'!pealExample1
+	self changeOrder: 1 bounds: (1 to: self size)! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Peal class	instanceVariableNames: ''!!Peal class methodsFor: 'examples' stamp: 'stp 1/28/2023 15:15'!pealExample1
 	"Play a simple bell peal"
 	"Peal pealExample1"
 
-	(Peal upon: #(60 62 64 65)) eventList editPTV! !!Peal class methodsFor: 'instance creation'!new: size
+	(Peal on: #(60 62 64 65)) eventList editPTV! !!Peal class methodsFor: 'instance creation'!new: size
 	"Create a new peal on the given size with 1..size as the base set."
 
 	| newPeal |
 	newPeal := self basicNew: size.
 	newPeal setBase: (1 to: size).
-	^ newPeal! !!Peal class methodsFor: 'instance creation' stamp: 'stp 1/18/2023 18:10'!upon: baseSet
+	^ newPeal! !!Peal class methodsFor: 'instance creation' stamp: 'stp 1/28/2023 15:15'!on: baseSet
 	"Create a new peal on the base set given"
 
 	| newPeal |
 	newPeal := self new: baseSet size.
 	newPeal setBase: baseSet.
+	^ newPeal! !!Peal class methodsFor: 'instance creation' stamp: 'stp 1/28/2023 15:18'!on: baseSet duration: dur
+	"Create a new peal on the base set given"
+
+	| newPeal |
+	newPeal := self new: baseSet size.
+	newPeal setBase: baseSet.	newPeal duration: dur.
 	^ newPeal! !Cluster subclass: #Roll	instanceVariableNames: 'number delta noteDuration'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!Roll commentStamp: '<historical>' prior: 0!Rolls repeat their single events.
 It will eventually be possible to apply pitch, amplitude or duration envelopes to them as well.
 
@@ -736,16 +726,14 @@ Instance variables:
 	number := aNumber.
 	noteDuration := aDuration.
 	self pitch: (Pitch value: aNote).
-	^self! !!Roll methodsFor: 'playing'!eventList
+	^self! !!Roll methodsFor: 'playing' stamp: 'stp 2/6/2023 11:15'!eventList
 	"return an eventList for me"
 
 	| newList |
 	newList := EventList newAnonymous.
 	0 to: number do:
-		[ :count |
-			newList add: (self defaultEventClass 
-					dur: noteDuration pitch: self pitch ampl: self loudness) 
-				at: (delta * count) ].
+		[ :count | | ev |		ev := self defaultEventClass dur: noteDuration pitch: self pitch ampl: self loudness.		properties associationsDo: [ :ass |			(ass key == #name) 				ifFalse: [ev perform: (ass key, ':') asSymbol with: ass value]].
+		newList add: ev at: (delta * count) ].
 	^newList! !!Roll methodsFor: 'accessing'!duration
 	"compute and answer the duration"
 
@@ -846,16 +834,16 @@ Instance variables:
 		[ :key :val |
 		self perform: key with: val with: eList].
 	eList removeLast.					"kludj"
-	^eList! !!Score11 methodsFor: 'private-generators' stamp: 'stp 12/30/2022 14:21'!populate: param required: isReq as: property into: eList
+	^eList! !!Score11 methodsFor: 'private-generators' stamp: 'stp 2/10/2023 11:52'!populate: param required: isReq as: property into: eList
 	"Execute the generator for the given key and property"
 	"self populate: #p4 required: false as: #pitch into: eList.
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 		-- sequential scale
-		add: #p5 -> (#mo -> '10 10 100' );			-- linear move
-		add: #p5 -> #(1.0 1.0 5.0);					-- rand range
+		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 	-- sequential scale
+		add: #p5 -> (#mo -> '10 10 100' );				-- linear move
+		add: #p5 -> #(1.0 1.0 5.0);						-- rand range
 		add: #p7 -> #(0.5 1 2  0.5 100 200);			-- mix of ranges
-		add: #p8 -> (#se -> '10 1 3 5 7 9' );			-- set
+		add: #p8 -> (#se -> '10 1 3 5 7 9' );				-- set
 		add: #p5 -> (#mx -> '5 4 100 / 5 100 5' )		-- multi-stage exponential move
-		add: #p5 -> (#mx -> '3 100 100 , 100 96' )		-- multi-stage exponential tendancy mask move
+		add: #p5 -> (#mx -> '3 100 100 , 100 96' )	-- multi-stage exponential tendancy mask move
 		add: #p4 -> (#nu -> '1./.5*3/.25//-.5/1.5' )		-- numerical sequences
  	 "
 
@@ -977,7 +965,7 @@ Instance variables:
 							val := rnd nextFrom: (v0 min: v1) to: (v0 max: v1).
 "							Transcript show: tN printString, ' -  [', v0 printString, ' - ', v1 printString, '] - ', val printString, ']'; cr" ]].
 				eAss event perform: property with: val]].
-		t0 := t0 + segDur]! !!Score11 methodsFor: 'private-generators' stamp: 'stp 12/30/2022 12:55'!writeMoveX2: property from: vString into: eList
+		t0 := t0 + segDur]! !!Score11 methodsFor: 'private-generators' stamp: 'stp 2/10/2023 12:34'!writeMoveX2: property from: vString into: eList
 	"Parse and process the complex exponential move keyword to generate events"
 	"aScore11 add: #p6 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .9 1.1'); 
 		add: #p4 -> (#mx -> '5 200 100  ,  2000 2100  /
@@ -986,16 +974,10 @@ Instance variables:
 	"Toks: _5_   _200_   _100_   _,_   _2000_   _2100_   _/_   _4_   _2050_   _2060_   _/_   _6_   _2000_   _2100_   _,_   _1100_   _1600_   "
 
 	| tStr strm evts rnd t0 t1 const |
-	tStr := vString copyWithout: Character cr.
-	tStr := tStr copyReplaceAll: '	' with: ' '.
-	[(tStr findString: '  ' startingAt: 1) > 0] whileTrue:
-		[tStr := tStr copyReplaceAll: '  ' with: ' '].
-	strm := ReadStream on: (tStr findTokens: ' ').			"split on spaces"
-"	Transcript clear.
-	[strm atEnd] whileFalse:						
-		[Transcript show:  '_', strm next, '_   '].
-	strm := ReadStream on: (tStr tokensBasedOn: $ ).
-"	evts := eList events.
+	tStr := vString copyWithout: Character cr.	tStr := tStr copyWithout: Character lf.	tStr := tStr copyWithout: Character tab.	tStr := tStr copyReplaceAll: '/' with: '/ '.	tStr := tStr copyReplaceAll: '  ' with: ' '.	strm := ReadStream on: (tStr findTokens: ' ').			"split on spaces"
+"	[strm atEnd] whileFalse:						
+		[Transcript show:  '_', strm next, '_   ']."
+	evts := eList events.
 	rnd := Random new.
 	t0 := start.
 	[strm atEnd] whileFalse:								"loop through the segments"
@@ -1028,9 +1010,9 @@ Instance variables:
 			[vDiff0 := (a1 / a0) asFloat.	
 			vDiff1 := (b1 / b0) asFloat].
 "		interp
-			ifTrue:[Transcript cr; show: 'Seg: ', t0 printString, ' - ', t1 printString, ' [', a0 printString, ' - ', b0 printString, '] - [ ', 
+			ifTrue:[Transcript cr; show: 'Seg: ', t0 printString, ' - ', t1 printString,						 ' [', a0 printString, ' - ', b0 printString, '] - [ ', 
 						a1 printString, ' - ', b1 printString, '] - ', vDiff0 printString, ' : ', vDiff1 printString; cr]
-			ifFalse:[Transcript cr; show: 'Seg: ', t0 printString, ' - ', t1 printString, ' [', a0 printString, ' - ', b0 printString, ']'; cr].
+			ifFalse:[Transcript cr; show: 'Seg: ', t0 printString, ' - ', t1 printString, ' 						[', a0 printString, ' - ', b0 printString, ']'; cr].
 "
 		evts do:										"event loop"
 			[ :eAss | | tN tScale val v0 v1 |
@@ -1107,13 +1089,13 @@ Instance variables:
 	key == #rh ifTrue: [^self writeP3RH: val into: eList].
 	key == #mx ifTrue: [^self writeP3MX: val into: eList].
 
-	self error: 'Unknown Score11 term'! !!Score11 methodsFor: 'private-generators' stamp: 'stp 1/20/2023 10:17'!writeP3MX: vString into: eList
+	self error: 'Unknown Score11 term'! !!Score11 methodsFor: 'private-generators' stamp: 'stp 2/10/2023 12:34'!writeP3MX: vString into: eList
 	"Parse and process the complex exponential move keyword to generate events"
 	"aScore11 add: #p3 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .9 1.1'); "
 
 	| tStr strm rnd t0 t1 |
 	tStr := vString copyWithout: Character lf.
-	tStr := tStr copyReplaceAll: '			' with: ' '.	tStr := tStr copyReplaceAll: '		' with: ' '.	tStr := tStr copyReplaceAll: '  ' with: ' '.	tStr := tStr copyReplaceAll: '  ' with: ' '.	[(tStr findString: '  ' startingAt: 1) > 0] whileTrue:
+	tStr := tStr copyWithout: Character cr.	tStr := tStr copyWithout: $	.	[(tStr findString: '  ' startingAt: 1) > 0] whileTrue:
 		[tStr := tStr copyReplaceAll: '  ' with: ' '].
 	strm := ReadStream on: (tStr findTokens: $ ).				"split on spaces"
 	rnd := Random new.
@@ -1125,25 +1107,24 @@ Instance variables:
 		a0 := strm next asNumber.
 		b0 := strm next asNumber.
 		(strm atEnd) ifFalse:
-			[sep := strm next.									"read comma or slash"
+			[sep := strm next.										"read comma or slash"
 			('/,' includes: sep first) ifFalse: [self error: 'Malformed movex expression'].
-			(sep = ',')											"comma means read 2 more tokens"
+			(sep = ',')												"comma means read 2 more tokens"
 				ifTrue: [interp := true.
 					a1 := strm next asNumber.
 					b1 := strm next asNumber.
 					(strm atEnd)									"read trailing slash"			
 						ifFalse: [sep := strm next.
 							((sep = '/') or: [strm atEnd]) ifFalse: [self error: 'Malformed movex expression']]]
-				ifFalse: [interp := false]].							"3 toks = no interpolation; const range"
-
+				ifFalse: [interp := false.							"3 toks = no interpolation; const range"					a1 := a0.					b1 := b0]]			ifTrue: [interp := false.							"3 toks = no interpolation; const range"					a1 := a0.					b1 := b0].
 		t1 := t0.													"compute start/end ratios for expon moving range"
 		tN := t0 + segDur.
 		vDiff0 := (a1 / a0) asFloat.	
 		vDiff1 := (b1 / b0) asFloat.
-
+"		Transcript show: 'Seg ' , a0 printString, ' ', a1 printString, ' ', b0 printString, ' ', b1 printString; cr."
 		[t1 < tN] whileTrue:										"event loop"
 			[ | val v0 v1 tScale |
-			interp												"false means single rand range for segment"
+			interp													"false means single rand range for segment"
 				ifFalse: [val := rnd nextFrom: (a0 min: b0) to: (a0 max: b0)]
 				ifTrue: [tScale := (t1 - t0) / segDur.
 					v0 := a0 asFloat * (vDiff0 raisedTo: tScale).
@@ -1151,7 +1132,7 @@ Instance variables:
 					val := rnd nextFrom: (v0 min: v1) to: (v0 max: v1)].
 			eList add: (MusicEvent dur: val voice: instrument).
 			t1 := t1 + val].
-		t0 := t0 + segDur]! !!Score11 methodsFor: 'private-generators' stamp: 'stp 12/30/2022 14:51'!writeP3RH: data into: eList	
+		t0 := t0 + segDur]! !!Score11 methodsFor: 'private-generators' stamp: 'stp 2/10/2023 12:22'!writeP3RH: data into: eList	
 	"Parse and process the RH keyword to generate events"
 	"aScore11 add: #p3 -> (#rh -> '4/8//4//');"
 	"aScore11 add: #p3 -> (#rh -> '4/8*4/6*3/4/');"
@@ -1161,7 +1142,7 @@ Instance variables:
 
 	| strm num cnt tim val tStr |
 	tim := start.
-	data isNumber ifTrue:						"rh number"
+	data isNumber ifTrue:					"rh number"
 		[num := 4.0 / data.
 		[tim > stop] whileFalse:
 			[eList add: (MusicEvent dur: num voice: instrument).
@@ -1169,17 +1150,17 @@ Instance variables:
 		^self].
 	data isString ifFalse:						"rh string"
 		[self error: 'Mal-formed duration data?'].
-	tStr := data copyWithout: Character cr.	tStr := data copyWithout: Character lf.	tStr := tStr copyWithout: $ .
+	tStr := data copyWithout: Character cr.	tStr := tStr copyWithout: Character lf.	tStr := tStr copyWithout: $ .
 	tStr := tStr copyWithout: $	.
 	strm := ReadStream on: tStr.
 	cnt := 0.
-	[tim > stop] whileFalse:
+	[tim < stop] whileTrue:
 		[val := strm upTo: $/.					"read to next $/ "
 		(val includes: $*)						"handle * expressions"
 			ifTrue: [ | str2 | 
 				str2 := ReadStream on: val.
 				num := 1.0 / (str2 upTo: $*) asNumber.
-				cnt := str2 upToEnd asNumber.
+				cnt := str2 upToEnd asNumber.				Transcript show: 'Rep ', num printString, ' * ', cnt printString; cr.
 				cnt timesRepeat: 
 					[eList add: (MusicEvent dur: num voice: instrument).
 					tim := tim + num]]	
@@ -1187,7 +1168,7 @@ Instance variables:
 				ifTrue: [ | va2 nDots delD |
 					va2 := val copyWithout: $. .
 					nDots := val size - va2 size.
-					num := 4.0 / val asNumber.
+					num := 1.0 / val asNumber.
 					delD := num / 2.0.
 					nDots timesRepeat:
 						[num := num + delD.
@@ -1196,11 +1177,11 @@ Instance variables:
 					tim := tim + num.
 					strm atEnd ifTrue: [strm := ReadStream on: data]]
 				ifFalse: [(val includes: $-)		"handle rests"
-					ifTrue: [val isEmpty ifFalse: [num := -4.0 / val asNumber].
+					ifTrue: [val isEmpty ifFalse: [num := -1.0 / val asNumber].
 						eList add: (RestEvent dur: num).
 						tim := tim + num.
-						strm atEnd ifTrue: [strm := ReadStream on: data]]
-					ifFalse: [val isEmpty ifFalse: [num := 4.0 / val asNumber].
+						strm atEnd ifTrue: [strm := ReadStream on: data]]												"handle normal notes"
+					ifFalse: [val isEmpty ifFalse: [num := 1.0 / val asNumber].
 						eList add: (MusicEvent dur: num voice: instrument).
 						tim := tim + num.
 						strm atEnd ifTrue: [strm := ReadStream on: data]]]]]! !!Score11 methodsFor: 'private-generators'!writeRand: property from: array into: eList
@@ -1302,7 +1283,7 @@ Instance variables:
 				toks remove: val ifAbsent: [nil].
 				evt perform: property with: val.
 "				Transcript show: tX printString, ' - ', val printString; cr"].
-		t0 := tN]]! !!Score11 methodsFor: 'private-post-processors'!duty: dutyCycle list: eList
+		t0 := tN]]! !!Score11 methodsFor: 'private-post-processors' stamp: 'stp 1/27/2023 19:10'!duty: dutyCycle list: eList
 	"Post-process the event list's durations."
 	"000 - 099		multiply dur by dutyCycle
 	  100 - 199		add dutyCycle - 100 to dur
@@ -1314,8 +1295,7 @@ Instance variables:
 	dec := (dutyCycle / 100) truncated.
 	val := dutyCycle \\ 100.
 	(dec == 0) ifTrue: 			"000 - 099	multiply dur by dutyCycle"
-		[eList scaleDurationsBy: val.
-		^self].
+		[eList eventsDo: [ :ev | ev duration: (ev duration * val)].		eList recomputeDuration.		^self].
 	(dec == 1) ifTrue: 			"100 - 199	add dutyCycle - 100 to dur"
 		[eList eventsDo: [ :ev | ev duration: (ev duration + (ev duration species value: val))].
 		eList recomputeDuration.
@@ -1325,7 +1305,7 @@ Instance variables:
 		eList recomputeDuration.
 		^self].
 	(dec == 3) ifTrue: 			"300 - 399	set dur to dutyCycle - 300"
-		[eList eventsDo: [ :ev | ev duration: (ev duration species value: val)].
+		[eList eventsDo: [ :ev | ev duration: (val beat)].
 		eList recomputeDuration.
 		^self].
 	(dec >= 4) ifTrue: 			"400 - 399	set dur to dutyCycle - 400 cycles (dur = (1/Hz) * (dutycycle - 400)"
@@ -1442,59 +1422,24 @@ Instance variables:
 		rat := ass key.
 		ass key: sum.
 		sum := sum + (rat * scale)].
-	^ranges! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Score11 class	instanceVariableNames: ''!!Score11 class methodsFor: 'instance creation'!instr: iNum from: start to: stop
-	"Answer an initialize instance of Score11"
+	^ranges! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Score11 class	instanceVariableNames: ''!!Score11 class methodsFor: 'instance creation' stamp: 'stp 2/10/2023 11:33'!instr: iNum from: start to: stop
+	"Answer an initialized instance of Score11"
 
-	"TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) 
+	"((Score11 instr: 1 from: 0 to: 10) 
 		add: #p3 -> (#rh -> '4//8////4//'); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
+		add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c'); 
 		add: #p5 -> #(1.0 1.0 5.0); 
 		add: #p6 -> (#mo -> #(5 1000 2000))) 
-	eventList"
+	eventList editPTV"
 
-	"TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) 
-		add: #p3 -> (#rh -> '4/8*4/6*3/4/'); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
+	"((Score11 instr: 1 from: 0 to: 10) 
+		add: #p3 -> (#rh -> '2//4*3/6*3/2/'); 
+		add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c'); 
 		add: #p5 -> #(1.0 1.0 5.0); 
 		add: #p6 -> (#mo -> #(5 1000 2000))) 
-	eventList"
+	eventList editPTV"
 
-	^(self new initialize) instrument: iNum; start: start; stop: stop! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/18/2023 18:28'!booh1	"Score for the first section of 'Bat out of Hell' (1980-82)"	"Score11 booh1"	"100 timesRepeat: [Score11 booh1. (Delay forSeconds: 130) wait ]"		| s11 score vox |	s11 := (Score11 instr: 1 from: 0 to: 120) 				"Score11 instrument block"															"dur in sec"			add: #p3 -> (#mx -> '15 .4 .5 , .05 .14 /
-						15 .1 .15 , .5 .4 /
-						20 .5 .3 , .1 .13 /
-						25 .2 .1 , .6 .6 /
-						25 .5 .7 , .1 .06 /
-						20 .12 .08 , .5 .5');															"pitch in Hz"		add: #p4 -> (#mx -> '20 2000 3000 , 2000 2100 /
-						20 2050 2050 /
-						30 2000 2100 , 2200 1600 /
-						20 2400 2500 , 2800 2000 /
-						30 2400 2400 , 2200 2100');		 add: #p5 -> 0.1;									"ampl ratio"		 add: #p6 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .8 1.2');	"gliss ratio"		 add: #p7 -> #(1.0 -1.0 1.0).	"L/R position"	s11 du: 303.											"duty cycle sets evt dur to 3"	s11 assign: #p6 to: #gliss:.	s11 assign: #p7 to: #pos:.	score := s11 eventList.									"generate the score and take an excerpt"	score flushVoices.	score := score excerptFrom: 0 to: 120.				"trim to the time alloted..."	1 to: score events size		do: [:ind | 			| ev |											"plug in dur & instruments 1-32"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].	vox := OSCVoice default.								"plug in the voice and parameter map"	vox parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score inspect].	score play! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/18/2023 18:27'!booh3	"Score for the first section of 'Bat out of Hell' (1980-82)"	"Score11 booh3"	"100 timesRepeat: [Score11 booh1. (Delay forSeconds: 130) wait ]"		| s11 score vox |	s11 := (Score11				instr: 1				from: 0				to: 120) add: #p3 -> (#mx -> '15 .4 .5 , .05 .14 /			
-						15 .1 .15 , .5 .4 /
-						20 .5 .3 , .1 .13 /
-						25 .2 .1 , .6 .6 /
-						25 .5 .7 , .1 .06 /
-						20 .12 .08 , .5 .5');				 add: #p4 -> (#mx -> '20 200 300 , 200 210 /
-						20 205 205 /
-						30 200 210 , 220 160 /
-						20 240 250 , 280 200 /
-						30 240 240 , 220 210');				 add: #p5 -> 0.1;				 add: #p6 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .8 1.2') mapTo: #gliss:;				 add: #p7 -> #(1.0 -1.0 1.0) mapTo: #pos:;				 add: #p8 -> #(1.0 6.0 20.0) mapTo: #modInd:.	s11 du: 303.	s11 assign: #p6.	s11 assign: #p7 to: #pos:.	score := s11 eventList.	score flushVoices.	score := score excerptFrom: 0 to: 120.	1 to: score events size		do: [:ind | 			| ev |					"plug in dur & instruments 1-32"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].	vox := OSCVoice default.		"plug in the voice and parameter map"	vox parameterMap: OSCVoice pMapForCSLFMBell.	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score inspect].	"inspect"	score play 						"play"! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/20/2023 09:21'!chorale1	"Play the score for a Bach chorale on the CSL FM bell -	http://scores.ccarh.org/bach/chorale/chorales.pdf #28"	"Score11 chorale1"	| s11 score vox |	s11 := (Score11 instr: 1 from: 0 to: 9) 							"Score11 instrument block for 9 beats"					add: #p3 -> (#rh -> '4/////2//');				"dur in beats"																	"pitch as chords"				 add: #p4 -> (#no -> 'f3:a4:c:f/f4:c5:f:a6/e4:c5:g:g/eb4:c:f:a5/d4:d:f:bb5/c4:g:e5:c/f4:c:f5:a/');				 add: #p5 -> #(1.0 0.25 0.3);						"ampl ratio"				 add: #p6 -> 1.0 mapTo: #gliss:;					"gliss ratio"				 add: #p7 -> #(1.0 1.0 -1.0) mapTo: #pos:;		"L/R position"				 add: #p8 -> #(1.0 4.0 8.0) mapTo: #modInd:.	"modulation index"	s11 tempo: 100.												"speed it up"	s11 du: 303.													"duty cycle sets evt dur to 3"	score := s11 eventList.											"generate the score"	score flushVoices.	1 to: score events size do: 		[ :ind | | ev |												"plug in dur & instruments 1-16"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].	vox := OSCVoice default.										"plug in the voice and parameter map"	vox parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score inspect].	score open! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/20/2023 09:27'!chorale2	"Play the score for a Bach chorale on the CSL plucked string -	http://scores.ccarh.org/bach/chorale/chorales.pdf #28"	"Score11 chorale2"	| s11 score vox |	s11 := (Score11				instr: 1				from: 0				to: 9) add: #p3 -> (#rh -> '4/////2//');				 add: #p4 -> (#no -> 'f3:a4:c:f/f4:c5:f:a6/e4:c5:g:g/eb4:c:f:a5/d4:d:f:bb5/c4:g:e5:c/f4:c:f5:a/');				 add: #p5 -> #(1.0 0.85 0.95);				 add: #p6 -> #(1.0 1.0 -1.0) mapTo: #pos:.	s11 tempo: 100.				"speed it up"	s11 du: 303.					"duty cycle sets evt dur to 3"	score := s11 eventList.			"generate the score"	score flushVoices.	1 to: score events size do: 		[ :ind | | ev |				"plug in dur & instruments 1-32"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 16 + 1) printString , '/pn'].	vox := OSCVoice default.		"plug in the voice and parameter map"	vox parameterMap: OSCVoice pMapForCSLString.	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score inspect].	score play! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/20/2023 09:27'!melody1	"Play the score for a simple melody by Praetorius (Volta 201 from Terpsichore) on the CSL FM bell.	http://conquest.imslp.info/files/imglnks/usimg/f/f1/IMSLP464311-PMLP176492-PraetoriusTerpsichoreCantus.pdf  p. 99"	"Score11 melody1"	| s11 score vox |	s11 := (Score11	 instr: 1 from: 0	 to: 32)							"Score11 instrument block"																		"note dur (rhythm) in beats"				add: #p3 -> (#rh -> '4///8//4////2//1/4///8//4////2//1/');																		"pitch in note names"				add: #p4 -> (#no -> 'c/d/e/d/e/f/e/d/c/e/f/g/c/d/e/d/e/f/e/d/c/e/d/c');				add: #p5 -> #(1.0 0.15 0.25);							"note amplitude range"				add: #p6 -> 1.0 mapTo: #gliss:;						"gliss ratio = 1"				add: #p7 -> (#mo -> '32 1.0 -1.0') mapTo: #pos:;		"L/R position - pan"				add: #p8 -> #(1.0 4.0 10.0) mapTo: #modInd:.		"L/R position - pan"	s11 tempo: 280.													"speed it up"	s11 du: 5.0.														"duty cycle < 100 scales evt dur by value"	score := s11 eventList.												"generate the score"	score flushVoices.	1 to: score events size do:		[:ind | | ev |													"plug in dur & instruments 42-58"		ev := (score events at: ind) event.		ev inst: '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].	vox := OSCVoice default.											"plug in the voice and parameter map"	vox parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score voice: vox.	Sensor shiftPressed ifTrue: [^ score explore].	score open! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/20/2023 09:26'!melody1b	"Play the score for a simple melody by Praetorius (Volta 201 from	Terpsichore) via MIDI chan 1	http://conquest.imslp.info/files/imglnks/usimg/f/f1/IMSLP464311-PMLP176492-PraetoriusTerpsichoreCantus.pdf	p. 99"	"Score11 melody1b"		| s11 score vox |	s11 := (Score11 instr: 1 from: 0 to: 32) 				"Score11 instrument block"		add: #p3 -> (#rh -> '4///8//4////2//1/
-						4///8//4////2//1/');				"dur in sec"		 add: #p4 -> (#no -> 'c/d/e/d/e/f/e/d/c/e/f/g/
-				c/d/e/d/e/f/e/d/c/e/d/c');					"pitch as note names"		 add: #p5 -> #(1.0 0.25 0.35);						"ampl ratio"		 add: #p6 -> 1.0 mapTo: #gliss:;					"gliss ratio"		 add: #p7 -> (#mo -> #(32 1.0 -1.0)) mapTo: #pos:;	"L/R position"		 add: #p8 -> #(1.0 4.0 10.0) mapTo: #modInd:.	"modulation index"	s11 tempo: 280.										"speed it up"	s11 du: 0.9.												"duty cycle < 100 scales evt dur by value"	score := s11 eventList.									"generate the score and take an excerpt"	score flushVoices.	vox := MIDIVoice default.							"plug in the voice"	"vox channel: 3."	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score play].	score inspect! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/20/2023 09:27'!sleepingSword1	"Score for the first gestures of 'SleepingSword' (WIP 2021)"	"Score11 sleepingSword1"	"Block 1: 3 clouds"	| s11 score1 score2 vox dur1 |	s11 := (Score11 instr: 1 from: 0to: 34)						"Score11 instrument block"																"dur in sec"				add: #p3 -> (#mx -> '5 0.08 0.08 , 0.1 0.12 / 5 0.1 0.1 , 0.12 0.07 / 2.0 2.0 2.0 / 
-						5 0.08 0.08 , 0.1 0.12 / 5 0.1 0.1 , 0.12 0.07 / 2.0 2.0 2.0 / 
-						5 0.077 0.077 , 0.1 0.12 / 5 0.1 0.1 , 0.12 0.07 
-						');										"pitch in Hz"				 add: #p4 -> (#mx -> '3 1000 1000 , 960 1000 / 3 920 920 / 4 910 920 , 860 880 / 2 1000 1000 /
-						3 1100 1100 , 1000 1070 / 3 930 930 / 4 900 960 , 840 910 / 2 1000 1000 /
-						3 1000 1000 , 940 1000 / 3 940 940 / 4 900 940 , 890 960
-						');										"ampl ratio"				 add: #p5 -> (#mx -> '4 0.03 0.05 / 6 0.05 0.1 / 2 0.00001 0.00001 /
-						4 0.04 0.05 / 6 0.05 0.15  / 2 0.00001 0.00001 /
-						4 0.04 0.04 / 6 0.04 0.15');				 add: #p6 -> #(1.0 0.8 1.2) mapTo: #gliss:;	"gliss ratio"				 add: #p7 -> (#mx -> '12 -1.0 -0.3 / 	"L/R position"
-						12 -1.0 -0.1 /
-						12 -0.4 0.2') mapTo: #pos:;				 add: #p8 -> #(1.0 3.0 4.0) mapTo: #modInd:;	"modulation index"				 add: #p9 -> 1.0 mapTo: #wet:.				"wet/dry"	s11 du: 300.5.												"duty cycle sets evt dur to X - 300"	score1 := s11 eventList.									"generate the score and take an excerpt"	score1 := score1 excerptFrom: 0 to: 34.					"trim to the time alloted..."	dur1 := score1 computeDuration.	score1 flushVoices.										"flush voices and assign sequential instruments 41-57"	score1 assignInstruments: [:ind | '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].																	"Block 2: spinning cloud"	s11 := (Score11	instr: 1 from: 0 to: 24)						"Score11 instrument block"				 add: #p3 -> (#mx -> '5 0.08 0.08 , 0.08 0.09 / 5 0.08 0.08 , 0.06 0.06 / 2.0 2.0 2.0 / 
-						2 0.06 0.075 , 0.06 0.06 / 8 0.06 0.06 / 2.0 2.0 2.0');				 add: #p4 -> (#mx -> '3 900 910 , 930 940 / 7 940 940 / 2 1000 1000 /
-						7 940 940 / 3 940 940 , 930 940 / 2 1000 1000');				 add: #p5 -> (#mx -> '6 0.1 0.15 / 4 0.15 0.15 /	2 0.0001 0.0001 /
-						10 0.15 0.15  / 2 0.0001 0.0001');				 add: #p6 -> #(1.0 0.8 1.2) mapTo: #gliss:;				 add: #p7 -> (#mo -> '7 -0.1 0.1 , -0.1 0.1 / 5 -0.1 0.1 , -0.5 0.5 / 
-						7 -0.5 0.5 , 0.2 0.2 / 5 0.2 0.2') mapTo: #pos:;				 add: #p8 -> (#mx -> '7 3.0 4.0 , 3.0 4.0 / 5 3.0 4.0 , 2.0 3.0 / 
-						7 2.0 3.0 , 2.0 2.2 / 5 2.0 2.2 , 2.0 2.0') mapTo: #modInd:;				 add: #p9 -> 1.0 mapTo: #wet:.	s11 du: 300.5.	score2 := s11 eventList.	score2 := score2 excerptFrom: 0 to: 24.	score1 computeDuration.	score2 flushVoices.	score2 assignInstruments: [:ind | '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].																"Post-processing"	score1		applyBlock: [:p | (PentatonicScale root: N re) nearestNoteTo: p asHz value]		toProp: #pitch		from: 12		to: 22.	score1		applyBlock: [:p | (BohlenPierceScale root: N mi) nearestNoteTo: p asHz value]		toProp: #pitch		from: 24		to: 34.	score2		applyBlock: [:p | (PentatonicScale root: N re) nearestNoteTo: p asHz value]		toProp: #pitch.	"score1 addAll: score2 at: dur1 + 3.0."						"concatenate event lists"	score1 := score2.											"for testing"	vox := OSCVoice default.									"Play or inspect"	vox parameterMap: OSCVoice pMapForCSLFMBell.	"plug in the voice and parameter map"	score1 voice: vox.	Sensor shiftPressed		ifTrue: [ ^ score1 inspect].	score1 play! !!Score11 class methodsFor: 'tests'!test1
+	^ (self new initialize) instrument: iNum; start: start; stop: stop! !!Score11 class methodsFor: 'tests'!test1
 	"Open a TSV on a simple Score11 event list"
 	"Score11 test1"
 
@@ -1657,7 +1602,42 @@ Instance variables:
 	which == #complex ifTrue: [s11 tempo: #(3 60 180  2 180 60  5 120 40)].
 	sco := s11 eventList.
 	sco scaleDurationsBy: 0.1.
-	sco open! !Cloud subclass: #SelectionCloud	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!SelectionCloud commentStamp: '<historical>' prior: 0!Selection clouds are created with a set of pitch and amplitude values and return eventLists selected from these values.!!SelectionCloud methodsFor: 'playing' stamp: 'stp 1/11/2023 18:39'!eventList
+	sco open! !!Score11 class methodsFor: 'examples' stamp: 'stp 2/8/2023 11:27'!chorale1	"Create and answer the score for a Bach chorale -	http://scores.ccarh.org/bach/chorale/chorales.pdf #28"	"Score11 chorale1 explore"	"Score11 chorale1 open"		| s11 score |	s11 := (Score11 instr: 1 from: 0 to: 9) 							"Score11 instrument block for 9 beats"				add: #p3 -> (#rh -> '4/////2//');					"dur in beats"																	"pitch as chords"				add: #p4 -> (#no -> 'f3:a:c4:f / f4:c5:f:a6 / e4:c5:g:g / eb4:c:f:a5 / d4:d5:f:bb6 / c4:g:e5:c / f4:c:f5:a /');				add: #p5 -> 0.5.									"ampl ratio"	s11 tempo: 250.												"speed it up"	s11 scaleDurationsBy: 0.25.	score := s11 eventList.											"generate the score"	score flushVoices.	^ score! !!Score11 class methodsFor: 'examples' stamp: 'stp 2/5/2023 21:01'!chorale1fm	"Play the score for a Bach chorale on the CSL FM bell -	http://scores.ccarh.org/bach/chorale/chorales.pdf #28"	"Score11 chorale1"		| s11 score vox |	s11 := (Score11 instr: 1 from: 0 to: 9) 							"Score11 instrument block for 9 beats"					add: #p3 -> (#rh -> '4/////2//');				"dur in beats"																	"pitch as chords"				 add: #p4 -> (#no -> 'f3:a4:c:f / f4:c5:f:a6 / e4:c5:g:g / eb4:c:f:a5 / d4:d:f:bb5 / c4:g:e5:c / f4:c:f5:a /');				 add: #p5 -> #(1.0 0.25 0.3);						"ampl ratio"				 add: #p6 -> 1.0 mapTo: #gliss:;					"gliss ratio"				 add: #p7 -> #(1.0 1.0 -1.0) mapTo: #pos:;		"L/R position"				 add: #p8 -> #(1.0 4.0 8.0) mapTo: #modInd:.	"modulation index"	s11 tempo: 100.												"speed it up"	s11 du: 0.25.													"duty cycle scales evt dur"	score := s11 eventList.											"generate the score"	score flushVoices.	1 to: score events size do: 		[ :ind | | ev |												"plug in dur & instruments 1-16"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].	vox := OSCVoice default.										"plug in the voice and parameter map"	vox parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score voice: vox.	^ score! !!Score11 class methodsFor: 'examples' stamp: 'stp 2/5/2023 21:41'!chorale2	"Play the score for a Bach chorale on the CSL plucked string -	http://scores.ccarh.org/bach/chorale/chorales.pdf #28"	"Score11 chorale2"		| s11 score vox |	s11 := (Score11				instr: 1				from: 0				to: 9) add: #p3 -> (#rh -> '4/////2//');				 add: #p4 -> (#no -> 'f3:a4:c:f/f4:c5:f:a6/e4:c5:g:g/eb4:c:f:a5/d4:d:f:bb5/c4:g:e5:c/f4:c:f5:a/');				 add: #p5 -> #(1.0 0.85 0.95);				 add: #p6 -> #(1.0 1.0 -1.0) mapTo: #pos:.	s11 tempo: 100.				"speed it up"	s11 du: 2.0.						"duty cycle scales evt dur by 2"	score := s11 eventList.			"generate the score"	score flushVoices.	1 to: score events size do: 		[ :ind | | ev |				"plug in dur & instruments 1-32"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 16 + 1) printString , '/pn'].	vox := OSCVoice default.		"plug in the voice and parameter map"	vox parameterMap: (OSCVoice pMapForCSLPluck: (1 to: 10)).	score voice: vox.	Sensor controlKeyPressed		ifTrue: [^ score explore].	score play! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/28/2023 11:16'!melody1	"Play the score for a simple melody by Praetorius (Volta 201 from Terpsichore) on the CSL FM bell.	http://conquest.imslp.info/files/imglnks/usimg/f/f1/IMSLP464311-PMLP176492-PraetoriusTerpsichoreCantus.pdf  p. 99"	"Score11 melody1 open"		| s11 score vox |	s11 := (Score11	 instr: 1 from: 0 to: 32)							"Score11 instrument block"																		"note dur (rhythm) in beats"				add: #p3 -> (#rh -> '4///8//4////2//1/4///8//4////2//1/');																		"pitch in note names"				add: #p4 -> (#no -> 'c/d/e/d/e/f/e/d/c/e/f/g/c/d/e/d/e/f/e/d/c/e/d/c');				add: #p5 -> #(1.0 0.15 0.25);							"note amplitude range"				add: #p6 -> 1.0 mapTo: #gliss:;						"gliss ratio = 1"				add: #p7 -> (#mo -> '32 1.0 -1.0') mapTo: #pos:;		"L/R position - pan"				add: #p8 -> #(1.0 4.0 10.0) mapTo: #modInd:.		"L/R position - pan"	s11 tempo:400.													"speed it up"	s11 du: 0.25.														"duty cycle < 100 scales evt dur by value"	score := s11 eventList.												"generate the score"	score flushVoices.	1 to: score events size do:		[:ind | | ev |													"plug in dur & instruments 42-58"		ev := (score events at: ind) event.		ev inst: '/i' , (ind - 1 \\ 16 + 41) printString , '/pn'].	vox := OSCVoice default.											"plug in the voice and parameter map"	vox parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score voice: vox.	^ score! !!Score11 class methodsFor: 'examples' stamp: 'stp 1/20/2023 09:26'!melody1b	"Play the score for a simple melody by Praetorius (Volta 201 from	Terpsichore) via MIDI chan 1	http://conquest.imslp.info/files/imglnks/usimg/f/f1/IMSLP464311-PMLP176492-PraetoriusTerpsichoreCantus.pdf	p. 99"	"Score11 melody1b"		| s11 score vox |	s11 := (Score11 instr: 1 from: 0 to: 32) 				"Score11 instrument block"		add: #p3 -> (#rh -> '4///8//4////2//1/
+						4///8//4////2//1/');				"dur in sec"		 add: #p4 -> (#no -> 'c/d/e/d/e/f/e/d/c/e/f/g/
+				c/d/e/d/e/f/e/d/c/e/d/c');					"pitch as note names"		 add: #p5 -> #(1.0 0.25 0.35);						"ampl ratio"		 add: #p6 -> 1.0 mapTo: #gliss:;					"gliss ratio"		 add: #p7 -> (#mo -> #(32 1.0 -1.0)) mapTo: #pos:;	"L/R position"		 add: #p8 -> #(1.0 4.0 10.0) mapTo: #modInd:.	"modulation index"	s11 tempo: 280.										"speed it up"	s11 du: 0.9.												"duty cycle < 100 scales evt dur by value"	score := s11 eventList.									"generate the score and take an excerpt"	score flushVoices.	vox := MIDIVoice default.							"plug in the voice"	"vox channel: 3."	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score play].	score inspect! !!Score11 class methodsFor: 'sketches' stamp: 'stp 2/10/2023 10:28'!booh1	"Score for the first section of 'Bat out of Hell' (1980-82)"	"Score11 booh1"	"100 timesRepeat: [Score11 booh1. (Delay forSeconds: 130) wait ]"		| s11 score vox |	s11 := (Score11 instr: 1 from: 0 to: 120) 				"Score11 instrument block"															"dur in sec"			add: #p3 -> (#mx -> '15 .4 .5 , .05 .14 /
+						15 .1 .15 , .5 .4 /
+						20 .5 .3 , .1 .13 /
+						25 .2 .1 , .6 .6 /
+						25 .5 .7 , .1 .06 /
+						20 .12 .08 , .5 .5');															"pitch in Hz"		add: #p4 -> (#mx -> '20 2000 3000 , 2000 2100 /
+						20 2050 2050 /
+						30 2000 2100 , 2200 1600 /
+						20 2400 2500 , 2800 2000 /
+						30 2400 2400 , 2200 2100');		 add: #p5 -> 0.1;									"ampl ratio"		 add: #p6 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .8 1.2');	"gliss ratio"		 add: #p7 -> #(1.0 -1.0 1.0).						"L/R position"	s11 du: 303.											"duty cycle sets evt dur to 3"	s11 assign: #p6 to: #gliss:.	s11 assign: #p7 to: #pos:.	score := s11 eventList.									"generate the score and take an excerpt"	score flushVoices.	score := score excerptFrom: 0 to: 120.					1 to: score events size		do: [:ind | | ev |									"plug in instruments 1-10"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 10 + 1) printString , '/pn'].								"plug in the voice and parameter map"	vox := OSCVoice parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score inspect].	score play! !!Score11 class methodsFor: 'sketches' stamp: 'stp 2/9/2023 20:38'!booh3	"Score for the first section of 'Bat out of Hell' (1980-82)"	"Score11 booh3"	"100 timesRepeat: [Score11 booh1. (Delay forSeconds: 130) wait ]"		| s11 score vox |	s11 := (Score11 instr: 1 from: 0 to: 120) 									"duration tendency masks"			add: #p3 -> (#mx -> '15 .4 .5 , .05 .14 /			
+						15 .1 .15 , .5 .4 /
+						20 .5 .3 , .1 .13 /
+						25 .2 .1 , .6 .6 /
+						25 .5 .7 , .1 .06 /
+						20 .12 .08 , .5 .5');										"pitch tendency masks"		 add: #p4 -> (#mx -> '20 200 300 , 200 210 /
+						20 205 205 /
+						30 200 210 , 220 160 /
+						20 240 250 , 280 200 /
+						30 240 240 , 220 210');			 add: #p5 -> 0.1;			"cost amplitude"			 add: #p6 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .8 1.2') mapTo: #gliss:;			 add: #p7 -> #(1.0 -1.0 1.0) mapTo: #pos:;			 add: #p8 -> #(1.0 6.0 20.0) mapTo: #modInd:.	s11 du: 303.	s11 assign: #p6.	s11 assign: #p7 to: #pos:.	score := s11 eventList.	score flushVoices.	score := score excerptFrom: 0 to: 120.	1 to: score events size		do: [:ind | | ev |					"plug in instruments 1-10"			ev := (score events at: ind) event.			ev inst: '/i' , (ind - 1 \\ 10 + 41) printString , '/pn'].	vox := OSCVoice parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score voice: vox.	Sensor shiftPressed		ifTrue: [^ score inspect].	"inspect"	score play 						"play"! !!Score11 class methodsFor: 'sketches' stamp: 'stp 2/10/2023 16:24'!sleepingSword1	"Score for the first gestures of 'SleepingSword' (WIP 2021)"	"Score11 sleepingSword1"	"Block 1: 3 clouds"		| s11 score1 vox dur1 |	s11 := (Score11 instr: 1 from: 0 to: 34)						"Score11 instrument block"																"dur in sec"				add: #p3 -> (#mx -> '5 0.08 0.08 , 0.1 0.12 / 5 0.1 0.1 , 0.12 0.07 / 2.0 2.0 2.0 / 
+						5 0.08 0.08 , 0.1 0.12 / 5 0.1 0.1 , 0.12 0.07 / 2.0 2.0 2.0 / 
+						5 0.077 0.077 , 0.1 0.12 / 5 0.1 0.1 , 0.12 0.07 
+						');										"pitch in Hz"				 add: #p4 -> (#mx -> '3 1000 1000 , 960 1000 / 3 920 920 / 4 910 920 , 860 880 / 2 1000 1000 /
+						3 1100 1100 , 1000 1070 / 3 930 930 / 4 900 960 , 840 910 / 2 1000 1000 /
+						3 1000 1000 , 940 1000 / 3 940 940 / 4 900 940 , 890 960
+						');										"ampl ratio"				 add: #p5 -> (#mx -> '4 0.03 0.05 / 6 0.05 0.1 / 2 0.00001 0.00001 /
+						4 0.04 0.05 / 6 0.05 0.15  / 2 0.00001 0.00001 /
+						4 0.04 0.04 / 6 0.04 0.15');				 add: #p6 -> #(1.0 0.8 1.2) mapTo: #gliss:;	"gliss ratio"																"L/R position"				 add: #p7 -> (#mx -> '12 -1.0 -0.3 / 12 -1.0 -0.1 / 12 -0.4 0.2') mapTo: #pos:;				 add: #p8 -> #(1.0 3.0 4.0) mapTo: #modInd:;	"modulation index"				 add: #p9 -> 1.0 mapTo: #wet:.				"wet/dry"	s11 du: 300.5.												"duty cycle sets evt dur to X - 300"	score1 := s11 eventList.									"generate the score and take an excerpt"	score1 := score1 excerptFrom: 0 to: 34.					"trim to the time alloted..."	dur1 := score1 computeDuration.	score1 flushVoices.										"flush voices and assign sequential instruments 41-57"	score1 assignInstruments: [:ind | '/i' , (ind - 1 \\ 5 + 1) printString , '/pn'].																	"Post-processing"	score1		applyBlock: [:p | (PentatonicScale root: N re) nearestNoteTo: p asHz value]		toProp: #pitch		from: 12		to: 22.	score1		applyBlock: [:p | (BohlenPierceScale root: N mi) nearestNoteTo: p asHz value]		toProp: #pitch		from: 24		to: 34.																"plug in the voice and parameter map"	vox := OSCVoice parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30)).	score1 voice: vox.	Sensor shiftPressed		ifTrue: [ ^ score1 inspect].	score1 play! !!Score11 class methodsFor: 'sketches' stamp: 'stp 2/10/2023 16:25'!sleepingSword2	"Score for the first gestures of 'SleepingSword' (WIP 2021)"	"Score11 sleepingSword2"	"Block 1: 3 clouds"		| s12 score vox |											"Block 2: spinning cloud"	s12 := (Score11	instr: 1 from: 0 to: 24)						"Score11 instrument block"				 add: #p3 -> (#mx -> '5 0.08 0.08 , 0.08 0.09 / 5 0.08 0.08 , 0.06 0.06 / 2.0 2.0 2.0 / 
+						2 0.06 0.075 , 0.06 0.06 / 8 0.06 0.06 / 2.0 2.0 2.0');				 add: #p4 -> (#mx -> '3 900 910 , 930 940 / 7 940 940 / 2 1000 1000 /
+						7 940 960 / 3 940 940 , 910 940 / 2 1000 1000');				 add: #p5 -> (#mx -> '6 0.1 0.15 / 4 0.15 0.15 / 2 0.001 0.001 /
+						10 0.15 0.15  / 2 0.0001 0.0001');				 add: #p6 -> #(1.0 0.8 1.2) mapTo: #gliss:;				 add: #p7 -> (#mo -> '7 -0.1 0.1 , -0.1 0.1 / 5 -0.1 0.1 , -0.5 0.5 / 
+						7 -0.5 0.5 , 0.2 0.2 / 5 0.2 0.2') mapTo: #pos:;				 add: #p8 -> (#mx -> '7 3.0 4.0 , 3.0 4.0 / 5 3.0 4.0 , 2.0 3.0 / 
+						7 2.0 3.0 , 2.0 2.2 / 5 2.0 2.2 , 2.0 2.0') mapTo: #modInd:;				 add: #p9 -> 1.0 mapTo: #wet:.	s12 du: 300.5.	score := s12 eventList.	score flushVoices.	score assignInstruments: [ :ind | '/i' , (ind - 1 \\ 5 + 6) printString , '/pn'].													"plug in the voice and parameter map"	vox := OSCVoice parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30))."	vox := OSCVoice parameterMap: (OSCVoice pMapForCSLPluck: (1 to: 10))."	score voice: vox.								"Play or inspect"	Sensor shiftPressed		ifTrue: [ ^ score explore].	score play! !!Score11 class methodsFor: 'sketches' stamp: 'stp 2/10/2023 16:24'!sleepingSword3	"Score for the first gestures of 'SleepingSword' (WIP 2021)"	"Score11 sleepingSword3"	"Block 1: 3 clouds"		| s12 score vox |											"Block 2: spinning cloud"	s12 := (Score11	instr: 1 from: 0 to: 24)						"Score11 instrument block"				 add: #p3 -> (#mx -> '8 0.08 0.08 , 0.1 0.12 / 8 0.1 0.1 , 0.15 0.17 / 8 0.1 0.12 , 08 0.08');				 add: #p4 -> (#mx -> '6 400 410 , 460 500 / 12 540 540 , 440 440 / 6 440 440 , 630 640');				 add: #p5 -> (#mx -> '18 0.1 0.15 / 6  0.1 0.15 , 0.01 0.01');				 add: #p6 -> #(1.0 0.8 1.2) mapTo: #gliss:;				 add: #p7 -> (#mo -> '7 -0.1 0.1 , -0.1 0.1 / 5 -0.1 0.1 , -0.5 0.5 / 
+						7 -0.5 0.5 , 0.2 0.2 / 5 0.2 0.2') mapTo: #pos:;				 add: #p8 -> (#mx -> '7 3.0 4.0 , 3.0 4.0 / 5 3.0 4.0 , 2.0 3.0 / 
+						7 2.0 3.0 , 2.0 2.2 / 5 2.0 2.2 , 2.0 2.0') mapTo: #modInd:;				 add: #p9 -> 1.0 mapTo: #wet:.	s12 du: 300.5.	score := s12 eventList.	score flushVoices.	score assignInstruments: [ :ind | '/i' , (ind - 1 \\ 16 + 1) printString , '/pn'].													"plug in the voice and parameter map""	vox := OSCVoice parameterMap: (OSCVoice pMapForCSLFMBell: (21 to: 30))."	vox := OSCVoice parameterMap: (OSCVoice pMapForCSLSHARC1: (35 to: 50)).	score voice: vox.								"Play or inspect"	Sensor shiftPressed		ifTrue: [ ^ score explore].	score play! !Cloud subclass: #SelectionCloud	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!SelectionCloud commentStamp: '<historical>' prior: 0!Selection clouds are created with a set of pitch and amplitude values and return eventLists selected from these values.!!SelectionCloud methodsFor: 'playing' stamp: 'stp 1/11/2023 18:39'!eventList
 	"Make the cloud's events"
 	"assume that the receiver's pitch, loudness and durations are actually intervals"
 
@@ -1782,15 +1762,15 @@ Instance variables:
 		pitch: #( #(36 38 40) #(69 70 72) )
 		ampl: #(80 80 120)
 "		voice: #(1 3 5 7)"
-		density: 16) eventList "edit" playOn: (MIDIVoice defaultOut: 3) "inspect"! !!DynamicSelectionCloud class methodsFor: 'examples'!example2
+		density: 16) eventList "edit" playOn: (MIDIVoice defaultOut: 3) "inspect"! !!DynamicSelectionCloud class methodsFor: 'examples' stamp: 'stp 2/6/2023 10:40'!example2
 	"Create a selection cloud that makes a transition from one triad to another"
-	"DynamicSelectionCloud example2"
+	"DynamicSelectionCloud example2 editPTV"
 
-	(DynamicSelectionCloud dur: 4
+	^ (DynamicSelectionCloud dur: 4 sec
 		pitch: #( #(60 62 64) #(72 74 76) )
 		ampl: #(80 80 120)
 		voice: #(1 3 5 7)
-		density: 12) eventList open "inspect"! !!DynamicSelectionCloud class methodsFor: 'examples'!randomExample
+		density: 12) eventList "open" "inspect"! !!DynamicSelectionCloud class methodsFor: 'examples'!randomExample
 	"Answer a dynamic selection cloud with random properties."
 	"DynamicSelectionCloud randomExample"
 
@@ -1820,7 +1800,7 @@ Instance variables:
 "	score play.
 	(Delay forMilliseconds: (score duration + 1000)) wait
 "
-	score edit! !DynamicSelectionCloud subclass: #ExtDynamicSelectionCloud	instanceVariableNames: 'list'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!ExtDynamicSelectionCloud methodsFor: 'playing' stamp: 'stp 1/11/2023 20:14'!eventList
+	score edit! !DynamicSelectionCloud subclass: #ExtDynamicSelectionCloud	instanceVariableNames: 'list'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!ExtDynamicSelectionCloud methodsFor: 'playing' stamp: 'stp 1/28/2023 15:34'!eventList
 	"make the dynamic selection cloud's events"
 	"assume that the receiver's 'pitch' is a list of associations like
 		(0 -> pitch-set)
@@ -1829,7 +1809,7 @@ Instance variables:
 	| pattern rand length start to from howMany howLong pList numSegs msecD |
 	pattern := EventList new.
 	rand := Random new.
-	pList := self pitch value.	to := pList at: 1.	numSegs := pList size.	start := 0 msec.	howLong := duration asMsec.	msecD := 0 msec.	2 to: numSegs do:		[ :which | | set1 set2 |		from := to.		to := pList at: which.		set1 := from value.		set2 := to value."		Transcript show: start asSec printString, ' -> ', set1 asArray printString, ' -- ', set2 asArray printString; cr."		density ifNil: 					" if using array of note durations"			[ | progress |			msecD := msecD + duration.			[start < msecD] whileTrue:		"note-adding loop"				[ | du |				du := durations atRandom msec.				progress := start value - msecD value / howLong value.				from := to.				to := pList at: which.				set1 := from value.				set2 := to value.				pattern add: (MusicEvent 						dur: du						pitch: ((rand next > progress) 							ifTrue: [set1 atRandom: rand]							ifFalse: [set2 atRandom: rand])						ampl: self loudness						voice: self voice)					at: start.					start := start + du]]		ifNotNil: 					" if using array of note durations"			[howMany := ((to key - from key) * density).			length := (1 / density) asFloat sec.			to := pList at: 1.
+	pList := self pitch value.	to := pList at: 1.	numSegs := pList size.	start := 0 msec.	howLong := duration asMsec.	msecD := 0 msec.	2 to: numSegs do:		[ :which | | set1 set2 |		from := to.		to := pList at: which.		set1 := from value.		set2 := to value."		Transcript show: start asSec printString, ' -> ', set1 asArray printString, ' -- ', set2 asArray printString; cr."		density ifNil: 					" if using array of note durations"			[ | progress |			msecD := msecD + duration.			[start < msecD] whileTrue:		"note-adding loop"				[ | du |				du := durations atRandom msec.				progress := start value - msecD value / howLong value.				from := to.				to := pList at: which.				set1 := from value.				set2 := to value.				pattern add: (MusicEvent 						dur: du						pitch: ((rand next > progress) 							ifTrue: [set1 atRandom: rand]							ifFalse: [set2 atRandom: rand])						ampl: self loudness						voice: (self voice hasItems 								ifTrue: [self voice atRandom: rand] 								ifFalse: [self voice]))					at: start.					start := start + du]]		ifNotNil: 					" if using array of note durations"			[howMany := ((to key - from key) * density).			length := (1 / density) asFloat sec.			to := pList at: 1.
 				1 to: howMany do:
 					[ :count |
 					pattern add: (MusicEvent 
@@ -1844,7 +1824,7 @@ Instance variables:
 	^pattern! !!ExtDynamicSelectionCloud methodsFor: 'accessing'!list: aList
 	"Set the receiver's list"
 
-	list := aList! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!ExtDynamicSelectionCloud class	instanceVariableNames: ''!!ExtDynamicSelectionCloud class methodsFor: 'examples' stamp: 'stp 1/12/2023 07:11'!chordExample
+	list := aList! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!ExtDynamicSelectionCloud class	instanceVariableNames: ''!!ExtDynamicSelectionCloud class methodsFor: 'examples' stamp: 'stp 1/28/2023 15:29'!chordExample
 	"Answer a dynamic selection cloud that plays chords from a scale."
 	"ExtDynamicSelectionCloud chordExample"
 	"Create cloud from a set like
@@ -1857,18 +1837,18 @@ Instance variables:
 		[ :ind |
 		ind even ifTrue: [list add: ((ind - 1) * 3 -> ((chords at: ind) collect: [ :no | no + 17]))]
 				ifFalse: [list add: ((ind - 1) * 3 -> (chords at: ind))]].
-	score := (self dur: 2 sec			"create event list for a pair of chords"
+	score := (self dur: 2 sec			"create event list for each pair of chords"
 		pitch: list
 		ampl: 60
 		voice: 3
 		density: 12) eventList.
-	score eventsDo: [ :ev |			"add fm properties"
+	score eventsDo: [ :ev |				"add fm properties"
 		ev inst: '/i1/pn'.
 		ev modIndex: 2.0.
 		ev ratio: 1.02.
 		ev pos: 0.0].
 "	score voice: (OSCVoice map: #pMapForCSLSimpleFM: range: #(1 to: 9)).
-	score play"	score editPTV! !!ExtDynamicSelectionCloud class methodsFor: 'examples' stamp: 'stp 1/18/2023 18:47'!chordExample2
+	score play"	score editPTV! !!ExtDynamicSelectionCloud class methodsFor: 'examples' stamp: 'stp 1/28/2023 15:31'!chordExample2
 	"Answer a dynamic selection cloud that plays chords from a scale."
 	"ExtDynamicSelectionCloud chordExample2"	"ExtDynamicSelectionCloud chordExample"	"Create cloud from a set like
 		(0 -> chord) (1 -> chord) ..."
@@ -1883,13 +1863,13 @@ Instance variables:
 	score := (self dur: 3 sec			"create event list"
 		pitch: list
 		ampl: 60
-		voice: 1
-		durations: #(125  250 250)) eventList.
-	score eventsDo: [ :ev |			"add fm properties"
+		voice: #(1 2 3 4)
+		durations: #(125  250 250)) eventList.				"add fm properties"
+"	score eventsDo: 		[ :ev |	
 		ev inst: '/i1/pn'.
 		ev modIndex: 2.0.
 		ev ratio: 1.02.
-		ev pos: 0.0].
+		ev pos: 0.0]."
 	score voice: (OSCVoice map: #pMapForCSLSimpleFM: range: #(1 to: 9)).
 "	score play."	score editPTV.	! !Roll subclass: #Trill	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!Trill commentStamp: '<historical>' prior: 0!A trill is like a roll, except that it can be given an eventList for repetition.!!Trill methodsFor: 'playing'!eventList
 	"return an eventList for me"
@@ -1909,4 +1889,4 @@ Instance variables:
 	^self new length: aNumber rhythm: aDuration note: aNote! !!Trill class methodsFor: 'instance creation'!length: aNumber rhythm: aDuration notes: aNote
 	"return a new trill of the specified length..."
 
-	^self new length: aNumber rhythm: aDuration note: aNote! !
+	^self new length: aNumber rhythm: aDuration note: aNote! !EventGenerator subclass: #Walk	instanceVariableNames: 'current steps probs sets length'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-EventGenerators'!!Walk methodsFor: 'accessing' stamp: 'stp 2/6/2023 13:48'!length: num	"Set the receiver's number of notes"	length := num! !!Walk methodsFor: 'accessing' stamp: 'stp 2/4/2023 12:31'!probs	"Answer the receiver's probs dictionary"	^ probs! !!Walk methodsFor: 'accessing' stamp: 'stp 2/4/2023 12:31'!sets	"Answer the receiver's sets dictionary"	^ sets! !!Walk methodsFor: 'accessing' stamp: 'stp 2/4/2023 12:34'!start: evt	"Set the receiver's starting note"	current := evt! !!Walk methodsFor: 'accessing' stamp: 'stp 2/4/2023 12:30'!steps	"Answer the receiver's steps dictionary"	^ steps! !!Walk methodsFor: 'processing' stamp: 'stp 2/6/2023 13:49'!eventList	"Answer an event list generated by the receiver having eventList: nEvts notes in it."	| list rand |	list := EventList new.	rand := Random new.	length timesRepeat:		[list add: (self next: rand)].	^ list! !!Walk methodsFor: 'processing' stamp: 'stp 2/4/2023 12:56'!eventList: nEvts	"Answer an event list generated by the receiver having eventList: nEvts notes in it."	| list rand |	list := EventList new.	rand := Random new.	nEvts timesRepeat:		[list add: (self next: rand)].	^ list! !!Walk methodsFor: 'processing' stamp: 'stp 2/6/2023 13:47'!next: rand	"Answer the current note and alter it based on the walk probabilities and ranges."	"Walk example1 editPTV"	| evt rng |	evt := current copy.	(probs includesKey: #pitch)						"if we have a pitch probability"		ifTrue: [(rand next < probs at: #pitch)		"and it's time to make a change"			ifTrue: [(steps includesKey: #pitch)		"it we're using walk vs set selection"				ifTrue: [rng := steps at: #pitch.					rng := (0 - rng) to: rng.				"make an interval +- rng"					current pitch: (current pitch + (rng atRandom: rand))] 				ifFalse: [current pitch: ((sets at: #pitch) atRandom: rand) key]]].	"else set selection"				(probs includesKey: #amplitude)		ifTrue: [(rand next < probs at: #amplitude)			ifTrue: [(steps includesKey: #amplitude)	"it we're using walk vs set selection"				ifTrue: [rng := steps at: #amplitude.					rng := (0 - rng) to: rng.				"make an interval +- rng"					current amplitude: (current amplitude + (rng atRandom: rand))]				ifFalse: [current amplitude: ((sets at: #amplitude) atRandom: rand) vel]]].	"else set selection"				(probs includesKey: #duration)		ifTrue: [(rand next < probs at: #duration)			ifTrue: [(steps includesKey: #amplitude)	"it we're using walk vs set selection"				ifTrue: [ | val |					rng := steps at: #duration.					rng := (0 - rng) to: rng.				"make an interval +- rng"					val := current duration asSec value + (rng atRandom: rand).					val := val max: 0.06.					"set a min duration"					current duration: val sec]				ifFalse: [current duration: ((sets at: #duration) atRandom: rand) sec]]].	"else set selection"		properties associationsDo: [ :ass |			(ass key == #name) 				ifFalse: [evt perform: (ass key, ':') asSymbol with: ass value]].	^ evt! !!Walk methodsFor: 'initialize-release' stamp: 'stp 2/4/2023 12:29'!initialize	"Initialize the receiver."	steps := Dictionary new.	probs := Dictionary new.	sets := Dictionary new.	current := MusicEvent new.! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Walk class	instanceVariableNames: ''!!Walk class methodsFor: 'instance creation' stamp: 'stp 2/6/2023 13:47'!len: len dur0: d0 pitch0: p0 vel0: v0 	"Demonstrate a walk that uses a pitch, duration and amplitude ranges and random voices"	"(Walk len: 60 dur0: 0.15 pitch0: 72 vel0: 80) editPTV"	| walk |	walk := self new.							"create a walk"	walk start: (d0 sec, p0 key, v0 vel).		"set its starting note"	walk steps at: #pitch put: 2.				"set the allowed pitch step"	walk steps at: #duration put: 0.04.		"and duration step"	walk steps at: #amplitude put: 0.1.		"and amplitude step"	walk probs at: #pitch put: 0.3.			"set probability of changing pitch"	walk probs at: #duration put: 0.2.	walk probs at: #amplitude put: 0.2.	walk length: len.	^ walk! !!Walk class methodsFor: 'instance creation' stamp: 'stp 2/10/2023 11:55'!len: len durN: d0 pitch0: p0 vel0: v0 	"Demonstrate a walk that uses a pitch, duration and amplitude ranges and random voices"	"(Walk len: 60 dur0: 0.15 pitch0: 72 vel0: 80) editPTV"	"OSCVoice playCSLPlucks: (Walk len: 120 durN: 0.15 pitch0: 72 vel0: 80)"		| walk |	walk := self new.							"create a walk"	walk start: (d0 sec, p0 key, v0 vel).		"set its starting note"	walk steps at: #pitch put: 2.				"set the allowed pitch step"	walk steps at: #amplitude put: 0.1.		"and amplitude step"	walk probs at: #pitch put: 0.3.			"set probability of changing pitch"	walk probs at: #amplitude put: 0.2.	walk length: len.	^ walk! !!Walk class methodsFor: 'instance creation' stamp: 'stp 2/6/2023 13:27'!len: len pitchSet: pSet	"Demonstrate a walk that uses pitch and duration sets"	"Walk example3 editPTV"	| walk |	walk := self new.								"create a walk"	walk start: (0.1 sec, 76 key, 80 vel).			"set its starting note"	walk sets at: #pitch put: pSet.		"set the allowed pitches"	walk sets at: #duration put: #(0.1 0.1 0.2).	"and durations"	walk probs at: #pitch put: 0.5.				"set probability of changing pitch"	walk probs at: #duration put: 0.2.	^ walk eventList: len							"get 60 notes"! !!Walk class methodsFor: 'instance creation' stamp: 'stp 2/6/2023 13:30'!len: len pitchSet: pSet durSet: dSet vel: vel	"Demonstrate a walk that uses pitch and duration sets"	"Walk example3 editPTV"	| walk |	walk := self new.								"create a walk"	walk start: (0.1 sec, 76 key, vel vel).			"set its starting note"	walk sets at: #pitch put: pSet.				"set the allowed pitches"	walk sets at: #duration put: dSet.				"and durations"	walk probs at: #pitch put: 0.5.				"set probability of changing pitch"	walk probs at: #duration put: 0.2.	^ walk eventList: len							"get 60 notes"! !!Walk class methodsFor: 'instance creation' stamp: 'stp 2/6/2023 13:29'!len: len pitchSet: pSet vel: vel	"Demonstrate a walk that uses pitch and duration sets"	"Walk example3 editPTV"	| walk |	walk := self new.								"create a walk"	walk start: (0.1 sec, 76 key, vel vel).			"set its starting note"	walk sets at: #pitch put: pSet.		"set the allowed pitches"	walk sets at: #duration put: #(0.1 0.1 0.2).	"and durations"	walk probs at: #pitch put: 0.5.				"set probability of changing pitch"	walk probs at: #duration put: 0.2.	^ walk eventList: len							"get 60 notes"! !!Walk class methodsFor: 'instance creation' stamp: 'stp 2/4/2023 12:27'!new	"Always initialiaze instances"	^ super new initialize! !!Walk class methodsFor: 'examples' stamp: 'stp 2/4/2023 13:21'!example1	"Demonstrate a walk that uses a pitch range"	"Walk example1 editPTV"	| walk |	walk := self new.							"create a walk"	walk start: (0.1 sec, 60 key, 80 vel).		"set its starting note"	walk steps at: #pitch put: 2.				"set the allowed pitch step"	walk probs at: #pitch put: 0.3.			"set probability of changing pitch"	^ walk eventList: 60						"get 60 notes"! !!Walk class methodsFor: 'examples' stamp: 'stp 2/8/2023 11:17'!example2	"Demonstrate a walk that uses a pitch, duration and amplitude ranges and random voices"	"Walk example2 editPTV"	| walk list rand inst |	walk := self new.							"create a walk"	walk start: (0.15 sec, 60 key, 80 vel).		"set its starting note"	walk steps at: #pitch put: 2.				"set the allowed pitch step"	walk steps at: #duration put: 0.04.		"and duration step"	walk steps at: #amplitude put: 0.1.		"and amplitude step"	walk probs at: #pitch put: 0.3.			"set probability of changing pitch"	walk probs at: #duration put: 0.2.	walk probs at: #amplitude put: 0.2.	list := walk eventList: 60.					"get 60 notes"	rand := Random new.	inst := rand nextIntFrom: 1 to: 8.	list eventsDo: [ :ev | (rand next > 0.75) ifTrue: [ev voice: (rand nextIntFrom: 1 to: 8)]].	^ list! !!Walk class methodsFor: 'examples' stamp: 'stp 2/8/2023 11:21'!example3	"Demonstrate a walk that uses pitch and duration sets"	"Walk example3 editPTV"	| walk list rand inst |	walk := self new.								"create a walk"	walk start: (0.1 sec, 67 key, 80 vel).			"set its starting note"	walk sets at: #pitch put: #(60 62 65 67).		"set the allowed pitches"	walk sets at: #duration put: #(0.1 0.1 0.2).	"and durations"	walk probs at: #pitch put: 0.5.				"set probability of changing pitch"	walk probs at: #duration put: 0.2.	list := walk eventList: 60.							"get 60 notes"	rand := Random new.	inst := rand nextIntFrom: 1 to: 8.	list eventsDo: [ :ev | (rand next > 0.75) ifTrue: [ev voice: (rand nextIntFrom: 1 to: 8)]].	^ list! !

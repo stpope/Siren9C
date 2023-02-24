@@ -36,13 +36,13 @@ Sounds use their Function and DurationEvent behaviors actively.
 !!Sound methodsFor: 'testing'!isSound
 	"Answer true."
 
-	^true! !!Sound methodsFor: 'initialize-release'!finalize
+	^true! !!Sound methodsFor: 'initialize-release' stamp: 'stp 1/29/2023 09:59'!finalize
 	"Free the receiver's external data, if any"
 
-	| fileNumber |
+"	| fileNumber |
 	fileNumber := self at: #fileIndex.
 	fileNumber ifNotNil:
-		[SoundFile releaseFileIndex: fileNumber]! !!Sound methodsFor: 'initialize-release'!initialize
+		[SoundFile releaseFileIndex: fileNumber]"! !!Sound methodsFor: 'initialize-release'!initialize
 	"Set up a default sound."
 
 	self propCheck.
@@ -145,7 +145,7 @@ Instance Variables:
 	^(self new) sound: sound; start: start; stop: stop! !!ComponentSound class methodsFor: 'instance creation'!on: sound start: start stop: stop offset: offset
 	"Answer a new instance initialized with the arguments."
 
-	^(self new) sound: sound; start: start; stop: stop; offset: offset! !SampledSound subclass: #VirtualSound	instanceVariableNames: 'source'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Sound'!!VirtualSound commentStamp: '<historical>' prior: 0!An instance of VirtualSound is a "reference" to another sound, typically by a named cue list entry.
+	^(self new) sound: sound; start: start; stop: stop; offset: offset! !SampledSound subclass: #VirtualSound	instanceVariableNames: 'source properties'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Sound'!!VirtualSound commentStamp: '<historical>' prior: 0!An instance of VirtualSound is a "reference" to another sound, typically by a named cue list entry.
 
 Instance Variables:
 	source	<StoredSound> the sound to which the VirtualSound points!!VirtualSound methodsFor: 'accessing'!cue: cueName

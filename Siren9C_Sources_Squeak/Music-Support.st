@@ -112,10 +112,13 @@ See the class examples.!!EventScheduler methodsFor: 'accessing'!addClient: t
 	timers add: (timer startTime usec => timer).
 	self changed: #timers.
 	self run.
-	^timer! !!EventScheduler methodsFor: 'accessing'!clientNamed: aName
+	^timer! !!EventScheduler methodsFor: 'accessing' stamp: 'stp 2/13/2023 00:44'!clientFor: anEV
+	"Answer a client eventList"
+
+	^ appointments detect: [ :ass | ass value == anEV] ifNone: [nil]! !!EventScheduler methodsFor: 'accessing' stamp: 'stp 2/12/2023 23:51'!clientNamed: aName
 	"Answer a named client"
 
-	^appointments detect: [ :ass | ass value name == aName]! !!EventScheduler methodsFor: 'accessing'!clients
+	^appointments detect: [ :ass | ass value name == aName] ifNone: [nil]! !!EventScheduler methodsFor: 'accessing'!clients
 	"Get the instance's clients"
 
 	^appointments! !!EventScheduler methodsFor: 'accessing'!clock
@@ -303,7 +306,7 @@ See the class examples.!!EventScheduler methodsFor: 'accessing'!addClient: t
 
 	EventScheduler addTimer: 0.0 interval: 2.0.
 	EventScheduler addTimer: 1.0 interval: 2.0.
-	EventScheduler  run.! !!EventScheduler class methodsFor: 'class initialization'!initialize
+	EventScheduler  run.! !!EventScheduler class methodsFor: 'class initialization' stamp: 'stp 2/13/2023 00:46'!initialize
 	"Set up the global Scheduler."
 	"EventScheduler initialize "
 	"EventScheduler instanceCount "
@@ -333,7 +336,7 @@ See the class examples.!!EventScheduler methodsFor: 'accessing'!addClient: t
 	self instance addTimer: aT! !!EventScheduler class methodsFor: 'instance control'!addTimer: aT interval: int
 	"Add a timer to the instance"
 
-	self instance addTimer: aT interval: int! !!EventScheduler class methodsFor: 'instance control'!clients
+	self instance addTimer: aT interval: int! !!EventScheduler class methodsFor: 'instance control' stamp: 'stp 2/13/2023 00:47'!clientFor: anEV	"Answer a client eventList"	^ self instance clientFor: anEV! !!EventScheduler class methodsFor: 'instance control'!clients
 	"Get the instance's clients"
 
 	^self instance clients! !!EventScheduler class methodsFor: 'instance control'!clock
@@ -371,7 +374,7 @@ See the class examples.!!EventScheduler methodsFor: 'accessing'!addClient: t
 	"EventScheduler instance"
 
 	ESchedule ifNil: [self initialize].
-	^ ESchedule! !Model subclass: #PortModel	instanceVariableNames: 'name status device in out'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Support'!!PortModel methodsFor: 'initialize-release'!initialize
+	^ ESchedule! !Model subclass: #PortModel	instanceVariableNames: 'name status device in out properties'	classVariableNames: ''	poolDictionaries: ''	category: 'Music-Support'!!PortModel methodsFor: 'initialize-release'!initialize
 	"no-op"
 
 	^self! !!PortModel methodsFor: 'initialize-release' stamp: 'stp 1/2/2023 14:52'!open	^self! !!PortModel methodsFor: 'mutex support'!critical: aBlock
@@ -620,7 +623,7 @@ Instance Variables
 	value := nil.
 ! !!ScheduleRecord methodsFor: 'control'!stop
 	value ifNotNil: [value stop]! !!ScheduleRecord methodsFor: 'testing'!isActive
-	^value isActive! !Model subclass: #SirenSession	instanceVariableNames: 'scheduleList scheduleListText verbosity clock startedAt inChannels blockSize sampleRate outChannels interfaceParams transport eventList sound voice timer soundPort midiPort loadedSounds loadedLists oscAddress defaultVoiceClass verboseButton'	classVariableNames: 'EventLists Sounds Voices'	poolDictionaries: ''	category: 'Music-Support'!!SirenSession commentStamp: '<historical>' prior: 0!The class SirenSession represents the user session state of the Siren Framework. The class is also the implementor of the Siren configuration panel, see the interface window spec, and the instance methods.
+	^value isActive! !Model subclass: #SirenSession	instanceVariableNames: 'scheduleList scheduleListText verbosity clock startedAt inChannels blockSize sampleRate outChannels interfaceParams transport timer loadedSounds loadedLists oscAddress defaultVoiceClass verboseButton'	classVariableNames: 'EventLists Sounds Voices'	poolDictionaries: ''	category: 'Music-Support'!!SirenSession commentStamp: '<historical>' prior: 0!The class SirenSession represents the user session state of the Siren Framework. The class is also the implementor of the Siren configuration panel, see the interface window spec, and the instance methods.
 
 Instance Variables (used by the pop-up utility window)
 	sampleRate - the sample rate
@@ -642,20 +645,18 @@ Class Variables:
 	EventLists <Dictionary> Event lists
 	Sounds <Dictionary> Sounds
 	Voices <Dictionary> Voices
-!!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:45'!acceptOSCAddr	"Set the OSC address from the text box."		self inform: 'Not implemented yet.'! !!SirenSession methodsFor: 'actions'!allOff
+!!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:45'!acceptOSCAddr	"Set the OSC address from the text box."		self inform: 'Not implemented yet.'! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/29/2023 07:58'!allOff
 	"Turn off anything that's playing"
 
 	self stopSound.
 	self stopMIDI.
-	self resetSound.
-	EventScheduler resetClock.! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/26/2022 17:11:59'!cleanUp
+	EventScheduler resetClock.! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/29/2023 07:59'!cleanUp
 
 	self stopSound.
 	self stopMIDI.
 	MIDIPort cleanUp.
-	self resetSound.
 	EventScheduler resetClock.
-! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/19/2023 12:58'!configureMIDI	"Run the MIDI config menu & submenus."		| menu inMenu outMenu devices |	menu := MenuMorph new defaultTarget: self.	inMenu := MenuMorph new defaultTarget: self.	outMenu := MenuMorph new defaultTarget: self.	menu addItem: [ :item | item contents: 'Reset MIDI driver'; target: PortMIDILibrary; selector: #resetMIDIDriver ].	menu addItem: [ :item | item contents: 'Dump device table'; target: PortMIDILibrary; selector: #listDeviceTable ].	devices := MIDIPort concreteClass devices select: [:item | item direction == #in].	devices do: [ :dev |		inMenu addItem: [ :item | item contents: dev name; target: SirenUtility; 					selector: #defaultMIDIIn: ; arguments: { dev name } ] ].	devices := MIDIPort concreteClass devices select: [:item | item direction == #out].	devices do: [ :dev |		outMenu addItem: [ :item | item contents: dev name; target: SirenUtility; 					selector: #defaultMIDIOut: ; arguments: { dev name }  ] ].			menu addItem: [ :item | item contents: 'Pick output port'; subMenu: outMenu ].	menu addItem: [ :item | item contents: 'Pick input port'; subMenu: inMenu ].	^ menu invokeModal! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/17/2023 18:33'!configureMIDI0	| sel dev devices ind |	MIDIPort concreteClass devices		ifEmpty: [PortMIDIPort initializeData].	sel := (PopUpMenu labelArray: #('reset MIDI driver' 'dump device table' 'pick input port' 'pick output port') lines: #(1 2)) startUp.	sel = 0		ifTrue: [^ self].	sel = 1		ifTrue: [^ PortMIDILibrary resetMIDIDriver].	sel = 2		ifTrue: [^ PortMIDILibrary listDeviceTable].	sel = 3		ifTrue: [devices := MIDIPort concreteClass devices						select: [:item | item direction == #in]].	sel = 4		ifTrue: [devices := MIDIPort concreteClass devices						select: [:item | item direction == #out]].	ind := (PopUpMenu				labelArray: (devices						collect: [:item | item name])) startUp.	ind = 0		ifTrue: [^ self].	sel = 3		ifTrue: [dev := (devices at: ind) port.			Transcript show: 'Default MIDI input device set to ' , (devices at: ind) name , '(' , dev , ')';				 cr.			SirenUtility defaultMIDIIn: dev].	sel = 4		ifTrue: [dev := (devices at: ind) port.			Transcript show: 'Default MIDI output device set to ' , (devices at: ind) name , '(' , dev , ')';				 cr.			SirenUtility defaultMIDIOut: dev]! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/21/2023 13:15'!freeLists
+! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/28/2023 15:02'!configureMIDI	"Run the MIDI config menu & submenus."		| menu inMenu outMenu devices voiceMenu |	menu := MenuMorph new defaultTarget: self.	inMenu := MenuMorph new defaultTarget: self.	outMenu := MenuMorph new defaultTarget: self.	menu addItem: [ :item | item contents: 'Reset MIDI driver'; target: PortMIDILibrary; selector: #resetMIDIDriver ].	menu addItem: [ :item | item contents: 'Dump device table'; target: PortMIDIPort; selector: #listDeviceTable ].	menu addLine.		devices := MIDIPort concreteClass devices select: [ :item | item direction == #in].	devices do: [ :dev |		inMenu addItem: [ :item | item contents: dev name; target: SirenUtility; 					selector: #defaultMIDIIn: ; arguments: { dev name } ] ].	devices := MIDIPort concreteClass devices select: [ :item | item direction == #out].	devices do: [ :dev |		outMenu addItem: [ :item | item contents: dev name; target: SirenUtility; 					selector: #defaultMIDIOut: ; arguments: { dev name } ] ].			menu addItem: [ :item | item contents: 'Pick output port'; subMenu: outMenu].	menu addItem: [ :item | item contents: 'Pick input port'; subMenu: inMenu].	voiceMenu := MenuMorph fromArray:  {				{'MIDIVoice'.			#selectMIDIVoice}.			{'OSCVoice'.			#selectOSCVoice}.			#-.			{'SuperColliderVoice'.		#selectSCVoice}.			{'CSoundVoice'.			#selectCSVoice} }.	menu addItem: [ :item | item contents: 'Pick default voice'; subMenu: voiceMenu].	menu addLine.	menu addItem: [ :item | item contents: 'AllNotesOff'; target: MIDIPort; selector: #allNotesOff].	^ menu invokeModal! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/21/2023 13:15'!freeLists
 
 	(self confirm: 'Really delete all lists, sounds and voices?')		ifFalse: [^self].	SirenSession flushTempEventLists.	SirenSession initializeEventLists.	SirenSession initializeSounds.	SirenSession initializeVoices.
 	Smalltalk garbageCollect! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 11:10'!inspectLists	"Inspect the shared data"	(Array		with: EventLists		with: Sounds		with: Voices) explore! !!SirenSession methodsFor: 'actions'!inspectSession
@@ -671,41 +672,14 @@ Class Variables:
 
 	SirenSession initialize. SirenSession loadDemoData! !!SirenSession methodsFor: 'actions'!openSirenUtility
 
-	SirenSession openUtility! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/11/2023 06:58'!openTools	"Open athe other tools"	| sel |	sel := (PopUpMenu labelArray: #('Open workbook' 'Open transport' 'Open voice editor' 'Explore voices')) startUp.	sel = 0		ifTrue: [^ self].	sel = 1		ifTrue: [^self openWorkbook].	sel = 2		ifTrue: [^self openTransport].	sel = 3		ifTrue: [^VoiceDialog open].	sel = 4		ifTrue: [^SirenSession voices explore].! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:46'!openTransport	"Open a transport control"			self inform: 'Not implemented yet.'! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 05:09'!openWorkbookWorkbookWindow open! !!SirenSession methodsFor: 'actions'!resetSound
-	"Reset the parameters of the sound port"
-
-	SoundPort initialize.
-	blockSize value: SoundPort blockSize.
-	inChannels value: SoundPort in.
-	outChannels value: SoundPort out.
-	sampleRate value: SoundPort sampleRate.! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:47'!stopMIDI	"Turn off MIDI"	EventScheduler interrupt.	EventScheduler flush.	[MIDIPort default allNotesOff]		on: Error		do: [:ex | Transcript show: 'MIDI prims not installed';				 cr].	ScorePlayer shutDown: true ! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:52'!stopSound	"Stop the sound player if it's active"	"| port |	port := SoundPort defaultOrNil.	port	ifNotNil: [port stop; close]."	AbstractSound sounds		do: [:anS | anS stopGracefully].	SoundPlayer stopPlayingAll.	 SoundPlayer stopPlayerProcess: true! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 11:11'!storeLists			self inform: 'Not implemented yet.'! !!SirenSession methodsFor: 'aspects'!blockSize
+	SirenSession openUtility! !!SirenSession methodsFor: 'actions' stamp: 'stp 1/29/2023 08:01'!openTools	"Open the other tools"		| sel |	sel := (PopUpMenu labelArray: #('Open workbook' 'Open transport' 'Open voice editor' 'Explore data')) startUp.	sel = 0		ifTrue: [^ self].	sel = 1		ifTrue: [^self openWorkbook].	sel = 2		ifTrue: [^self openTransport].	sel = 3		ifTrue: [^VoiceDialog open].	sel = 4		ifTrue: [^SirenSession data explore].! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:46'!openTransport	"Open a transport control"			self inform: 'Not implemented yet.'! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 05:09'!openWorkbookWorkbookWindow open! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:47'!stopMIDI	"Turn off MIDI"	EventScheduler interrupt.	EventScheduler flush.	[MIDIPort default allNotesOff]		on: Error		do: [:ex | Transcript show: 'MIDI prims not installed';				 cr].	ScorePlayer shutDown: true ! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 10:52'!stopSound	"Stop the sound player if it's active"	"| port |	port := SoundPort defaultOrNil.	port	ifNotNil: [port stop; close]."	AbstractSound sounds		do: [:anS | anS stopGracefully].	SoundPlayer stopPlayingAll.	 SoundPlayer stopPlayerProcess: true! !!SirenSession methodsFor: 'actions' stamp: 'stp 12/29/2022 11:11'!storeLists			self inform: 'Not implemented yet.'! !!SirenSession methodsFor: 'aspects'!blockSize
 
 	^blockSize! !!SirenSession methodsFor: 'aspects'!clock
 	^clock! !!SirenSession methodsFor: 'aspects'!defaultVoiceClass
 
-	^defaultVoiceClass! !!SirenSession methodsFor: 'aspects'!eventList
-	"This method was generated by UIDefiner.  Any edits made here
-	may be lost whenever methods are automatically defined.  The
-	initialization provided below may have been preempted by an
-	initialize method."
+	^defaultVoiceClass! !!SirenSession methodsFor: 'aspects'!inChannels
 
-	^eventList isNil
-		ifTrue:
-			[eventList := nil asValue]
-		ifFalse:
-			[eventList]! !!SirenSession methodsFor: 'aspects'!inChannels
-
-	^inChannels! !!SirenSession methodsFor: 'aspects'!midiPort
-	"This method was generated by UIDefiner.  Any edits made here
-	may be lost whenever methods are automatically defined.  The
-	initialization provided below may have been preempted by an
-	initialize method."
-
-	^midiPort isNil
-		ifTrue:
-			[midiPort := nil asValue]
-		ifFalse:
-			[midiPort]! !!SirenSession methodsFor: 'aspects'!oscAddress
+	^inChannels! !!SirenSession methodsFor: 'aspects'!oscAddress
 	"Answer the formatted OSC IP address + port"
 
 	^oscAddress! !!SirenSession methodsFor: 'aspects' stamp: 'stp 12/26/2022 17:02:50'!oscAddress: value
@@ -721,25 +695,7 @@ Class Variables:
 	^scheduleList! !!SirenSession methodsFor: 'aspects'!scheduleListText
 	"Answer the scheduler's list"
 
-	^scheduleListText! !!SirenSession methodsFor: 'aspects'!scheduleListText0
-	"Answer the scheduler's list"
-
-	^SelectionInList new list: (self scheduleList list collect:
-		[ :item | | obj |
-		obj := self objectFor: item.
-		obj ifNotNil: [(obj isActive ifTrue: [' X	'] ifFalse: ['	']), item]])! !!SirenSession methodsFor: 'aspects'!sound
-
-	^sound isNil
-		ifTrue:
-			[sound := nil asValue]
-		ifFalse:
-			[sound]! !!SirenSession methodsFor: 'aspects'!soundPort
-
-	^soundPort isNil
-		ifTrue:
-			[soundPort := nil asValue]
-		ifFalse:
-			[soundPort]! !!SirenSession methodsFor: 'aspects'!timer
+	^scheduleListText! !!SirenSession methodsFor: 'aspects'!timer
 	"Answer the timer"
 
 	^timer isNil
@@ -771,11 +727,7 @@ Class Variables:
 	self changed: #timer.! !!SirenSession methodsFor: 'aspects'!verbosity
 	"Answer the verbosity level 0, 1, or 2"
 
-	^verbosity! !!SirenSession methodsFor: 'aspects'!voice
-
-	^voice isNil
-		ifTrue: [voice := nil asValue]
-		ifFalse: [voice]! !!SirenSession methodsFor: 'initialize release' stamp: 'stp 1/21/2023 13:14'!initialize
+	^verbosity! !!SirenSession methodsFor: 'initialize release' stamp: 'stp 1/21/2023 13:14'!initialize
 	"Set up the defaults values."
 	"SirenSession initialize"
 
@@ -798,27 +750,7 @@ Class Variables:
 		ifTrue: [EventScheduler instance removeDependent: self].
 	loadedSounds := OrderedCollection new.
 	loadedLists := OrderedCollection new.
-	Smalltalk garbageCollect.! !!SirenSession methodsFor: 'actions--change'!chBlockSize
-	"Respond to a selection in the block size menu"
-
-	SoundPort blockSize: blockSize value.
-"	Transcript show: 'Sound IO block size set to ', SoundPort blockSize printString; cr"! !!SirenSession methodsFor: 'actions--change'!chInChans
-	"Respond to a selection in the input channel menu"
-
-	SoundPort in: inChannels value.
-"	Transcript show: 'Sound IO # input channels set to ', SoundPort inChannels printString; cr"! !!SirenSession methodsFor: 'actions--change'!chListSelection
-	"Respond to a selection in the main list menu"
-
-	transport value: self selectedObject.
-"	Transcript show: 'Select: ', transport value printString; cr."! !!SirenSession methodsFor: 'actions--change' stamp: 'stp 12/31/2022 11:27'!chOSCAddr	"Respond to a selection in the OSC address field"	| str addr port toks |	str := oscAddress value.	(str includes: $:)		ifFalse: [^self error: 'Broken OSC address format'].	addr := str copyUpTo: $:.	port := str copyAfter: $:.	addr first isDigit		ifTrue: ["if the IP is an address like '127.0.0.1'"			toks := addr findTokens: '.'.			toks size = 4 ifFalse: [^self error: 'Broken OSC address format'].			addr := SocketAddress						hostAddress: (ByteArray								with: (toks at: 1)								with: (toks at: 2)								with: (toks at: 3)								with: (toks at: 4))]		ifFalse: [addr := NetNameResolver addressesForName: addr].	OSCPort defaultIP: addr.	OSCPort defaultPort: port asNumber.	Transcript show: 'OSC address set to ' , str;		 cr! !!SirenSession methodsFor: 'actions--change'!chOutChans
-	"Respond to a selection in the output channel menu"
-
-	SoundPort out value.
-"	Transcript show: 'Sound IO # output channels set to ', SoundPort out printString; cr"! !!SirenSession methodsFor: 'actions--change'!chSRate
-	"Respond to a selection in the sampleRate menu"
-
-	SoundPort sampleRate: sampleRate value.
-"	Transcript show: 'Sound IO sample rate set to ', SoundPort sampleRate printString; cr"! !!SirenSession methodsFor: 'actions--change'!chVerbosity
+	Smalltalk garbageCollect.! !!SirenSession methodsFor: 'actions--change' stamp: 'stp 12/31/2022 11:27'!chOSCAddr	"Respond to a selection in the OSC address field"	| str addr port toks |	str := oscAddress value.	(str includes: $:)		ifFalse: [^self error: 'Broken OSC address format'].	addr := str copyUpTo: $:.	port := str copyAfter: $:.	addr first isDigit		ifTrue: ["if the IP is an address like '127.0.0.1'"			toks := addr findTokens: '.'.			toks size = 4 ifFalse: [^self error: 'Broken OSC address format'].			addr := SocketAddress						hostAddress: (ByteArray								with: (toks at: 1)								with: (toks at: 2)								with: (toks at: 3)								with: (toks at: 4))]		ifFalse: [addr := NetNameResolver addressesForName: addr].	OSCPort defaultIP: addr.	OSCPort defaultPort: port asNumber.	Transcript show: 'OSC address set to ' , str;		 cr! !!SirenSession methodsFor: 'actions--change'!chVerbosity
 	"Respond to a selection in the verbosity menu"
 
 	SirenUtility verbosity: verbosity value.
@@ -827,40 +759,10 @@ Class Variables:
 	"Respond to a selection in the voice class menu"
 
 	Voice setDefault: defaultVoiceClass value.
-	Transcript show: 'Default IO voice class set to ', defaultVoiceClass value; cr! !!SirenSession methodsFor: 'actions--change'!newEventList
-	"Respond to a selection in the score menu"
-
-	| sco |
-	sco := eventList value.
-	sco ifNil: [^nil].
-	sco isString ifFalse: [sco := sco name].
-	sco isEmpty ifTrue: [self halt].
-	Transcript show: 'Score ', sco, ' selected'; cr.
-	loadedLists add: sco.
-	self updateScheduleList! !!SirenSession methodsFor: 'actions--change'!newMIDIPort
-	"Respond to a selection in the MIDI port menu"
-
-	Transcript show: 'MIDI port set to ', (MIDIPort devices at: midiPort value) name; cr.! !!SirenSession methodsFor: 'actions--change'!newSound
-	"Respond to a selection in the sound menu"
-
-	| snd |
-	snd := sound value.
-	snd ifNil: [^nil].
-	snd isString ifFalse: [snd := snd name].
-	snd isEmpty ifTrue: [self error: 'Sound not found'. "snd := snd name"].
-	Transcript show: 'Sound ', snd, ' selected'; cr.
-	loadedSounds add: snd.
-	self updateScheduleList.! !!SirenSession methodsFor: 'actions--change'!newSoundPort
-	"Respond to a selection in the sound port menu"
-
-	Transcript show: 'Sound port set to ', 
-			(SoundPort concreteClass devices at: soundPort value) name; cr.! !!SirenSession methodsFor: 'actions--change'!newTimer
+	Transcript show: 'Default IO voice class set to ', defaultVoiceClass value; cr! !!SirenSession methodsFor: 'actions--change'!newTimer
 	"Respond to a selection in the timer menu"
 
-	Transcript show: 'Timer  ', timer value printString, ' selected'; cr.! !!SirenSession methodsFor: 'actions--change'!newVoice
-	"Respond to a selection in the sound port menu"
-
-	Transcript show: 'Voice set to ', voice value printString; cr.! !!SirenSession methodsFor: 'accessing'!objectFor: identifier
+	Transcript show: 'Timer  ', timer value printString, ' selected'; cr.! !!SirenSession methodsFor: 'actions--change' stamp: 'stp 1/29/2023 08:06'!selectCSVoice	"Choose CsoundVoice as the default."	Voice setDefault: CsoundVoice! !!SirenSession methodsFor: 'actions--change' stamp: 'stp 1/29/2023 08:04'!selectMIDIVoice	"Choose MIDIVoice as the default."	Voice setDefault: MIDIVoice! !!SirenSession methodsFor: 'actions--change' stamp: 'stp 1/29/2023 08:05'!selectOSCVoice	"Choose OSCVoice as the default."	Voice setDefault: OSCVoice! !!SirenSession methodsFor: 'actions--change' stamp: 'stp 1/29/2023 08:05'!selectSCVoice	"Choose SCVoice (SuperCollider) as the default."	Voice setDefault: SuperColliderVoice! !!SirenSession methodsFor: 'accessing'!objectFor: identifier
 	"Find the object that corresponds to the given ID"
 
 	| obj |
@@ -892,10 +794,7 @@ Class Variables:
 	^it! !!SirenSession methodsFor: 'accessing'!transport
 	"it's me"
 
-	^self! !!SirenSession methodsFor: 'accessing' stamp: 'stp 1/22/2023 18:12'!verboseButton: aButton	verboseButton := aButton! !!SirenSession methodsFor: 'resources' stamp: 'stp 12/31/2022 11:39'!addItemsFrom: aDict to: aMenu path: aPath 	"Add items from the given dictionary to a hierarchical menu"	| fils dirs |	aDict isEmpty		ifTrue: [^ PopUpMenu labelArray: #('Empty')].	fils := OrderedCollection new: aDict size.	dirs := OrderedCollection new: aDict size.	aDict		associationsDo: [:ass | 			| key val |			key := ass key.			val := ass value.			(val isKindOf: Dictionary)				ifTrue: ["kludj"					dirs add: key]				ifFalse: [fils add: key]].	dirs isEmpty		ifFalse: [dirs				do: [:sub | 					| child |					"recurse through sub-dicts creating submenus"					aMenu beginSubMenuLabeled: sub.					sub == #/						ifTrue: [child := aPath , sub]						ifFalse: [child := aPath , sub , '/'].					self						addItemsFrom: (aDict at: sub)						to: aMenu						path: child.					aMenu endSubMenu]].	fils		do: [:it | aMenu add: it -> (aPath , it)			"(aDict at: it)"]! !!SirenSession methodsFor: 'resources' stamp: 'stp 12/31/2022 11:41'!listMenu	"Answer the event list menu"	| devs list |	devs := SirenSession eventLists.	devs isEmpty		ifTrue: [^ PopUpMenu labelArray: #('No scores')].	list := OrderedCollection new.	devs do:  [ :dev |		list addLast: dev name].	^  PopUpMenu labelArray: list asArray! !!SirenSession methodsFor: 'resources' stamp: 'stp 12/31/2022 11:42'!soundMenu	"Answer the hierarchical sound menu"	| snds list |	snds := SirenSession sounds.	snds isEmpty		ifTrue: [^ PopUpMenu labelArray: #('No sounds')].	list := OrderedCollection new.	snds		do: [:dev | list addLast: dev name].	^ PopUpMenu labelArray: list asArray! !!SirenSession methodsFor: 'resources' stamp: 'stp 12/31/2022 11:43'!timerMenu	"Answer the timer list menu"	| devs labels |	devs := EventScheduler timers.	devs isEmpty		ifTrue: [^ PopUpMenu labelArray: #('No timers')].	labels := Array new: devs size.	1		to: devs size		do: [:ind | labels at: ind put: (devs at: ind) name].	^ PopUpMenu labelArray: labels! !!SirenSession methodsFor: 'resources'!voiceMenu
-	"Tools.MenuEditor new openOnClass: self andSelector: #voiceMenu"
-
-	! !!SirenSession methodsFor: 'actions--menu'!deleteItem
+	^self! !!SirenSession methodsFor: 'accessing' stamp: 'stp 1/22/2023 18:12'!verboseButton: aButton	verboseButton := aButton! !!SirenSession methodsFor: 'resources' stamp: 'stp 12/31/2022 11:39'!addItemsFrom: aDict to: aMenu path: aPath 	"Add items from the given dictionary to a hierarchical menu"	| fils dirs |	aDict isEmpty		ifTrue: [^ PopUpMenu labelArray: #('Empty')].	fils := OrderedCollection new: aDict size.	dirs := OrderedCollection new: aDict size.	aDict		associationsDo: [:ass | 			| key val |			key := ass key.			val := ass value.			(val isKindOf: Dictionary)				ifTrue: ["kludj"					dirs add: key]				ifFalse: [fils add: key]].	dirs isEmpty		ifFalse: [dirs				do: [:sub | 					| child |					"recurse through sub-dicts creating submenus"					aMenu beginSubMenuLabeled: sub.					sub == #/						ifTrue: [child := aPath , sub]						ifFalse: [child := aPath , sub , '/'].					self						addItemsFrom: (aDict at: sub)						to: aMenu						path: child.					aMenu endSubMenu]].	fils		do: [:it | aMenu add: it -> (aPath , it)			"(aDict at: it)"]! !!SirenSession methodsFor: 'resources' stamp: 'stp 12/31/2022 11:41'!listMenu	"Answer the event list menu"	| devs list |	devs := SirenSession eventLists.	devs isEmpty		ifTrue: [^ PopUpMenu labelArray: #('No scores')].	list := OrderedCollection new.	devs do:  [ :dev |		list addLast: dev name].	^  PopUpMenu labelArray: list asArray! !!SirenSession methodsFor: 'resources' stamp: 'stp 12/31/2022 11:42'!soundMenu	"Answer the hierarchical sound menu"	| snds list |	snds := SirenSession sounds.	snds isEmpty		ifTrue: [^ PopUpMenu labelArray: #('No sounds')].	list := OrderedCollection new.	snds		do: [:dev | list addLast: dev name].	^ PopUpMenu labelArray: list asArray! !!SirenSession methodsFor: 'actions--menu'!deleteItem
 	"Remove an item from the list"
 
 	| it |
@@ -977,7 +876,7 @@ Class Variables:
 	transport value ifNotNil: [^transport value stop].
 	obj := self selectedObject.
 	obj ifNotNil: [^obj stop].
-	EventScheduler instance run: false! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 1/19/2023 12:58'!testMIDI	| menu inMenu outMenu |	menu := MenuMorph new defaultTarget: self.	inMenu := MenuMorph new defaultTarget: self.	outMenu := MenuMorph new defaultTarget: self.		inMenu addItem: [ :item | item contents: 'Start'; target: MIDIPort; selector: #testInput ].	inMenu addItem: [ :item | item contents: 'Stop'; target: MIDIPort; selector: #testInputStop ].		outMenu addItem: [ :item | item contents: 'Single note'; target: MIDIPort; selector: #testANote ].	outMenu addItem: [ :item | item contents: 'Scale'; target: MIDIPort; selector: #testAScale ].	outMenu addItem: [ :item | item contents: 'Clouds'; target: MIDIPort; selector: #testACloud ].				menu addItem: [ :item | item contents: 'Test output'; subMenu: outMenu ].	menu addItem: [ :item | item contents: 'Test input'; subMenu: inMenu ].	^ menu invokeModal! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 1/19/2023 06:58'!testMIDI0	| lis sel |	sel := (PopUpMenu labelArray: #('test input' 'test output')) startUp.	sel == 0		ifTrue: [^ self].	sel == 1		ifTrue: [sel := (PopUpMenu labelArray: #('start input' 'stop input') lines: #(1)) startUp.			sel == 0				ifTrue: [^ self].			sel == 1				ifTrue: [^ MIDIPort testInput].			sel == 2				ifTrue: [^ MIDIPort testInputStop]].	sel := (PopUpMenu labelArray: #('single note' 'scale' 'clouds')) startUp.	sel == 0		ifTrue: [^ self].	sel == 1		ifTrue: [^ MIDIPort testANote].	"play a scale"	sel == 2		ifTrue: [^ (EventList				scaleFrom: 48				to: 72				in: 1.5)				playOn: (MIDIVoice defaultOut: 1)].	"play merged clouds"	lis := EventList newAnonymous.	lis addAll: (DynamicCloud			dur: 6 sec			pitch: {50 to: 64. 78 to: 80}			ampl: {80 to: 90. 20 to: 50}			density: 8) eventList.	lis addAll: (DynamicCloud			dur: 6 sec			pitch: {22 to: 40. 48 to: 50}			ampl: {70 to: 80. 20 to: 60}			density: 9) eventList.	lis addAll: (DynamicCloud			dur: 6 sec			pitch: {72 to: 72. 88 to: 90}			ampl: {40 to: 50. 90 to: 90}			density: 10) eventList.	lis		playOn: (MIDIVoice defaultOut: 0)! !!SirenSession methodsFor: 'actions--tests'!testMIDIin
+	EventScheduler instance run: false! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 1/28/2023 15:07'!testMIDI	| menu inMenu outMenu |	menu := MenuMorph new defaultTarget: self.	inMenu := MenuMorph new defaultTarget: self.	outMenu := MenuMorph new defaultTarget: self.		inMenu addItem: [ :item | item contents: 'Start'; target: MIDIPort; selector: #testInput ].	inMenu addItem: [ :item | item contents: 'Stop'; target: MIDIPort; selector: #testInputStop ].		outMenu addItem: [ :item | item contents: 'Single note'; target: MIDIPort; selector: #testANote ].	outMenu addItem: [ :item | item contents: 'Scale'; target: MIDIPort; selector: #testAScale ].	outMenu addItem: [ :item | item contents: 'Clouds'; target: MIDIPort; selector: #testACloud ].	outMenu addItem: [ :item | item contents: 'All channels'; target: MIDIPort; selector: #testAllChannels ].				menu addItem: [ :item | item contents: 'Test output'; subMenu: outMenu ].	menu addItem: [ :item | item contents: 'Test input'; subMenu: inMenu ].	^ menu invokeModal! !!SirenSession methodsFor: 'actions--tests'!testMIDIin
 
 	MIDIPort testInput! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 1/19/2023 12:58'!testOSCout	| sel |	sel := (PopUpMenu labelArray: #('Scale example' 'CSL strings example' )) startUp.	sel == 0		ifTrue: [^ self].	sel == 1		ifTrue: [^ OSCVoice scaleExample].	^ OSCVoice pluckExample1! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 12/31/2022 07:07'!testSndFileIn	"Run the default sound file test"	! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 12/29/2022 10:55'!testSndFiles	"Run the default sound file test""	LibSndFileInterface example1: 'unbelichtet.aiff'"		(LoopedSampledSound fromAIFFFileNamed: './Siren9C/Data/unbelichtet.aiff' mergeIfStereo: false) play! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 1/19/2023 14:24'!testSoundFiles	"Run the default sound file test"	"SirenSession testSoundFiles"		(LoopedSampledSound fromAIFFFileNamed: './Siren9C/Data/unbelichtet.aiff' mergeIfStereo: false) play! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 12/29/2022 10:45'!testSoundIn	"This stub method was generated by UIDefiner"	self inform: 'Not implemented yet.'! !!SirenSession methodsFor: 'actions--tests' stamp: 'stp 12/29/2022 10:43'!testSoundOut
 	"Play a sound"
@@ -1020,7 +919,10 @@ Class Variables:
 		(i.e., do	you want to store events lists and sounds in the image or not)"	anAspect == #aboutToSnapshot		ifTrue: [instance release			"never store an IO object across snapshots"]! !!SirenSession class methodsFor: 'class var accessing'!atVoice: nam put: vox
 	"Add to the class's voice dictionary."
 
-	^Voices at: nam put: vox! !!SirenSession class methodsFor: 'class var accessing'!eventList: aName
+	^Voices at: nam put: vox! !!SirenSession class methodsFor: 'class var accessing' stamp: 'stp 1/28/2023 15:48'!data
+	"Answer the class's voice dictionary."
+
+	^ (#EventLists -> EventLists), (#Sounds -> Sounds), (#Voices -> Voices)! !!SirenSession class methodsFor: 'class var accessing'!eventList: aName
 	"Get the event list at the given (possibly hierarchical) name in the shared dictionary"
 	"SirenSession eventListNamed: 'aa/bb/cc' "
 
@@ -1197,15 +1099,15 @@ Class Variables:
 
 	instance ifNotNil: 
 		[instance release.
-		instance := nil]! !Model subclass: #SirenUtility	instanceVariableNames: ''	classVariableNames: 'DataDir DefaultMIDIIn DefaultMIDIOut DefaultOSCHost DefaultOSCPort LoggingStream ScoreDir SoundDir Verbosity'	poolDictionaries: ''	category: 'Music-Support'!!SirenUtility commentStamp: '<historical>' prior: 0!The class SirenUtility represents the package-level state of the Siren Framework. Its class methods answer a variety of Siren system variables such as default file directories.
+		instance := nil]! !Model subclass: #SirenUtility	instanceVariableNames: ''	classVariableNames: 'DataDir DefaultMIDIIn DefaultMIDIOut DefaultOSCHost DefaultOSCPort LoggingStream SampleDir ScoreDir SoundDir Verbosity'	poolDictionaries: ''	category: 'Music-Support'!!SirenUtility commentStamp: '<historical>' prior: 0!The class SirenUtility represents the package-level state of the Siren Framework. Its class methods answer a variety of Siren system variables such as default file directories.
 
 Class Variables:
 	DataDir <String> the default sound/score directory.
 	ScoreDir <String> the score directory.
 	SoundDir <String> the sound directory.
-!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SirenUtility class	instanceVariableNames: ''!!SirenUtility class methodsFor: 'class initialization' stamp: 'stp 1/20/2023 11:35'!initialize	"Edit these to taste for your installation."	"SirenUtility initialize"	"SirenSession initialize"	"SirenUtility dataDir"	"SirenSession eventLists"	"See also system-dependent setup in SirenUtility>>playSoundFile"		| sirenDir |	DefaultMIDIIn := 4.		"Tune these to your setup"	DefaultMIDIOut := 10.	DefaultOSCHost := #[127 0 0 1].	DefaultOSCPort := 54321.	PortModel initialize.	Verbosity := 1.				"0 = pretty silent;
+!"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SirenUtility class	instanceVariableNames: ''!!SirenUtility class methodsFor: 'class initialization' stamp: 'stp 2/6/2023 11:08'!initialize	"Edit these to taste for your installation."	"SirenUtility initialize"	"SirenSession initialize"	"SirenUtility dataDir"	"SirenUtility cslDir"	"SirenSession eventLists"	"See also system-dependent setup in SirenUtility>>playSoundFile"		| sirenDir |	DefaultMIDIIn := 4.		"Tune these to your setup"	DefaultMIDIOut := 10.	DefaultOSCHost := #[127 0 0 1].	DefaultOSCPort := 54321.	PortModel initialize.	Verbosity := 1.				"0 = pretty silent;
 								 1 = medium-verbose; 
-								 2 = full scheduler and interface logging"	LoggingStream = nil.		"logging output file"								"Look for Siren data and set search paths"	DataDir := #().	sirenDir := FileDirectory default name, '/Siren9C/'.	ScoreDir := OrderedCollection with: (sirenDir , 'Data') asSymbol.	"Scores"	self addDir: 'Scores' to: ScoreDir.	self addDir: 'MID' to: ScoreDir.	SoundDir := OrderedCollection with: (sirenDir , 'Data') asSymbol.	"Sound files"	self addDir: 'Sound' to: SoundDir.	self addDir: 'Samples' to: SoundDir.	DataDir := SoundDir copy.				"Basic data directory"	self addDir: 'Databases/*' to: SoundDir.	"STP-specific"	self addDir: '3-Credo/*' to: SoundDir.	"You can add using wildcards"	DataDir := SoundDir copy.				"Basic data directory"	DataDir addAll: SoundDir.	DataDir := DataDir asSet asOrderedCollection.	SirenSession initialize 					"Session setup"						! !!SirenUtility class methodsFor: 'logging' stamp: 'stp 1/17/2023 18:45'!ifVerbose: aBlock 	"Answer the class's default verbosity, 0/1/2."	"(SirenUtility verbosity > 0)"	"(SirenUtility verbosity > 1)"		Verbosity > 0		ifTrue: [aBlock value]! !!SirenUtility class methodsFor: 'logging' stamp: 'stp 12/26/2022 22:16:06'!log: theMessage
+								 2 = full scheduler and interface logging"	LoggingStream = nil.		"logging output file"								"Look for Siren data and set search paths"	DataDir := #().	sirenDir := FileDirectory default name, '/Siren9C/'.	ScoreDir := OrderedCollection with: (sirenDir , 'Data/') asSymbol.	"Scores"	self addDir: 'Scores' to: ScoreDir.	self addDir: 'MID' to: ScoreDir.	SoundDir := OrderedCollection with: (sirenDir , 'Data/') asSymbol.	"Sound files"	self addDir: 'Sound' to: SoundDir.	self addDir: 'Samples' to: SoundDir.	DataDir := SoundDir copy.				"Basic data directory"	self addDir: 'Databases/*' to: SoundDir.	"STP-specific"	self addDir: '3-Credo/*' to: SoundDir.	"You can add using wildcards"	DataDir := SoundDir copy.				"Basic data directory"	DataDir addAll: SoundDir.	DataDir := DataDir asSet asOrderedCollection.	SampleDir := 	(FileDirectory getenv: 'HOME'), '/Code/CSL7/Data/'.	SirenSession initialize 					"Session setup"						! !!SirenUtility class methodsFor: 'logging' stamp: 'stp 1/17/2023 18:45'!ifVerbose: aBlock 	"Answer the class's default verbosity, 0/1/2."	"(SirenUtility verbosity > 0)"	"(SirenUtility verbosity > 1)"		Verbosity > 0		ifTrue: [aBlock value]! !!SirenUtility class methodsFor: 'logging' stamp: 'stp 12/26/2022 22:16:06'!log: theMessage
 	"Log the given string to the Transcript (or otgher output stream) if the system verbosity is >= the given verbosity level"
 	"SirenUtility log: 'hello there' level: 0"
 
@@ -1225,10 +1127,13 @@ Class Variables:
 	^Verbosity! !!SirenUtility class methodsFor: 'logging'!verbosity: aNum
 	"Set the class's default verbosity, 0/1/2."
 
-	Verbosity := aNum! !!SirenUtility class methodsFor: 'class var accessing'!dataDir
+	Verbosity := aNum! !!SirenUtility class methodsFor: 'class var accessing' stamp: 'stp 2/6/2023 11:05'!cslDir
+	"Answer the class's default CSL sample data storage directory."
+	"SirenUtility cslDir"	
+	^SampleDir! !!SirenUtility class methodsFor: 'class var accessing' stamp: 'stp 2/14/2023 11:37'!dataDir
 	"Answer the class's default data storage directory."
-
-	^DataDir! !!SirenUtility class methodsFor: 'class var accessing'!defaultMIDIIn
+	"SirenUtility dataDir"	
+	^DataDir first! !!SirenUtility class methodsFor: 'class var accessing'!defaultMIDIIn
 	"Answer the class's default MIDI input device."
 
 	^DefaultMIDIIn! !!SirenUtility class methodsFor: 'class var accessing' stamp: 'stp 1/5/2023 11:47'!defaultMIDIIn: num 	"Set the class's default MIDI input device."	DefaultMIDIIn := num.! !!SirenUtility class methodsFor: 'class var accessing'!defaultMIDIOut
@@ -1246,7 +1151,10 @@ Class Variables:
 	^DefaultOSCPort! !!SirenUtility class methodsFor: 'class var accessing'!defaultOSCPort: num
 	"Set the class's default OSC port #."
 
-	DefaultOSCPort := num! !!SirenUtility class methodsFor: 'class var accessing'!scoreDir
+	DefaultOSCPort := num! !!SirenUtility class methodsFor: 'class var accessing' stamp: 'stp 2/6/2023 11:04'!sampleDir
+	"Answer the class's default CSL sample data storage directory."
+	"SirenUtility sampleDir"	
+	^SampleDir! !!SirenUtility class methodsFor: 'class var accessing'!scoreDir
 	"Answer the class's default score storage directory."
 
 	^ScoreDir! !!SirenUtility class methodsFor: 'class var accessing'!soundDir
@@ -1329,7 +1237,7 @@ Class Variables:
 	"SirenUtility findDir: 'Data' tryHard: false"
 	"SirenUtility findDir: 'Frameworks' tryHard: true"
 
-	^self findDir: dir tryHard: false! !!SirenUtility class methodsFor: 'file support' stamp: 'stp 1/21/2023 12:35'!findDir: dir tryHard: aggressive 	"Try to locate the requested directory either locally or globally"	"SirenUtility findDir: 'Data' tryHard: false"	"SirenUtility findDir: 'Frameworks' tryHard: true"	"SirenUtility findDir: '3-Credo' tryHard: true"		| fsep home |	((FileDirectory default) fileExists: dir)		ifTrue: [ ^ dir].									"if local"	fsep := FileDirectory separatorString.	((FileDirectory default) fileExists: (fsep , dir))		ifTrue: [ ^ fsep , dir].							"if at /X"	home := MacOSShell new getenv: 'HOME'.	((FileDirectory default) fileExists: (home , fsep , dir))		ifTrue: [ ^ home , fsep , dir].					"if in $HOME"	(FileDirectory default fileNamesMatching: '*') do: 			[ :each |									 "if in *"			((FileDirectory default) fileExists: (each , fsep , dir))				ifTrue: [^ each , fsep , dir]].	DataDir do: [ :dDir | | fnd | 						"if in DataDir"			((FileDirectory default directoryNamed: dDir) directoryNamesMatching: '*') do: 					[ :sDir |					 (sDir findString: dir startingAt: 1) ~= 0						ifTrue: [ ^ dDir , fsep , dir]].			(dDir findString: dir asString startingAt: 1) = 0				ifTrue: [fnd := self findFile: dir in: dDir.					fnd isEmpty ifFalse: [ ^ fnd]]				ifFalse: []].	aggressive ifFalse: [^ nil].	(FileDirectory default fileNamesMatching: (home , fsep , '*')) do: 			[ :each |									"if in ~/*"			((FileDirectory default) fileExists: (each , fsep , dir))				ifTrue: [^ each , fsep , dir]].	(FileDirectory default fileNamesMatching: home , fsep , 'Smalltalk' , fsep , '*') do: 			[ :each |									"if in ~/Smalltalk/*"			((FileDirectory default) fileExists: (each , fsep , dir))				ifTrue: [^ each , fsep , dir]].	^ nil! !!SirenUtility class methodsFor: 'file support' stamp: 'stp 12/31/2022 07:43'!findFile: fil 	"Try to locate the requested file in the data directories, being smart	about s7 files"	"SirenUtility findFile: 'b.snd'"	"SirenUtility findFile: '1.1a.aiff'"	| nam ans base s7 |	(FileDirectory default fileExists: fil)		ifTrue: [^FileDirectory default fullNameFor: fil].	DataDir isString		ifTrue: [nam := DataDir , FileDirectory separatorString , fil.			(FileDirectory default fileExists: nam)				ifTrue: [^ nam]]		ifFalse: [DataDir				do: [:dir | 					ans := self findFile: fil in: dir.					ans isEmpty						ifFalse: [^ ans]]].	(fil findString: '.s7' startingAt: 1)			= 0		ifFalse: [^ nil].	(fil includes: $.)		ifTrue: ["if not found, look for an s7 folder"			base := FileDirectory default fullNameFor: fil.			s7 := base , 's7'.			s7 := self findFile: s7.			s7				ifNotNil: [nam := s7 , FileDirectory separatorString , fil.					(FileDirectory default fileExists: nam)						ifTrue: [^ nam]].			base := base copyFrom: 1 to: base size - 1.			"try again removing the next-to-last suffix"			s7 := (FileDirectory default fullNameFor: fil) , 's7'.			s7 := self findFile: s7.			s7				ifNotNil: [nam := s7 , FileDirectory separatorString , fil.					(FileDirectory default fileExists: nam)						ifTrue: [^ nam]]].	^ nil! !!SirenUtility class methodsFor: 'file support' stamp: 'stp 1/20/2023 11:36'!findFile: fil in: theDir 	"Try to locate the requested file in the given directory, being smart	about s7 files"	"SirenUtility findFile: 'b.snd'"	"SirenUtility findFile: '1.1a.aiff'"	"SirenUtility findFile: '1.2a1.aiff'"	| nam ans |	(theDir includes: $*)		ifTrue: [(FileDirectory default fileNamesMatching: theDir)				do: [:dir2 | 					(FileDirectory localNameFor: dir2) = fil						ifTrue: [^ dir2].					 (FileDirectory directoryExists: dir2)						ifTrue: [ans := self findFile: fil in: dir2.							ans isEmpty								ifFalse: [^ ans]]]]		ifFalse: [nam := theDir , FileDirectory separatorString , fil.			(FileDirectory default fileExists: nam)				ifTrue: [^ nam].			(FileDirectory default fileNamesMatching: theDir , FileDirectory separatorString , '*.s7')				do: [:dir2 | 					nam := theDir , FileDirectory separatorString , fil.					(FileDirectory fileOrDirectoryExists: nam)						ifTrue: [^FileDirectory fullPathFor: nam]]].	^ ''! !!SirenUtility class methodsFor: 'file support'!findFiles: ext
+	^self findDir: dir tryHard: false! !!SirenUtility class methodsFor: 'file support' stamp: 'stp 2/6/2023 11:02'!findDir: dir tryHard: aggressive 	"Try to locate the requested directory either locally or globally"	"SirenUtility findDir: 'Data' tryHard: false"	"SirenUtility findDir: 'Frameworks' tryHard: true"	"SirenUtility findDir: '3-Credo' tryHard: true"		| fsep home |	((FileDirectory default) fileExists: dir)		ifTrue: [ ^ dir].									"if local"	fsep := FileDirectory separatorString.	((FileDirectory default) fileExists: (fsep , dir))		ifTrue: [ ^ fsep , dir].							"if at /X"	home := FileDirectory getenv: 'HOME'.	((FileDirectory default) fileExists: (home , fsep , dir))		ifTrue: [ ^ home , fsep , dir].					"if in $HOME"	(FileDirectory default fileNamesMatching: '*') do: 			[ :each |									 "if in *"			((FileDirectory default) fileExists: (each , fsep , dir))				ifTrue: [^ each , fsep , dir]].	DataDir do: [ :dDir | | fnd | 						"if in DataDir"			((FileDirectory default directoryNamed: dDir) directoryNamesMatching: '*') do: 					[ :sDir |					 (sDir findString: dir startingAt: 1) ~= 0						ifTrue: [ ^ dDir , fsep , dir]].			(dDir findString: dir asString startingAt: 1) = 0				ifTrue: [fnd := self findFile: dir in: dDir.					fnd isEmpty ifFalse: [ ^ fnd]]				ifFalse: []].	aggressive ifFalse: [^ nil].	(FileDirectory default fileNamesMatching: (home , fsep , '*')) do: 			[ :each |									"if in ~/*"			((FileDirectory default) fileExists: (each , fsep , dir))				ifTrue: [^ each , fsep , dir]].	(FileDirectory default fileNamesMatching: home , fsep , 'Smalltalk' , fsep , '*') do: 			[ :each |									"if in ~/Smalltalk/*"			((FileDirectory default) fileExists: (each , fsep , dir))				ifTrue: [^ each , fsep , dir]].	^ nil! !!SirenUtility class methodsFor: 'file support' stamp: 'stp 2/6/2023 07:36'!findFile: fil 	"Try to locate the requested file in the data directories, being smart	about s7 files"	"SirenUtility findFile: 'b.snd'"	"SirenUtility findFile: '1.1a.aiff'"	| nam ans base s7 |	(FileDirectory default fileExists: fil)		ifTrue: [^FileDirectory default fullNameFor: fil].	DataDir isString		ifTrue: [nam := DataDir , fil.			(FileDirectory default fileExists: nam)				ifTrue: [^ nam]]		ifFalse: [DataDir				do: [:dir | 					ans := self findFile: fil in: dir.					ans isEmpty						ifFalse: [^ ans]]].	(fil findString: '.s7' startingAt: 1)			= 0		ifFalse: [^ nil].	(fil includes: $.)		ifTrue: ["if not found, look for an s7 folder"			base := FileDirectory default fullNameFor: fil.			s7 := base , 's7'.			s7 := self findFile: s7.			s7				ifNotNil: [nam := s7 , FileDirectory separatorString , fil.					(FileDirectory default fileExists: nam)						ifTrue: [^ nam]].			base := base copyFrom: 1 to: base size - 1.			"try again removing the next-to-last suffix"			s7 := (FileDirectory default fullNameFor: fil) , 's7'.			s7 := self findFile: s7.			s7				ifNotNil: [nam := s7 , FileDirectory separatorString , fil.					(FileDirectory default fileExists: nam)						ifTrue: [^ nam]]].	^ nil! !!SirenUtility class methodsFor: 'file support' stamp: 'stp 1/20/2023 11:36'!findFile: fil in: theDir 	"Try to locate the requested file in the given directory, being smart	about s7 files"	"SirenUtility findFile: 'b.snd'"	"SirenUtility findFile: '1.1a.aiff'"	"SirenUtility findFile: '1.2a1.aiff'"	| nam ans |	(theDir includes: $*)		ifTrue: [(FileDirectory default fileNamesMatching: theDir)				do: [:dir2 | 					(FileDirectory localNameFor: dir2) = fil						ifTrue: [^ dir2].					 (FileDirectory directoryExists: dir2)						ifTrue: [ans := self findFile: fil in: dir2.							ans isEmpty								ifFalse: [^ ans]]]]		ifFalse: [nam := theDir , FileDirectory separatorString , fil.			(FileDirectory default fileExists: nam)				ifTrue: [^ nam].			(FileDirectory default fileNamesMatching: theDir , FileDirectory separatorString , '*.s7')				do: [:dir2 | 					nam := theDir , FileDirectory separatorString , fil.					(FileDirectory fileOrDirectoryExists: nam)						ifTrue: [^FileDirectory fullPathFor: nam]]].	^ ''! !!SirenUtility class methodsFor: 'file support'!findFiles: ext
 	"Answer all of the files in the user's data folders with the given filename extension"
 	"SirenUtility findFiles: 'au'"
 	"SirenUtility findFiles: 'mid'"

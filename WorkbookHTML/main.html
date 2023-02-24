@@ -1395,10 +1395,10 @@ The extended DynamicSelectionCloud uses a multi-part pitch set  of the format (t
 </br>
 As an example of a more sophisticated event generator, Mark Lentczner's bell peals ring the changes.</br>
 </br>
-&emsp;[(Peal upon: #(60 62 65)) eventList open]</br>
+&emsp;[(Peal on: #(60 62 65)) eventList open]</br>
 </br>
 &emsp;[ | peal list |</br>
-&emsp;peal := Peal upon: #(60 62 65 67).</br>
+&emsp;peal := Peal on: #(60 62 65 67).</br>
 &emsp;list := EventList new.</br>
 &emsp;peal playOn: list durations: 240 meter: 100 at: 0.</br>
 "&emsp;list voice: #marimba."</br>
@@ -1433,228 +1433,502 @@ One can get an event generator's event list and process it using Smalltalk code 
 Extending EventGenerators</br>
 </br>
 New kinds of event generator can be programmed with constructor and eventList: methods. The framework facilitates the design of fancier behaviors and parameterized event generators.</br>
-</p><hr><h3 id="Score11EventGenerators">14 - Score11 EventGenerators</h3>Score11-in-Siren is a port of the Score11 music description language; see https://www.esm.rochester.edu/ears/docs/score11/index.html</br>
+</p><hr><h3 id="Score11EventGenerators">14 - Score11 EventGenerators</h3>Test Workspace - stp - 230128</br>
 </br>
-Score11 is a derivative of Leland Smith SCORE language; ikt is equally well suited for transcribing music from traditional Western music notation as for describing algorithmic composition structures.  See the 2022 ICMC paper in the Doc folder for details.</br>
+Known bugs</br>
+&emsp;TSV selection update</br>
+&emsp;PTV time-region selection(?)</br>
+&emsp;DLV selection handles scale with zoom</br>
+&emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
+&emsp;Ostinato doesn't wait right.</br>
 </br>
+ToDo</br>
+&emsp;MIDI input: kbd & ctrlrs</br>
+&emsp;Function & Sound editors</br>
+&emsp;CSL vocoder resynth stage</br>
+&emsp;New transport panel</br>
 </br>
-Examples of original Score11</br>
+Post-build testing</br>
 </br>
-Format of an instrument block</br>
+Test plug-ins</br>
 </br>
+&emsp;CStandardLibrary new abs: -42 </br>
+&emsp;FFITestLibrary ffiPrintString: 'Hello' </br>
+&emsp;FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0</br>
+&emsp;FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 </br>
+&emsp;[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]</br>
+&emsp;[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]</br>
 </br>
-instrument 1 0 10;&emsp;< Instrument 1 starts at time 0 and plays for 10 beats.</br>
-&emsp;parameter 3 1; &emsp;< Each note lasts 1 beat</br>
-end;          &emsp;&emsp;&emsp;&emsp;< This finishes the instrument block</br>
+&emsp;[Undeclared inspect]</br>
+&emsp;[Smalltalk garbageCollect]</br>
+&emsp;[Utilities openUsefulExpressions]</br>
+&emsp;[DirectoryEntry currentDirectory]</br>
+&emsp;[DependentsFields]</br>
+&emsp;[MIDIPort allNotesOff]</br>
+&emsp;[MIDIPort cleanUp]</br>
 </br>
-A simple melody</br>
+New Siren GUI Tools</br>
 </br>
+&emsp;[SirenSession openUtilityVert]</br>
+&emsp;[VoiceDialog open]</br>
 </br>
-i1 0 5;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;< instrument 0 for 5 seconds</br>
-&emsp;p3 rh 4/8*6/4;&emsp;&emsp;&emsp;&emsp;< rhythmic values, 1/4 note, then 6 1/8 notes...</br>
-&emsp;p4 no c4/d/e/f/g/a/b/c5;&emsp;< pitches as note names</br>
-&emsp;p5 1.0 3.0 5.0;    &emsp;&emsp;&emsp;< select 100% of values between 3.0 and 5.0 for amplitude</br>
-&emsp;p6 mo 5 1000 2000;&emsp;&emsp;< move from 1000 to 2000 in 5 beats for parameter 6</br>
-end;</br>
+==================================</br>
 </br>
-Standard parameter maps -- the SCORE-11 constant parameter meanings are:</br>
+Display list view examples</br>
 </br>
-      p1 = Instrument number</br>
-      p2 = Starting time for this note (in beats) (not normally used)</br>
-      p3 = Duration for this note (in beats)</br>
-      p4 = Pitch (or frequency)</br>
-      p5 = Amplitude value (0 - 32000)</br>
+&emsp;[DisplayListView exampleRectangles]</br>
+&emsp;[DisplayRectangle rectangleExample2]&emsp;&emsp;"slow - uses rotated rects"</br>
+&emsp;[DisplayListView exampleLines]</br>
+&emsp;[DisplayListView examplePolylines]</br>
+&emsp;[DisplayListView exampleVisuals]</br>
+&emsp;[(DisplayList stringsX: 6000 byY: 10000) display]</br>
+&emsp;[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
+&emsp;[DisplayList exampleHierarchical display]</br>
 </br>
-Score11-in-Smalltalk examples</br>
+&emsp;Display the old and new glyph catalogs</br>
 </br>
-A simple scale</br>
+&emsp;[DisplayVisual displayMusicConstants]&emsp;&emsp;</br>
+&emsp;[DisplayVisual displayMusicGlyphs]&emsp;</br>
 </br>
+Music notation demos</br>
 </br>
-&emsp;[ | s11 |</br>
-&emsp;s11 := (Score11 instr: 1 from: 0 to: 5)</br>
-&emsp;&emsp;add: #p3 -> (#rh -> '4/8*6/4');</br>
-&emsp;&emsp;add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c');</br>
-&emsp;&emsp;add: #p5 -> #(1.0 0.2 2.0);</br>
-&emsp;&emsp;add: #p6 -> (#mo -> #(5 1000 2000)).</br>
-&emsp;s11 open]</br>
+&emsp;[TimeSequenceView randomExample]</br>
+&emsp;[PitchTimeView randomExample]</br>
+&emsp;[PitchTimeView randomExample2]</br>
+&emsp;[EventList randomSWSSExample2 editPTV]</br>
+&emsp;[HauerSteffensView randomExampleQ]</br>
+&emsp;[HauerSteffensView cloudExample]</br>
+&emsp;[HauerSteffensView cloudsExample]</br>
+&emsp;[HauerSteffensView cloudsExample2]</br>
+&emsp;[DynamicCloud focusExample]</br>
+&emsp;[HauerSteffensView scaleExample]</br>
+&emsp;[HauerSteffensView scaleExample2]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]</br>
+&emsp;[EventList accellExample open]</br>
 </br>
-Show just the rhythm</br>
+Advanced Event Generators</br>
 </br>
+&emsp;[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]</br>
+&emsp;[Arpeggio example1]&emsp;&emsp; "Plays midi"</br>
 </br>
-&emsp;[TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> '4//8////4//'); </br>
-&emsp;&emsp;add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); </br>
-&emsp;&emsp;add: #p5 -> #(1.0 1.0 5.0); </br>
-&emsp;&emsp;add: #p6 -> (#mo -> #(5 1000 2000))) </br>
-&emsp;eventList]</br>
+&emsp;[Score11 melody1]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample2]</br>
 </br>
-Rhythmic example using triplets (1/6 notes)</br>
+Function views</br>
 </br>
+&emsp;[Function functionViewExample]</br>
+&emsp;[FunctionView multiFunctionExample]</br>
+&emsp;[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]</br>
 </br>
-&emsp;[TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> '4/8*4/6*3/4/'); </br>
-&emsp;&emsp;add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); </br>
-&emsp;&emsp;add: #p5 -> (#mo -> #(10 10 100));</br>
-&emsp;&emsp;add: #p6 -> #(1.0 -1.0 1.0)) </br>
-&emsp;eventList]</br>
+--------------------------</br>
 </br>
-Example with add'l parameters</br>
+Roll timing tests</br>
 </br>
-</br>
-&emsp;[ | s11 |</br>
-&emsp;s11 := ((Score11 instr: 1 from: 0 to: 10) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> '4/8*4/6*3/4/'); </br>
-&emsp;&emsp;add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); </br>
-&emsp;&emsp;add: #p5 -> (#mo -> #(10 10 100));</br>
-&emsp;&emsp;add: #p6 -> #(1.0 -1.0 1.0);</br>
-&emsp;&emsp;add: #p7 -> #(0.5 1 2  0.5 100 200);</br>
-&emsp;&emsp;add: #p8 -> (#se -> '10 1 3 5 7 9');</br>
-&emsp;&emsp;add: #p9 -> (#mx -> #(10 1 100))).</br>
-&emsp;s11 assign: #p6 to: #position:.</br>
-&emsp;s11 assign: #p7 to: #attack:.</br>
-&emsp;s11 eventList explore ]</br>
-</br>
-Demonstrate multi-segment moves</br>
-</br>
-</br>
-&emsp;[ | s11 |&emsp;&emsp;&emsp;</br>
-&emsp;s11 := ((Score11 instr: 1 from: 0 to: 10) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> 16); </br>
-&emsp;&emsp;add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c'); &emsp;&emsp;"play a scale"</br>
-&emsp;&emsp;add: #p5 -> (#mo -> '7 0.2 2.0 / 3 2.0 0.2')).&emsp;&emsp;"crescendo/decrescendo"</br>
-&emsp;s11 tempo: #(10 60 120).</br>
-&emsp;s11 eventList removeLast editPTV ]</br>
-</br>
-Test dotted values</br>
-</br>
-</br>
-&emsp;[ | s11 |&emsp;&emsp;&emsp;</br>
-&emsp;s11 := ((Score11 instr: 1 from: 0 to: 10) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> '4/4./4../8'); </br>
-&emsp;&emsp;add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); </br>
-&emsp;&emsp;add: #p5 -> (#mo -> #(7 5 100  3 100 5))).</br>
-&emsp;s11 tempo: #(10 60 120).</br>
-&emsp;s11 eventList inspect ]</br>
-</br>
-Test rests</br>
-</br>
-</br>
-&emsp;[ | s11 |&emsp;</br>
-&emsp;s11 := ((Score11 instr: 1 from: 0 to: 10) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> '4/-4/8/-8'); </br>
-&emsp;&emsp;add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); </br>
-&emsp;&emsp;add: #p5 -> (#mo -> '7 5 100 / 3 100 5')).</br>
-&emsp;s11 tempo: #(10 60 120).</br>
-&emsp;s11 eventList inspect ]</br>
-</br>
-Test complex movex - 5 sec low-to-high pitch ranges, then 4 sec constant, then 6 sec move back to low pitch</br>
-</br>
-</br>
-&emsp;[ | s11 |</br>
-&emsp;s11 := ((Score11 instr: 1 from: 0 to: 15) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> '16/'); </br>
-&emsp;&emsp;add: #p4 -> (#mx -> '5 100 120 , 2000 2400 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;4 2050 2060 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;6 2000 2100 , 700 1100' )).&emsp;&emsp;&emsp;</br>
-&emsp;s11 eventList explore ]</br>
-</br>
-Test complex movex 2 - more pitch range testing</br>
-</br>
-</br>
-&emsp;[ | s11 |</br>
-&emsp;s11 := ((Score11 instr: 1 from: 0 to: 8) </br>
-&emsp;&emsp;add: #p3 -> (#rh -> '32/'); </br>
-&emsp;&emsp;add: #p4 -> (#mx -> '3 140 190 , 400 440 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;2 440 460 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;3 400 400 , 150 250' )).</br>
-&emsp;s11 eventList editPTV ]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList </br>
+&emsp;&emsp;&emsp;&emsp;&emsp;playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]</br>
 </br>
 ----</br>
 </br>
-Gesture from BatOutOfHell (STP 1983) Part 1</br>
+MIDI Tests</br>
 </br>
-&emsp;[ | s11 |</br>
-&emsp;s11 := ((Score11 instr: 1 from: 0 to: 120) </br>
-&emsp;&emsp;add: #p3 -> (#mx -> '15 .4 .5 , .05 .14 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;15 .1 .15 , .5 .4 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;20 .5 .3 , .1 .13 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;25 .2 .1 , .6 .6 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;25 .5 .7 , .1 .06 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;20 .12 .08 , .5 .5'); </br>
-&emsp;&emsp;add: #p4 -> (#mx -> '20 2000 3000 , 2000 2100 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;20 2050 2050 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;30 2000 2100 , 2200 1600 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;20 2400 2500 , 2800 2000 /</br>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;30 2400 2400 , 2200 2100'); </br>
-&emsp;&emsp;add: (#p5 -> 70);</br>
-&emsp;&emsp;add: #p6 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .9 1.1');</br>
-&emsp;&emsp;add: #p7 -> #(1.0 -1.0 1.0) ).</br>
-&emsp;s11 du: 303.</br>
-&emsp;s11 assign: #p6 to: #gliss:.</br>
-&emsp;s11 assign: #p7 to: #position:.</br>
-&emsp;s11 eventList explore ]</br>
+&emsp;[PortMIDILibrary pm_count_devices ]</br>
+&emsp;[PortMIDILibrary pm_default_input_device ] </br>
+&emsp;[PortMIDILibrary pm_default_output_device ] </br>
+&emsp;PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
+&emsp;[PortMIDIPort listDeviceTable]</br>
+&emsp;[PortMIDILibrary testAllNotes]</br>
+&emsp;[ExternalLibrary clearAllCaches.]</br>
+&emsp;[PortMIDILibrary pm_terminate]</br>
+&emsp;[MIDIVoice scaleExample]</br>
+&emsp;[MIDIVoice randomExample]</br>
+</br>
+Various verbose MIDIVoice creation methods</br>
+</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice on: </br>
+&emsp;&emsp;&emsp;(MIDIDevice </br>
+&emsp;&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
+&emsp;&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
+&emsp;&emsp;&emsp;channel: 3)]</br>
+&emsp;[PortMIDIPort streams]</br>
+&emsp;[EventList multiVoiceExample playOn: MIDIVoice default]</br>
+</br>
+OSC Tests</br>
+</br>
+&emsp;Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
+</br>
+&emsp;1 - 10 ---- 10 plucked strings</br>
+&emsp;&emsp; "fff" - amp, pitch, pos</br>
+&emsp;11 - 20 ---- 10 FM instruments</br>
+&emsp;&emsp;"ffff" - dur amp pitch pos</br>
+&emsp;&emsp;"ffffff" - dur, ampl, c_fr, m_fr, ind, pos</br>
+&emsp;21 - 30 ---- 10 FM bells</br>
+&emsp;&emsp; "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos</br>
+&emsp;31 - 34 ---- 4 sound files (words)</br>
+&emsp;&emsp;"ff" - amp, pos</br>
+&emsp;35 - 50 ---- 16 SHARC SOS voices (different instruments)</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;62 - 63 ---- 2 granular scramblers</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;64 - 67 ---- 4 granular shifters</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;68-75 ---- 8 SoundFont sample players</br>
+&emsp;&emsp;"fffff" - dur, chan, key, ampl, pos</br>
+&emsp;&emsp;"s" - load sound file given full file name (cmd 156 = set_file_f)</br>
+</br>
+&emsp;[EventScheduler interrupt; flush]</br>
+&emsp;[OSCVoice fmExample1]</br>
+&emsp;[OSCVoice fmExample2]</br>
+&emsp;[OSCVoice pluckExample1]</br>
+&emsp;[OSCVoice sndExample1]</br>
+&emsp;[OSCVoice sndExample2]</br>
+&emsp;[OSCVoice sharcExample1]</br>
+&emsp;[OSCVoice bellExample1]</br>
+&emsp;[OSCVoice vSOSExample1]</br>
+&emsp;[OSCVoice granulatorExample1]</br>
+&emsp;[OSCVoice granulatorExample2: 1]</br>
+</br>
+SoundFont Sampler tests</br>
+</br>
+&emsp;[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]</br>
+</br>
+SndSynth Tests</br>
+</br>
+&emsp;ScorePlayerMorph new openMIDIFile - fix this</br>
+</br>
+----------------------------------------------------------------------------</br>
+----------------------------------------------------------------------------</br>
+</br>
+Music Font debugging</br>
+</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]</br>
+&emsp;&emsp;&emsp;&emsp;</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC]</br>
+</br>
+[(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) </br>
+&emsp;&emsp;displayOn: Display at: (256@256) clippingBox: Display boundingBox </br>
+&emsp;&emsp;rule: Form paint fillColor: Color black]</br>
+</br>
+[DisplayListView loadNoteGlyphsFromFontSized: 100]"&emsp;"load music icons from the font"</br>
+DisplayVisual displayMusicGlyphs</br>
+</br>
+</br>
+(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEdit</br>
+Offsets:</br>
+&emsp;1/1 -> 6 @ 66</br>
+&emsp;1/2 -> 5 @ 66</br>
+(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit</br>
+&emsp;Offsets (5 @ 45)</br>
+</br>
+----</br>
+</br>
+Loading transport icons</br>
+</br>
+[ | folder |</br>
+&emsp;DisplayListView glyphs at: #Transport put: Dictionary new.</br>
+&emsp;folder := (FileDirectory default directoryNamed: </br>
+&emsp;&emsp;&emsp;&emsp;'Siren9C/Data/Fonts/transport_icons') name, '/'.</br>
+&emsp;((FileDirectory on: folder) fileNamesMatching: '*.png') do:</br>
+&emsp;[ :jpg | | form |</br>
+&emsp;form := (Form fromFileNamed: folder, jpg).</br>
+&emsp;form := form scaledToSize: 16 @ 16.</br>
+&emsp;(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]]</br>
+</br>
+[ | gly right down left up |</br>
+gly := DisplayListView glyphs at: #Transport.</br>
+right := gly at: #'right-arrow'.</br>
+down := right rotateBy: #right centerAt: 0@0.</br>
+left := right rotateBy: #pi centerAt: 0@0.</br>
+up := right rotateBy: #left centerAt: 0@0.</br>
+gly at: #'down-arrow' put: down.</br>
+gly at: #'left-arrow' put: left.</br>
+gly at: #'up-arrow' put: up.</br>
+</br>
+right := gly at: #'fast-forward'.</br>
+down := right rotateBy: #pi centerAt: 0@0.</br>
+gly at: #'rewind' put: down.</br>
+</br>
+]</br>
+</br>
+[(DisplayListView glyphs at: #Transport) explore]</br>
+</br>
+[DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7</br>
+&emsp;&emsp;keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )</br>
+&emsp;&emsp;into: #StdNoteIcons.</br>
+DisplayListView shrinkGlyphs.</br>
+DisplayListView tweakGlyphs]</br>
+</br>
+[DisplayVisual displayMusicGlyphs: #StdNoteIcons]</br>
+[HauerSteffensView scaleExample]</br>
+[HauerSteffensView scaleExample2]</br>
+[EventList accellExample edit]</br>
 </br>
 </br>
 </br>
-Keywords requiring a parameter number:</br>
-&emsp;1. funcs (not implemented)</br>
-&emsp;2. move - move "number of beats for change" "first value" "second value"</br>
-&emsp;3. movex - movex "number of beats for change" "first value" "second value"</br>
-&emsp;4. notes - symbolic note names</br>
-&emsp;5. numbers - numerical sequences</br>
-&emsp;6. rhythms - rhythmic notations</br>
-&emsp;7. rlist</br>
-&emsp;8. rnotes</br>
-&emsp;9. sets - selection from sets</br>
 </br>
-Keywords not using a parameter number:</br>
-&emsp;1. ampfac</br>
-&emsp;2. beat</br>
-&emsp;3. duty_factor</br>
-&emsp;4. end</br>
-&emsp;5. instrument (valid as 'i')</br>
-&emsp;6. parameter (valid as 'p')</br>
-&emsp;7. rdeviation</br>
-&emsp;8. rrests</br>
-&emsp;9. rseed</br>
-&emsp;10. tempo</br>
-&emsp;11. tfactor</br>
-</p><hr><h3 id="EventModifiersandMappingFunctions">15 - EventModifiers and Mapping Functions</h3>Using EventModifiers</br>
+</p><hr><h3 id="EventModifiersandMappingFunctions">15 - EventModifiers and Mapping Functions</h3>Test Workspace - stp - 230128</br>
 </br>
-One can apply functions to the properties of event lists, as in the following example, which creates a drum roll and applies a crescendo modifier to it.</br>
+Known bugs</br>
+&emsp;TSV selection update</br>
+&emsp;PTV time-region selection(?)</br>
+&emsp;DLV selection handles scale with zoom</br>
+&emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
+&emsp;Ostinato doesn't wait right.</br>
 </br>
-&emsp;[ | roll decresc |</br>
-&emsp;roll := ((Roll length: 3 rhythm: 0.06 note: 60) ampl: 120) eventList.</br>
-&emsp;decresc := Swell function: (ExponentialFunction from: #((0 0 2) (1 2))).</br>
-&emsp;decresc applyTo: roll.</br>
-&emsp;roll editPTV]</br>
+ToDo</br>
+&emsp;MIDI input: kbd & ctrlrs</br>
+&emsp;Function & Sound editors</br>
+&emsp;CSL vocoder resynth stage</br>
+&emsp;New transport panel</br>
 </br>
-Similarly, the following changes the tempo of the drum roll.</br>
+Post-build testing</br>
 </br>
-&emsp;[ | roll rub |</br>
-&emsp;roll := ((Roll length: 5 rhythm: 0.1 note: 60) ampl: 80) eventList.</br>
-&emsp;rub := Rubato function: (LinearFunction from: #((0 1) (1 2))).</br>
-&emsp;rub applyTo: roll.</br>
-&emsp;roll editPTV]</br>
+Test plug-ins</br>
 </br>
-or this example, where the rubato is a sine curve with an offset</br>
+&emsp;CStandardLibrary new abs: -42 </br>
+&emsp;FFITestLibrary ffiPrintString: 'Hello' </br>
+&emsp;FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0</br>
+&emsp;FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 </br>
+&emsp;[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]</br>
+&emsp;[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]</br>
 </br>
-&emsp;[ | roll sin rub |</br>
-&emsp;roll := ((Roll length: 5 rhythm: 0.15 note: 60) ampl: 80) eventList.</br>
-&emsp;sin := (FourierSummation from: #((1 0.1 0))) + 1.0.</br>
-&emsp;rub := Rubato function: sin.</br>
-&emsp;rub applyTo: roll.</br>
-&emsp;roll editPTV]</br>
+&emsp;[Undeclared inspect]</br>
+&emsp;[Smalltalk garbageCollect]</br>
+&emsp;[Utilities openUsefulExpressions]</br>
+&emsp;[DirectoryEntry currentDirectory]</br>
+&emsp;[DependentsFields]</br>
+&emsp;[MIDIPort allNotesOff]</br>
+&emsp;[MIDIPort cleanUp]</br>
 </br>
-All of these work by sending the message,</br>
+New Siren GUI Tools</br>
+</br>
+&emsp;[SirenSession openUtilityVert]</br>
+&emsp;[VoiceDialog open]</br>
+</br>
+==================================</br>
+</br>
+Display list view examples</br>
+</br>
+&emsp;[DisplayListView exampleRectangles]</br>
+&emsp;[DisplayRectangle rectangleExample2]&emsp;&emsp;"slow - uses rotated rects"</br>
+&emsp;[DisplayListView exampleLines]</br>
+&emsp;[DisplayListView examplePolylines]</br>
+&emsp;[DisplayListView exampleVisuals]</br>
+&emsp;[(DisplayList stringsX: 6000 byY: 10000) display]</br>
+&emsp;[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
+&emsp;[DisplayList exampleHierarchical display]</br>
+</br>
+&emsp;Display the old and new glyph catalogs</br>
+</br>
+&emsp;[DisplayVisual displayMusicConstants]&emsp;&emsp;</br>
+&emsp;[DisplayVisual displayMusicGlyphs]&emsp;</br>
+</br>
+Music notation demos</br>
+</br>
+&emsp;[TimeSequenceView randomExample]</br>
+&emsp;[PitchTimeView randomExample]</br>
+&emsp;[PitchTimeView randomExample2]</br>
+&emsp;[EventList randomSWSSExample2 editPTV]</br>
+&emsp;[HauerSteffensView randomExampleQ]</br>
+&emsp;[HauerSteffensView cloudExample]</br>
+&emsp;[HauerSteffensView cloudsExample]</br>
+&emsp;[HauerSteffensView cloudsExample2]</br>
+&emsp;[DynamicCloud focusExample]</br>
+&emsp;[HauerSteffensView scaleExample]</br>
+&emsp;[HauerSteffensView scaleExample2]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]</br>
+&emsp;[EventList accellExample open]</br>
+</br>
+Advanced Event Generators</br>
+</br>
+&emsp;[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]</br>
+&emsp;[Arpeggio example1]&emsp;&emsp; "Plays midi"</br>
+</br>
+&emsp;[Score11 melody1]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample2]</br>
+</br>
+Function views</br>
+</br>
+&emsp;[Function functionViewExample]</br>
+&emsp;[FunctionView multiFunctionExample]</br>
+&emsp;[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]</br>
+</br>
+--------------------------</br>
+</br>
+Roll timing tests</br>
+</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList </br>
+&emsp;&emsp;&emsp;&emsp;&emsp;playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]</br>
+</br>
+----</br>
+</br>
+MIDI Tests</br>
+</br>
+&emsp;[PortMIDILibrary pm_count_devices ]</br>
+&emsp;[PortMIDILibrary pm_default_input_device ] </br>
+&emsp;[PortMIDILibrary pm_default_output_device ] </br>
+&emsp;PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
+&emsp;[PortMIDIPort listDeviceTable]</br>
+&emsp;[PortMIDILibrary testAllNotes]</br>
+&emsp;[ExternalLibrary clearAllCaches.]</br>
+&emsp;[PortMIDILibrary pm_terminate]</br>
+&emsp;[MIDIVoice scaleExample]</br>
+&emsp;[MIDIVoice randomExample]</br>
+</br>
+Various verbose MIDIVoice creation methods</br>
+</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice on: </br>
+&emsp;&emsp;&emsp;(MIDIDevice </br>
+&emsp;&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
+&emsp;&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
+&emsp;&emsp;&emsp;channel: 3)]</br>
+&emsp;[PortMIDIPort streams]</br>
+&emsp;[EventList multiVoiceExample playOn: MIDIVoice default]</br>
+</br>
+OSC Tests</br>
+</br>
+&emsp;Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
+</br>
+&emsp;1 - 10 ---- 10 plucked strings</br>
+&emsp;&emsp; "fff" - amp, pitch, pos</br>
+&emsp;11 - 20 ---- 10 FM instruments</br>
+&emsp;&emsp;"ffff" - dur amp pitch pos</br>
+&emsp;&emsp;"ffffff" - dur, ampl, c_fr, m_fr, ind, pos</br>
+&emsp;21 - 30 ---- 10 FM bells</br>
+&emsp;&emsp; "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos</br>
+&emsp;31 - 34 ---- 4 sound files (words)</br>
+&emsp;&emsp;"ff" - amp, pos</br>
+&emsp;35 - 50 ---- 16 SHARC SOS voices (different instruments)</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;62 - 63 ---- 2 granular scramblers</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;64 - 67 ---- 4 granular shifters</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;68-75 ---- 8 SoundFont sample players</br>
+&emsp;&emsp;"fffff" - dur, chan, key, ampl, pos</br>
+&emsp;&emsp;"s" - load sound file given full file name (cmd 156 = set_file_f)</br>
+</br>
+&emsp;[EventScheduler interrupt; flush]</br>
+&emsp;[OSCVoice fmExample1]</br>
+&emsp;[OSCVoice fmExample2]</br>
+&emsp;[OSCVoice pluckExample1]</br>
+&emsp;[OSCVoice sndExample1]</br>
+&emsp;[OSCVoice sndExample2]</br>
+&emsp;[OSCVoice sharcExample1]</br>
+&emsp;[OSCVoice bellExample1]</br>
+&emsp;[OSCVoice vSOSExample1]</br>
+&emsp;[OSCVoice granulatorExample1]</br>
+&emsp;[OSCVoice granulatorExample2: 1]</br>
+</br>
+SoundFont Sampler tests</br>
+</br>
+&emsp;[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]</br>
+</br>
+SndSynth Tests</br>
+</br>
+&emsp;ScorePlayerMorph new openMIDIFile - fix this</br>
+</br>
+----------------------------------------------------------------------------</br>
+----------------------------------------------------------------------------</br>
+</br>
+Music Font debugging</br>
+</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]</br>
+&emsp;&emsp;&emsp;&emsp;</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC]</br>
+</br>
+[(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) </br>
+&emsp;&emsp;displayOn: Display at: (256@256) clippingBox: Display boundingBox </br>
+&emsp;&emsp;rule: Form paint fillColor: Color black]</br>
+</br>
+[DisplayListView loadNoteGlyphsFromFontSized: 100]"&emsp;"load music icons from the font"</br>
+DisplayVisual displayMusicGlyphs</br>
 </br>
 </br>
-&emsp;anEventList applyFunction: aFunction to: aSelector startingAt: sTime</br>
+(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEdit</br>
+Offsets:</br>
+&emsp;1/1 -> 6 @ 66</br>
+&emsp;1/2 -> 5 @ 66</br>
+(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit</br>
+&emsp;Offsets (5 @ 45)</br>
+</br>
+----</br>
+</br>
+Loading transport icons</br>
+</br>
+[ | folder |</br>
+&emsp;DisplayListView glyphs at: #Transport put: Dictionary new.</br>
+&emsp;folder := (FileDirectory default directoryNamed: </br>
+&emsp;&emsp;&emsp;&emsp;'Siren9C/Data/Fonts/transport_icons') name, '/'.</br>
+&emsp;((FileDirectory on: folder) fileNamesMatching: '*.png') do:</br>
+&emsp;[ :jpg | | form |</br>
+&emsp;form := (Form fromFileNamed: folder, jpg).</br>
+&emsp;form := form scaledToSize: 16 @ 16.</br>
+&emsp;(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]]</br>
+</br>
+[ | gly right down left up |</br>
+gly := DisplayListView glyphs at: #Transport.</br>
+right := gly at: #'right-arrow'.</br>
+down := right rotateBy: #right centerAt: 0@0.</br>
+left := right rotateBy: #pi centerAt: 0@0.</br>
+up := right rotateBy: #left centerAt: 0@0.</br>
+gly at: #'down-arrow' put: down.</br>
+gly at: #'left-arrow' put: left.</br>
+gly at: #'up-arrow' put: up.</br>
+</br>
+right := gly at: #'fast-forward'.</br>
+down := right rotateBy: #pi centerAt: 0@0.</br>
+gly at: #'rewind' put: down.</br>
+</br>
+]</br>
+</br>
+[(DisplayListView glyphs at: #Transport) explore]</br>
+</br>
+[DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7</br>
+&emsp;&emsp;keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )</br>
+&emsp;&emsp;into: #StdNoteIcons.</br>
+DisplayListView shrinkGlyphs.</br>
+DisplayListView tweakGlyphs]</br>
+</br>
+[DisplayVisual displayMusicGlyphs: #StdNoteIcons]</br>
+[HauerSteffensView scaleExample]</br>
+[HauerSteffensView scaleExample2]</br>
+[EventList accellExample edit]</br>
 </br>
 </br>
-which can be used for many other situations.</br>
 </br>
-There are many other examples of using functions with event lists in the MIDI, OSC, and CSL I/O examples.</br>
+</br>
 </p><hr><h3 id="SchedulersandReal-timeIOforSiren">16 - Schedulers and Real-time IO for Siren</h3>Schedulers and Real-time Performance</br>
 </br>
 Event lists have events sorted by their relative start times. One "performs" event lists by placing them in a schedule for performance. A schedule can have one or more client objects (usually event lists whose items are simple events, sound events, or function events) that are able to do something in response to the</br>
@@ -1793,234 +2067,135 @@ The MIDI file voice can read standard MIDI file format and generate a Siren even
 Extending the Voice Framework</br>
 </br>
 By adding new voice classes, you can add parsers and generators for new score file formats, or extend the system with new real-time output driver interfaces. Look at the uses of the parameter maps in the notelist voices, or the OSC and CSL voices.</br>
-</p><hr><h3 id="MIDIIOandControlinSiren">18 - MIDI IO and Control in Siren</h3>About Siren MIDI</br>
+</p><hr><h3 id="MIDIIOandControlinSiren">18 - MIDI IO and Control in Siren</h3>Test Workspace - stp - 230128</br>
 </br>
-Siren includes a portable MIDI I/O framework that consists of an abstract I/O port class (MIDIPort), a plug-in that uses the Squeak primitive interface, and a C-language interface module that talks to the platform-independent PortMIDI library. The higher-level model is that a MIDI voice object holds onto a MIDI device and a channel. The MIDI device object is connected to a MIDI port. For example, the verbose way to create the default MIDI voice would be to say,</br>
+Known bugs</br>
+&emsp;TSV selection update</br>
+&emsp;PTV time-region selection(?)</br>
+&emsp;DLV selection handles scale with zoom</br>
+&emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
+&emsp;Ostinato doesn't wait right.</br>
 </br>
+ToDo</br>
+&emsp;MIDI input: kbd & ctrlrs</br>
+&emsp;Function & Sound editors</br>
+&emsp;CSL vocoder resynth stage</br>
+&emsp;New transport panel</br>
 </br>
-&emsp;MIDIVoice on: (MIDIDevice on: (MIDIPort default openOutput))</br>
+Post-build testing</br>
 </br>
-The voice object gives us the standard voice behavior (like event mapping and scheduling). The MIDI device allows us to model the device-specific messages supported by some devices. (I used to use micro-tonal extended messages on a few different hardware synths.) The MIDIPort is used for the interface betweeen Siren and external MIDI drivers and devices. It implements both note-oriented (e.g., [aPort play: pitch at: aDelay dur: aDur amp: anAmp voice: voice]), and data-oriented (e.g., [aPort put: data at: delay length: size]) behaviors for MIDI I/O.</br>
+Test plug-ins</br>
 </br>
-There is typically only one instance of MIDIPort (i.e., it's a singleton); the messages new, default, and instance all answer the sole instance. MIDIPorts use observers (dependency) to signal input data--objects wishing to receive input should register themselves as dependents of a port. In the default Siren implementation, the scheduler is all in Smalltalk, and only the simplest MIDI driver is assumed.</br>
+&emsp;CStandardLibrary new abs: -42 </br>
+&emsp;FFITestLibrary ffiPrintString: 'Hello' </br>
+&emsp;FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0</br>
+&emsp;FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 </br>
+&emsp;[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]</br>
+&emsp;[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]</br>
 </br>
-MIDI Implementation</br>
-</br>
-The class PortMIDIPort implements the low-level MIDI I/O messages by talking to the PortMIDILibrary external class, which is a front-end to C-language glue code that talks to the PortMIDI library. If you set the verbosity to 2 and open a port, it will print your entire device table to the VM's standard output and to the Transcript; for my system, this looks like the following:</br>
-</br>
-2007 set-up</br>
-</br>
-Midi Device Table</br>
-&emsp;0: IAC Driver IAC Bus 1 - in</br>
-&emsp;1: IAC Driver IAC Bus 2 - in</br>
-&emsp;2: IAC Driver IAC Bus 3 - in</br>
-&emsp;3: PC-1600X - in</br>
-&emsp;4: StudioLogic SL-161 - in</br>
-&emsp;5: Tascam FW-1804 FW-1804 Control Port - in</br>
-&emsp;6: IAC Driver IAC Bus 1 - out</br>
-&emsp;7: IAC Driver IAC Bus 2 - out</br>
-&emsp;8: IAC Driver IAC Bus 3 - out</br>
-&emsp;9: Tascam FW-1804 FW-1804 Port 1 - out</br>
-&emsp;10: EM-100 - out</br>
-&emsp;11: Tascam FW-1804 FW-1804 Port 3 - out</br>
-&emsp;12: Tascam FW-1804 FW-1804 Port 4 - out</br>
-&emsp;13: Tascam FW-1804 FW-1804 Control Port - out</br>
-</br>
-More recent, smaller set-up</br>
-</br>
-MIDI devices (4):</br>
-&emsp;0: CoreMIDI, Kurzweil   in -- default in</br>
-&emsp;1: CoreMIDI, PV16X   in</br>
-&emsp;2: CoreMIDI, Kurzweil   out -- default out</br>
-&emsp;3: CoreMIDI, MIDIPLUS TBOX 2x2 Midi Out 2   out</br>
-</br>
-2022 set-up</br>
-</br>
-MIDI Device Table</br>
-&emsp;# 0 - MIDIPLUS TBOX 2x2 Midi In 1 - in</br>
-&emsp;# 1 - Faders - in</br>
-&emsp;# 2 - IAC Driver Bus 1 - in</br>
-&emsp;# 3 - Nord Stage 3 MIDI Output - in</br>
-&emsp;# 4 - Nord Stage 3 - out</br>
-&emsp;# 5 - MIDIPLUS TBOX 2x2 Midi Out 2 - out</br>
-&emsp;# 6 - IAC Driver Bus 1 - out</br>
-&emsp;# 7 - Nord Stage 3 MIDI Input - out</br>
-&emsp;# 8 - Kontakt 7 Virtual Input - out</br>
-</br>
-</br>
-MIDI Tests and Examples (See the basic demo script for tested examples)</br>
-</br>
-Basic Tests</br>
-</br>
-Edit the methods MIDIPort initialize to suit your setup.</br>
-</br>
-Try to open and close the MIDI port (this also reports to the transcript and dumps a device list to the VM's stdout).</br>
-&emsp;[MIDIPort testOpenClose]</br>
-</br>
-Open MIDI, play a 1-sec. note.</br>
-&emsp;[MIDIPort testANote]</br>
-</br>
-Open MIDI, play a fast scale.</br>
-&emsp;[MIDIPort testAScale]</br>
-</br>
-Open MIDI, play notes based on the mouse position (x --> voice; y --> pitch) until mouse down.</br>
-&emsp;[MIDIPort testMouseMIDI]</br>
+&emsp;[Undeclared inspect]</br>
+&emsp;[Smalltalk garbageCollect]</br>
+&emsp;[Utilities openUsefulExpressions]</br>
+&emsp;[DirectoryEntry currentDirectory]</br>
+&emsp;[DependentsFields]</br>
 &emsp;[MIDIPort allNotesOff]</br>
-</br>
-</br>
-Close down and clean up.</br>
-</br>
-</br>
 &emsp;[MIDIPort cleanUp]</br>
 </br>
-Using voices</br>
+New Siren GUI Tools</br>
 </br>
+&emsp;[SirenSession openUtilityVert]</br>
+&emsp;[VoiceDialog open]</br>
 </br>
-&emsp;[MIDIVoice randomExample]</br>
+==================================</br>
+</br>
+Display list view examples</br>
+</br>
+&emsp;[DisplayListView exampleRectangles]</br>
+&emsp;[DisplayRectangle rectangleExample2]&emsp;&emsp;"slow - uses rotated rects"</br>
+&emsp;[DisplayListView exampleLines]</br>
+&emsp;[DisplayListView examplePolylines]</br>
+&emsp;[DisplayListView exampleVisuals]</br>
+&emsp;[(DisplayList stringsX: 6000 byY: 10000) display]</br>
+&emsp;[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
+&emsp;[DisplayList exampleHierarchical display]</br>
+</br>
+&emsp;Display the old and new glyph catalogs</br>
+</br>
+&emsp;[DisplayVisual displayMusicConstants]&emsp;&emsp;</br>
+&emsp;[DisplayVisual displayMusicGlyphs]&emsp;</br>
+</br>
+Music notation demos</br>
+</br>
+&emsp;[TimeSequenceView randomExample]</br>
+&emsp;[PitchTimeView randomExample]</br>
+&emsp;[PitchTimeView randomExample2]</br>
+&emsp;[EventList randomSWSSExample2 editPTV]</br>
+&emsp;[HauerSteffensView randomExampleQ]</br>
+&emsp;[HauerSteffensView cloudExample]</br>
+&emsp;[HauerSteffensView cloudsExample]</br>
+&emsp;[HauerSteffensView cloudsExample2]</br>
+&emsp;[DynamicCloud focusExample]</br>
+&emsp;[HauerSteffensView scaleExample]</br>
+&emsp;[HauerSteffensView scaleExample2]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]</br>
+&emsp;[EventList accellExample open]</br>
+</br>
+Advanced Event Generators</br>
+</br>
+&emsp;[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]</br>
+&emsp;[Arpeggio example1]&emsp;&emsp; "Plays midi"</br>
+</br>
+&emsp;[Score11 melody1]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample2]</br>
+</br>
+Function views</br>
+</br>
+&emsp;[Function functionViewExample]</br>
+&emsp;[FunctionView multiFunctionExample]</br>
+&emsp;[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]</br>
+</br>
+--------------------------</br>
+</br>
+Roll timing tests</br>
+</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList </br>
+&emsp;&emsp;&emsp;&emsp;&emsp;playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]</br>
+</br>
+----</br>
+</br>
+MIDI Tests</br>
+</br>
+&emsp;[PortMIDILibrary pm_count_devices ]</br>
+&emsp;[PortMIDILibrary pm_default_input_device ] </br>
+&emsp;[PortMIDILibrary pm_default_output_device ] </br>
+&emsp;PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
+&emsp;[PortMIDIPort listDeviceTable]</br>
+&emsp;[PortMIDILibrary testAllNotes]</br>
+&emsp;[ExternalLibrary clearAllCaches.]</br>
+&emsp;[PortMIDILibrary pm_terminate]</br>
 &emsp;[MIDIVoice scaleExample]</br>
-&emsp;[MIDIVoice voiceInspect]</br>
-</br>
-General MIDI Maps and Program Changes</br>
-</br>
-"Demonstrate program change by setting up an organ instrument to play on.</br>
-</br>
-</br>
-&emsp;[MIDIPort testProgramChange]</br>
-</br>
-Down-load a general MIDI patch for a 4-voice organ.</br>
-</br>
-</br>
-&emsp;[MIDIPort setupOrgan. Cluster example1]</br>
-</br>
-Down-load a general MIDI patch for a 16-voice percussion ensemble.</br>
-</br>
-</br>
-&emsp;[MIDIPort setupTunedPercussion. MIDIPort testAScale]</br>
-</br>
-Or try these</br>
-</br>
-</br>
-&emsp;[MIDIPort setAllInstrumentsTo: 'Tenor Sax'. MIDIPort testAScale]</br>
-&emsp;[MIDIPort setAllInstrumentsTo: 'Music Box'. MIDIPort testAScale]</br>
-</br>
-Reset the GM map (for the first 16 instruments)</br>
-</br>
-</br>
-&emsp;[MIDIPort setupDefaultGeneralMIDI]</br>
-</br>
-MIDI Input (Untested on Squeak)</br>
-</br>
-Open MIDI, try to read something--dump it to the transcript.</br>
-</br>
-</br>
-&emsp;[MIDIPort testInput]</br>
-&emsp;[MIDIPort dumpExample]</br>
-</br>
-Execute this to end the input test</br>
-</br>
-</br>
-&emsp;[MIDIPort testInputStop]</br>
-</br>
-Get the port's pending input.</br>
-</br>
-</br>
-&emsp;[MIDIPort default eventsAvailable]</br>
-&emsp;[MIDIPort default readAll]</br>
-&emsp;[MIDIPort default input]</br>
-&emsp;[MIDIPort default resetInput]</br>
-</br>
-Set up a MIDI dump object as a dependent of the input port. Dump for 5 seconds,</br>
-then turn off. The default update: method just dumps the MIDI packet into the transcript.</br>
-</br>
-</br>
-&emsp;[MIDIPort dumpExample]</br>
-</br>
-This example captures notes to an event list for 5 seconds and opens an editor on it.</br>
-</br>
-</br>
-&emsp;[MIDIDump exampleList]</br>
-</br>
-Set up uncached controller reading and dump input to the transcript.</br>
-</br>
-</br>
-&emsp;[MIDIPort testControllerInput]</br>
-&emsp;[MIDIPort testInputStop]</br>
-</br>
-Set up uncached controller reading--read controllers from lo to hi as an array and print it; </br>
-stop on mouse press.</br>
-</br>
-</br>
-&emsp;[MIDIPort testControllerCachingFrom: 48 to: 52]</br>
-</br>
-Real-time Performance Tests</br>
-</br>
-Play ''num'' random pitches spaced ''dur'' msec apart.</br>
-This test creates the messages and does the scheduling right here.</br>
-</br>
-</br>
-&emsp;[MIDIPort testRandomPlayLowLevel: 64 dur: 80]</br>
-</br>
-Play a roll of 'num' notes spaced 'dur' msec apart.</br>
-This test creates the messages and does the scheduling right here.</br>
-</br>
-</br>
-&emsp;[MIDIPort testRollLowLevel: 20 dur: 80]</br>
-</br>
-&emsp;[MIDIPort testRollLowLevel: 200 dur: 40]</br>
-</br>
-Continuous Control Tests</br>
-</br>
-Demonstrate control commands by playing a note and making a crescendo with the volume pedal.</br>
-</br>
-</br>
-&emsp;[MIDIPort testControlContinuous]</br>
-</br>
-Demonstrate pitch-bend by playing two notes and bending them.</br>
-</br>
-</br>
-&emsp;[MIDIPort testBend]</br>
-</br>
-Recording Continuous Controllers</br>
-</br>
-One can also record functions from input controlers, as in the following example, which reads MIDI controller 48 at a rate of 40 Hz for 5 seconds.</br>
-</br>
-&emsp;[MIDIPort testControllerRecording]</br>
-</br>
-Utilities</br>
-</br>
-</br>
-ANO</br>
-&emsp;[MIDIPort allNotesOff]</br>
-</br>
-Close down and clean up</br>
-&emsp;[MIDIPort cleanUp]</br>
-</br>
-For much more detail, see the class example messages in MIDIPort, or the tests in the PortMIDIPort and PortMIDILibrary classes.</br>
-</p><hr><h3 id="OpenSoundControl-OSCIO">19 - OpenSoundControl - OSC IO</h3>Siren and OpenSoundControl</br>
-</br>
-Siren includes an output voice that generates messages using the CNMAT OpenSoundControl (OSC) protocol  (http://www.cnmat.berkeley.edu/OpenSoundControl), which is sent out via UDP network packets to an external synthesis server. We generally build these servers using CSL or SuperCollider, and then control them with set-up, event trigger, and control messages sent out from Siren.</br>
-</br>
-The verbosity flag in the SirenUtility class allows for logging of all OSC to the transcript; open a Siren utility panel and use the pop-up menu to set the verbosity to 2. To test the OSC I/O, look at the classes OSCPort and OSCVoice with the default host/port settings and several useful parameter maps. A parameter map is a Smalltalk block that takes an event as its argument and returns an OSC message object (or a bundle), as in the following example (don't execute this):</br>
-</br>
-&emsp;[ :event |  | arr |&emsp;&emsp;&emsp;&emsp;"This block takes an event as its argument and answers a"</br>
-&emsp;arr := Array&emsp;&emsp;&emsp;&emsp;&emsp;"TypedOSCMessage for the address /note-on with 3 parameters"</br>
-&emsp;&emsp;&emsp;with: event duration asSec value</br>
-&emsp;&emsp;&emsp;with: event pitch asHz value</br>
-&emsp;&emsp;&emsp;with: event ampl asRatio value.</br>
-&emsp;TypedOSCMessage for: '/note-on' with: arr]</br>
-</br>
-For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://fastlabinc.com/CSL/Occam.zip). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example plays a scale on an ugly FM instrument.</br>
-</br>
-&emsp;[OSCVoice midiScaleExample]</br>
-</br>
-</br>
-Play a scale on the CSL plucked string voice.</br>
-&emsp;"OSCVoice scaleExample"</br>
-</br>
-</br>
-There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "osc_synth_server" target, which sets up a  server with a mix of FM synthesis, sound file playback, granulation and other instruments (see the list below). Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.</br>
-</br>
-Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
+&emsp;[MIDIVoice randomExample]</br>
+</br>
+Various verbose MIDIVoice creation methods</br>
+</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice on: </br>
+&emsp;&emsp;&emsp;(MIDIDevice </br>
+&emsp;&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
+&emsp;&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
+&emsp;&emsp;&emsp;channel: 3)]</br>
+&emsp;[PortMIDIPort streams]</br>
+&emsp;[EventList multiVoiceExample playOn: MIDIVoice default]</br>
+</br>
+OSC Tests</br>
+</br>
+&emsp;Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 </br>
 &emsp;1 - 10 ---- 10 plucked strings</br>
 &emsp;&emsp; "fff" - amp, pitch, pos</br>
@@ -2041,172 +2216,601 @@ Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 &emsp;&emsp;dur, ampl, pitch, pos</br>
 &emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
 &emsp;62 - 63 ---- 2 granular scramblers</br>
-&emsp;&emsp;"ff" - dur, ampl</br>
-&emsp;&emsp;"fff" - dur, ampl, rate</br>
+&emsp;&emsp;dur, ampl</br>
 &emsp;64 - 67 ---- 4 granular shifters</br>
-&emsp;&emsp;"ff" - dur, ampl</br>
-&emsp;&emsp;"fff" - dur, ampl, rate</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;68-75 ---- 8 SoundFont sample players</br>
+&emsp;&emsp;"fffff" - dur, chan, key, ampl, pos</br>
+&emsp;&emsp;"s" - load sound file given full file name (cmd 156 = set_file_f)</br>
 </br>
-</br>
-Then you can try the OSCVoice examples that follow.</br>
-</br>
+&emsp;[EventScheduler interrupt; flush]</br>
 &emsp;[OSCVoice fmExample1]</br>
+&emsp;[OSCVoice fmExample2]</br>
+&emsp;[OSCVoice pluckExample1]</br>
 &emsp;[OSCVoice sndExample1]</br>
+&emsp;[OSCVoice sndExample2]</br>
+&emsp;[OSCVoice sharcExample1]</br>
+&emsp;[OSCVoice bellExample1]</br>
+&emsp;[OSCVoice vSOSExample1]</br>
+&emsp;[OSCVoice granulatorExample1]</br>
+&emsp;[OSCVoice granulatorExample2: 1]</br>
 </br>
-Play notes on CSL FM bell instruments</br>
-&emsp;"OSCVoice bellExample1"</br>
+SoundFont Sampler tests</br>
+</br>
+&emsp;[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]</br>
+</br>
+SndSynth Tests</br>
+</br>
+&emsp;ScorePlayerMorph new openMIDIFile - fix this</br>
+</br>
+----------------------------------------------------------------------------</br>
+----------------------------------------------------------------------------</br>
+</br>
+Music Font debugging</br>
+</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]</br>
+&emsp;&emsp;&emsp;&emsp;</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC]</br>
+</br>
+[(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) </br>
+&emsp;&emsp;displayOn: Display at: (256@256) clippingBox: Display boundingBox </br>
+&emsp;&emsp;rule: Form paint fillColor: Color black]</br>
+</br>
+[DisplayListView loadNoteGlyphsFromFontSized: 100]"&emsp;"load music icons from the font"</br>
+DisplayVisual displayMusicGlyphs</br>
 </br>
 </br>
-Play an FM bell using CSL; fork a block that plays a note and waits a bit; stop the scheduler to stop the block.</br>
-</br>
-&emsp;"OSCVoice fmExample4"</br>
-</br>
-</br>
-For more examples, set the default voice to OSC (using the Siren utility control panel) and run the built in examples on the other pages of this outline.</br>
-</br>
-Play short notes on the 16 SHARC instruments (version w vibrato)</br>
-&emsp;"OSCVoice sharcExample1"&emsp;&emsp;</br>
-</br>
-Play long low notes on the 16 SHARC instruments</br>
-&emsp;"OSCVoice sharcExample2"&emsp;&emsp;</br>
-&emsp;"OSCVoice sharcExample4"&emsp;&emsp;</br>
-</br>
-Play notes on CSL FM bell instruments</br>
-&emsp;"OSCVoice bellExample1"</br>
-</br>
-Play random notes on the CSL simple vector SHARC instruments</br>
-&emsp;"OSCVoice vSOSExample1"&emsp;</br>
-&emsp;&emsp;</br>
-Play long low notes on the fancy vector SOS instruments</br>
-&emsp;"OSCVoice vSOSExample2"&emsp;&emsp;</br>
-</br>
-Play on the CSL granulator1 instrument - short bursts of garbled speak'n'spell for 20 sec</br>
-&emsp;"OSCVoice granulatorExample1"</br>
-</br>
-Play on the CSL granulator2 instrument until interrupted - long low drones</br>
-&emsp;"OSCVoice granulatorExample2"&emsp;</br>
-</br>
-Play on the CSL granulator2 instrument - layers of long low drones</br>
-&emsp;"OSCVoice granulatorExample2: 1"</br>
-&emsp;"OSCVoice granulatorExample2: 2"</br>
-&emsp;"OSCVoice granulatorExample2: 3"</br>
-</br>
+(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEdit</br>
+Offsets:</br>
+&emsp;1/1 -> 6 @ 66</br>
+&emsp;1/2 -> 5 @ 66</br>
+(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit</br>
+&emsp;Offsets (5 @ 45)</br>
 </br>
 ----</br>
 </br>
-The liblo OSC library includes a useful test program called oscsend, which allows one to </br>
-send OSC commands to a server from the UNIX shell.  To compile this tool, go to the </br>
-CSL7/Libs/liblo-0.31/src/tools folder and use a shell command such as,</br>
+Loading transport icons</br>
 </br>
-&emsp;gcc -I../.. -g -O2 -o oscsend oscsend-oscsend.o /usr/local/lib/liblo.7.dylib -lpthread -lm</br>
+[ | folder |</br>
+&emsp;DisplayListView glyphs at: #Transport put: Dictionary new.</br>
+&emsp;folder := (FileDirectory default directoryNamed: </br>
+&emsp;&emsp;&emsp;&emsp;'Siren9C/Data/Fonts/transport_icons') name, '/'.</br>
+&emsp;((FileDirectory on: folder) fileNamesMatching: '*.png') do:</br>
+&emsp;[ :jpg | | form |</br>
+&emsp;form := (Form fromFileNamed: folder, jpg).</br>
+&emsp;form := form scaledToSize: 16 @ 16.</br>
+&emsp;(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]]</br>
 </br>
-to compile and link the oscsend command -- the Makefile may of may not work; it depends</br>
-on where you installed the liblo library goven in the command line.</br>
-If you're running the CSL demo OSC synthesis server, you can now open</br>
-a shell window and use commands such as,</br>
+[ | gly right down left up |</br>
+gly := DisplayListView glyphs at: #Transport.</br>
+right := gly at: #'right-arrow'.</br>
+down := right rotateBy: #right centerAt: 0@0.</br>
+left := right rotateBy: #pi centerAt: 0@0.</br>
+up := right rotateBy: #left centerAt: 0@0.</br>
+gly at: #'down-arrow' put: down.</br>
+gly at: #'left-arrow' put: left.</br>
+gly at: #'up-arrow' put: up.</br>
 </br>
-&emsp;# Plucked string (amp, pitch, pos)</br>
-&emsp;oscsend localhost 54321 /i1/pn fff   0.77 207.67 -0.271&emsp;</br>
-&emsp;</br>
-&emsp;# FM (dur, amp, pitch, pos) or (dur, amp, c_fr, m_fr, ind, pos)</br>
-&emsp;oscsend localhost 54321 /i11/pn ffff  3.0 0.177 207.67 -0.271</br>
-&emsp;oscsend localhost 54321 /i12/pn ffff  3.0 0.177 207.6 207.6 0.0 0.0</br>
-&emsp;</br>
-&emsp;# FM bell</br>
-&emsp;oscsend localhost 54321 /i21/pn fffffff  3.0 0.77 107.67 0.5 180.0 120.0 0.0 </br>
+right := gly at: #'fast-forward'.</br>
+down := right rotateBy: #pi centerAt: 0@0.</br>
+gly at: #'rewind' put: down.</br>
 </br>
-&emsp;# Snd file player (amp, pos)</br>
-&emsp;oscsend localhost 54321 /i31/pn ff  3.0 0.0 </br>
-&emsp;oscsend localhost 54321 /i32/pn ff  3.0 0.0 </br>
-&emsp;</br>
-&emsp;# SHARC add-syn - basic version w vibrato</br>
-&emsp;oscsend localhost 54321 /i35/pn ffff  3.0 0.77 207.67 -0.271</br>
-&emsp;oscsend localhost 54321 /i36/pn ffff  3.0 0.77 207.67 -0.271</br>
-&emsp;</br>
-&emsp;# SHARC add-syn - basic version w attack chiff</br>
-&emsp;oscsend localhost 54321 /i51/pn ffff  3.0 0.77 207.67 -0.271</br>
-&emsp;oscsend localhost 54321 /i52/pn ffff  3.0 0.77 207.67 -0.271</br>
-&emsp;</br>
-&emsp;# Vector-synth SHARC add synth (dur, amp, pitch, pos)</br>
-&emsp;# Version with SHARC instruments, i.e., different spectra per-note and straight cross-fade</br>
-&emsp;oscsend localhost 54321 /i56/pn ffff  3.0 0.77 144.7 0.0</br>
-&emsp;oscsend localhost 54321 /i57/pn ffff  3.0 0.77 144.7 0.0</br>
-&emsp;oscsend localhost 54321 /i58/pn ffff  3.0 0.77 144.7 0.0</br>
-&emsp;oscsend localhost 54321 /i59/pn ffff  3.0 0.77 144.7 0.0</br>
-&emsp;oscsend localhost 54321 /i60/pn ffff  3.0 0.77 144.7 0.0</br>
-&emsp;</br>
-&emsp;# Vector-synth SHARC add synth (dur, amp, pitch, pos)</br>
-&emsp;# Version with SHARC instruments and random-walk cross-fade</br>
-&emsp;oscsend localhost 54321 /i62/pn ffff  3.0 0.77 144.7 0.0</br>
-&emsp;oscsend localhost 54321 /i63/pn ffff  3.0 0.77 144.7 0.0</br>
-&emsp;oscsend localhost 54321 /i64/pn ffff  3.0 0.77 144.7 0.0</br>
-</p><hr><h3 id="AbstractandSampledSoundObjects">20 - Abstract and Sampled Sound Objects</h3>Sound Objects in Siren</br>
+]</br>
 </br>
-NOTE: THIS PAGE DESCRIBED THE OLD SIREN SAMPLED SOUND FRAMEWORK, WHICH HAS NOT YET BEEN MERGED WITH THE SQUEAK FRAMEWORK IN THE CATEGORY 'Sound-Synthesis'</br>
+[(DisplayListView glyphs at: #Transport) explore]</br>
 </br>
-Siren's hierarchy of events and functions includes objects that represent sampled sounds. These can be used for synthesis, recording, processing, and playback. The fact that a Siren sound is a function means that it has the semantics of a single-valued function of time. A concrete SampledSound has something in its data instance variable (inherited from Function) that might be a word (16-bit) or floating-point sample array, or a CPointer, meaning that the sound's actual data is held onto by CSL, PortAudio, LibSndFile, or Loris. Since sounds are also events, they can have properties such as sound metadata or control functions.</br>
+[DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7</br>
+&emsp;&emsp;keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )</br>
+&emsp;&emsp;into: #StdNoteIcons.</br>
+DisplayListView shrinkGlyphs.</br>
+DisplayListView tweakGlyphs]</br>
 </br>
-There are many instance creation methods in the class SampledSound, including examples to create several kinds of waveforms, frequency sweeps, and impulse trains.</br>
+[DisplayVisual displayMusicGlyphs: #StdNoteIcons]</br>
+[HauerSteffensView scaleExample]</br>
+[HauerSteffensView scaleExample2]</br>
+[EventList accellExample edit]</br>
 </br>
-Examples</br>
 </br>
-Create a 1-second sine wave sound at a sample rate of 44100 Hz, with 1 channel and the base frequency of 80 Hz.</br>
-&emsp;[(SampledSound sineDur: 5 rate: 44100 freq: 80 chans: 1) edit]</br>
 </br>
-View a swept sine wave</br>
-&emsp;[(SampledSound sweepDur: 2.0 rate: 44100 from: 10 to: 100 chans: 1) edit]</br>
 </br>
-View a pulse train</br>
-&emsp;[(SampledSound pulseTrainDur: 5.0 rate: 44100 freq: 200 width: 0.1 chans: 1) edit]</br>
+</p><hr><h3 id="OpenSoundControl-OSCIO">19 - OpenSoundControl - OSC IO</h3>Test Workspace - stp - 230128</br>
 </br>
-View a sawtooth waveform (these 2 methods are the same)</br>
-&emsp;[SoundView openOn: SampledSound sawtooth]</br>
-&emsp;[SampledSound sawtooth edit]</br>
+Known bugs</br>
+&emsp;TSV selection update</br>
+&emsp;PTV time-region selection(?)</br>
+&emsp;DLV selection handles scale with zoom</br>
+&emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
+&emsp;Ostinato doesn't wait right.</br>
 </br>
-Read in a sound from a file</br>
-&emsp;[(SampledSound fromFile: 'unbelichtet.aiff') edit]</br>
+ToDo</br>
+&emsp;MIDI input: kbd & ctrlrs</br>
+&emsp;Function & Sound editors</br>
+&emsp;CSL vocoder resynth stage</br>
+&emsp;New transport panel</br>
 </br>
-Save a sound to a file</br>
-&emsp;[(SampledSound sweepDur: 5.0 rate: 44100 from: 50 to: 1000 chans: 1) </br>
-&emsp;&emsp;&emsp;&emsp;scaleBy: 0.2; storeOnFileNamed: 'sweep.aiff']</br>
-&emsp;[(SampledSound fromFile: 'sweep.aiff') edit]</br>
+Post-build testing</br>
 </br>
-Load and edit a long-ish sound file</br>
-&emsp;[(SampledSound fromFile: 'FourMagicSentences.aiff') edit]</br>
+Test plug-ins</br>
 </br>
-Manipulating Sound Objects</br>
+&emsp;CStandardLibrary new abs: -42 </br>
+&emsp;FFITestLibrary ffiPrintString: 'Hello' </br>
+&emsp;FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0</br>
+&emsp;FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 </br>
+&emsp;[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]</br>
+&emsp;[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]</br>
 </br>
-Sampled sound objects can be traeated as normal functions, i.e., one can address them as sample arrays and perform all manner of sample arithmetic, as illustrated in the following example, which mixes a sine wave and a sawtooth using low-level sample-accessing messages.</br>
+&emsp;[Undeclared inspect]</br>
+&emsp;[Smalltalk garbageCollect]</br>
+&emsp;[Utilities openUsefulExpressions]</br>
+&emsp;[DirectoryEntry currentDirectory]</br>
+&emsp;[DependentsFields]</br>
+&emsp;[MIDIPort allNotesOff]</br>
+&emsp;[MIDIPort cleanUp]</br>
 </br>
-&emsp;[ | sin saw |</br>
-&emsp;sin := SampledSound sineDur: 1.0 rate: 44100 freq: 10 chans: 1.</br>
-&emsp;saw := SampledSound sawtoothDur: 1.0 rate: 44100 freq: 100 chans: 1.</br>
-&emsp;sin scaleBy: 0.8.</br>
-&emsp;saw scaleBy: 0.1.</br>
-&emsp;1 to: sin size do:&emsp;&emsp;&emsp;"loop to do verctor math on sound samples"</br>
-&emsp;&emsp;[ :index |</br>
-&emsp;&emsp;sin at: index put: ((sin at: index) + (saw at: index))].</br>
-&emsp;sin edit]</br>
+New Siren GUI Tools</br>
 </br>
-Class SampledSound also supports basic envelope extraction, as in this example,</br>
+&emsp;[SirenSession openUtilityVert]</br>
+&emsp;[VoiceDialog open]</br>
 </br>
-&emsp;[(SampledSound fromFile: 'kombination1a.snd') rmsEnvelope edit]</br>
+==================================</br>
 </br>
-As a final example, one can apply a function to a sound as an envelope, as in this block,</br>
+Display list view examples</br>
 </br>
-&emsp;[((SampledSound sineDur: 1.0 rate: 44100 freq: 220 chans: 1) </br>
-&emsp;&emsp;&emsp;&emsp;scaledByFunction: (ExponentialFunction default)) edit]</br>
+&emsp;[DisplayListView exampleRectangles]</br>
+&emsp;[DisplayRectangle rectangleExample2]&emsp;&emsp;"slow - uses rotated rects"</br>
+&emsp;[DisplayListView exampleLines]</br>
+&emsp;[DisplayListView examplePolylines]</br>
+&emsp;[DisplayListView exampleVisuals]</br>
+&emsp;[(DisplayList stringsX: 6000 byY: 10000) display]</br>
+&emsp;[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
+&emsp;[DisplayList exampleHierarchical display]</br>
 </br>
-For fancier signal processing, we use the CSL package rather than sample arithmetic with sounds and fnuctions.</br>
+&emsp;Display the old and new glyph catalogs</br>
 </br>
-FFTs and Spectra</br>
+&emsp;[DisplayVisual displayMusicConstants]&emsp;&emsp;</br>
+&emsp;[DisplayVisual displayMusicGlyphs]&emsp;</br>
 </br>
-There's also an FFT-based spectrum class in Siren, which uses the external interface to the FFTW FFT package. To use it, look at the example methods in the class Spectrum and SpectrumView</br>
+Music notation demos</br>
 </br>
-&emsp;[Spectrum sweepExample display]</br>
-&emsp;[Spectrum fileExample display]</br>
+&emsp;[TimeSequenceView randomExample]</br>
+&emsp;[PitchTimeView randomExample]</br>
+&emsp;[PitchTimeView randomExample2]</br>
+&emsp;[EventList randomSWSSExample2 editPTV]</br>
+&emsp;[HauerSteffensView randomExampleQ]</br>
+&emsp;[HauerSteffensView cloudExample]</br>
+&emsp;[HauerSteffensView cloudsExample]</br>
+&emsp;[HauerSteffensView cloudsExample2]</br>
+&emsp;[DynamicCloud focusExample]</br>
+&emsp;[HauerSteffensView scaleExample]</br>
+&emsp;[HauerSteffensView scaleExample2]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]</br>
+&emsp;[EventList accellExample open]</br>
 </br>
-For more on sound processing, see the the various *sound* class utility methods, the SoundFile I/O methods, and notes below on the CSL framework in Siren.</br>
+Advanced Event Generators</br>
+</br>
+&emsp;[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]</br>
+&emsp;[Arpeggio example1]&emsp;&emsp; "Plays midi"</br>
+</br>
+&emsp;[Score11 melody1]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample2]</br>
+</br>
+Function views</br>
+</br>
+&emsp;[Function functionViewExample]</br>
+&emsp;[FunctionView multiFunctionExample]</br>
+&emsp;[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]</br>
+</br>
+--------------------------</br>
+</br>
+Roll timing tests</br>
+</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList </br>
+&emsp;&emsp;&emsp;&emsp;&emsp;playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]</br>
+</br>
+----</br>
+</br>
+MIDI Tests</br>
+</br>
+&emsp;[PortMIDILibrary pm_count_devices ]</br>
+&emsp;[PortMIDILibrary pm_default_input_device ] </br>
+&emsp;[PortMIDILibrary pm_default_output_device ] </br>
+&emsp;PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
+&emsp;[PortMIDIPort listDeviceTable]</br>
+&emsp;[PortMIDILibrary testAllNotes]</br>
+&emsp;[ExternalLibrary clearAllCaches.]</br>
+&emsp;[PortMIDILibrary pm_terminate]</br>
+&emsp;[MIDIVoice scaleExample]</br>
+&emsp;[MIDIVoice randomExample]</br>
+</br>
+Various verbose MIDIVoice creation methods</br>
+</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice on: </br>
+&emsp;&emsp;&emsp;(MIDIDevice </br>
+&emsp;&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
+&emsp;&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
+&emsp;&emsp;&emsp;channel: 3)]</br>
+&emsp;[PortMIDIPort streams]</br>
+&emsp;[EventList multiVoiceExample playOn: MIDIVoice default]</br>
+</br>
+OSC Tests</br>
+</br>
+&emsp;Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
+</br>
+&emsp;1 - 10 ---- 10 plucked strings</br>
+&emsp;&emsp; "fff" - amp, pitch, pos</br>
+&emsp;11 - 20 ---- 10 FM instruments</br>
+&emsp;&emsp;"ffff" - dur amp pitch pos</br>
+&emsp;&emsp;"ffffff" - dur, ampl, c_fr, m_fr, ind, pos</br>
+&emsp;21 - 30 ---- 10 FM bells</br>
+&emsp;&emsp; "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos</br>
+&emsp;31 - 34 ---- 4 sound files (words)</br>
+&emsp;&emsp;"ff" - amp, pos</br>
+&emsp;35 - 50 ---- 16 SHARC SOS voices (different instruments)</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;62 - 63 ---- 2 granular scramblers</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;64 - 67 ---- 4 granular shifters</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;68-75 ---- 8 SoundFont sample players</br>
+&emsp;&emsp;"fffff" - dur, chan, key, ampl, pos</br>
+&emsp;&emsp;"s" - load sound file given full file name (cmd 156 = set_file_f)</br>
+</br>
+&emsp;[EventScheduler interrupt; flush]</br>
+&emsp;[OSCVoice fmExample1]</br>
+&emsp;[OSCVoice fmExample2]</br>
+&emsp;[OSCVoice pluckExample1]</br>
+&emsp;[OSCVoice sndExample1]</br>
+&emsp;[OSCVoice sndExample2]</br>
+&emsp;[OSCVoice sharcExample1]</br>
+&emsp;[OSCVoice bellExample1]</br>
+&emsp;[OSCVoice vSOSExample1]</br>
+&emsp;[OSCVoice granulatorExample1]</br>
+&emsp;[OSCVoice granulatorExample2: 1]</br>
+</br>
+SoundFont Sampler tests</br>
+</br>
+&emsp;[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]</br>
+</br>
+SndSynth Tests</br>
+</br>
+&emsp;ScorePlayerMorph new openMIDIFile - fix this</br>
+</br>
+----------------------------------------------------------------------------</br>
+----------------------------------------------------------------------------</br>
+</br>
+Music Font debugging</br>
+</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]</br>
+&emsp;&emsp;&emsp;&emsp;</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC]</br>
+</br>
+[(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) </br>
+&emsp;&emsp;displayOn: Display at: (256@256) clippingBox: Display boundingBox </br>
+&emsp;&emsp;rule: Form paint fillColor: Color black]</br>
+</br>
+[DisplayListView loadNoteGlyphsFromFontSized: 100]"&emsp;"load music icons from the font"</br>
+DisplayVisual displayMusicGlyphs</br>
+</br>
+</br>
+(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEdit</br>
+Offsets:</br>
+&emsp;1/1 -> 6 @ 66</br>
+&emsp;1/2 -> 5 @ 66</br>
+(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit</br>
+&emsp;Offsets (5 @ 45)</br>
+</br>
+----</br>
+</br>
+Loading transport icons</br>
+</br>
+[ | folder |</br>
+&emsp;DisplayListView glyphs at: #Transport put: Dictionary new.</br>
+&emsp;folder := (FileDirectory default directoryNamed: </br>
+&emsp;&emsp;&emsp;&emsp;'Siren9C/Data/Fonts/transport_icons') name, '/'.</br>
+&emsp;((FileDirectory on: folder) fileNamesMatching: '*.png') do:</br>
+&emsp;[ :jpg | | form |</br>
+&emsp;form := (Form fromFileNamed: folder, jpg).</br>
+&emsp;form := form scaledToSize: 16 @ 16.</br>
+&emsp;(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]]</br>
+</br>
+[ | gly right down left up |</br>
+gly := DisplayListView glyphs at: #Transport.</br>
+right := gly at: #'right-arrow'.</br>
+down := right rotateBy: #right centerAt: 0@0.</br>
+left := right rotateBy: #pi centerAt: 0@0.</br>
+up := right rotateBy: #left centerAt: 0@0.</br>
+gly at: #'down-arrow' put: down.</br>
+gly at: #'left-arrow' put: left.</br>
+gly at: #'up-arrow' put: up.</br>
+</br>
+right := gly at: #'fast-forward'.</br>
+down := right rotateBy: #pi centerAt: 0@0.</br>
+gly at: #'rewind' put: down.</br>
+</br>
+]</br>
+</br>
+[(DisplayListView glyphs at: #Transport) explore]</br>
+</br>
+[DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7</br>
+&emsp;&emsp;keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )</br>
+&emsp;&emsp;into: #StdNoteIcons.</br>
+DisplayListView shrinkGlyphs.</br>
+DisplayListView tweakGlyphs]</br>
+</br>
+[DisplayVisual displayMusicGlyphs: #StdNoteIcons]</br>
+[HauerSteffensView scaleExample]</br>
+[HauerSteffensView scaleExample2]</br>
+[EventList accellExample edit]</br>
+</br>
+</br>
+</br>
+</br>
+</p><hr><h3 id="AbstractandSampledSoundObjects">20 - Abstract and Sampled Sound Objects</h3>Test Workspace - stp - 230128</br>
+</br>
+Known bugs</br>
+&emsp;TSV selection update</br>
+&emsp;PTV time-region selection(?)</br>
+&emsp;DLV selection handles scale with zoom</br>
+&emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
+&emsp;Ostinato doesn't wait right.</br>
+</br>
+ToDo</br>
+&emsp;MIDI input: kbd & ctrlrs</br>
+&emsp;Function & Sound editors</br>
+&emsp;CSL vocoder resynth stage</br>
+&emsp;New transport panel</br>
+</br>
+Post-build testing</br>
+</br>
+Test plug-ins</br>
+</br>
+&emsp;CStandardLibrary new abs: -42 </br>
+&emsp;FFITestLibrary ffiPrintString: 'Hello' </br>
+&emsp;FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0</br>
+&emsp;FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 </br>
+&emsp;[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]</br>
+&emsp;[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]</br>
+</br>
+&emsp;[Undeclared inspect]</br>
+&emsp;[Smalltalk garbageCollect]</br>
+&emsp;[Utilities openUsefulExpressions]</br>
+&emsp;[DirectoryEntry currentDirectory]</br>
+&emsp;[DependentsFields]</br>
+&emsp;[MIDIPort allNotesOff]</br>
+&emsp;[MIDIPort cleanUp]</br>
+</br>
+New Siren GUI Tools</br>
+</br>
+&emsp;[SirenSession openUtilityVert]</br>
+&emsp;[VoiceDialog open]</br>
+</br>
+==================================</br>
+</br>
+Display list view examples</br>
+</br>
+&emsp;[DisplayListView exampleRectangles]</br>
+&emsp;[DisplayRectangle rectangleExample2]&emsp;&emsp;"slow - uses rotated rects"</br>
+&emsp;[DisplayListView exampleLines]</br>
+&emsp;[DisplayListView examplePolylines]</br>
+&emsp;[DisplayListView exampleVisuals]</br>
+&emsp;[(DisplayList stringsX: 6000 byY: 10000) display]</br>
+&emsp;[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
+&emsp;[DisplayList exampleHierarchical display]</br>
+</br>
+&emsp;Display the old and new glyph catalogs</br>
+</br>
+&emsp;[DisplayVisual displayMusicConstants]&emsp;&emsp;</br>
+&emsp;[DisplayVisual displayMusicGlyphs]&emsp;</br>
+</br>
+Music notation demos</br>
+</br>
+&emsp;[TimeSequenceView randomExample]</br>
+&emsp;[PitchTimeView randomExample]</br>
+&emsp;[PitchTimeView randomExample2]</br>
+&emsp;[EventList randomSWSSExample2 editPTV]</br>
+&emsp;[HauerSteffensView randomExampleQ]</br>
+&emsp;[HauerSteffensView cloudExample]</br>
+&emsp;[HauerSteffensView cloudsExample]</br>
+&emsp;[HauerSteffensView cloudsExample2]</br>
+&emsp;[DynamicCloud focusExample]</br>
+&emsp;[HauerSteffensView scaleExample]</br>
+&emsp;[HauerSteffensView scaleExample2]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]</br>
+&emsp;[EventList accellExample open]</br>
+</br>
+Advanced Event Generators</br>
+</br>
+&emsp;[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]</br>
+&emsp;[Arpeggio example1]&emsp;&emsp; "Plays midi"</br>
+</br>
+&emsp;[Score11 melody1]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample2]</br>
+</br>
+Function views</br>
+</br>
+&emsp;[Function functionViewExample]</br>
+&emsp;[FunctionView multiFunctionExample]</br>
+&emsp;[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]</br>
+</br>
+--------------------------</br>
+</br>
+Roll timing tests</br>
+</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList </br>
+&emsp;&emsp;&emsp;&emsp;&emsp;playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]</br>
+</br>
+----</br>
+</br>
+MIDI Tests</br>
+</br>
+&emsp;[PortMIDILibrary pm_count_devices ]</br>
+&emsp;[PortMIDILibrary pm_default_input_device ] </br>
+&emsp;[PortMIDILibrary pm_default_output_device ] </br>
+&emsp;PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
+&emsp;[PortMIDIPort listDeviceTable]</br>
+&emsp;[PortMIDILibrary testAllNotes]</br>
+&emsp;[ExternalLibrary clearAllCaches.]</br>
+&emsp;[PortMIDILibrary pm_terminate]</br>
+&emsp;[MIDIVoice scaleExample]</br>
+&emsp;[MIDIVoice randomExample]</br>
+</br>
+Various verbose MIDIVoice creation methods</br>
+</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice on: </br>
+&emsp;&emsp;&emsp;(MIDIDevice </br>
+&emsp;&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
+&emsp;&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
+&emsp;&emsp;&emsp;channel: 3)]</br>
+&emsp;[PortMIDIPort streams]</br>
+&emsp;[EventList multiVoiceExample playOn: MIDIVoice default]</br>
+</br>
+OSC Tests</br>
+</br>
+&emsp;Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
+</br>
+&emsp;1 - 10 ---- 10 plucked strings</br>
+&emsp;&emsp; "fff" - amp, pitch, pos</br>
+&emsp;11 - 20 ---- 10 FM instruments</br>
+&emsp;&emsp;"ffff" - dur amp pitch pos</br>
+&emsp;&emsp;"ffffff" - dur, ampl, c_fr, m_fr, ind, pos</br>
+&emsp;21 - 30 ---- 10 FM bells</br>
+&emsp;&emsp; "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos</br>
+&emsp;31 - 34 ---- 4 sound files (words)</br>
+&emsp;&emsp;"ff" - amp, pos</br>
+&emsp;35 - 50 ---- 16 SHARC SOS voices (different instruments)</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato</br>
+&emsp;&emsp;dur, ampl, pitch, pos</br>
+&emsp;&emsp;dur, ampl, pitch, pos, att, dec, sus, rel</br>
+&emsp;62 - 63 ---- 2 granular scramblers</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;64 - 67 ---- 4 granular shifters</br>
+&emsp;&emsp;dur, ampl</br>
+&emsp;68-75 ---- 8 SoundFont sample players</br>
+&emsp;&emsp;"fffff" - dur, chan, key, ampl, pos</br>
+&emsp;&emsp;"s" - load sound file given full file name (cmd 156 = set_file_f)</br>
+</br>
+&emsp;[EventScheduler interrupt; flush]</br>
+&emsp;[OSCVoice fmExample1]</br>
+&emsp;[OSCVoice fmExample2]</br>
+&emsp;[OSCVoice pluckExample1]</br>
+&emsp;[OSCVoice sndExample1]</br>
+&emsp;[OSCVoice sndExample2]</br>
+&emsp;[OSCVoice sharcExample1]</br>
+&emsp;[OSCVoice bellExample1]</br>
+&emsp;[OSCVoice vSOSExample1]</br>
+&emsp;[OSCVoice granulatorExample1]</br>
+&emsp;[OSCVoice granulatorExample2: 1]</br>
+</br>
+SoundFont Sampler tests</br>
+</br>
+&emsp;[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]</br>
+</br>
+SndSynth Tests</br>
+</br>
+&emsp;ScorePlayerMorph new openMIDIFile - fix this</br>
+</br>
+----------------------------------------------------------------------------</br>
+----------------------------------------------------------------------------</br>
+</br>
+Music Font debugging</br>
+</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]</br>
+&emsp;&emsp;&emsp;&emsp;</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7]</br>
+[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC]</br>
+</br>
+[(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) </br>
+&emsp;&emsp;displayOn: Display at: (256@256) clippingBox: Display boundingBox </br>
+&emsp;&emsp;rule: Form paint fillColor: Color black]</br>
+</br>
+[DisplayListView loadNoteGlyphsFromFontSized: 100]"&emsp;"load music icons from the font"</br>
+DisplayVisual displayMusicGlyphs</br>
+</br>
+</br>
+(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEdit</br>
+Offsets:</br>
+&emsp;1/1 -> 6 @ 66</br>
+&emsp;1/2 -> 5 @ 66</br>
+(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit</br>
+&emsp;Offsets (5 @ 45)</br>
+</br>
+----</br>
+</br>
+Loading transport icons</br>
+</br>
+[ | folder |</br>
+&emsp;DisplayListView glyphs at: #Transport put: Dictionary new.</br>
+&emsp;folder := (FileDirectory default directoryNamed: </br>
+&emsp;&emsp;&emsp;&emsp;'Siren9C/Data/Fonts/transport_icons') name, '/'.</br>
+&emsp;((FileDirectory on: folder) fileNamesMatching: '*.png') do:</br>
+&emsp;[ :jpg | | form |</br>
+&emsp;form := (Form fromFileNamed: folder, jpg).</br>
+&emsp;form := form scaledToSize: 16 @ 16.</br>
+&emsp;(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]]</br>
+</br>
+[ | gly right down left up |</br>
+gly := DisplayListView glyphs at: #Transport.</br>
+right := gly at: #'right-arrow'.</br>
+down := right rotateBy: #right centerAt: 0@0.</br>
+left := right rotateBy: #pi centerAt: 0@0.</br>
+up := right rotateBy: #left centerAt: 0@0.</br>
+gly at: #'down-arrow' put: down.</br>
+gly at: #'left-arrow' put: left.</br>
+gly at: #'up-arrow' put: up.</br>
+</br>
+right := gly at: #'fast-forward'.</br>
+down := right rotateBy: #pi centerAt: 0@0.</br>
+gly at: #'rewind' put: down.</br>
+</br>
+]</br>
+</br>
+[(DisplayListView glyphs at: #Transport) explore]</br>
+</br>
+[DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7</br>
+&emsp;&emsp;keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )</br>
+&emsp;&emsp;into: #StdNoteIcons.</br>
+DisplayListView shrinkGlyphs.</br>
+DisplayListView tweakGlyphs]</br>
+</br>
+[DisplayVisual displayMusicGlyphs: #StdNoteIcons]</br>
+[HauerSteffensView scaleExample]</br>
+[HauerSteffensView scaleExample2]</br>
+[EventList accellExample edit]</br>
+</br>
+</br>
+</br>
+</br>
 </p><hr><h3 id="SoundFilesandStreamingSoundIO">21 - Sound Files and Streaming Sound IO</h3>Sound File I/O</br>
 </br>
 NOTE: THIS PAGE DESCRIBED THE OLD SIREN SAMPLED SOUND FRAMEWORK, WHICH HAS NOT YET BEEN MERGED WITH THE SQUEAK FRAMEWORK IN THE CATEGORY 'Sound-Synthesis'</br>
@@ -2951,7 +3555,7 @@ a chord is simply a set of events at the same time.</br>
 </br>
 Open an editor on a scale created with a class message.</br>
 </br>
-&emsp;[(EventList scaleFrom: 60 to: 72 in: 3000) open] d</br>
+&emsp;[(EventList scaleFrom: 60 to: 72 in: 3 sec) open] d</br>
 </br>
 Create 64 random events with parameters in the given ranges, play it on the default output voice, or edit it.</br>
 </br>
@@ -2959,7 +3563,7 @@ Create 64 random events with parameters in the given ranges, play it on the defa
 &emsp;&emsp;from: ((#duration: -> (50 to: 200)),&emsp;"duration range in msec"</br>
 &emsp;&emsp;&emsp;&emsp;(#pitch: -> (36 to: 60)),&emsp;&emsp;"pitch range in MIDI keys"</br>
 &emsp;&emsp;&emsp;&emsp;(#ampl: -> (48 to: 120)),&emsp;&emsp;"amplitude range in MIDI velocities"</br>
-&emsp;&emsp;&emsp;&emsp;(#voice: -> (1 to: 2)))&emsp;&emsp;&emsp;"play all on voice 1"</br>
+&emsp;&emsp;&emsp;&emsp;(#voice: -> (1 to: 4)))&emsp;&emsp;&emsp;"play all on voice 1 to:4"</br>
 &emsp;&emsp;) editPTV] d&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"open an pitch-time view on the list"</br>
 </br>
 Create an event list of 20 notes with semi-random values and play it on an OSC output voice.</br>
@@ -2981,7 +3585,7 @@ Event lists don't have to have pitches at all, as in the following word,</br>
 &emsp;&emsp;&emsp;&emsp;&emsp;with: #(#dun #kel #kam #mer #ge #sprae #che)).</br>
 &emsp;EventList named: 'phrase1'] i</br>
 </br>
-Play two-voice "counterpoint" on the Csound note list score file voices.</br>
+Scores can also be stored into any of several text formats; e;g;, to save two-voice "counterpoint" on a Csound note list score file.</br>
 </br>
 &emsp;[ | vox list |</br>
 &emsp;vox := CsoundVoice onFileNamed: 'test.cs'.</br>
@@ -3009,41 +3613,45 @@ You can also create event lists with snippets of code such as the following 2-oc
 &emsp;&emsp;elist add: (1/4  beat, (index * 2 + 60) key,  'mf' ampl)].</br>
 &emsp;elist open ] d</br>
 </br>
-Event lists can also be nested into arbitrary structures, as in the following group of four sub-groups</br>
+Event lists can also be nested into arbitrary structures, as in the following group of four sub-groups that get successively higher and quieter</br>
 </br>
-&emsp;[((EventList newNamed: 'Test/Groups')</br>
+&emsp;[((EventList newNamed: 'Hierarchical/4Groups')</br>
 &emsp;&emsp;add: (EventList randomExample: 8 </br>
-&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (36 to: 40)), (#ampl: -> #(110)))) </br>
+&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (56 to: 60)), (#ampl: -> #(110)))) </br>
 &emsp;&emsp;at: 0 sec;</br>
 &emsp;&emsp;add: (EventList randomExample: 8 </br>
-&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (40 to: 44)), (#ampl: -> #(100)))) </br>
+&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (60 to: 64)), (#ampl: -> #(90)))) </br>
 &emsp;&emsp;at: 1.5 sec;</br>
 &emsp;&emsp;add: (EventList randomExample: 8 </br>
-&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (44 to: 48)), (#ampl: -> #(80)))) </br>
+&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (64 to: 68)), (#ampl: -> #(70)))) </br>
 &emsp;&emsp;at: 3 sec;</br>
 &emsp;&emsp;add: (EventList randomExample: 8</br>
-&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (48 to: 52)), (#ampl: -> #(70)))) </br>
+&emsp;&emsp;&emsp;from: ((#duration: -> (60 to: 120)), (#pitch: -> (68 to: 72)), (#ampl: -> #(50)))) </br>
 &emsp;&emsp;at: 4.5 sec) </br>
 &emsp;editPTV] d</br>
 </br>
 </br>
 Smalltalk methods can also process event lists, as in this code to increase the durations of the last notes in each of the groups from the previous example.</br>
 </br>
-&emsp;[ (EventList named: 'Hierarchical/4Groups') eventsDo: </br>
+&emsp;[(EventList named: 'Hierarchical/4Groups') eventsDo: </br>
 &emsp;&emsp;[ :sublist | | evnt |&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"Remember: this is hierarchical, to the events are the sub-groups"</br>
 &emsp;&emsp;evnt := sublist events last event.&emsp;&emsp;&emsp;"get the first note of each group"</br>
 &emsp;&emsp;evnt duration: evnt duration * 8].&emsp;&emsp;"multiply the duration by 4"</br>
-&emsp;(EventList named: 'Hierarchical/4Groups') open ] d</br>
+&emsp;(EventList named: 'Hierarchical/4Groups') editPTV] d</br>
 </br>
 ...or the following to take the scale and make it slow down</br>
 </br>
 &emsp;[ | elist |</br>
 &emsp;elist := EventList scaleFrom: 60 to: 36 in: 2.5. </br>
 &emsp;1 to: elist size do: </br>
-&emsp;&emsp;[ :index | | assoc |</br>
+&emsp;&emsp;[ :index | | assoc scale |</br>
+&emsp;&emsp;scale := 1 + (index * 2 / elist events size).</br>
 &emsp;&emsp;assoc := elist events at: index.</br>
-&emsp;&emsp;assoc key: (assoc key * (1 + (index / elist events size)))].</br>
+&emsp;&emsp;assoc key: (assoc key * scale).</br>
+&emsp;&emsp;assoc value duration: assoc value duration * scale].</br>
 &emsp;elist editPTV ] d</br>
+</br>
+[(ScorePlayerMorph onMIDIFileNamed: (SirenUtility dataDir, 'BWV775.MID')) openInWorld]</br>
 </br>
 =====================================================================</br>
 </br>
@@ -3051,14 +3659,14 @@ EventGenerators</br>
 </br>
 A cluster is the simplest event generator.</br>
 </br>
-&emsp;[(Cluster  dur: 2.0</br>
+&emsp;[(Cluster  dur: 1.0</br>
 &emsp;&emsp;pitchSet: #(48 50 52 54 56)</br>
 &emsp;&emsp;ampl: 50</br>
 &emsp;&emsp;voice: 1) edit] d</br>
 </br>
 Chord object can give you an event list.</br>
 </br>
-&emsp;[((Chord majorTetradOn: 'f2' inversion: 0) duration: 1.0) edit] d</br>
+&emsp;[((Chord majorTetradOn: 'f3' inversion: 0) duration: 1.0) edit] d</br>
 </br>
 Create and play a simple drum roll--another 1-D event generator.</br>
 </br>
@@ -3077,7 +3685,7 @@ Create and edit a low 6 second stochastic cloud with 5 events per second.</br>
 Play a 6-second cloud that goes from low to high and soft to loud.</br>
 </br>
 &emsp;[(DynamicCloud  dur: 6 sec</br>
-&emsp;&emsp;pitch: #((30 to: 44) (50 to: 50))&emsp;"given starting and ending selection ranges"</br>
+&emsp;&emsp;pitch: #((50 to: 64) (70 to: 70))&emsp;&emsp;"given starting and ending selection ranges"</br>
 &emsp;&emsp;ampl: #((20 to: 20) (90 to: 120))</br>
 &emsp;&emsp;voice: (1 to: 4)</br>
 &emsp;&emsp;density: 10)  open] d</br>
@@ -3098,7 +3706,7 @@ Play a selection cloud that makes a transition from one triad to another.</br>
 &emsp;&emsp;voice: #(1)</br>
 &emsp;&emsp;density: 12) open] d</br>
 </br>
-The extended DynamicSelectionCloud uses a multi-part pitch set  of the format (time -> chord) (time -> chord) ... as in the following example.</br>
+The extended DynamicSelectionCloud uses a multi-part pitch set of the format (time -> chord) (time -> chord) ... as in the following example.</br>
 </br>
 &emsp;[ | score chords list |&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"generate the tetrads from the selected scale; scramble the order"</br>
 &emsp;chords := ((NeapolitanMinor root: N do) generateChordsPoly: 4 inOctave: 2) shuffled.</br>
@@ -3107,23 +3715,29 @@ The extended DynamicSelectionCloud uses a multi-part pitch set  of the format (t
 &emsp;&emsp;[ :ind |&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"shift every other one up 2 octaves"</br>
 &emsp;&emsp;ind even ifTrue: [list add: ((ind - 1) * 3 -> ((chords at: ind) collect: [ :no | no + 24]))]</br>
 &emsp;&emsp;&emsp;ifFalse: [list add: ((ind - 1) * 3 -> (chords at: ind))]].</br>
-&emsp;score := (ExtDynamicSelectionCloud dur: 8&emsp;&emsp;"now make a cloud from these"</br>
+&emsp;score := (ExtDynamicSelectionCloud dur: 8 sec&emsp;"now make a cloud from these"</br>
 &emsp;&emsp;pitch: list</br>
 &emsp;&emsp;ampl: 60</br>
 &emsp;&emsp;voice: nil</br>
-&emsp;&emsp;density: 10) eventList.</br>
+&emsp;&emsp;density: 16) eventList.</br>
 &emsp;score eventsDo: &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"plug in the properties for FM"</br>
 &emsp;&emsp;[ :ev |&emsp;</br>
 &emsp;&emsp;ev inst: '/i1/pn'.</br>
 &emsp;&emsp;ev modIndex: 2.0.</br>
 &emsp;&emsp;ev ratio: 1.02.</br>
 &emsp;&emsp;ev pos: 0.0].</br>
-&emsp;SirenSession eventList: 'EvGens/dsCloud1' put: score.</br>
-&emsp;score open] d</br>
+"&emsp;SirenSession eventList: 'EvGens/dsCloud1' put: score."</br>
+&emsp;score editPRN] d</br>
 </br>
 Mark Lentczner's bell peals ring the changes.</br>
 </br>
-&emsp;[(Peal upon: #(60 65 68 72)) eventList open] d</br>
+&emsp;[(Peal upon: #(60 65 68 72)) eventList editPTV] d</br>
+</br>
+Random walks in several flavors</br>
+</br>
+&emsp;[Walk example1 editPTV]</br>
+&emsp;[Walk example2 editPTV]</br>
+&emsp;[Walk example3 editPTV]</br>
 </br>
 Other EvGen examples (do these and/or browse them to see what's going on)</br>
 </br>
@@ -3135,7 +3749,6 @@ Other EvGen examples (do these and/or browse them to see what's going on)</br>
 &emsp;[HauerSteffensView scaleExample2]</br>
 &emsp;[HauerSteffensView randomExampleQ]</br>
 &emsp;[ExtDynamicSelectionCloud chordExample]</br>
-&emsp;[(Peal upon: #(60 62 64 65)) eventList editPRN]</br>
 &emsp;[Arpeggio example1]&emsp;&emsp;&emsp;&emsp; "Plays midi"</br>
 &emsp;[ExtDynamicSelectionCloud chordExample]</br>
 &emsp;[ExtDynamicSelectionCloud chordExample2]</br>
@@ -3144,8 +3757,8 @@ Score11</br>
 </br>
 See the above description of Score11; most of the examples play via MIDI or OSC</br>
 </br>
-&emsp;[Score11 chorale1] d</br>
-&emsp;[Score11 melody1] d</br>
+&emsp;[Score11 chorale1 open] d</br>
+&emsp;[Score11 melody1 open] d</br>
 &emsp;[Score11 sleepingSword1] b</br>
 </br>
 =====================================================================</br>
@@ -3242,6 +3855,10 @@ Simple examples</br>
 &emsp;[MIDIVoice scaleExample]</br>
 &emsp;[MIDIVoice randomExample]</br>
 </br>
+If you have a multi-timbral synth with all 16 channels mapped, try this,</br>
+</br>
+&emsp;[EventList multiVoiceExample playOn: MIDIVoice default]</br>
+</br>
 Open MIDI, play notes based on the mouse position (x --> dur; y --> pitch) until mouse down.</br>
 </br>
 &emsp;[MIDIPort testMouseMIDI] d</br>
@@ -3275,10 +3892,8 @@ Close down and clean up.</br>
 &emsp;[MIDIPort cleanUp]</br>
 </br>
 MIDI Tests</br>
-</br>
-&emsp;PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
-&emsp;[PortMIDILibrary testAllNotes]</br>
-&emsp;[ExternalLibrary clearAllCaches.]</br>
+&emsp;</br>
+&emsp;[PortMIDILibrary pm_write_data3: 0 with: 144 with: 60 with: 100.]</br>
 &emsp;[PortMIDILibrary pm_terminate]</br>
 </br>
 &emsp;Various verbose MIDIVoice creation methods</br>
@@ -3565,7 +4180,7 @@ family := 'LibreBaskerville'.</br>
 "family := 'BitstreamVeraSerif'."</br>
 base := 10.5.</br>
 {</br>
-   { #setButtonFontTo:&emsp;&emsp;.&emsp;&emsp;family&emsp;.&emsp;base }.</br>
+   { #setButtonFontTo:&emsp;.&emsp;&emsp;family&emsp;.&emsp;base }.</br>
    { #setMenuFontTo:&emsp;&emsp;.&emsp;&emsp;family&emsp;.&emsp;base + 1.5 }.</br>
    { #setListFontTo:        &emsp;.&emsp;&emsp;family&emsp;.&emsp;base  }.</br>
    { #setCodeFontTo:      &emsp;.&emsp;&emsp;family&emsp;.&emsp;base + 1.5  }.</br>
@@ -4110,7 +4725,7 @@ To actually work in Smalltalk, one generally writes code in browsers, then uses 
 For more info, there are several excellent on-line Smallatlk tutorials (just ask Google), see the reference section of this workbook. The Squeak CD-ROM (http://www.squeak.org/Download/SqueakCD) has a whole collection of good Smalltalk tutorials.</br>
 </p><hr><h3 id="ThingsToDo">40 - ThingsToDo</h3>Status</br>
 </br>
-This is a test release; both the Squeak and Cuis ports are work-in-progress and many features are still to be ported.  See the demo script on page 32 for what works in Siren9c-on-Squeak.</br>
+This is a test release; both the Squeak and Cuis ports are work-in-progress and many features are still to be ported.  See the demo script on page 32 for what works in Siren9C-on-Squeak.</br>
 </br>
 There are certainly many bugs in Siren.</br>
 </br>
@@ -4122,139 +4737,164 @@ The old ManualWriter and ComposedTextEditor packages have disappeared, so the li
 </br>
 The display list views have no notion of pages, so longer musical examples don't display well. We need a fancier document model with page layout.</br>
 </br>
-There's alot of stale code in the Squeak port that's vestige of the VisualWorks world, all the displayOn: methods are old, as are all the GUIs that use VisualWorks-style set-up.</br>
+There's alot of stale code in the Squeak port that's vestiges of the VisualWorks world, all the displayOn: methods are old, as are all the GUIs that use VisualWorks-style set-up.</br>
 </br>
 </br>
 ----</br>
 </br>
-Bugs - see the test workspace below fort the list of what I'm working on.</br>
+Bugs - see the test workspace below for the list of what I'm working on.</br>
 </br>
-</p><hr><h3 id="TestWorkspace">41 - Test Workspace</h3>Test Workspace - stp - 230127</br>
+</p><hr><h3 id="TestWorkspace">41 - Test Workspace</h3>Test Workspace - stp - 230213</br>
 </br>
-ToDo - known bugs</br>
+Known bugs</br>
 &emsp;TSV selection update</br>
-&emsp;HSV selection</br>
-&emsp;ControlMorph play actions</br>
+&emsp;PTV time-region selection(?)</br>
 &emsp;DLV selection handles scale with zoom</br>
-</br>
+&emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
+&emsp;Ostinato doesn't wait right.</br>
+&emsp;Score11 has issues with octaves in chords</br>
+&emsp;Score11 has issues with rhythmic repeats (e.g., 6*3)</br>
+&emsp;SFSampler leaves notes hanging</br>
+&emsp;Workbook should remember selection per-page</br>
+&emsp;</br>
+ToDo</br>
+&emsp;PTV scrolling during play</br>
+&emsp;&emsp;Update thread</br>
+&emsp;Live note capture to PTV</br>
+&emsp;&emsp;Ports/Voices log events to SirenSession</br>
+&emsp;MIDI input: kbd & ctrlrs (play into PTV)</br>
 &emsp;Function & Sound editors</br>
 &emsp;CSL vocoder resynth stage</br>
 &emsp;New transport panel</br>
-&emsp;PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3</br>
-&emsp;Ostinato doesn't wait right.</br>
 </br>
 Post-build testing</br>
 </br>
 Test plug-ins</br>
 </br>
-CStandardLibrary new abs: -42 </br>
-FFITestLibrary ffiPrintString: 'Hello' </br>
-FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0</br>
-FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 </br>
-[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]</br>
-[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]</br>
+&emsp;CStandardLibrary new abs: -42 </br>
+&emsp;FFITestLibrary ffiPrintString: 'Hello' </br>
+&emsp;FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0</br>
+&emsp;FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 </br>
+&emsp;[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]</br>
+&emsp;[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]</br>
 </br>
-[Undeclared inspect]</br>
-[Smalltalk garbageCollect]</br>
-[Utilities openUsefulExpressions]</br>
-[DirectoryEntry currentDirectory]</br>
-[DependentsFields]</br>
-[MIDIPort allNotesOff]</br>
-[MIDIPort cleanUp]</br>
+&emsp;[Undeclared inspect]</br>
+&emsp;[Smalltalk garbageCollect]</br>
+&emsp;[Utilities openUsefulExpressions]</br>
+&emsp;[DirectoryEntry currentDirectory]</br>
+&emsp;[DependentsFields]</br>
+&emsp;[MIDIPort allNotesOff]</br>
+&emsp;[MIDIPort cleanUp]</br>
 </br>
 New Siren GUI Tools</br>
 </br>
-[SirenSession openUtilityVert]</br>
-[VoiceDialog open]</br>
+&emsp;[SirenSession openUtilityVert]</br>
+&emsp;[VoiceDialog open]</br>
 </br>
 ==================================</br>
 </br>
 Display list view examples</br>
 </br>
-[DisplayListView exampleRectangles]</br>
-[DisplayRectangle rectangleExample2]&emsp;&emsp;"slow - uses rotated rects"</br>
-[DisplayListView exampleLines]</br>
-[DisplayListView examplePolylines]</br>
-[DisplayListView exampleVisuals]</br>
-[(DisplayList stringsX: 6000 byY: 10000) display]</br>
-[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
-[DisplayList exampleHierarchical display]</br>
+&emsp;[DisplayListView exampleRectangles]</br>
+&emsp;[DisplayRectangle rectangleExample2]&emsp;&emsp;"slow - uses rotated rects"</br>
+&emsp;[DisplayListView exampleLines]</br>
+&emsp;[DisplayListView examplePolylines]</br>
+&emsp;[DisplayListView exampleVisuals]</br>
+&emsp;[(DisplayList stringsX: 6000 byY: 10000) display]</br>
+&emsp;[DisplayListView exampleMixed]&emsp;&emsp;"huge display list - takes a while"</br>
+&emsp;[DisplayList exampleHierarchical display]</br>
 </br>
-Display the old and new glyph catalogs</br>
+&emsp;Display the old and new glyph catalogs</br>
 </br>
-[DisplayVisual displayMusicConstants]&emsp;&emsp;</br>
-[DisplayVisual displayMusicGlyphs]&emsp;</br>
+&emsp;[DisplayVisual displayMusicConstants]&emsp;&emsp;</br>
+&emsp;[DisplayVisual displayMusicGlyphs]&emsp;</br>
 </br>
 Music notation demos</br>
 </br>
-[TimeSequenceView randomExample]</br>
-[PitchTimeView randomExample]</br>
-[PitchTimeView randomExample2]</br>
-[EventList randomSWSSExample2 editPTV]</br>
-[HauerSteffensView randomExampleQ]</br>
-[HauerSteffensView cloudExample]</br>
-[HauerSteffensView cloudsExample]</br>
-[HauerSteffensView cloudsExample2]</br>
-[DynamicCloud focusExample]</br>
-[HauerSteffensView scaleExample]</br>
-[HauerSteffensView scaleExample2]</br>
-[ExtDynamicSelectionCloud chordExample]</br>
-[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]</br>
+&emsp;[TimeSequenceView randomExample]</br>
+&emsp;[PitchTimeView randomExample]</br>
+&emsp;[PitchTimeView randomExample2]</br>
+&emsp;[EventList randomSWSSExample2 editPTV]</br>
+&emsp;[HauerSteffensView randomExampleQ]</br>
+&emsp;[HauerSteffensView cloudExample]</br>
+&emsp;[HauerSteffensView cloudsExample]</br>
+&emsp;[HauerSteffensView cloudsExample2]</br>
+&emsp;[DynamicCloud focusExample]</br>
+&emsp;[HauerSteffensView scaleExample]</br>
+&emsp;[HauerSteffensView scaleExample2]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[PitchTimeView openOnEventList: EventList randomExample</br>
+&emsp;&emsp;&emsp;&emsp;label: 'P T V' pianoRoll: true]</br>
+&emsp;[EventList accellExample open]</br>
 </br>
 Advanced Event Generators</br>
 </br>
-[(Peal upon: #(60 62 64 65)) eventList editPTV]</br>
-[Arpeggio example1]&emsp;&emsp; "Plays midi"</br>
+&emsp;[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]</br>
+&emsp;[Arpeggio example1]&emsp;&emsp; "Plays midi"</br>
 </br>
-[Score11 melody1]</br>
-[ExtDynamicSelectionCloud chordExample]</br>
-[ExtDynamicSelectionCloud chordExample2]</br>
+&emsp;[Score11 melody1]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample]</br>
+&emsp;[ExtDynamicSelectionCloud chordExample2]</br>
+</br>
+Random walks in several flavors</br>
+</br>
+&emsp;[Walk example1 editPTV]</br>
+&emsp;[Walk example2 editPTV]</br>
+&emsp;[Walk example3 editPTV]</br>
 </br>
 Function views</br>
 </br>
-[Function functionViewExample]</br>
-[FunctionView multiFunctionExample]</br>
-[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]</br>
+&emsp;[Function functionViewExample]</br>
+&emsp;[FunctionView multiFunctionExample]</br>
+&emsp;[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]</br>
 </br>
 --------------------------</br>
 </br>
-Roll timing tests</br>
+Roll timing tests - compare jitter on synth-sound, MIDI, OSC-synth and OSC-sampler</br>
 </br>
-[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]</br>
-[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]</br>
-[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList </br>
-&emsp;&emsp;&emsp;&emsp;playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]</br>
+</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]</br>
+</br>
+&emsp;[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList </br>
+&emsp;&emsp;&emsp;&emsp;playOn: (OSCVoice pMap: #pMapForCSLPluck: range: (1 to: 10))]</br>
+&emsp;&emsp;&emsp;</br>
+&emsp;[ | vox |</br>
+&emsp;vox := OSCVoice pMap: #pMapForCSLSFSampler: range: (68 to: 75).</br>
+&emsp;vox send: '/i68/fi' args: (Array with: SirenUtility cslDir, 'vibra.sf2').</br>
+&emsp;((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: vox]</br>
 </br>
 ----</br>
 </br>
 MIDI Tests</br>
 </br>
-[PortMIDILibrary pm_count_devices ]</br>
-[PortMIDILibrary pm_default_input_device ] </br>
-[PortMIDILibrary pm_default_output_device ] </br>
-PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
-[PortMIDIPort listDeviceTable]</br>
-[PortMIDILibrary testAllNotes]</br>
-[ExternalLibrary clearAllCaches.]</br>
-[PortMIDILibrary pm_terminate]</br>
-[MIDIVoice scaleExample]</br>
-[MIDIVoice randomExample]</br>
+&emsp;[PortMIDILibrary pm_count_devices ]</br>
+&emsp;[PortMIDILibrary pm_default_input_device ] </br>
+&emsp;[PortMIDILibrary pm_default_output_device ] </br>
+&emsp;PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device </br>
+&emsp;[PortMIDIPort listDeviceTable]</br>
+&emsp;[PortMIDILibrary testAllNotes]</br>
+&emsp;[ExternalLibrary clearAllCaches.]</br>
+&emsp;[PortMIDILibrary pm_terminate]</br>
+&emsp;[MIDIVoice scaleExample]</br>
+&emsp;[MIDIVoice randomExample]</br>
 </br>
 Various verbose MIDIVoice creation methods</br>
 </br>
-[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]</br>
-[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
-[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]</br>
-[EventList scaleExample1 playOn: (MIDIVoice on: </br>
-&emsp;&emsp;(MIDIDevice </br>
-&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
-&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
-&emsp;&emsp;channel: 3)]</br>
-[PortMIDIPort streams]</br>
-&emsp;&emsp;</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]</br>
+&emsp;[EventList scaleExample1 playOn: (MIDIVoice on: </br>
+&emsp;&emsp;&emsp;(MIDIDevice </br>
+&emsp;&emsp;&emsp;&emsp;outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') </br>
+&emsp;&emsp;&emsp;&emsp;port: MIDIPort concreteClass default) </br>
+&emsp;&emsp;&emsp;channel: 3)]</br>
+&emsp;[PortMIDIPort streams]</br>
+&emsp;[EventList multiVoiceExample playOn: MIDIVoice default]</br>
+</br>
 OSC Tests</br>
 </br>
-Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
+&emsp;Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 </br>
 &emsp;1 - 10 ---- 10 plucked strings</br>
 &emsp;&emsp; "fff" - amp, pitch, pos</br>
@@ -4278,24 +4918,37 @@ Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)</br>
 &emsp;&emsp;dur, ampl</br>
 &emsp;64 - 67 ---- 4 granular shifters</br>
 &emsp;&emsp;dur, ampl</br>
+&emsp;68-75 ---- 8 SoundFont sample players</br>
+&emsp;&emsp;"fffff" - dur, chan, key, ampl, pos</br>
+&emsp;&emsp;"s" - load sound file given full file name (cmd 156 = set_file_f)</br>
 </br>
-[EventScheduler interrupt; flush]</br>
-[OSCVoice fmExample1]</br>
-[OSCVoice fmExample2]</br>
-[OSCVoice pluckExample1]</br>
-[OSCVoice sndExample1]</br>
-[OSCVoice sndExample2]</br>
-[OSCVoice sharcExample1]</br>
-[OSCVoice bellExample1]</br>
-[OSCVoice vSOSExample1]</br>
-[OSCVoice granulatorExample1]</br>
-[OSCVoice granulatorExample2: 1]</br>
+&emsp;[EventScheduler interrupt; flush]</br>
+&emsp;[OSCVoice fmExample1]</br>
+&emsp;[OSCVoice fmExample2]</br>
+&emsp;[OSCVoice pluckExample1]</br>
+&emsp;[OSCVoice sndExample1]</br>
+&emsp;[OSCVoice sndExample2]</br>
+&emsp;[OSCVoice sharcExample1]</br>
+&emsp;[OSCVoice bellExample1]</br>
+&emsp;[OSCVoice vSOSExample1]</br>
+&emsp;[OSCVoice granulatorExample1]</br>
+&emsp;[OSCVoice granulatorExample2: 1]</br>
 </br>
+SoundFont Sampler tests</br>
+</br>
+&emsp;[OSCVoice samplerExample1]</br>
+&emsp;[OSCVoice samplerExample2]</br>
+&emsp;[OSCVoice samplerExample3]</br>
+&emsp;[OSCVoice samplerExample3Menu]</br>
+&emsp;[OSCVoice samplerExample4]</br>
 </br>
 SndSynth Tests</br>
 </br>
-ScorePlayerMorph new openMIDIFile - fix this</br>
+&emsp;[(ScorePlayerMorph new openMIDIFile) openInWorld</br>
+&emsp; onMIDIFileNamed: '/Users/stp/Code/Smalltalk/Siren9C/Data/jerusalm.mid') open]</br>
 </br>
+</br>
+----------------------------------------------------------------------------</br>
 ----------------------------------------------------------------------------</br>
 </br>
 Music Font debugging</br>
@@ -4322,7 +4975,14 @@ Offsets:</br>
 &emsp;Offsets (5 @ 45)</br>
 </br>
 ----</br>
+Threads</br>
 </br>
+[ | i | i := 0.</br>
+&emsp;[[i < 10] whileTrue:</br>
+&emsp;[Transcript show: i printString; cr.</br>
+&emsp;(Delay forSeconds: 1) wait.</br>
+&emsp;i := i + 1]] fork]</br>
+----</br>
 Loading transport icons</br>
 </br>
 [ | folder |</br>
@@ -4364,49 +5024,91 @@ DisplayListView tweakGlyphs]</br>
 [HauerSteffensView scaleExample2]</br>
 [EventList accellExample edit]</br>
 </br>
-</br>
-</br>
+----</br>
 </br>
 </p><hr><h3 id="Sketches">42 - Sketches</h3>Sketches for Sleeping Sword</br>
 </br>
-Score11 examples</br>
+Tympani - 3 swells</br>
+&emsp;</br>
+&emsp;[[ | swell |</br>
+&emsp;swell := [ :dur :pit :rhy | | el |</br>
+&emsp;el := ((Roll length: dur sec rhythm: rhy note: pit) ampl: 100; inst: '/i4/pn') </br>
+&emsp;&emsp;&emsp;eventList scaleDurationsBy: 8.0.</br>
+&emsp;el applyFunction: (LinearFunction from: #((0 0.2) (1 1))) to: #loudness.</br>
+&emsp;OSCVoice play4vSampler: el].</br>
+&emsp;swell value: 6 value: 60 value: 80.</br>
+&emsp;6 sec wait.</br>
+&emsp;swell value: 6 value: 58 value: 80.</br>
+&emsp;6 sec wait.</br>
+&emsp;swell value: 10 value: 56 value: 90] fork]</br>
 </br>
-&emsp;Score11 sleepingSword1</br>
+String clouds - cresc./decresc.</br>
+</br>
+&emsp;[[ | du base |</br>
+&emsp;base := 0.005.</br>
+&emsp;10 timesRepeat:</br>
+&emsp;&emsp;[du := OSCVoice pluckExample1: (base to: base * 2).</br>
+&emsp;&emsp;du wait.</br>
+&emsp;&emsp;base := base + 0.007].</br>
+&emsp;10 timesRepeat:</br>
+&emsp;&emsp;[du := OSCVoice pluckExample1: (base to: base * 2).</br>
+&emsp;&emsp;du wait.</br>
+&emsp;&emsp;base := base - 0.007]] fork]</br>
 </br>
 Granular drone surface</br>
 </br>
-&emsp;"OSCVoice granulatorExample2: 1"</br>
-&emsp;"OSCVoice granulatorExample2: 2"</br>
-&emsp;"OSCVoice granulatorExample2: 3"</br>
+&emsp;[[OSCVoice granulatorExample2: 1] fork]</br>
+&emsp;[[OSCVoice granulatorExample2: 2] fork]</br>
+&emsp;[[OSCVoice granulatorExample2: 3] fork]</br>
 </br>
-Granular noise background</br>
+Low strings and bells</br>
+&emsp;</br>
+&emsp;[[OSCVoice bellExample2] fork]</br>
+&emsp;[OSCVoice fmExample4]&emsp;&emsp;&emsp;runs until the scheduler is stopped</br>
 </br>
-&emsp;[OSCVoice granulatorExample1]</br>
+Bursts of garbled speak'n'spell</br>
 </br>
-String clouds</br>
+&emsp;[[OSCVoice granulatorExample1] fork]</br>
 </br>
-&emsp;[OSCVoice pluckExample1]</br>
+Score11 examples</br>
+</br>
+&emsp;[[Score11 sleepingSword1] fork]</br>
+&emsp;[[Score11 sleepingSword2] fork]</br>
+&emsp;[[Score11 sleepingSword3] fork]</br>
+</br>
+Random walks</br>
+</br>
+&emsp;[[OSCVoice play4vSampler: </br>
+&emsp;&emsp;&emsp;&emsp;(Walk len: 60 dur0: 0.15 pitch0: 72 vel0: 80) eventList] fork]</br>
+&emsp;[[OSCVoice play4vSampler: </br>
+&emsp;&emsp;&emsp;&emsp;(Walk len: 80 pitchSet: #(76 78 81 83) durSet: #(0.1 0.1 0.2) vel: 70)] fork]</br>
+&emsp;[[OSCVoice playCSLPlucks: (Walk len: 120 durN: 0.15 pitch0: 72 vel0: 48)] fork]</br>
+&emsp;[[OSCVoice play4vSampler: &emsp;&emsp;"tymp"</br>
+&emsp;&emsp;&emsp;&emsp;((Walk len: 40 dur0: 2.0 pitch0: 44 vel0: 80) inst: '/i4/pn') eventList] fork]</br>
+&emsp;[[(Walk len: 40 dur0: 1.0 pitch0: 64 vel0: 80) eventList playOn: (MIDIVoice defaultOut: 11)] fork]</br>
+&emsp;[[(Walk len: 40 dur0: 1.0 pitch0: 64 vel0: 80) eventList playOn: (MIDIVoice defaultOut: 12)] fork]</br>
 </br>
 Bell peals on MIDI glockenspiel or FM bells</br>
 </br>
-&emsp;[(Peal upon: #(72 74 76 77)) eventList playOn: (MIDIVoice defaultOut: 1)]</br>
-&emsp;[(Peal upon: #(72 74 76 77)) eventList playOn: (MIDIVoice defaultOut: 1)]</br>
+&emsp;[(((Peal on: #(72 74 76 77)) eventList) setAll: #loudness to: 40 vel) playOn: (MIDIVoice defaultOut: 4)]</br>
+&emsp;[(((Peal on: #(72 74 76 77)) eventList) setAll: #loudness to: 80 vel) playOn: (MIDIVoice defaultOut: 3)]</br>
+&emsp;[OSCVoice playCSLPlucks: (((Peal on: #(70 72 74 76 77)) eventList) setAll: #loudness to: 30 vel)]</br>
 </br>
-Arpeggii - assumes a MIDI synth with instruments 4 and 5 panned L/R</br>
+Arpeggii - assumes a MIDI synth with instruments 3 and 4 panned L/R</br>
 </br>
-[&emsp;| scales roots |</br>
+[[&emsp;| scales roots |</br>
 &emsp;scales := { HungarianMinor . Oriental . PentatonicScale . </br>
 &emsp;&emsp;&emsp;&emsp;ChromaticScale . MelodicMinorScale . MajorScale}.</br>
 &emsp;roots := { N do . N mi . N fa . N la}.</br>
-&emsp;1 to: 10 do: </br>
+&emsp;1 to: 20 do: </br>
 &emsp;&emsp;[ :ind | | sca rt ar1 ar2 |</br>
 &emsp;&emsp;sca := scales atRandom.</br>
 &emsp;&emsp;rt := roots atRandom.</br>
-&emsp;&emsp;ar1 := Arpeggio onScale: (sca root: rt) fromOct: 3 toOct: 5 drop: 25 delay: 80 loud: 50.</br>
-&emsp;&emsp;ar2  := Arpeggio onScale: (sca root: rt) fromOct: 3 toOct: 5 drop: 25 delay: 85 loud: 50.</br>
-&emsp;&emsp;ar1 playOn: (MIDIVoice defaultOut: 4). </br>
+&emsp;&emsp;ar1 := Arpeggio onScale: (sca root: rt) fromOct: 3 toOct: 5 drop: 25 delay: 80 loud: 80.</br>
+&emsp;&emsp;ar2  := Arpeggio onScale: (sca root: rt) fromOct: 3 toOct: 5 drop: 25 delay: 85 loud: 40.</br>
+&emsp;&emsp;ar1 playOn: (MIDIVoice defaultOut: 3). </br>
 &emsp;&emsp;(Delay forMilliseconds: 25) wait.</br>
-&emsp;&emsp;ar2 playOn: (MIDIVoice defaultOut: 5).</br>
-&emsp;&emsp;(Delay forMilliseconds: (ar1 duration asMsec value) +  250) wait ] ]</br>
+&emsp;&emsp;ar2 playOn: (MIDIVoice defaultOut: 4).</br>
+&emsp;&emsp;(Delay forMilliseconds: (ar1 duration asMsec value) +  250) wait ] ] fork]</br>
 </br>
 </p></p><HR><p>

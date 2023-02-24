@@ -1,162 +1,1 @@
-About Siren MIDI
-
-Siren includes a portable MIDI I/O framework that consists of an abstract I/O port class (MIDIPort), a plug-in that uses the Squeak primitive interface, and a C-language interface module that talks to the platform-independent PortMIDI library. The higher-level model is that a MIDI voice object holds onto a MIDI device and a channel. The MIDI device object is connected to a MIDI port. For example, the verbose way to create the default MIDI voice would be to say,
-	MIDIVoice on: (MIDIDevice on: (MIDIPort default openOutput))
-
-The voice object gives us the standard voice behavior (like event mapping and scheduling). The MIDI device allows us to model the device-specific messages supported by some devices. (I used to use micro-tonal extended messages on a few different hardware synths.) The MIDIPort is used for the interface betweeen Siren and external MIDI drivers and devices. It implements both note-oriented (e.g., [aPort play: pitch at: aDelay dur: aDur amp: anAmp voice: voice]), and data-oriented (e.g., [aPort put: data at: delay length: size]) behaviors for MIDI I/O.
-
-There is typically only one instance of MIDIPort (i.e., it's a singleton); the messages new, default, and instance all answer the sole instance. MIDIPorts use observers (dependency) to signal input data--objects wishing to receive input should register themselves as dependents of a port. In the default Siren implementation, the scheduler is all in Smalltalk, and only the simplest MIDI driver is assumed.
-
-MIDI ImplementationThe class PortMIDIPort implements the low-level MIDI I/O messages by talking to the PortMIDILibrary external class, which is a front-end to C-language glue code that talks to the PortMIDI library. If you set the verbosity to 2 and open a port, it will print your entire device table to the VM's standard output and to the Transcript; for my system, this looks like the following:
-
-2007 set-up
-
-Midi Device Table
-	0: IAC Driver IAC Bus 1 - in
-	1: IAC Driver IAC Bus 2 - in
-	2: IAC Driver IAC Bus 3 - in
-	3: PC-1600X - in
-	4: StudioLogic SL-161 - in
-	5: Tascam FW-1804 FW-1804 Control Port - in
-	6: IAC Driver IAC Bus 1 - out
-	7: IAC Driver IAC Bus 2 - out
-	8: IAC Driver IAC Bus 3 - out
-	9: Tascam FW-1804 FW-1804 Port 1 - out
-	10: EM-100 - out
-	11: Tascam FW-1804 FW-1804 Port 3 - out
-	12: Tascam FW-1804 FW-1804 Port 4 - out
-	13: Tascam FW-1804 FW-1804 Control Port - out
-
-More recent, smaller set-up
-
-MIDI devices (4):
-	0: CoreMIDI, Kurzweil   in -- default in
-	1: CoreMIDI, PV16X   in
-	2: CoreMIDI, Kurzweil   out -- default out
-	3: CoreMIDI, MIDIPLUS TBOX 2x2 Midi Out 2   out
-
-2022 set-up
-
-MIDI Device Table
-	# 0 - MIDIPLUS TBOX 2x2 Midi In 1 - in
-	# 1 - Faders - in
-	# 2 - IAC Driver Bus 1 - in
-	# 3 - Nord Stage 3 MIDI Output - in
-	# 4 - Nord Stage 3 - out
-	# 5 - MIDIPLUS TBOX 2x2 Midi Out 2 - out
-	# 6 - IAC Driver Bus 1 - out
-	# 7 - Nord Stage 3 MIDI Input - out
-	# 8 - Kontakt 7 Virtual Input - out
-
-
-MIDI Tests and Examples (See the basic demo script for tested examples)
-
-Basic Tests
-
-Edit the methods MIDIPort initialize to suit your setup.
-
-Try to open and close the MIDI port (this also reports to the transcript and dumps a device list to the VM's stdout).
-	[MIDIPort testOpenClose]
-
-Open MIDI, play a 1-sec. note.
-	[MIDIPort testANote]
-
-Open MIDI, play a fast scale.
-	[MIDIPort testAScale]
-
-Open MIDI, play notes based on the mouse position (x --> voice; y --> pitch) until mouse down.
-	[MIDIPort testMouseMIDI]
-	[MIDIPort allNotesOff]
-
-
-Close down and clean up.
-	[MIDIPort cleanUp]
-
-Using voices
-	[MIDIVoice randomExample]
-	[MIDIVoice scaleExample]
-	[MIDIVoice voiceInspect]
-
-General MIDI Maps and Program Changes
-
-"Demonstrate program change by setting up an organ instrument to play on.
-	[MIDIPort testProgramChange]
-
-Down-load a general MIDI patch for a 4-voice organ.
-	[MIDIPort setupOrgan. Cluster example1]
-
-Down-load a general MIDI patch for a 16-voice percussion ensemble.
-	[MIDIPort setupTunedPercussion. MIDIPort testAScale]
-
-Or try these
-	[MIDIPort setAllInstrumentsTo: 'Tenor Sax'. MIDIPort testAScale]
-	[MIDIPort setAllInstrumentsTo: 'Music Box'. MIDIPort testAScale]
-
-Reset the GM map (for the first 16 instruments)
-	[MIDIPort setupDefaultGeneralMIDI]
-
-MIDI Input (Untested on Squeak)
-
-Open MIDI, try to read something--dump it to the transcript.
-	[MIDIPort testInput]
-	[MIDIPort dumpExample]
-
-Execute this to end the input test
-	[MIDIPort testInputStop]
-
-Get the port's pending input.
-	[MIDIPort default eventsAvailable]
-	[MIDIPort default readAll]
-	[MIDIPort default input]
-	[MIDIPort default resetInput]
-
-Set up a MIDI dump object as a dependent of the input port. Dump for 5 seconds,
-then turn off. The default update: method just dumps the MIDI packet into the transcript.
-	[MIDIPort dumpExample]
-
-This example captures notes to an event list for 5 seconds and opens an editor on it.
-	[MIDIDump exampleList]
-
-Set up uncached controller reading and dump input to the transcript.
-	[MIDIPort testControllerInput]
-	[MIDIPort testInputStop]
-
-Set up uncached controller reading--read controllers from lo to hi as an array and print it; 
-stop on mouse press.
-	[MIDIPort testControllerCachingFrom: 48 to: 52]
-
-Real-time Performance Tests
-
-Play ''num'' random pitches spaced ''dur'' msec apart.
-This test creates the messages and does the scheduling right here.
-	[MIDIPort testRandomPlayLowLevel: 64 dur: 80]
-
-Play a roll of 'num' notes spaced 'dur' msec apart.
-This test creates the messages and does the scheduling right here.
-	[MIDIPort testRollLowLevel: 20 dur: 80]
-
-	[MIDIPort testRollLowLevel: 200 dur: 40]
-
-Continuous Control Tests
-
-Demonstrate control commands by playing a note and making a crescendo with the volume pedal.
-	[MIDIPort testControlContinuous]
-
-Demonstrate pitch-bend by playing two notes and bending them.
-	[MIDIPort testBend]
-
-Recording Continuous Controllers
-
-One can also record functions from input controlers, as in the following example, which reads MIDI controller 48 at a rate of 40 Hz for 5 seconds.
-
-	[MIDIPort testControllerRecording]
-
-Utilities
-
-ANO
-	[MIDIPort allNotesOff]
-
-Close down and clean up
-	[MIDIPort cleanUp]
-
-For much more detail, see the class example messages in MIDIPort, or the tests in the PortMIDIPort and PortMIDILibrary classes.
+Test Workspace - stp - 230128Known bugs	TSV selection update	PTV time-region selection(?)	DLV selection handles scale with zoom	PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3	Ostinato doesn't wait right.ToDo	MIDI input: kbd & ctrlrs	Function & Sound editors	CSL vocoder resynth stage	New transport panelPost-build testingTest plug-ins	CStandardLibrary new abs: -42 	FFITestLibrary ffiPrintString: 'Hello' 	FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0	FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 	[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]	[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]	[Undeclared inspect]	[Smalltalk garbageCollect]	[Utilities openUsefulExpressions]	[DirectoryEntry currentDirectory]	[DependentsFields]	[MIDIPort allNotesOff]	[MIDIPort cleanUp]New Siren GUI Tools	[SirenSession openUtilityVert]	[VoiceDialog open]==================================Display list view examples	[DisplayListView exampleRectangles]	[DisplayRectangle rectangleExample2]		"slow - uses rotated rects"	[DisplayListView exampleLines]	[DisplayListView examplePolylines]	[DisplayListView exampleVisuals]	[(DisplayList stringsX: 6000 byY: 10000) display]	[DisplayListView exampleMixed]		"huge display list - takes a while"	[DisplayList exampleHierarchical display]	Display the old and new glyph catalogs	[DisplayVisual displayMusicConstants]			[DisplayVisual displayMusicGlyphs]	Music notation demos	[TimeSequenceView randomExample]	[PitchTimeView randomExample]	[PitchTimeView randomExample2]	[EventList randomSWSSExample2 editPTV]	[HauerSteffensView randomExampleQ]	[HauerSteffensView cloudExample]	[HauerSteffensView cloudsExample]	[HauerSteffensView cloudsExample2]	[DynamicCloud focusExample]	[HauerSteffensView scaleExample]	[HauerSteffensView scaleExample2]	[ExtDynamicSelectionCloud chordExample]	[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]	[EventList accellExample open]Advanced Event Generators	[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]	[Arpeggio example1]		 "Plays midi"	[Score11 melody1]	[ExtDynamicSelectionCloud chordExample]	[ExtDynamicSelectionCloud chordExample2]Function views	[Function functionViewExample]	[FunctionView multiFunctionExample]	[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]--------------------------Roll timing tests	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList 					playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]----MIDI Tests	[PortMIDILibrary pm_count_devices ]	[PortMIDILibrary pm_default_input_device ] 	[PortMIDILibrary pm_default_output_device ] 	PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device 	[PortMIDIPort listDeviceTable]	[PortMIDILibrary testAllNotes]	[ExternalLibrary clearAllCaches.]	[PortMIDILibrary pm_terminate]	[MIDIVoice scaleExample]	[MIDIVoice randomExample]Various verbose MIDIVoice creation methods	[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]	[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]	[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]	[EventList scaleExample1 playOn: (MIDIVoice on: 			(MIDIDevice 				outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') 				port: MIDIPort concreteClass default) 			channel: 3)]	[PortMIDIPort streams]	[EventList multiVoiceExample playOn: MIDIVoice default]OSC Tests	Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)	1 - 10 ---- 10 plucked strings		 "fff" - amp, pitch, pos	11 - 20 ---- 10 FM instruments		"ffff" - dur amp pitch pos		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos	21 - 30 ---- 10 FM bells		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos	31 - 34 ---- 4 sound files (words)		"ff" - amp, pos	35 - 50 ---- 16 SHARC SOS voices (different instruments)		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	62 - 63 ---- 2 granular scramblers		dur, ampl	64 - 67 ---- 4 granular shifters		dur, ampl	68-75 ---- 8 SoundFont sample players		"fffff" - dur, chan, key, ampl, pos		"s" - load sound file given full file name (cmd 156 = set_file_f)	[EventScheduler interrupt; flush]	[OSCVoice fmExample1]	[OSCVoice fmExample2]	[OSCVoice pluckExample1]	[OSCVoice sndExample1]	[OSCVoice sndExample2]	[OSCVoice sharcExample1]	[OSCVoice bellExample1]	[OSCVoice vSOSExample1]	[OSCVoice granulatorExample1]	[OSCVoice granulatorExample2: 1]SoundFont Sampler tests	[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]SndSynth Tests	ScorePlayerMorph new openMIDIFile - fix this--------------------------------------------------------------------------------------------------------------------------------------------------------Music Font debugging[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]				[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7][((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7][((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC][(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) 		displayOn: Display at: (256@256) clippingBox: Display boundingBox 		rule: Form paint fillColor: Color black][DisplayListView loadNoteGlyphsFromFontSized: 100]"	"load music icons from the font"DisplayVisual displayMusicGlyphs(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEditOffsets:	1/1 -> 6 @ 66	1/2 -> 5 @ 66(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit	Offsets (5 @ 45)----Loading transport icons[ | folder |	DisplayListView glyphs at: #Transport put: Dictionary new.	folder := (FileDirectory default directoryNamed: 				'Siren9C/Data/Fonts/transport_icons') name, '/'.	((FileDirectory on: folder) fileNamesMatching: '*.png') do:	[ :jpg | | form |	form := (Form fromFileNamed: folder, jpg).	form := form scaledToSize: 16 @ 16.	(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]][ | gly right down left up |gly := DisplayListView glyphs at: #Transport.right := gly at: #'right-arrow'.down := right rotateBy: #right centerAt: 0@0.left := right rotateBy: #pi centerAt: 0@0.up := right rotateBy: #left centerAt: 0@0.gly at: #'down-arrow' put: down.gly at: #'left-arrow' put: left.gly at: #'up-arrow' put: up.right := gly at: #'fast-forward'.down := right rotateBy: #pi centerAt: 0@0.gly at: #'rewind' put: down.][(DisplayListView glyphs at: #Transport) explore][DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7		keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )		into: #StdNoteIcons.DisplayListView shrinkGlyphs.DisplayListView tweakGlyphs][DisplayVisual displayMusicGlyphs: #StdNoteIcons][HauerSteffensView scaleExample][HauerSteffensView scaleExample2][EventList accellExample edit]

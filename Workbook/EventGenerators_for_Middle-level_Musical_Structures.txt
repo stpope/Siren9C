@@ -111,10 +111,10 @@ The extended DynamicSelectionCloud uses a multi-part pitch set  of the format (t
 
 As an example of a more sophisticated event generator, Mark Lentczner's bell peals ring the changes.
 
-	[(Peal upon: #(60 62 65)) eventList open]
+	[(Peal on: #(60 62 65)) eventList open]
 
 	[ | peal list |
-	peal := Peal upon: #(60 62 65 67).
+	peal := Peal on: #(60 62 65 67).
 	list := EventList new.
 	peal playOn: list durations: 240 meter: 100 at: 0.
 "	list voice: #marimba."

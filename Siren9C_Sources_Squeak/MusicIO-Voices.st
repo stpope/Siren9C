@@ -66,7 +66,7 @@ The global object Voices is a dictionary that note events can refer to with inte
 		ifTrue: [name := aName printString]
 		ifFalse: [name := aName].
 	SirenSession voices ~~ nil
-		ifTrue: [SirenSession voices at: name asSymbol put: self]! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Voice class	instanceVariableNames: ''!!Voice class methodsFor: 'class initialization' stamp: 'stp 1/19/2023 07:56'!initialize
+		ifTrue: [SirenSession voices at: name asSymbol put: self]! !!Voice methodsFor: 'initialize-release' stamp: 'stp 1/28/2023 13:49'!species	^Voice! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Voice class	instanceVariableNames: ''!!Voice class methodsFor: 'class initialization' stamp: 'stp 1/19/2023 07:56'!initialize
 	"set up the shared dictionary for caching voices"
 	"Voice initialize"
 	"Voice allSubclassesDo: [ :each | each initialize]"
@@ -428,9 +428,9 @@ Instance Variables:
 	^self! !!CsoundVoice class methodsFor: 'examples' stamp: 'stp 12/31/2022 07:15'!randomExampleToFileNamed: fnam 	"Create a random event list and store it on a file."	"CsoundVoice randomExampleToFileAndEdit"	| evt strm list rand vox |	strm := FileStream named: fnam.	rand := Random new.	"Create the event list and add a few additional properties"	(list := EventList randomExample: 64)		do: [:ass | 			(evt := ass event) at: #pos put: rand next.			evt				at: #prop1				put: (rand nextFrom: 320 to: 480).			evt				at: #prop2				put: (rand nextIntFrom: 12000 to: 23000)].	"Create a csounc voice and customize its parameter map."	(vox := CsoundVoice newNamed: '1' onStream: strm) addMap: #pos.	vox		addMap: [:item | (item at: #prop1)				/ 1000 printString: 4].	vox addMap: #prop2.	"Play the list on the voice."	vox play: list.	strm close.	(FileStream named: fnam) edit! !!CsoundVoice class methodsFor: 'instance creation' stamp: 'stp 12/28/2022 16:56'!defaultPMap	| map |	(map := OrderedCollection new: 8)		add: [:t2 | 'i' , (t2 voice == nil					ifTrue: [1]					ifFalse: [t2 voice]) printString].	map add: #start.	map		add: [:t3 | t3 duration asSec value asFloat printString: 4].	map		add: [:t4 | t4 loudness asDB positiveDB printString: 4].	^ map! !Voice subclass: #SoundVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!SoundVoice commentStamp: '<historical>' prior: 0!SoundVoice is unfinished; it is intended for putting sound objects in scores.!!SoundVoice methodsFor: 'events'!playEvent: t1 at: t2 
 
 	stream play: t1.
-	^self! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SoundVoice class	instanceVariableNames: ''!!SoundVoice class methodsFor: 'constant access'!default
+	^self! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!SoundVoice class	instanceVariableNames: ''!!SoundVoice class methodsFor: 'constant access' stamp: 'stp 1/29/2023 10:00'!default
 
-	^self on: SoundPort default! !NotelistVoice subclass: #SuperColliderVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!SuperColliderVoice commentStamp: '<historical>' prior: 0!A SuperColliderVoice can write an event list to a sc format file for use by SuperCollider.!!SuperColliderVoice methodsFor: 'events'!endLine
+"	^self on: SoundPort default"! !NotelistVoice subclass: #SuperColliderVoice	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'MusicIO-Voices'!!SuperColliderVoice commentStamp: '<historical>' prior: 0!A SuperColliderVoice can write an event list to a sc format file for use by SuperCollider.!!SuperColliderVoice methodsFor: 'events'!endLine
 	"Put the proper command terminator on the receiver's stream."
 
 	stream nextPutAll: ' ],'; cr! !!SuperColliderVoice methodsFor: 'events'!space

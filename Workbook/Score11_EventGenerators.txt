@@ -1,142 +1,1 @@
-Score11-in-Siren is a port of the Score11 music description language; see https://www.esm.rochester.edu/ears/docs/score11/index.html
-Score11 is a derivative of Leland Smith SCORE language; ikt is equally well suited for transcribing music from traditional Western music notation as for describing algorithmic composition structures.  See the 2022 ICMC paper in the Doc folder for details.
-Examples of original Score11
-Format of an instrument block
-instrument 1 0 10;	< Instrument 1 starts at time 0 and plays for 10 beats.
-	parameter 3 1; 	< Each note lasts 1 beat
-end;          				< This finishes the instrument block
-A simple melody
-i1 0 5;							< instrument 0 for 5 seconds
-	p3 rh 4/8*6/4;				< rhythmic values, 1/4 note, then 6 1/8 notes...
-	p4 no c4/d/e/f/g/a/b/c5;	< pitches as note names
-	p5 1.0 3.0 5.0;    			< select 100% of values between 3.0 and 5.0 for amplitude
-	p6 mo 5 1000 2000;		< move from 1000 to 2000 in 5 beats for parameter 6
-end;
-
-Standard parameter maps -- the SCORE-11 constant parameter meanings are:
-
-      p1 = Instrument number
-      p2 = Starting time for this note (in beats) (not normally used)
-      p3 = Duration for this note (in beats)
-      p4 = Pitch (or frequency)
-      p5 = Amplitude value (0 - 32000)
-
-Score11-in-Smalltalk examples
-A simple scale
-	[ | s11 |	s11 := (Score11 instr: 1 from: 0 to: 5)
-		add: #p3 -> (#rh -> '4/8*6/4');
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c');
-		add: #p5 -> #(1.0 0.2 2.0);
-		add: #p6 -> (#mo -> #(5 1000 2000)).
-	s11 open]
-Show just the rhythm
-	[TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) 
-		add: #p3 -> (#rh -> '4//8////4//'); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
-		add: #p5 -> #(1.0 1.0 5.0); 
-		add: #p6 -> (#mo -> #(5 1000 2000))) 
-	eventList]
-Rhythmic example using triplets (1/6 notes)
-	[TimeSequenceView openOnEventList: ((Score11 instr: 1 from: 0 to: 10) 
-		add: #p3 -> (#rh -> '4/8*4/6*3/4/'); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
-		add: #p5 -> (#mo -> #(10 10 100));
-		add: #p6 -> #(1.0 -1.0 1.0)) 
-	eventList]
-Example with add'l parameters
-	[ | s11 |
-	s11 := ((Score11 instr: 1 from: 0 to: 10) 
-		add: #p3 -> (#rh -> '4/8*4/6*3/4/'); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
-		add: #p5 -> (#mo -> #(10 10 100));
-		add: #p6 -> #(1.0 -1.0 1.0);
-		add: #p7 -> #(0.5 1 2  0.5 100 200);
-		add: #p8 -> (#se -> '10 1 3 5 7 9');
-		add: #p9 -> (#mx -> #(10 1 100))).
-	s11 assign: #p6 to: #position:.
-	s11 assign: #p7 to: #attack:.
-	s11 eventList explore ]
-Demonstrate multi-segment moves
-	[ | s11 |			
-	s11 := ((Score11 instr: 1 from: 0 to: 10) 
-		add: #p3 -> (#rh -> 16); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a5/b/c'); 		"play a scale"
-		add: #p5 -> (#mo -> '7 0.2 2.0 / 3 2.0 0.2')).		"crescendo/decrescendo"
-	s11 tempo: #(10 60 120).
-	s11 eventList removeLast editPTV ]
-Test dotted values
-	[ | s11 |			
-	s11 := ((Score11 instr: 1 from: 0 to: 10) 
-		add: #p3 -> (#rh -> '4/4./4../8'); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
-		add: #p5 -> (#mo -> #(7 5 100  3 100 5))).
-	s11 tempo: #(10 60 120).
-	s11 eventList inspect ]
-Test rests
-	[ | s11 |	
-	s11 := ((Score11 instr: 1 from: 0 to: 10) 
-		add: #p3 -> (#rh -> '4/-4/8/-8'); 
-		add: #p4 -> (#no -> 'c4/d/e/f/g/a/b/c5'); 
-		add: #p5 -> (#mo -> '7 5 100 / 3 100 5')).
-	s11 tempo: #(10 60 120).
-	s11 eventList inspect ]
-Test complex movex - 5 sec low-to-high pitch ranges, then 4 sec constant, then 6 sec move back to low pitch
-	[ | s11 |
-	s11 := ((Score11 instr: 1 from: 0 to: 15) 
-		add: #p3 -> (#rh -> '16/'); 
-		add: #p4 -> (#mx -> '5 100 120 , 2000 2400 /						4 2050 2060 /						6 2000 2100 , 700 1100' )).			
-	s11 eventList explore ]Test complex movex 2 - more pitch range testing
-	[ | s11 |
-	s11 := ((Score11 instr: 1 from: 0 to: 8) 
-		add: #p3 -> (#rh -> '32/'); 
-		add: #p4 -> (#mx -> '3 140 190 , 400 440 /
-						2 440 460 /
-						3 400 400 , 150 250' )).
-	s11 eventList editPTV ]
-
-----Gesture from BatOutOfHell (STP 1983) Part 1
-
-	[ | s11 |
-	s11 := ((Score11 instr: 1 from: 0 to: 120) 
-		add: #p3 -> (#mx -> '15 .4 .5 , .05 .14 /
-						15 .1 .15 , .5 .4 /
-						20 .5 .3 , .1 .13 /
-						25 .2 .1 , .6 .6 /
-						25 .5 .7 , .1 .06 /
-						20 .12 .08 , .5 .5'); 
-		add: #p4 -> (#mx -> '20 2000 3000 , 2000 2100 /
-						20 2050 2050 /
-						30 2000 2100 , 2200 1600 /
-						20 2400 2500 , 2800 2000 /
-						30 2400 2400 , 2200 2100'); 
-		add: (#p5 -> 70);
-		add: #p6 -> (#mx -> '100 1 1 , 1 1 / 20 1 1 , .9 1.1');
-		add: #p7 -> #(1.0 -1.0 1.0) ).
-	s11 du: 303.
-	s11 assign: #p6 to: #gliss:.
-	s11 assign: #p7 to: #position:.
-	s11 eventList explore ]
-
-Keywords requiring a parameter number:
-	1. funcs (not implemented)
-	2. move - move "number of beats for change" "first value" "second value"
-	3. movex - movex "number of beats for change" "first value" "second value"
-	4. notes - symbolic note names
-	5. numbers - numerical sequences
-	6. rhythms - rhythmic notations
-	7. rlist
-	8. rnotes
-	9. sets - selection from sets
-
-Keywords not using a parameter number:
-	1. ampfac
-	2. beat
-	3. duty_factor
-	4. end
-	5. instrument (valid as 'i')
-	6. parameter (valid as 'p')
-	7. rdeviation
-	8. rrests
-	9. rseed
-	10. tempo
-	11. tfactor
+Test Workspace - stp - 230128Known bugs	TSV selection update	PTV time-region selection(?)	DLV selection handles scale with zoom	PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3	Ostinato doesn't wait right.ToDo	MIDI input: kbd & ctrlrs	Function & Sound editors	CSL vocoder resynth stage	New transport panelPost-build testingTest plug-ins	CStandardLibrary new abs: -42 	FFITestLibrary ffiPrintString: 'Hello' 	FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0	FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 	[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]	[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]	[Undeclared inspect]	[Smalltalk garbageCollect]	[Utilities openUsefulExpressions]	[DirectoryEntry currentDirectory]	[DependentsFields]	[MIDIPort allNotesOff]	[MIDIPort cleanUp]New Siren GUI Tools	[SirenSession openUtilityVert]	[VoiceDialog open]==================================Display list view examples	[DisplayListView exampleRectangles]	[DisplayRectangle rectangleExample2]		"slow - uses rotated rects"	[DisplayListView exampleLines]	[DisplayListView examplePolylines]	[DisplayListView exampleVisuals]	[(DisplayList stringsX: 6000 byY: 10000) display]	[DisplayListView exampleMixed]		"huge display list - takes a while"	[DisplayList exampleHierarchical display]	Display the old and new glyph catalogs	[DisplayVisual displayMusicConstants]			[DisplayVisual displayMusicGlyphs]	Music notation demos	[TimeSequenceView randomExample]	[PitchTimeView randomExample]	[PitchTimeView randomExample2]	[EventList randomSWSSExample2 editPTV]	[HauerSteffensView randomExampleQ]	[HauerSteffensView cloudExample]	[HauerSteffensView cloudsExample]	[HauerSteffensView cloudsExample2]	[DynamicCloud focusExample]	[HauerSteffensView scaleExample]	[HauerSteffensView scaleExample2]	[ExtDynamicSelectionCloud chordExample]	[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]	[EventList accellExample open]Advanced Event Generators	[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]	[Arpeggio example1]		 "Plays midi"	[Score11 melody1]	[ExtDynamicSelectionCloud chordExample]	[ExtDynamicSelectionCloud chordExample2]Function views	[Function functionViewExample]	[FunctionView multiFunctionExample]	[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]--------------------------Roll timing tests	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList 					playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]----MIDI Tests	[PortMIDILibrary pm_count_devices ]	[PortMIDILibrary pm_default_input_device ] 	[PortMIDILibrary pm_default_output_device ] 	PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device 	[PortMIDIPort listDeviceTable]	[PortMIDILibrary testAllNotes]	[ExternalLibrary clearAllCaches.]	[PortMIDILibrary pm_terminate]	[MIDIVoice scaleExample]	[MIDIVoice randomExample]Various verbose MIDIVoice creation methods	[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]	[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]	[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]	[EventList scaleExample1 playOn: (MIDIVoice on: 			(MIDIDevice 				outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') 				port: MIDIPort concreteClass default) 			channel: 3)]	[PortMIDIPort streams]	[EventList multiVoiceExample playOn: MIDIVoice default]OSC Tests	Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)	1 - 10 ---- 10 plucked strings		 "fff" - amp, pitch, pos	11 - 20 ---- 10 FM instruments		"ffff" - dur amp pitch pos		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos	21 - 30 ---- 10 FM bells		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos	31 - 34 ---- 4 sound files (words)		"ff" - amp, pos	35 - 50 ---- 16 SHARC SOS voices (different instruments)		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	62 - 63 ---- 2 granular scramblers		dur, ampl	64 - 67 ---- 4 granular shifters		dur, ampl	68-75 ---- 8 SoundFont sample players		"fffff" - dur, chan, key, ampl, pos		"s" - load sound file given full file name (cmd 156 = set_file_f)	[EventScheduler interrupt; flush]	[OSCVoice fmExample1]	[OSCVoice fmExample2]	[OSCVoice pluckExample1]	[OSCVoice sndExample1]	[OSCVoice sndExample2]	[OSCVoice sharcExample1]	[OSCVoice bellExample1]	[OSCVoice vSOSExample1]	[OSCVoice granulatorExample1]	[OSCVoice granulatorExample2: 1]SoundFont Sampler tests	[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]SndSynth Tests	ScorePlayerMorph new openMIDIFile - fix this--------------------------------------------------------------------------------------------------------------------------------------------------------Music Font debugging[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]				[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7][((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7][((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC][(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) 		displayOn: Display at: (256@256) clippingBox: Display boundingBox 		rule: Form paint fillColor: Color black][DisplayListView loadNoteGlyphsFromFontSized: 100]"	"load music icons from the font"DisplayVisual displayMusicGlyphs(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEditOffsets:	1/1 -> 6 @ 66	1/2 -> 5 @ 66(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit	Offsets (5 @ 45)----Loading transport icons[ | folder |	DisplayListView glyphs at: #Transport put: Dictionary new.	folder := (FileDirectory default directoryNamed: 				'Siren9C/Data/Fonts/transport_icons') name, '/'.	((FileDirectory on: folder) fileNamesMatching: '*.png') do:	[ :jpg | | form |	form := (Form fromFileNamed: folder, jpg).	form := form scaledToSize: 16 @ 16.	(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]][ | gly right down left up |gly := DisplayListView glyphs at: #Transport.right := gly at: #'right-arrow'.down := right rotateBy: #right centerAt: 0@0.left := right rotateBy: #pi centerAt: 0@0.up := right rotateBy: #left centerAt: 0@0.gly at: #'down-arrow' put: down.gly at: #'left-arrow' put: left.gly at: #'up-arrow' put: up.right := gly at: #'fast-forward'.down := right rotateBy: #pi centerAt: 0@0.gly at: #'rewind' put: down.][(DisplayListView glyphs at: #Transport) explore][DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7		keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )		into: #StdNoteIcons.DisplayListView shrinkGlyphs.DisplayListView tweakGlyphs][DisplayVisual displayMusicGlyphs: #StdNoteIcons][HauerSteffensView scaleExample][HauerSteffensView scaleExample2][EventList accellExample edit]

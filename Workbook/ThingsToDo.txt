@@ -1,6 +1,6 @@
 Status
 
-This is a test release; both the Squeak and Cuis ports are work-in-progress and many features are still to be ported.  See the demo script on page 32 for what works in Siren9c-on-Squeak.
+This is a test release; both the Squeak and Cuis ports are work-in-progress and many features are still to be ported.  See the demo script on page 32 for what works in Siren9C-on-Squeak.
 
 There are certainly many bugs in Siren.
 
@@ -11,7 +11,7 @@ The SWIG code for Loris and CSL is no longer supported (sadly).
 The old ManualWriter and ComposedTextEditor packages have disappeared, so the list workbook is single-font.
 
 The display list views have no notion of pages, so longer musical examples don't display well. We need a fancier document model with page layout.
-There's alot of stale code in the Squeak port that's vestige of the VisualWorks world, all the displayOn: methods are old, as are all the GUIs that use VisualWorks-style set-up.
+There's alot of stale code in the Squeak port that's vestiges of the VisualWorks world, all the displayOn: methods are old, as are all the GUIs that use VisualWorks-style set-up.
 ----
 
-Bugs - see the test workspace below fort the list of what I'm working on.
+Bugs - see the test workspace below for the list of what I'm working on.

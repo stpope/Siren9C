@@ -777,7 +777,7 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 		d := ass event duration.
 		tDur := tDur max: (t +d)].
 	duration := tDur.
-	self changed: #duration! !!EventList methodsFor: 'code conversion' stamp: 'stp 12/29/2022 01:40'!asSoundScore	"Convert the receiver to a Squeak-format score"	"(EventList scaleFrom: 48 to: 60 in: 1.5) asSoundScore play"	"| sco voxs| 	sco := EventList scaleFrom: 48 to: 60 in: 1.5.	voxs := Array with: FMSound oboe1 with: FMSound brass1 with:	FMSound marimba with: PluckedSound default.	sco eventsDo: [ :ev |	ev voice: voxs atRandom].	sco asSoundScore play "	| sco cnt tim vox |	sco := SequentialSound new initialize.	"(pitch, duration, loudness)"	cnt := 1.	tim := 0 msec.	events		do: [:ass | 			| sta evt |			sta := ass key.			sta = tim				ifTrue: [evt := ass value.					vox := evt voice.					vox isString						ifTrue: [vox := (Smalltalk at: vox) new].					vox						ifNil: [vox := FMSound oboe1].					sco						add: (vox								soundForPitch: evt pitch asHz value								dur: evt duration asSec value								loudness: evt loudness asMIDI value / 1000.0).					tim := sta + evt duration.					cnt := cnt + 1]				ifFalse: ["add rest"					sco						add: (RestSound dur: ass value duration asMS value)]].	"self halt."	^ sco! !!EventList methodsFor: 'code conversion'!continueProperties
+	self changed: #duration! !!EventList methodsFor: 'code conversion' stamp: 'stp 2/14/2023 11:36'!asSoundScore	"Convert the receiver to a Squeak-format score"	"(EventList scaleFrom: 48 to: 60 in: 1.5) asSoundScore play"	" | sco voxs| 		sco := EventList scaleFrom: 48 to: 60 in: 1.5.		voxs := Array with: FMSound oboe1 with: FMSound brass1 with:		FMSound marimba with: PluckedSound default.		sco eventsDo: [ :ev |		ev voice: voxs atRandom].		sco asSoundScore play "		| sco cnt tim vox |	sco := SequentialSound new initialize.	"(pitch, duration, loudness)"	cnt := 1.	tim := 0 msec.	events		do: [:ass | 			| sta evt |			sta := ass key.			sta = tim				ifTrue: [evt := ass value.					vox := evt voice.					vox isString						ifTrue: [vox := (Smalltalk at: vox) new].					vox						ifNil: [vox := FMSound oboe1].					sco						add: (vox								soundForPitch: evt pitch asHz value								dur: evt duration asSec value								loudness: evt loudness asMIDI value / 1000.0).					tim := sta + evt duration.					cnt := cnt + 1]				ifFalse: ["add rest"					sco						add: (RestSound dur: ass value duration asMS value)]].	"self halt."	^ sco! !!EventList methodsFor: 'code conversion'!continueProperties
 	"Fill in missing properties with values that are continued from previous ones."
 	"((440 Hz, (1/4 beat), (#voice -> #flute)), (1/4 => 460 Hz), (1/2 => 500 Hz), (3/4 => 320 Hz), (4/4 => 440 Hz)) continueProperties"
 
@@ -871,10 +871,10 @@ The global dictionary EventLists holds onto instances that can be referenced wit
 	^newList! !!EventList methodsFor: 'collecting'!do: aBlock
 	"Iterate over the receiver's event associations with the given block"
 
-	self events do: aBlock! !!EventList methodsFor: 'collecting'!eventsDo: aBlock
+	self events do: aBlock! !!EventList methodsFor: 'collecting' stamp: 'stp 2/6/2023 07:54'!eventsDo: aBlock
 	"Iterate over the receiver's events with the given block"
 
-	^self events do: [:assoc | aBlock value: (assoc event) ]! !!EventList methodsFor: 'collecting' stamp: 'stp 12/30/2022 14:33'!excerptFrom: start to: end
+	^self events do: [ :assoc | aBlock value: (assoc event) ]! !!EventList methodsFor: 'collecting' stamp: 'stp 12/30/2022 14:33'!excerptFrom: start to: end
 	"Answer a hierarchical list delineated by the given times."
 
 	| newList newEvent |
@@ -1177,11 +1177,11 @@ add: ('.
 	"Open your favorite graphical editor on the receiver."
 
 	PitchTimeView openOnEventList: self label: 'Music Notation' pianoRoll: true
-! !!EventList methodsFor: 'processing' stamp: 'stp 1/11/2023 19:34'!editPTV
+! !!EventList methodsFor: 'processing' stamp: 'stp 1/27/2023 18:03'!editPTV
 	"Open your favorite graphical editor on the receiver (left-shift-sensitive)"
 
-	PitchTimeView openOnEventList: self label: 'Music Notation'
-! !!EventList methodsFor: 'processing' stamp: 'stp 1/11/2023 15:33'!patchTimes
+	PitchTimeView openOnEventList: self flatten label: 'Music Notation'
+! !!EventList methodsFor: 'processing' stamp: 'stp 1/27/2023 18:09'!flatten	"Answer a copy of the receiver with its hierarchy flattened."	| new |	new := EventList new.	events do:		[ :ass | | tm ev |		tm := ass key.		ev := ass value.		ev hasItems			ifTrue: [ | subnew |				subnew := ev flatten.				subnew events do: [ :ass2 |					new add: ass2 value at: ass2 key + tm]]			ifFalse: [new add: ass]].	^new! !!EventList methodsFor: 'processing' stamp: 'stp 1/11/2023 15:33'!patchTimes
 	"Make sure the notes are end-to-end - no overlap or silences"
 
 	| prev tim |	prev := events first.	tim := prev key + prev value duration.	2 to: events size do: 		[ : ind | | assoc | 		assoc := events at: ind.		assoc key = tim ifFalse: [assoc key: tim].		tim := tim + assoc value duration	].
@@ -1190,18 +1190,31 @@ add: ('.
 	"someEventList scale: #duration by: 2"
 
 	self applyBlock: [ :v | (v class new value: (v value * theValue))] 
-			toProp: theSelector! !!EventList methodsFor: 'processing'!scaleStartTimesBy: theValue
-	"Multiply the start times all events by theValue."
+			toProp: theSelector! !!EventList methodsFor: 'processing' stamp: 'stp 2/5/2023 21:26'!scaleDurationsBy: theScale
+	"Multiply the durations of all events by theScale."
+
+	self events do: [ :assoc | assoc value duration: (assoc value duration * theScale)].
+	self recomputeDuration! !!EventList methodsFor: 'processing' stamp: 'stp 2/5/2023 14:56'!scaleStartTimesBy: theValue
+	"Multiply the start times of all events by theValue."
 
 	self events do: [ :assoc | assoc key: (assoc key * theValue) ].
+	self recomputeDuration! !!EventList methodsFor: 'processing' stamp: 'stp 2/5/2023 15:11'!scaleTimesBy: theScale
+	"Multiply the start times and durations of all events by theScale."
+
+	self events do: [ :assoc | assoc key: (assoc key * theScale).			assoc value duration: (assoc value duration * theScale)].
 	self recomputeDuration! !!EventList methodsFor: 'processing'!scaleValue: theValue toProp: theSelector
 	"Multiply the aspect refered to by theSelector of all events by theValue."
 	"someEventList scaleValue: 3 toProp: #duration"
 
 	self applyBlock: [ :v | (v class new value: (v value * theValue))] 
-			toProp: theSelector! !!EventList methodsFor: 'processing'!setValue: theValue toProp: theSelector
+			toProp: theSelector! !!EventList methodsFor: 'processing' stamp: 'stp 2/10/2023 16:41'!setAll: theSelector to: theValue
 	"Set the aspect refered to by theSelector of all events to theValue."
-	"someEventList scaleValue: (MSecondDuration value: 10) toProp: #duration"
+	"someEventList setValue: (MSecondDuration value: 10) toProp: #duration"
+
+	self applyBlock: [ :v | theValue] 
+			toProp: theSelector! !!EventList methodsFor: 'processing' stamp: 'stp 2/9/2023 12:45'!setValue: theValue toProp: theSelector
+	"Set the aspect refered to by theSelector of all events to theValue."
+	"someEventList setValue: (MSecondDuration value: 10) toProp: #duration"
 
 	self applyBlock: [ :v | theValue] 
 			toProp: theSelector! !!EventList methodsFor: 'processing'!spreadValue: theRandomPercent toProp: theSelector
@@ -1252,26 +1265,26 @@ add: ('.
 "	self playOn: aVoice at: Time microsecondClock"! !!EventList methodsFor: 'scheduling'!playOn: aVoice at: startTime
 	"Play the event list on the voice by expanding its events"
 
-	aVoice play: self at: startTime.! !!EventList methodsFor: 'scheduling' stamp: 'stp 12/30/2022 15:57'!scheduleAt: aTime 
+	aVoice play: self at: startTime.! !!EventList methodsFor: 'scheduling' stamp: 'stp 2/13/2023 02:12'!scheduleAt: aTime 
 	"Expand an eventList for the appointment scheduler."
 
 	| theEvent |
 	self events isEmpty ifTrue: [^nil].
 	index ifNil: 
-		[index := 1.
-		startedAt := Time utcMicrosecondClock].
+			[index := 1.
+			startedAt := Time utcMicrosecondClock].
 	index > self events size
-		ifTrue: [index := nil. ^nil].
+			ifTrue: [index := nil. 					^nil].
 	theEvent := self events at: index.
 	theEvent := self map: theEvent at: aTime.
 	theEvent voice ifNil:
-		[theEvent voice: voice].
-	theEvent play.			"play the next event"
+			[theEvent voice: voice].
+	theEvent play.						"play the next event"
 	index := index + 1.
 	index > self events size
-		ifTrue: [^aTime + theEvent duration asUsec value].
-	^self nextTime: aTime! !!EventList methodsFor: 'scheduling'!stop
-	"Play the event list by passing it off to the event scheduler."
+			ifTrue: [^aTime + theEvent duration asUsec value].
+	^self nextTime: aTime! !!EventList methodsFor: 'scheduling' stamp: 'stp 2/13/2023 00:50'!stop
+	"Stop the event list playing."
 
 	EventScheduler instance removeClientNamed: self name! !!EventList methodsFor: 'private'!map: anAssociation
 	"Map the receiver's special properties and/or eventModifiers onto the given event."
@@ -1318,7 +1331,7 @@ add: ('.
 		fromStartTimes: #(0 500 1000 1500 2000 2500 3000)) inspect.
 "
 	((440 Hz, 250 msec, (#voice -> #flute)), 
-		((1/4) => (471 Hz, (1/4) beat, (#voice -> #flute)))) inspect! !!EventList class methodsFor: 'examples' stamp: 'stp 1/21/2023 15:30'!exampleHierarchical	"Create and edit a hierarchical event list with grolups in sub-event-lists."	"EventList exampleHierarchical"	((EventList newNamed: 'Test/Groups')		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (36 to: 40)), (#ampl: -> #(110)))) at: 0 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (40 to: 44)), (#ampl: -> #(100)))) at: 1.5 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (44 to: 48)), (#ampl: -> #(80)))) at: 3 sec;		add: (EventList randomExample: 8			from: ((#duration: -> (60 to: 120)), (#pitch: -> (48 to: 52)), (#ampl: -> #(70)))) at: 4.5 sec) editPTV! !!EventList class methodsFor: 'examples' stamp: 'stp 1/23/2023 17:37'!randomExample
+		((1/4) => (471 Hz, (1/4) beat, (#voice -> #flute)))) inspect! !!EventList class methodsFor: 'examples' stamp: 'stp 1/21/2023 15:30'!exampleHierarchical	"Create and edit a hierarchical event list with grolups in sub-event-lists."	"EventList exampleHierarchical"	((EventList newNamed: 'Test/Groups')		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (36 to: 40)), (#ampl: -> #(110)))) at: 0 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (40 to: 44)), (#ampl: -> #(100)))) at: 1.5 sec;		add: (EventList randomExample: 8 			from: ((#duration: -> (60 to: 120)), (#pitch: -> (44 to: 48)), (#ampl: -> #(80)))) at: 3 sec;		add: (EventList randomExample: 8			from: ((#duration: -> (60 to: 120)), (#pitch: -> (48 to: 52)), (#ampl: -> #(70)))) at: 4.5 sec) editPTV! !!EventList class methodsFor: 'examples' stamp: 'stp 1/29/2023 10:41'!multiVoiceExample	"Create an event list that tests all 16 MIDI channels"	"EventList multiVoiceExample playOn: MIDIVoice default."		| list pit |	list := EventList new.	pit := 72 key.	1 to: 16 do:		[ :ind | | dur |		dur := (ind - 1 * 0.75) sec.		list add: (0.75 sec, pit, 90 velocity, (#channel -> ind)) at: dur].	^ list! !!EventList class methodsFor: 'examples' stamp: 'stp 1/23/2023 17:37'!randomExample
 	"Create an event list with random data."
 	"EventList randomExample"
 	"EventList randomExample edit"

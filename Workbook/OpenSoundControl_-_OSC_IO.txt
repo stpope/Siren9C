@@ -1,77 +1,1 @@
-Siren and OpenSoundControl
-
-Siren includes an output voice that generates messages using the CNMAT OpenSoundControl (OSC) protocol  (http://www.cnmat.berkeley.edu/OpenSoundControl), which is sent out via UDP network packets to an external synthesis server. We generally build these servers using CSL or SuperCollider, and then control them with set-up, event trigger, and control messages sent out from Siren.
-
-The verbosity flag in the SirenUtility class allows for logging of all OSC to the transcript; open a Siren utility panel and use the pop-up menu to set the verbosity to 2. To test the OSC I/O, look at the classes OSCPort and OSCVoice with the default host/port settings and several useful parameter maps. A parameter map is a Smalltalk block that takes an event as its argument and returns an OSC message object (or a bundle), as in the following example (don't execute this):
-
-	[ :event |  | arr |				"This block takes an event as its argument and answers a"
-	arr := Array					"TypedOSCMessage for the address /note-on with 3 parameters"
-			with: event duration asSec value
-			with: event pitch asHz value
-			with: event ampl asRatio value.
-	TypedOSCMessage for: '/note-on' with: arr]
-
-For simple debugging, Chandrasekhar Ramakrishnan wrote Occam, a stand-alone OSC-to-MIDI convertor for Mac OS X (http://fastlabinc.com/CSL/Occam.zip). You can also use the CNMAT dumpOSC utility to print out OSC messages. The following example plays a scale on an ugly FM instrument.
-
-	[OSCVoice midiScaleExample]
-Play a scale on the CSL plucked string voice.	"OSCVoice scaleExample"
-There are also several examples that are set up to work with the CSL OSC server demos; if you have CSL, compile and start the "osc_synth_server" target, which sets up a  server with a mix of FM synthesis, sound file playback, granulation and other instruments (see the list below). Look at the conditional compilation macros in the file OSC_main.cpp; there are several options, each of which compiles a different instrument library into the CSL OSC server.
-
-Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)	1 - 10 ---- 10 plucked strings		 "fff" - amp, pitch, pos	11 - 20 ---- 10 FM instruments		"ffff" - dur amp pitch pos		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos	21 - 30 ---- 10 FM bells		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos	31 - 34 ---- 4 sound files (words)		"ff" - amp, pos	35 - 50 ---- 16 SHARC SOS voices (different instruments)		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	62 - 63 ---- 2 granular scramblers		"ff" - dur, ampl		"fff" - dur, ampl, rate	64 - 67 ---- 4 granular shifters		"ff" - dur, ampl		"fff" - dur, ampl, rate
-Then you can try the OSCVoice examples that follow.
-
-	[OSCVoice fmExample1]
-	[OSCVoice sndExample1]
-Play notes on CSL FM bell instruments	"OSCVoice bellExample1"
-Play an FM bell using CSL; fork a block that plays a note and waits a bit; stop the scheduler to stop the block.	"OSCVoice fmExample4"
-
-For more examples, set the default voice to OSC (using the Siren utility control panel) and run the built in examples on the other pages of this outline.
-Play short notes on the 16 SHARC instruments (version w vibrato)	"OSCVoice sharcExample1"		Play long low notes on the 16 SHARC instruments	"OSCVoice sharcExample2"			"OSCVoice sharcExample4"		Play notes on CSL FM bell instruments	"OSCVoice bellExample1"Play random notes on the CSL simple vector SHARC instruments	"OSCVoice vSOSExample1"			Play long low notes on the fancy vector SOS instruments	"OSCVoice vSOSExample2"		Play on the CSL granulator1 instrument - short bursts of garbled speak'n'spell for 20 sec	"OSCVoice granulatorExample1"Play on the CSL granulator2 instrument until interrupted - long low drones	"OSCVoice granulatorExample2"	Play on the CSL granulator2 instrument - layers of long low drones	"OSCVoice granulatorExample2: 1"	"OSCVoice granulatorExample2: 2"	"OSCVoice granulatorExample2: 3"
-----
-
-The liblo OSC library includes a useful test program called oscsend, which allows one to 
-send OSC commands to a server from the UNIX shell.  To compile this tool, go to the 
-CSL7/Libs/liblo-0.31/src/tools folder and use a shell command such as,
-
-	gcc -I../.. -g -O2 -o oscsend oscsend-oscsend.o /usr/local/lib/liblo.7.dylib -lpthread -lm
-
-to compile and link the oscsend command -- the Makefile may of may not work; it depends
-on where you installed the liblo library goven in the command line.
-If you're running the CSL demo OSC synthesis server, you can now open
-a shell window and use commands such as,
-
-	# Plucked string (amp, pitch, pos)
-	oscsend localhost 54321 /i1/pn fff   0.77 207.67 -0.271	
-	
-	# FM (dur, amp, pitch, pos) or (dur, amp, c_fr, m_fr, ind, pos)
-	oscsend localhost 54321 /i11/pn ffff  3.0 0.177 207.67 -0.271
-	oscsend localhost 54321 /i12/pn ffff  3.0 0.177 207.6 207.6 0.0 0.0
-	
-	# FM bell
-	oscsend localhost 54321 /i21/pn fffffff  3.0 0.77 107.67 0.5 180.0 120.0 0.0 
-
-	# Snd file player (amp, pos)
-	oscsend localhost 54321 /i31/pn ff  3.0 0.0 
-	oscsend localhost 54321 /i32/pn ff  3.0 0.0 
-	
-	# SHARC add-syn - basic version w vibrato
-	oscsend localhost 54321 /i35/pn ffff  3.0 0.77 207.67 -0.271
-	oscsend localhost 54321 /i36/pn ffff  3.0 0.77 207.67 -0.271
-	
-	# SHARC add-syn - basic version w attack chiff
-	oscsend localhost 54321 /i51/pn ffff  3.0 0.77 207.67 -0.271
-	oscsend localhost 54321 /i52/pn ffff  3.0 0.77 207.67 -0.271
-	
-	# Vector-synth SHARC add synth (dur, amp, pitch, pos)
-	# Version with SHARC instruments, i.e., different spectra per-note and straight cross-fade
-	oscsend localhost 54321 /i56/pn ffff  3.0 0.77 144.7 0.0
-	oscsend localhost 54321 /i57/pn ffff  3.0 0.77 144.7 0.0
-	oscsend localhost 54321 /i58/pn ffff  3.0 0.77 144.7 0.0
-	oscsend localhost 54321 /i59/pn ffff  3.0 0.77 144.7 0.0
-	oscsend localhost 54321 /i60/pn ffff  3.0 0.77 144.7 0.0
-	
-	# Vector-synth SHARC add synth (dur, amp, pitch, pos)
-	# Version with SHARC instruments and random-walk cross-fade
-	oscsend localhost 54321 /i62/pn ffff  3.0 0.77 144.7 0.0
-	oscsend localhost 54321 /i63/pn ffff  3.0 0.77 144.7 0.0
-	oscsend localhost 54321 /i64/pn ffff  3.0 0.77 144.7 0.0
+Test Workspace - stp - 230128Known bugs	TSV selection update	PTV time-region selection(?)	DLV selection handles scale with zoom	PitchClass octave bugs - (HungarianMinor root: N fa) asPitchesInOctave: 3	Ostinato doesn't wait right.ToDo	MIDI input: kbd & ctrlrs	Function & Sound editors	CSL vocoder resynth stage	New transport panelPost-build testingTest plug-ins	CStandardLibrary new abs: -42 	FFITestLibrary ffiPrintString: 'Hello' 	FFITestLibrary ffiTestChars: $A with: 32 with: 0 with: 0	FFITestLibrary ffiTestInts: 100 with: 32 with: 0 with: 0 	[ExternalAddress loadSymbol: 'pm_initialize' module: PortMIDILibrary moduleName]	[ExternalAddress loadSymbol: 'not-there' module: PortMIDILibrary moduleName]	[Undeclared inspect]	[Smalltalk garbageCollect]	[Utilities openUsefulExpressions]	[DirectoryEntry currentDirectory]	[DependentsFields]	[MIDIPort allNotesOff]	[MIDIPort cleanUp]New Siren GUI Tools	[SirenSession openUtilityVert]	[VoiceDialog open]==================================Display list view examples	[DisplayListView exampleRectangles]	[DisplayRectangle rectangleExample2]		"slow - uses rotated rects"	[DisplayListView exampleLines]	[DisplayListView examplePolylines]	[DisplayListView exampleVisuals]	[(DisplayList stringsX: 6000 byY: 10000) display]	[DisplayListView exampleMixed]		"huge display list - takes a while"	[DisplayList exampleHierarchical display]	Display the old and new glyph catalogs	[DisplayVisual displayMusicConstants]			[DisplayVisual displayMusicGlyphs]	Music notation demos	[TimeSequenceView randomExample]	[PitchTimeView randomExample]	[PitchTimeView randomExample2]	[EventList randomSWSSExample2 editPTV]	[HauerSteffensView randomExampleQ]	[HauerSteffensView cloudExample]	[HauerSteffensView cloudsExample]	[HauerSteffensView cloudsExample2]	[DynamicCloud focusExample]	[HauerSteffensView scaleExample]	[HauerSteffensView scaleExample2]	[ExtDynamicSelectionCloud chordExample]	[PitchTimeView openOnEventList: EventList randomExample label: 'P T V' pianoRoll: true]	[EventList accellExample open]Advanced Event Generators	[(Peal on: #(60 62 64 65) duration: (1/8) beat) eventList editPTV]	[Arpeggio example1]		 "Plays midi"	[Score11 melody1]	[ExtDynamicSelectionCloud chordExample]	[ExtDynamicSelectionCloud chordExample2]Function views	[Function functionViewExample]	[FunctionView multiFunctionExample]	[FunctionView onFunctions: (Function fromFile: 'G1.2a1.env')]--------------------------Roll timing tests	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList asSoundScore play]	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList playOn: MIDIVoice default]	[((Roll length: 6 sec rhythm: 60 note: 72) ampl: 100) eventList 					playOn: (OSCVoice cslHost: pMapForCSLSimpleFM)]----MIDI Tests	[PortMIDILibrary pm_count_devices ]	[PortMIDILibrary pm_default_input_device ] 	[PortMIDILibrary pm_default_output_device ] 	PortMIDILibrary pm_test: PortMIDILibrary new pm_default_output_device 	[PortMIDIPort listDeviceTable]	[PortMIDILibrary testAllNotes]	[ExternalLibrary clearAllCaches.]	[PortMIDILibrary pm_terminate]	[MIDIVoice scaleExample]	[MIDIVoice randomExample]Various verbose MIDIVoice creation methods	[EventList scaleExample1 playOn: (MIDIVoice defaultOut: 1)]	[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Kontakt' channel: 3)]	[EventList scaleExample1 playOn: (MIDIVoice onDeviceNamed: 'Nord' channel: 1)]	[EventList scaleExample1 playOn: (MIDIVoice on: 			(MIDIDevice 				outOn: (PortMIDIPort indexOfOutNamed: '*Kontakt*') 				port: MIDIPort concreteClass default) 			channel: 3)]	[PortMIDIPort streams]	[EventList multiVoiceExample playOn: MIDIVoice default]OSC Tests	Default CSL Synthesis Server Instruments (see CSL7/Src/IO/OSC_main.cpp)	1 - 10 ---- 10 plucked strings		 "fff" - amp, pitch, pos	11 - 20 ---- 10 FM instruments		"ffff" - dur amp pitch pos		"ffffff" - dur, ampl, c_fr, m_fr, ind, pos	21 - 30 ---- 10 FM bells		 "fffffff" - dur, ampl, pitch,  gliss, rat,  ind,  pos	31 - 34 ---- 4 sound files (words)		"ff" - amp, pos	35 - 50 ---- 16 SHARC SOS voices (different instruments)		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	51 - 55 ---- 5 basic SHARC-spectrum instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	56 - 61 ---- 5 SHARC-instrument additive cross-fade instruments w vibrato		dur, ampl, pitch, pos		dur, ampl, pitch, pos, att, dec, sus, rel	62 - 63 ---- 2 granular scramblers		dur, ampl	64 - 67 ---- 4 granular shifters		dur, ampl	68-75 ---- 8 SoundFont sample players		"fffff" - dur, chan, key, ampl, pos		"s" - load sound file given full file name (cmd 156 = set_file_f)	[EventScheduler interrupt; flush]	[OSCVoice fmExample1]	[OSCVoice fmExample2]	[OSCVoice pluckExample1]	[OSCVoice sndExample1]	[OSCVoice sndExample2]	[OSCVoice sharcExample1]	[OSCVoice bellExample1]	[OSCVoice vSOSExample1]	[OSCVoice granulatorExample1]	[OSCVoice granulatorExample2: 1]SoundFont Sampler tests	[OSCVoice new send: '/i68/fi' args: '/Users/stp/Code/Audio/Synths/SoundFonts/male.sf2' ]SndSynth Tests	ScorePlayerMorph new openMIDIFile - fix this--------------------------------------------------------------------------------------------------------------------------------------------------------Music Font debugging[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) browseAllGlyphs]				[((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E1D0 to: 16r00E1E7][((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00ECA0 to: 16r00ECB7][((StrikeFont familyName: 'Bravura' size: 100) asPointSize: 100) displayGlyphsFrom: 16r00E0A0 to: 16r00E0FC][(((StrikeFont familyName: 'Bravura' size: 100) pointSize: 100) characterFormAtCode: 16r00E1D2) 		displayOn: Display at: (256@256) clippingBox: Display boundingBox 		rule: Form paint fillColor: Color black][DisplayListView loadNoteGlyphsFromFontSized: 100]"	"load music icons from the font"DisplayVisual displayMusicGlyphs(((DisplayListView glyphs at: #StdNoteIcons) at: '1' asSymbol) image image) bitEditOffsets:	1/1 -> 6 @ 66	1/2 -> 5 @ 66(((DisplayListView glyphs at: #OtherNoteIcons) at: '4' asSymbol) image image) bitEdit	Offsets (5 @ 45)----Loading transport icons[ | folder |	DisplayListView glyphs at: #Transport put: Dictionary new.	folder := (FileDirectory default directoryNamed: 				'Siren9C/Data/Fonts/transport_icons') name, '/'.	((FileDirectory on: folder) fileNamesMatching: '*.png') do:	[ :jpg | | form |	form := (Form fromFileNamed: folder, jpg).	form := form scaledToSize: 16 @ 16.	(DisplayListView glyphs at: #Transport) at: (jpg copyUpTo: $.) asSymbol put: form]][ | gly right down left up |gly := DisplayListView glyphs at: #Transport.right := gly at: #'right-arrow'.down := right rotateBy: #right centerAt: 0@0.left := right rotateBy: #pi centerAt: 0@0.up := right rotateBy: #left centerAt: 0@0.gly at: #'down-arrow' put: down.gly at: #'left-arrow' put: left.gly at: #'up-arrow' put: up.right := gly at: #'fast-forward'.down := right rotateBy: #pi centerAt: 0@0.gly at: #'rewind' put: down.][(DisplayListView glyphs at: #Transport) explore][DisplayListView loadNoteGlyphsFrom: 16r00E1D0 to: 16r00E1E7		keys: #('2' '4' '1' '1/2' '1/2d' '1/4' '1/4d' '1/8' '1/8d' '1/16' '1/16d' '1/32' '1/32d'  '1/64' '1/64d' )		into: #StdNoteIcons.DisplayListView shrinkGlyphs.DisplayListView tweakGlyphs][DisplayVisual displayMusicGlyphs: #StdNoteIcons][HauerSteffensView scaleExample][HauerSteffensView scaleExample2][EventList accellExample edit]
